@@ -1805,19 +1805,22 @@
 
         function eheckKey(e) {
             // 키보드 이벤트 발생하면
-            e.preventDefault(); // 기본 스크롤 동작을 막음
             console.clear();
             if (e.keyCode === 37) {
                 // 왼쪽 방향키가 눌렸는지 확인하고
+                e.preventDefault(); // 기본 스크롤 동작 방지
                 left(); // 맞다면 왼쪽 메소드 실행
             } else if (e.keyCode === 38) {
                 // 아니라면 위쪽 방향키가 눌렸는지 확인하고
+                e.preventDefault(); // 기본 스크롤 동작 방지
                 up(); // 맞다면 위쪽 메소드 실행
             } else if (e.keyCode === 39) {
                 // 아니라면 오른쪽 방향키가 눌렸는지 확인하고
+                e.preventDefault(); // 기본 스크롤 동작 방지
                 right(); // 맞다면 오른쪽 메소드 실행
             } else if (e.keyCode === 40) {
                 // 아니라면 아래쪽 방향키가 눌렸는지 확인하고
+                e.preventDefault(); // 기본 스크롤 동작 방지
                 down(); // 맞다면 아래쪽 메소드 실행
             }
         }
