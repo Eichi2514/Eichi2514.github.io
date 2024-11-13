@@ -6,12 +6,6 @@
     <title>Eichi portfolio</title>
 
     <style>
-        /* 배경색 */
-        body {
-            margin: 0;
-            padding: 0;
-            background: #1e3a8a;
-        }
 
         /* 폰트1 양식 */
         .dancing-script {
@@ -28,6 +22,13 @@
             font-style: normal;
         }
 
+        /* 배경색 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1e3a8a;
+        }
+
         /* 처음화면 */
 
         /* 배경 */
@@ -35,7 +36,7 @@
             margin: auto;
             width: 550px;
             height: 550px;
-            background: #4374d9;
+            background: #1e3a8a;
         }
 
         /* 환경설정 위치 */
@@ -88,7 +89,7 @@
             margin: auto;
             width: 550px;
             height: 550px;
-            background: #4374d9;
+            background: #1e3a8a;
         }
 
         /* 캐릭터 선택 알림창 배경 */
@@ -100,7 +101,7 @@
             z-index: 10;
         }
 
-        .p1t, .p2t, .p3t{
+        .p1t, .p2t, .p3t {
             border: 1px solid;
         }
 
@@ -300,8 +301,8 @@
             width: 200px;
             height: 200px;
             border: 1px solid;
-            top: 10px;
-            left: 340px;
+            top: -500px;
+            left: 600px;
             background-color: #fff;
         }
 
@@ -364,7 +365,7 @@
         /* 골 배경 */
         .wrapper {
             margin: auto;
-            background: #4374d9;
+            background: #1e3a8a;
             width: 550px;
             height: 550px;
             position: relative;
@@ -664,103 +665,152 @@
             }
         }
 
+        .info_text {
+            width: 1440px;
+            color: white;
+            font-size: 2.5rem;
+            position: absolute;
+            left: calc(50% - 720px);
+            top: 700px;
+        }
+
+        @keyframes scrollDown {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .animate-scroll {
+            animation: scrollDown 1s infinite;
+        }
+
         .portfolio {
-          position: absolute;
-          top: 919px;
-          left: 50%;
-          transform: translateX(-50%);
+            position: absolute;
+            top: 919px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .portfolio-box {
-          width: 1440px;
-          height: 919px;
-          display: flex;
-          flex-direction: column;
-          position: relative;
-          border-top: 1px solid white;
+            width: 1440px;
+            height: 919px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-top: 1px solid white;
         }
 
         .portfolio-title {
-          width: 100%;
-          text-align: center;
-          font-size: 2.5rem;
-          font-weight: 600;
-          color: white;
-          margin-top: 50px;
-          margin-bottom: 50px;
+            width: 100%;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: white;
+            margin-top: 50px;
+            margin-bottom: 50px;
         }
 
         .portfolio-body {
-          display: flex;
-          justify-content: center;
+            display: flex;
+            justify-content: center;
         }
 
         .my_poto {
-          width: 570px;
-          height: 570px;
-          object-fit: cover;
-          border-radius: 50%;
+            width: 570px;
+            height: 570px;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .my_introduction {
-          width: 50%;
-          color: #ffffff;
-          margin-left: 50px;
-          margin-top: 130px;
+            width: 50%;
+            color: #ffffff;
+            margin-left: 50px;
+            margin-top: 130px;
         }
 
         .my_introduction div {
-          font-size: 28px;
-          margin-bottom: 1rem;
+            font-size: 28px;
+            margin-bottom: 1rem;
         }
 
         .my_introduction strong {
-          font-weight: 600;
+            font-weight: 600;
         }
 
         .github-icon {
-          width: 120px;
-          height: 120px;
-          background: #ffffff;
-          border-radius: 100px;
+            width: 120px;
+            height: 120px;
+            background: #ffffff;
+            border-radius: 100px;
         }
 
         .velog-icon {
-          width: 100px;
-          height: 100px;
-          background: #ffffff;
-          border-radius: 100px;
+            width: 100px;
+            height: 100px;
+            background: #ffffff;
+            border-radius: 100px;
         }
 
         img,
         svg {
-          transition: transform 0.3s ease;
+            transition: transform 0.3s ease;
         }
 
         a:hover img,
         a:hover svg {
-          transform: scale(1.1);
+            transform: scale(1.1);
         }
 
         .project {
-          width: 770px;
-          text-align: center;
+            width: 770px;
+            text-align: center;
         }
 
         .project-title {
-          width: 100%;
-          text-align: center;
-          font-size: 2rem;
-          font-weight: 600;
-          color: white;
-          padding-bottom: 30px;
+            width: 100%;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+            padding-bottom: 30px;
         }
 
         .project-image {
-          display: inline-block;
-          width: 500px;
-          height: 500px;
-          border-radius: 10px;
+            display: inline-block;
+            width: 500px;
+            height: 500px;
+            border-radius: 10px;
+        }
+
+        .gform input,
+        .gform textarea {
+            width: 1000px;
+            padding: 16px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .gform button {
+            width: 200px;
+            padding: 12px;
+            background-color: #4f46e5;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .gform button:hover {
+            background-color: #4338ca;
         }
     </style>
 </head>
@@ -1051,94 +1101,152 @@
         </div>
     </div>
 </div>
+<div class="info_text flex justify-center">
+    <div class="pr-4 animate-scroll">
+        <i class="fa-solid fa-angles-down"></i>
+    </div>
+    <div> 아래에서 더 보기</div>
+    <div class="pl-4 animate-scroll">
+        <i class="fa-solid fa-angles-down"></i>
+    </div>
+</div>
 <div class="portfolio">
-  <div class="portfolio-box">
-    <div class="portfolio-title">
-      협업을 통한 성장을 추구하는 개발자 유건혁 입니다.
+    <div class="portfolio-box">
+        <div class="portfolio-title">
+            협업을 통한 성장을 추구하는 개발자 유건혁 입니다.
+        </div>
+        <div class="portfolio-body">
+            <div class="my_poto flex flex-col">
+                <img class="my_poto rounded-full"
+                     src="https://github.com/user-attachments/assets/ac814b54-840a-4456-95a3-3064d5208f91" alt="내 사진">
+                <div class="flex justify-around items-center w-full">
+                    <a target="blank" href="https://github.com/Eichi2514" class="inline-block mr-2">
+                        <img class="github-icon"
+                             src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                    </a>
+                    <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/posts">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
+                             viewBox="0 0 192 192">
+                            <path fill-rule="evenodd"
+                                  d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="my_introduction">
+                <div class="mb-3">
+                    <strong>이름 : </strong> 유건혁
+                </div>
+                <div class="mb-3">
+                    <strong>전화번호 : </strong> 010-2229-6877
+                </div>
+                <div class="mb-3">
+                    <strong>이메일 : </strong> picon1317@gmail.com
+                </div>
+                <div class="mb-3">
+                    <strong>학력 : </strong><br>
+                    충남기계공업고등학교<br> (2012.03 ~ 2015.02)
+                </div>
+                <div class="mb-3">
+                    <strong>교육과정 : </strong><br>
+                    [산대특] 공공데이터를 활용한 웹앱개발자 양성과정
+                    <br> (2024.05 ~ 2024.12)
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="portfolio-body">
-      <div class="my_poto flex flex-col">
-        <img class="my_poto rounded-full" src="https://github.com/user-attachments/assets/ac814b54-840a-4456-95a3-3064d5208f91" alt="내 사진">
-        <div class="flex justify-around items-center w-full">
-          <a target="blank" href="https://github.com/Eichi2514" class="inline-block mr-2">
-            <img class="github-icon" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png" />
-          </a>
-          <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/posts">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100" viewBox="0 0 192 192">
-              <path fill-rule="evenodd" d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z" clip-rule="evenodd"></path>
-            </svg>
-          </a>
+    <div class="portfolio-box">
+        <div class="portfolio-title">
+            프로젝트
         </div>
-      </div>
-      <div class="my_introduction">
-        <div class="mb-3">
-          <strong>이름 : </strong> 유건혁
+        <div class="portfolio-body">
+            <div class="project">
+                <div class="project-title">개인 : 로그라이크 형식 브라우저 게임</div>
+                <div class="images">
+                    <img class="project-image"
+                         src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780"
+                         alt="개인프로젝트 사진">
+                    <div class="flex justify-around items-center w-full pt-10">
+                        <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
+                            <img class="github-icon"
+                                 src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                        </a>
+                        <a class="inline-block velog-icon" target="blank"
+                           href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
+                                 viewBox="0 0 192 192">
+                                <path fill-rule="evenodd"
+                                      d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
+                                      clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="project">
+                <div class="project-title">팀 : 반려견 커뮤니티 사이트</div>
+                <div class="images">
+                    <img class="project-image"
+                         src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3"
+                         alt="팀프로젝트 사진">
+                    <div class="flex justify-around items-center w-full pt-10">
+                        <a target="blank" href="" class="inline-block mr-2">
+                            <img class="github-icon"
+                                 src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                        </a>
+                        <a class="inline-block velog-icon" target="blank" href="">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
+                                 viewBox="0 0 192 192">
+                                <path fill-rule="evenodd"
+                                      d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
+                                      clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-          <strong>전화번호 : </strong> 010-2229-6877
-        </div>
-        <div class="mb-3">
-          <strong>이메일 : </strong> picon1317@gmail.com
-        </div>
-        <div class="mb-3">
-          <strong>학력 : </strong><br>
-          충남기계공업고등학교<br> (2012.03 ~ 2015.02)
-        </div>
-        <div class="mb-3">
-          <strong>교육과정 : </strong><br>
-          [산대특] 공공데이터를 활용한 웹앱개발자 양성과정
-          <br> (2024.05 ~ 2024.12)
-        </div>
-      </div>
     </div>
-  </div>
-  <div class="portfolio-box">
-    <div class="portfolio-title">
-      프로젝트
-    </div>
-    <div class="portfolio-body">
-      <div class="project">
-        <div class="project-title">개인 : 로그라이크 형식 브라우저 게임</div>
-        <div class="images">
-          <img class="project-image" src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780" alt="개인프로젝트 사진">
-          <div class="flex justify-around items-center w-full pt-10">
-            <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
-              <img class="github-icon" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png" />
-            </a>
-            <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100" viewBox="0 0 192 192">
-                <path fill-rule="evenodd" d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z" clip-rule="evenodd"></path>
-              </svg>
-            </a>
-          </div>
+    <div class="portfolio-box">
+        <div class="portfolio-title">
+            기술 스택
         </div>
-      </div>
-      <div class="project">
-        <div class="project-title">팀 : 반려견 커뮤니티 사이트</div>
-        <div class="images">
-          <img class="project-image" src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3" alt="팀프로젝트 사진">
-          <div class="flex justify-around items-center w-full pt-10">
-            <a target="blank" href="" class="inline-block mr-2">
-              <img class="github-icon" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png" />
-            </a>
-            <a class="inline-block velog-icon" target="blank" href="">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100" viewBox="0 0 192 192">
-                <path fill-rule="evenodd" d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z" clip-rule="evenodd"></path>
-              </svg>
-            </a>
-          </div>
+        <div class="portfolio-body">
+            <img src="https://github.com/user-attachments/assets/c1bea2cd-8977-40f0-89b5-cb62d504ec37" alt="">
         </div>
-      </div>
     </div>
-  </div>
-  <div class="portfolio-box">
-    <div class="portfolio-title">
-      기술 스택
-    </div>
-    <div class="portfolio-body">
-      <img src="https://github.com/user-attachments/assets/c1bea2cd-8977-40f0-89b5-cb62d504ec37" alt="">
-    </div>
-  </div>
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                문의하기
+            </div>
+            <div class="portfolio-body contact-page section">
+                <form class="gform space-y-6" method="POST" data-email="picon1317@gmail.com" action="https://script.google.com/macros/s/AKfycbyvwI3cORAFClWsOGDKsrAIHD_YWaL4p3JvYuay141Z2479enNsFMeoX3cs5_mvunWS9Q/exec">
+                    <div>
+                        <label for="name" class="block text-white text-lg font-medium">이름</label>
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="name" type="text" placeholder="이름을 입력해 주세요" name="name" required />
+                    </div>
+                    <div>
+                        <label for="contact" class="block text-white text-lg font-medium">연락처</label>
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required />
+                    </div>
+                    <div>
+                        <label for="email" class="block text-white text-lg font-medium">이메일</label>
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="email" type="email" placeholder="이메일을 입력해 주세요 (예: id@email.com)" name="email" required />
+                    </div>
+                    <div>
+                        <label for="body" class="block text-white text-lg font-medium">내용</label>
+                        <textarea class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="body" placeholder="메시지를 남겨주세요" name="body" required></textarea>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="px-6 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition duration-300" id="submitBtn" type="submit">
+                            보내기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 </div>
 <script>
     $(document).ready(function () {
@@ -1697,6 +1805,7 @@
 
         function eheckKey(e) {
             // 키보드 이벤트 발생하면
+            e.preventDefault(); // 기본 스크롤 동작을 막음
             console.clear();
             if (e.keyCode === 37) {
                 // 왼쪽 방향키가 눌렸는지 확인하고
@@ -1748,6 +1857,32 @@
             $(".key").removeClass("bg-yellow-300"); // 키의 배경색을 없엔다
         });
 
+        document.querySelector(".gform").addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 기본 동작 중지
+            document.getElementById("submitBtn").disabled = true; // 버튼 비활성화
+
+            // 비동기로 폼 데이터 전송
+            fetch(event.target.action, {
+                method: "POST",
+                body: new FormData(event.target)
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("이메일이 성공적으로 전송되었습니다!");
+                    } else {
+                        response.text().then((errorMessage) => {
+                            alert("이메일 전송에 실패했습니다: " + errorMessage);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("전송 중 오류 발생:", error);
+                    alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
+                })
+                .finally(() => {
+                    document.getElementById("submitBtn").disabled = false; // 버튼 활성화
+                });
+        });
     });
 </script>
 </body>
