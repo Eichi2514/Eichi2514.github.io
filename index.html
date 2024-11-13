@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eichi portfolio</title>
+
+    <style>
+        /* 배경색 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #4374d9;
+        }
+
+        /* 폰트1 양식 */
+        .dancing-script {
+            font-family: "Dancing Script", cursive;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: "CHOGOONCHICKENSCRATCHV3";
+            src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2406-2@1.0/CHOGOONCHICKENSCRATCHV3.woff2") format("woff2");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 처음화면 */
+
+        /* 배경 */
+        .game_start {
+            margin: auto;
+            width: 550px;
+            height: 550px;
+            background: #4374d9;
+        }
+
+        /* 환경설정 위치 */
+        .sug {
+            top: 450px;
+            left: 450px;
+        }
+
+        /* 기본 테두리 */
+        .bo {
+            border: 1px solid red;
+        }
+
+        /* 왼쪽 제목, 오른쪽 제목 */
+        .title1,
+        .title3 {
+            font-size: 2.5rem;
+            padding: 0 50px;
+            display: inline-block;
+        }
+
+        /* 제목 틀 */
+        .title {
+            display: inline-block;
+            border: 5px solid black;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        /* 시작 버튼 */
+        .start_btn_text {
+            display: inline-block;
+            padding: 0 20px 0 20px;
+            border: 2px solid;
+            font-family: "CHOGOONCHICKENSCRATCHV3";
+            font-size: 2rem;
+            background-color: #fff;
+        }
+
+        /* 시작 버튼 호버시 효과 */
+        .start_btn_text:hover {
+            margin-top: -10px;
+            font-size: 3rem;
+        }
+
+        /* 캐릭터 선택 */
+
+        /* 배경 */
+        .choice {
+            margin: auto;
+            width: 550px;
+            height: 550px;
+            background: #4374d9;
+        }
+
+        /* 캐릭터 선택 알림창 배경 */
+        .choice_t {
+            padding: 10px;
+            width: 300px;
+            left: 125px;
+            top: 200px;
+            z-index: 10;
+        }
+
+        .p1t, .p2t, .p3t{
+            border: 1px solid;
+        }
+
+        /* 폰트2 양식 */
+        .noon {
+            font-family: "CHOGOONCHICKENSCRATCHV3";
+        }
+
+        /* 캐릭터 */
+        .p1,
+        .p2,
+        .p3 {
+            display: inline-block;
+            border: 1px solid;
+            width: 140px;
+            height: 140px;
+            background-color: #fff;
+        }
+
+        /* 캐릭터1 위치 */
+        .p1 {
+            top: 100px;
+            left: 30px;
+        }
+
+        /* 캐릭터1 호버시 효과 */
+        .p1:hover {
+            top: 95px;
+            left: 25px;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* 캐릭터2 위치 */
+        .p2 {
+            top: 100px;
+            left: 205px;
+        }
+
+        /* 캐릭터2 호버시 효과 */
+        .p2:hover {
+            top: 95px;
+            left: 200px;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* 캐릭터3 위치 */
+        .p3 {
+            top: 100px;
+            left: 380px;
+        }
+
+        /* 캐릭터3 호버시 효과 */
+        .p3:hover {
+            top: 95px;
+            left: 375px;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* 메인 */
+
+        /* 배경 */
+        .map {
+            margin: auto;
+            width: 550px;
+            height: 550px;
+        }
+
+        /* 골 위치 */
+        .goolin {
+            width: 50px;
+            height: 50px;
+            top: 450px;
+            left: 450px;
+        }
+
+        /* 키 위치 */
+        .key {
+            width: 50px;
+            height: 50px;
+            top: 250px;
+            left: 250px;
+            transition: all 2s;
+        }
+
+        /* 캐릭터 위치 */
+        .character {
+            width: 50px;
+            height: 50px;
+            top: 50px;
+            left: 50px;
+            transition: transform 2s;
+        }
+
+        /* 길 라이브러리 */
+        .road {
+            position: absolute;
+            color: white;
+            background-color: white;
+            height: 50px;
+            width: 50px;
+        }
+
+        .t1 {
+            top: 50px;
+        }
+
+        .t2 {
+            top: 100px;
+        }
+
+        .t3 {
+            top: 150px;
+        }
+
+        .t4 {
+            top: 200px;
+        }
+
+        .t5 {
+            top: 250px;
+        }
+
+        .t6 {
+            top: 300px;
+        }
+
+        .t7 {
+            top: 350px;
+        }
+
+        .t8 {
+            top: 400px;
+        }
+
+        .t9 {
+            top: 450px;
+        }
+
+        .l1 {
+            left: 50px;
+        }
+
+        .l2 {
+            left: 100px;
+        }
+
+        .l3 {
+            left: 150px;
+        }
+
+        .l4 {
+            left: 200px;
+        }
+
+        .l5 {
+            left: 250px;
+        }
+
+        .l6 {
+            left: 300px;
+        }
+
+        .l7 {
+            left: 350px;
+        }
+
+        .l8 {
+            left: 400px;
+        }
+
+        .l9 {
+            left: 450px;
+        }
+
+        /* 메인 키보드 */
+
+        /* 화면 조작키 영역 */
+        .keybord_box {
+            margin: auto;
+            width: 550px;
+            height: 200px;
+        }
+
+        /* 화면 조작키 버튼 이미지 */
+        .key-img {
+            font-size: 2rem;
+            width: 50px;
+            height: 60px;
+            text-align: center;
+        }
+
+        /* 화면 조작키 배경 */
+        .keybord {
+            width: 200px;
+            height: 200px;
+            border: 1px solid;
+            top: 10px;
+            left: 340px;
+            background-color: #fff;
+        }
+
+        /* 위쪽 버튼 위치 */
+        .key-up {
+            width: 200px;
+            height: 50px;
+        }
+
+        /* 오른쪽 버튼 위치 */
+        .key-right {
+            width: 50px;
+            height: 200px;
+            left: 150px;
+        }
+
+        /* 아래쪽 버튼 위치 */
+        .key-down {
+            width: 200px;
+            height: 50px;
+            top: 150px;
+        }
+
+        /* 왼쪽 버튼 위치 */
+        .key-left {
+            width: 50px;
+            height: 200px;
+        }
+
+        /* 화면 조작키 좌우 위치 */
+        .l_75 {
+            left: 75px;
+        }
+
+        /* 화면 조작키 상하 위치 */
+        .t_75 {
+            top: 75px;
+        }
+
+        /* 엔딩 */
+
+        /* 확인 버튼 */
+        .goal_chick {
+            font-size: 3rem;
+            background-color: #fff;
+            padding: 0 20px;
+        }
+
+        /* 여러개의 이미지가 겹칠경우를 대비해 버튼을 가장 앞으로 빼기위해서 */
+        .z-101 {
+            z-index: 101;
+        }
+
+        /* 확인버튼 위치 */
+        .goal-t {
+            font-size: 6rem;
+            margin: auto;
+        }
+
+        /* 골 배경 */
+        .wrapper {
+            margin: auto;
+            background: #4374d9;
+            width: 550px;
+            height: 550px;
+            position: relative;
+        }
+
+        /* 배경 삼각형 */
+        .clip {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            top: 198px;
+            left: 198px;
+            transition: 0.5s;
+            transition-timing-function: ease-in-out;
+            z-index: 100;
+            background: #3db7cc;
+        }
+
+        /* 위쪽 삼각형 도형 */
+        .clip-top {
+            clip-path: polygon(50% 50%, 0 0, 100% 0);
+            animation: clip-top 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 왼쪽 삼각형 도형 */
+        .clip-left {
+            clip-path: polygon(50% 50%, 0 0, 0 100%);
+            animation: clip-left 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 오른쪽 삼각형 도형 */
+        .clip-right {
+            clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+            animation: clip-right 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 아래쪽 삼각형 도형 */
+        .clip-bottom {
+            clip-path: polygon(50% 50%, 0 100%, 100% 100%);
+            animation: clip-bottom 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 원형 도형 */
+        .circle {
+            border-radius: 50%;
+        }
+
+        /* 사각형1 도형 */
+        .square-1 {
+            width: 30px;
+            height: 30px;
+            top: 250px;
+            left: 250px;
+            background-color: red;
+            animation: square-1 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 사각형2 도형 */
+        .square-2 {
+            width: 50px;
+            height: 50px;
+            top: 250px;
+            left: 250px;
+            background-color: orange;
+            animation: square-2 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 원형 도형 */
+        .circle-1 {
+            width: 40px;
+            height: 40px;
+            top: 250px;
+            left: 250px;
+            background: gold;
+            animation: circle-1 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 삼각형 도형 */
+        .triangle-1 {
+            width: 40px;
+            height: 40px;
+            top: 250px;
+            left: 250px;
+            background: green;
+            clip-path: polygon(50% 0%, 0 100%, 100% 100%);
+            animation: triangle-1 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 엑스자 도형 */
+        .close-1 {
+            width: 35px;
+            height: 35px;
+            top: 250px;
+            left: 250px;
+            background: blue;
+            clip-path: polygon(
+                    20% 0%,
+                    0% 20%,
+                    30% 50%,
+                    0% 80%,
+                    20% 100%,
+                    50% 70%,
+                    80% 100%,
+                    100% 80%,
+                    70% 50%,
+                    100% 20%,
+                    80% 0%,
+                    50% 30%
+            );
+            animation: close-1 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 별1 도형 */
+        .star-1 {
+            width: 50px;
+            height: 50px;
+            top: 250px;
+            left: 250px;
+            background: navy;
+            clip-path: polygon(
+                    50% 0%,
+                    61% 35%,
+                    98% 35%,
+                    68% 57%,
+                    79% 91%,
+                    50% 70%,
+                    21% 91%,
+                    32% 57%,
+                    2% 35%,
+                    39% 35%
+            );
+            animation: star-1 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 별2 도형 */
+        .star-2 {
+            width: 50px;
+            height: 50px;
+            top: 250px;
+            left: 250px;
+            background: violet;
+            clip-path: polygon(
+                    50% 0%,
+                    61% 35%,
+                    98% 35%,
+                    68% 57%,
+                    79% 91%,
+                    50% 70%,
+                    21% 91%,
+                    32% 57%,
+                    2% 35%,
+                    39% 35%
+            );
+            animation: star-2 2.5s infinite cubic-bezier(0.415, 0.547, 0, 0.809);
+        }
+
+        /* 시각적 효과를 위한 위쪽 삼각형 변화과정 중 트렌스폼 변화 */
+        @keyframes clip-top {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-150px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* 시각적 효과를 위한 왼쪽 삼각형 변화과정 중 트렌스폼 변화 */
+        @keyframes clip-left {
+            0% {
+                transform: translateX(0px);
+            }
+            50% {
+                transform: translateX(-150px);
+            }
+            100% {
+                transform: translateX(0px);
+            }
+        }
+
+        /* 시각적 효과를 위한 오른쪽 삼각형 변화과정 중 트렌스폼 변화 */
+        @keyframes clip-right {
+            0% {
+                transform: translateX(0px);
+            }
+            50% {
+                transform: translateX(150px);
+            }
+            100% {
+                transform: translateX(0px);
+            }
+        }
+
+        /* 시각적 효과를 위한 아래쪽 삼각형 변화과정 중 트렌스폼 변화 */
+        @keyframes clip-bottom {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(150px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 사각형1 변화과정 중 트렌스폼 변화 */
+        @keyframes square-1 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(-50px) translateY(50px) scale(1) rotateZ(90deg);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 사각형2 변화과정 중 트렌스폼 변화 */
+        @keyframes square-2 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(-80px) translateY(-60px) scale(1) rotateZ(135deg);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 원형 변화과정 중 트렌스폼 변화 */
+        @keyframes circle-1 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0);
+            }
+            50% {
+                transform: translateX(70px) translateY(-80px) scale(1);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 삼각형 변화과정 중 트렌스폼 변화 */
+        @keyframes triangle-1 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(-100px) translateY(140px) scale(1) rotateZ(-90deg);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 엑스자 변화과정 중 트렌스폼 변화 */
+        @keyframes close-1 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(100px) translateY(140px) scale(1) rotateZ(-270deg);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 별1 변화과정 중 트렌스폼 변화 */
+        @keyframes star-1 {
+            0% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(60px) translateY(70px) scale(1) rotateZ(155deg);
+            }
+            100% {
+                transform: translateX(0) translateY(0) scale(0) rotateZ(0);
+            }
+        }
+
+        /* 시각적 효과를 위한 위쪽 별2 변화과정 중 트렌스폼 변화 */
+        @keyframes star-2 {
+            0% {
+                transform: translateX(0) scale(0) rotateZ(0);
+            }
+            50% {
+                transform: translateX(70px) scale(1) rotateZ(-360deg);
+            }
+            100% {
+                transform: translateX(0) scale(0) rotateZ(0);
+            }
+        }
+
+        .portfolio{
+            position: absolute;
+            left: calc(50% - 720px);
+            top: 919px;
+            width: 1440px;
+            height: 919px;
+        }
+    </style>
+</head>
+<body>
+<!-- 제이 쿼리 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 폰트어썸 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<!-- 테일윈드 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+
+<!-- 처음화면 -->
+
+<!-- 높이 조정 -->
+<div class="h-12"></div>
+
+<!-- 배경 -->
+<div class="relative game_start flex flex-col">
+    <!-- 높이 조정 -->
+    <div class="h-24"></div>
+    <!-- 제목 배경 -->
+    <div class="text-center">
+        <!-- 제목 -->
+        <div class="title">
+            <!-- 왼쪽 제목 -->
+            <div class="title1 dancing-script">MAZE</div>
+            <!-- 오른쪽 제목 -->
+            <div class="title3 dancing-script">MAZE</div>
+        </div>
+    </div>
+    <!-- 높이 조정 -->
+    <div class="h-48"></div>
+    <!-- 버튼 배경 -->
+    <div class="start_btn text-center">
+        <!-- 시작 버튼 글자 -->
+        <div class="start_btn_text cursor-pointer rounded-2xl">시작</div>
+    </div>
+    <!-- 환경설정(기능 없음) -->
+    <div class="sug absolute cursor-pointer">
+        <!-- 환경설정 이미지 -->
+        <i class="fa-solid fa-gear fa-2x"></i>
+    </div>
+</div>
+
+<!-- 캐릭터 선택 -->
+
+<!-- 배경 -->
+<div class="choice hidden relative">
+    <!-- 캐릭터 선택 알림창 배경 -->
+    <div class="choice_t absolute">
+        <!-- 캐릭터1(드래곤) 선택창 -->
+        <div class="p1t hidden text-center bg-white rounded-2xl">
+            <!-- 캐릭터1(드래곤) 선택 알림창 -->
+            <div class="p1t_ti p-3">용 캐릭터를 선택하시겠습니까?</div>
+            <!-- 캐릭터1(드래곤) 선택 버튼 배경 -->
+            <div class="p1t_bo">
+                <!-- 캐릭터1(드래곤) 선택 확인 버튼 -->
+                <div class="p1t_yes p-3 cursor-pointer inline-block">확인</div>
+                <!-- 캐릭터1(드래곤) 선택 취소 버튼 -->
+                <div class="p1t_no p-3 cursor-pointer inline-block">취소</div>
+            </div>
+        </div>
+        <!-- 캐릭터2(수달) 선택창 -->
+        <div class="p2t hidden text-center bg-white rounded-2xl">
+            <!-- 캐릭터2(수달) 선택 알림창 -->
+            <div class="p2t_ti p-3">수달 캐릭터를 선택하시겠습니까?</div>
+            <!-- 캐릭터2(수달) 선택 버튼 배경 -->
+            <div class="p2t_bo">
+                <!-- 캐릭터2(수달) 선택 확인 버튼 -->
+                <div class="p2t_yes p-3 cursor-pointer inline-block">확인</div>
+                <!-- 캐릭터2(수달) 선택 취소 버튼 -->
+                <div class="p2t_no p-3 cursor-pointer inline-block">취소</div>
+            </div>
+        </div>
+        <!-- 캐릭터3(유령) 선택창 -->
+        <div class="p3t hidden text-center bg-white rounded-2xl">
+            <!-- 캐릭터3(유령) 선택 알림창 -->
+            <div class="p3t_ti p-3">유령 캐릭터를 선택하시겠습니까?</div>
+            <!-- 캐릭터3(유령) 선택 버튼 배경 -->
+            <div class="p3t_bo">
+                <!-- 캐릭터3(유령) 선택 확인 버튼 -->
+                <div class="p3t_yes p-3 cursor-pointer inline-block">확인</div>
+                <!-- 캐릭터3(유령) 선택 취소 버튼 -->
+                <div class="p3t_no p-3 cursor-pointer inline-block">취소</div>
+            </div>
+        </div>
+    </div>
+
+    <!--  높이 조정  -->
+    <div class="h-12"></div>
+    <!-- 캐릭터 선택 제목 배경-->
+    <div class="text-center">
+        <!-- 캐릭터 선택 제목-->
+        <div class="title">
+            <!-- 캐릭터 선택 왼쪽 제목-->
+            <div class="title1 noon">캐 릭 터</div>
+            <!-- 캐릭터 선택 오른쪽 제목-->
+            <div class="title3 noon">선 택</div>
+        </div>
+    </div>
+    <!-- 캐릭터 선택 이미지 배경-->
+    <div class="characters relative cursor-pointer">
+        <!-- 캐릭터1 이미지 배경-->
+        <div class="ps p1 text-center content-center absolute rounded-2xl">
+            <!-- 캐릭터1 이미지-->
+            <i class="fa-duotone fa-solid fa-dragon fa-4x"></i>
+        </div>
+        <!-- 캐릭터2 이미지 배경-->
+        <div class="ps p2 text-center content-center absolute rounded-2xl">
+            <!-- 캐릭터2 이미지-->
+            <i class="fa-solid fa-otter fa-4x"></i>
+        </div>
+        <!-- 캐릭터3 이미지 배경-->
+        <div class="ps p3 text-center content-center absolute rounded-2xl">
+            <!-- 캐릭터3 이미지-->
+            <i class="fa-solid fa-ghost fa-4x"></i>
+        </div>
+    </div>
+</div>
+
+<!-- 메인 -->
+
+<!-- 메인 배경 -->
+<div class="relative map hidden">
+    <!-- 배경 이미지 -->
+    <img src="https://picsum.photos/id/127/550/550" alt="">
+
+    <!-- 캐릭터1 배경 -->
+    <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
+        <!-- 캐릭터1 이미지 -->
+        <i class="fa-duotone fa-solid fa-dragon fa-2x"></i>
+    </div>
+    <!-- 캐릭터2 배경 -->
+    <div class="character otter hidden text-center content-center absolute rounded-full bg-yellow-900 z-20">
+        <!-- 캐릭터2 이미지 -->
+        <i class="fa-solid fa-otter fa-2x"></i>
+    </div>
+    <!-- 캐릭터3 배경 -->
+    <div class="character ghost hidden text-center content-center absolute rounded-full bg-black text-white z-20">
+        <!-- 캐릭터3 이미지 -->
+        <i class="fa-solid fa-ghost fa-2x"></i>
+    </div>
+
+    <!-- 열쇠 배경 -->
+    <div class="key text-center content-center absolute rounded-full z-10">
+        <!-- 열쇠 이미지 -->
+        <i class="fa-duotone fa-solid fa-key"></i>
+    </div>
+
+    <!-- 골인지점 배경 -->
+    <div class="goolin text-center content-center absolute z-10">
+        <!-- 골인지점 배경 이미지-->
+        <i class="fa-solid fa-door-open fa-2x"></i>
+    </div>
+
+    <!-- 길 -->
+    <!-- road 클래스는 모든 길을 한번에 정의할 경우를 위해서 -->
+    <!--  t 클래스는 TOP 위에서부터 떨어진 거리를 의미
+          ex) t1은 첫번째열 t2는 두전째열  -->
+    <!--  l 클래스는 left 왼쪽에서부터 떨어진 거리를 의미
+          ex) l1은 첫번째행 l2는 두전째행  -->
+    <!--  r 클래스는 ROAD 길을 각각 정의할 경우를 위해서
+          ex) r11은 ROAD중에 1열 1행에 있는 길
+              r12는 ROAD중에 1열 2행에 있는 길 -->
+    <!--  hidden은 처음에는 안보이다가 이벤트 발생 시 보여주기 위해서
+          hidden이 없는 길은 초기 위치에서 보여지는 길-->
+    <div class="road t1 l1 r11">11</div>
+    <div class="road t1 l2 r12">12</div>
+    <div class="road t1 l4 r14 hidden">14</div>
+    <div class="road t1 l5 r15 hidden">15</div>
+    <div class="road t1 l6 r16 hidden">16</div>
+    <div class="road t1 l7 r17 hidden">17</div>
+    <div class="road t1 l8 r18 hidden">18</div>
+    <div class="road t1 l9 r19 hidden">19</div>
+    <div class="road t2 l1 r21">21</div>
+    <div class="road t2 l4 r24 hidden">24</div>
+    <div class="road t2 l7 r27 hidden">27</div>
+    <div class="road t3 l1 r31 hidden">31</div>
+    <div class="road t3 l2 r32 hidden">32</div>
+    <div class="road t3 l3 r33 hidden">33</div>
+    <div class="road t3 l4 r34 hidden">34</div>
+    <div class="road t3 l5 r35 hidden">35</div>
+    <div class="road t3 l7 r37 hidden">37</div>
+    <div class="road t3 l8 r38 hidden">38</div>
+    <div class="road t3 l9 r39 hidden">39</div>
+    <div class="road t4 l1 r41 hidden">41</div>
+    <div class="road t4 l5 r45 hidden">45</div>
+    <div class="road t4 l9 r49 hidden">49</div>
+    <div class="road t5 l1 r51 hidden">51</div>
+    <div class="road t5 l2 r52 hidden">52</div>
+    <div class="road t5 l3 r53 hidden">53</div>
+    <div class="road t5 l5 r55">55</div>
+    <div class="road t5 l7 r57 hidden">57</div>
+    <div class="road t5 l8 r58 hidden">58</div>
+    <div class="road t5 l9 r59 hidden">59</div>
+    <div class="road t6 l1 r61 hidden">61</div>
+    <div class="road t6 l3 r63 hidden">63</div>
+    <div class="road t6 l7 r67 hidden">67</div>
+    <div class="road t7 l3 r73 hidden">73</div>
+    <div class="road t7 l4 r74 hidden">74</div>
+    <div class="road t7 l5 r75 hidden">75</div>
+    <div class="road t7 l7 r77 hidden">77</div>
+    <div class="road t7 l8 r78 hidden">78</div>
+    <div class="road t7 l9 r79 hidden">79</div>
+    <div class="road t8 l1 r81 hidden">81</div>
+    <div class="road t8 l2 r82 hidden">82</div>
+    <div class="road t8 l3 r83 hidden">83</div>
+    <div class="road t8 l5 r85 hidden">85</div>
+    <div class="road t8 l7 r87 hidden">87</div>
+    <div class="road t8 l9 r89 hidden">89</div>
+    <div class="road t9 l1 r91 hidden">91</div>
+    <div class="road t9 l3 r93 hidden">93</div>
+    <div class="road t9 l5 r95 hidden">95</div>
+    <div class="road t9 l7 r97 hidden">97</div>
+    <div class="road t9 l9 r99 hidden">99</div>
+</div>
+
+<!-- 메인 모바일 키보드 -->
+
+<!-- 화면 조작키 영역 -->
+<div class="keybord_box relative hidden">
+    <!-- 화면 조작키 배경 -->
+    <div class="keybord absolute rounded-full">
+        <!-- 화면 조작키 위쪽 버튼 영역 -->
+        <div class="key-up absolute cursor-pointer">
+            <!-- 화면 조작키 위쪽 버튼 이미지 -->
+            <div class="absolute key-img l_75">▲</div>
+        </div>
+        <!-- 화면 조작키 오른쪽 버튼 영역 -->
+        <div class="key-right absolute cursor-pointer">
+            <!-- 화면 조작키 오른쪽 버튼 이미지 -->
+            <div class="absolute key-img t_75">▶</div>
+        </div>
+        <!-- 화면 조작키 아래쪽 버튼 영역 -->
+        <div class="key-down absolute cursor-pointer">
+            <!-- 화면 조작키 아래쪽 버튼 이미지 -->
+            <div class="absolute key-img l_75">▼</div>
+        </div>
+        <!-- 화면 조작키 왼쪽 버튼 영역 -->
+        <div class="key-left absolute cursor-pointer">
+            <!-- 화면 조작키 왼쪽 버튼 이미지 -->
+            <div class="absolute key-img t_75">◀</div>
+        </div>
+    </div>
+</div>
+
+<!-- 엔딩 -->
+
+<!-- 골 배경 -->
+<div class="wrapper goal relative hidden">
+    <!-- 위쪽 삼각형 도형-->
+    <div class="clip absolute clip-top"></div>
+    <!-- 왼쪽 삼각형 도형-->
+    <div class="clip absolute clip-left"></div>
+    <!-- 오른쪽 삼각형 도형-->
+    <div class="clip absolute clip-right"></div>
+    <!-- 아래쪽 삼각형 도형-->
+    <div class="clip absolute clip-bottom"></div>
+
+    <!--  사각형1 도형  -->
+    <div class="square absolute square-1"></div>
+    <!--  사각형2 도형  -->
+    <div class="square absolute square-2"></div>
+    <!--  원형 도형  -->
+    <div class="circle absolute circle-1"></div>
+    <!--  삼각형 도형  -->
+    <div class="triangle absolute triangle-1"></div>
+    <!--  엑스자 도형  -->
+    <div class="close absolute close-1"></div>
+    <!--  별1 도형  -->
+    <div class="star absolute star-1"></div>
+    <!--  별2 도형  -->
+    <div class="star absolute star-2"></div>
+    <!--  확인버튼 위치조정을 위한 배경  -->
+    <div class="goal-t flex flex-col">
+        <!--  골 텍스트 및 확인버튼 배경  -->
+        <div class="text-center">
+            <!--  골 텍스트 배경  -->
+            <div class="goal_title z-101  dancing-script">g o a l</div>
+            <!--    높이조정    -->
+            <div class="h-24"></div>
+            <!--  확인 버튼 배경  -->
+            <div class="goal_chick z-101 cursor-pointer noon"> 확인</div>
+        </div>
+    </div>
+</div>
+<div class="portfolio"></div>
+<script>
+    $(document).ready(function () {
+        console.clear();
+
+// 처음 화면
+
+        $(".start_btn").click(function () {
+            // 시작 버튼을 클릭하면
+            $(".game_start").addClass("hidden"); // 게임 화면을 없에고
+            $(".choice").removeClass("hidden"); // 캐릭터 선택 화면을 살린다
+        });
+
+        console.clear();
+
+// 캐릭터 선택
+
+        $(".ps").mouseenter(function () {
+            // 캐릭터에 마우스가 올라가면
+            $(this).find("i").removeClass("fa-4x");
+            $(this).find("i").addClass("fa-6x"); // 마우스가 올라간 자식의 이미지를 4x에서 6x로 키운다
+        });
+
+        $(".ps").mouseleave(function () {
+            // 캐릭터에서 마우스가 내려가면
+            $(this).find("i").removeClass("fa-6x");
+            $(this).find("i").addClass("fa-4x"); //마우스의 내려간 자식의 이미지를 6x에서 4x로 되돌린다
+        });
+
+        $(".p1").click(function () {
+            // 첫번째 캐릭터를 클릭하면
+            $(".p1t").removeClass("hidden"); // 첫번째 캐릭터의 안내문구가 나온다
+        });
+
+        $(".p1t_yes").click(function () {
+            // 첫번째 캐릭터의 안내문구의 확인을 클릭하면
+            $(".choice").addClass("hidden"); // 캐릭터 선택 화면을 없에고
+            $(".map").removeClass("hidden"); // 맵 화면을 살리고
+            $(".keybord_box").removeClass("hidden"); // 화면 조작키를 살리고
+            $(".dragon").removeClass("hidden"); // 드래곤 캐릭터를 살리고
+            $(".p1t").addClass("hidden"); // 첫번째 캐릭터의 안내문구를 없엔다
+        });
+
+        $(".p1t_no").click(function () {
+            // 첫번째 캐릭터의 안내문구의 취소를 클릭하면
+            $(".p1t").addClass("hidden"); // 첫번째 캐릭터의 안내문구를 없엔다
+        });
+
+        $(".p2").click(function () {
+            // 두번째 캐릭터를 클릭하면
+            $(".p2t").removeClass("hidden"); // 두번째 캐릭터의 안내문구가 나온다
+        });
+
+        $(".p2t_yes").click(function () {
+            $(".choice").addClass("hidden"); // 캐릭터 선택 화면을 없에고
+            $(".map").removeClass("hidden"); // 맵 화면을 살리고
+            $(".keybord_box").removeClass("hidden"); // 화면 조작키를 살리고
+            $(".otter").removeClass("hidden"); // 수달 캐릭터를 살리고
+            $(".p2t").addClass("hidden"); // 두번째 캐릭터의 안내문구를 없엔다
+        });
+
+        $(".p2t_no").click(function () {
+            // 두번째 캐릭터의 안내문구의 취소를 클릭하면
+            $(".p2t").addClass("hidden"); // 두번째 캐릭터의 안내문구를 없엔다
+        });
+
+        $(".p3").click(function () {
+            // 세번째 캐릭터를 클릭하면
+            $(".p3t").removeClass("hidden"); // 세번째 캐릭터의 안내문구가 나온다
+        });
+
+        $(".p3t_yes").click(function () {
+            $(".choice").addClass("hidden"); // 캐릭터 선택 화면을 없에고
+            $(".map").removeClass("hidden"); // 맵 화면을 살리고
+            $(".keybord_box").removeClass("hidden"); // 화면 조작키를 살리고
+            $(".ghost").removeClass("hidden"); // 유령 캐릭터를 살리고
+            $(".p3t").addClass("hidden"); // 세번째 캐릭터의 안내문구를 없엔다
+        });
+
+        $(".p3t_no").click(function () {
+            // 세번째 캐릭터의 안내문구의 취소를 클릭하면
+            $(".p3t").addClass("hidden"); // 두번째 캐릭터의 안내문구를 없엔다
+        });
+
+// 메인
+        let UD = 50; // 상하 위치를 저장할 변수
+        let LR = 50; // 좌우 위치를 저장할 변수
+        let key = false; // 열쇠의 획득 여부를 저장할 변수
+        let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+        function up() {
+            $(".character").css("transform", "rotate(270deg)"); // 캐릭터가 270도 회전해서 위쪽을 바라보게한다
+            let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+            if (
+                go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+                (LR == 50 && 50 < UD && UD < 350) ||
+                (LR == 50 && 400 < UD) ||
+                (LR == 150 && 250 < UD) ||
+                (LR == 200 && 50 < UD && UD < 200) ||
+                (LR == 250 && 150 < UD && UD < 300) ||
+                (LR == 250 && 350 < UD) ||
+                (LR == 350 && 50 < UD && UD < 200) ||
+                (LR == 350 && 250 < UD) ||
+                (LR == 450 && 150 < UD && UD < 300) ||
+                (LR == 450 && 350 < UD) // 벽의 위치를 확인하는 과정
+            ) {
+                UD -= 5; // 상하 값을 5 감소시켜서
+                $(".character").css("top", UD + "px"); // 위쪽으로 5px 옮긴다
+            }
+            console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
+            key_hidden(); // 키 이벤트 발생 확인
+            map_hidden(); // 맵 이벤트 발생 확인
+            goal_hidden(); // 골 이벤트 발생 확인
+        }
+
+        function down() {
+            $(".character").css("transform", "rotate(90deg)"); // 캐릭터가 90도 회전해서 아래쪽을 바라보게한다
+            let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+            if (
+                go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+                (LR == 50 && UD < 300) ||
+                (LR == 50 && 350 < UD && UD < 450) ||
+                (LR == 150 && 200 < UD && UD < 450) ||
+                (LR == 200 && UD < 150) ||
+                (LR == 250 && 100 < UD && UD < 250) ||
+                (LR == 250 && 300 < UD && UD < 450) ||
+                (LR == 350 && UD < 150) ||
+                (LR == 350 && 200 < UD && UD < 450) ||
+                (LR == 450 && 100 < UD && UD < 250) ||
+                (LR == 450 && 300 < UD && UD < 450) // 벽의 위치를 확인하는 과정
+            ) {
+                UD += 5; // 상하 값을 5 증가시켜서
+                $(".character").css("top", UD + "px"); // 아래쪽으로 5px 옮긴다
+            }
+            console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
+            key_hidden(); // 키 이벤트 발생 확인
+            map_hidden(); // 맵 이벤트 발생 확인
+            goal_hidden(); // 골 이벤트 발생 확인
+        }
+
+        function left() {
+            $(".character").css("transform", "scaleX(-1)"); // 캐릭터가 왼쪽으로 뒤집혀서 왼쪽을 바라보게한다
+            let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+            if (
+                go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+                (UD == 50 && 50 < LR && LR <= 100) ||
+                (UD == 50 && 200 < LR) ||
+                (UD == 150 && 50 < LR && LR < 300) ||
+                (UD == 150 && 350 < LR) ||
+                (UD == 250 && 50 < LR && LR < 200) ||
+                (UD == 250 && 350 < LR) ||
+                (UD == 350 && 150 < LR && LR < 300) ||
+                (UD == 350 && 350 < LR) ||
+                (UD == 400 && 50 < LR && LR < 200) // 벽의 위치를 확인하는 과정
+            ) {
+                LR -= 5; // 좌우 값을 5 감소시켜서
+                $(".character").css("left", LR + "px"); // 왼쪽으로 5px 옮긴다
+            }
+            console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
+            key_hidden(); // 키 이벤트 발생 확인
+            map_hidden(); // 맵 이벤트 발생 확인
+            goal_hidden(); // 골 이벤트 발생 확인
+        }
+
+        function right() {
+            $(".character").css("transform", "scaleX(1)"); // 캐릭터를 원래 방향으로 뒤집어서 오른쪽을 바라보게한다
+            let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+            if (
+                go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+                (UD == 50 && LR < 100) ||
+                (UD == 50 && 150 < LR && LR < 450) ||
+                (UD == 150 && LR < 250) ||
+                (UD == 150 && 300 < LR && LR < 450) ||
+                (UD == 250 && LR < 150) ||
+                (UD == 250 && 300 < LR && LR < 450) ||
+                (UD == 350 && 100 < LR && LR < 250) ||
+                (UD == 350 && 300 < LR && LR < 450) ||
+                (UD == 400 && LR < 150) // 벽의 위치를 확인하는 과정
+            ) {
+                LR += 5; // 좌우 값을 5 증가시켜서
+                $(".character").css("left", LR + "px"); // 오른쪽으로 5px 옮긴다
+            }
+            console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
+            key_hidden(); // 키 이벤트 발생 확인
+            map_hidden(); // 맵 이벤트 발생 확인
+            goal_hidden(); // 골 이벤트 발생 확인
+        }
+
+        function goal_hidden() {
+            if (LR == 450 && UD == 450 && key) {
+                // 골인 위치 좌우 450, 상하 450을 달성하고 키의 값이 true면
+                $(".map").addClass("hidden"); // 맵을 없에고
+                $(".keybord_box").addClass("hidden"); // 화면 조작키를 없에고
+                $(".goal").removeClass("hidden"); // 골인 화면을 살린다
+            }
+        }
+
+        function key_hidden() {
+            if (LR == 250 && UD == 250) {
+                // 키의 위치 좌우 250, 상하 250을 달성하면
+                key = true; // 키의 값을 true로 바꾸고
+                $(".key").css("top", "0px").css("left", "450px"); // key의 위치를 오른쪽 위로 옮기고
+                $(".key").addClass("bg-yellow-300"); // 키의 배경색을 노란색으로 바꾼다
+            }
+        }
+
+        function map_hidden() {
+            // 각 조건문을 달성하면
+            // 상, 하, 좌, 우, 대각선 총 8방향의 길을 확인해서 1초동안 fadein하면서 살린다
+            // 아래는 처음엔 인텔리제이때 만들었던거처럼 맵을 여러개 만들 생각으로
+            // 모든 위치에서 길을 확인하게 짠 코드라 없는길의 class도 적혀있는데
+            // 자바스크립트 만으로는 시간이 너무 오래 걸려서 맵의 추가 여부는 무기한 보류되었다
+            if (LR == 50 && UD == 50) {
+                $(".r11, .r12, .r21, .r22").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 50) {
+                $(".r11, .r12, .r13, .r21, .r22, .r23").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 150 && UD == 50) {
+                $(".r12, .r13, .r14, .r22, .r23, .r24").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 200 && UD == 50) {
+                $(".r13, .r14, .r15, .r23, .r24, .r25").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 250 && UD == 50) {
+                $(".r14, .r15, .r16, .r24, .r25, .r26").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 300 && UD == 50) {
+                $(".r15, .r16, .r17, .r25, .r26, .r27").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 350 && UD == 50) {
+                $(".r16, .r17, .r18, .r26, .r27, .r28").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 400 && UD == 50) {
+                $(".r17, .r18, .r19, .r27, .r28, .r29").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 450 && UD == 50) {
+                $(".r18, .r19, .r28, .r29").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 100) {
+                $(".r11, .r12, .r21, .r22, .r31, .r32").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 100) {
+                $(".r11, .r12, .r13, .r21, .r22, .r23, .r31, .r32, .r33")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 100) {
+                $(".r12, .r13, .r14, .r22, .r23, .r24, .r32, .r33, .r34")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 100) {
+                $(".r13, .r14, .r15, .r23, .r24, .r25, .r33, .r34, .r35")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 100) {
+                $(".r14, .r15, .r16, .r24, .r25, .r26, .r34, .r35, .r36")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 100) {
+                $(".r15, .r16, .r17, .r25, .r26, .r27, .r35, .r36, .r37")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 100) {
+                $(".r16, .r17, .r18, .r26, .r27, .r28, .r36, .r37, .r38")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 100) {
+                $(".r17, .r18, .r19, .r27, .r28, .r29, .r37, .r38, .r39")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 100) {
+                $(".r18, .r19, .r28, .r29, .r38, .r39").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 150) {
+                $(".r21, .r22, .r31, .r32, .r41, .r42").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 150) {
+                $(".r21, .r22, .r23, .r31, .r32, .r33, .r41, .r42, .r43")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 150) {
+                $(".r42, .r43, .r44, .r22, .r23, .r24, .r32, .r33, .r34")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 150) {
+                $(".r43, .r44, .r45, .r23, .r24, .r25, .r33, .r34, .r35")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 150) {
+                $(".r44, .r45, .r46, .r24, .r25, .r26, .r34, .r35, .r36")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 150) {
+                $(".r45, .r46, .r47, .r25, .r26, .r27, .r35, .r36, .r37")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 150) {
+                $(".r46, .r47, .r48, .r26, .r27, .r28, .r36, .r37, .r38")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 150) {
+                $(".r47, .r48, .r49, .r27, .r28, .r29, .r37, .r38, .r39")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 150) {
+                $(".r48, .r49, .r28, .r29, .r38, .r39").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 200) {
+                $(".r41, .r42, .r51, .r52, .r31, .r32").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 200) {
+                $(".r41, .r42, .r43, .r51, .r52, .r53, .r31, .r32, .r33")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 200) {
+                $(".r42, .r43, .r44, .r52, .r53, .r54, .r32, .r33, .r34")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 200) {
+                $(".r43, .r44, .r45, .r53, .r54, .r55, .r33, .r34, .r35")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 200) {
+                $(".r44, .r45, .r46, .r54, .r55, .r56, .r34, .r35, .r36")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 200) {
+                $(".r45, .r46, .r47, .r55, .r56, .r57, .r35, .r36, .r37")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 200) {
+                $(".r46, .r47, .r48, .r56, .r57, .r58, .r36, .r37, .r38")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 200) {
+                $(".r47, .r48, .r49, .r57, .r58, .r59, .r37, .r38, .r39")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 200) {
+                $(".r48, .r49, .r58, .r59, .r38, .r39").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 250) {
+                $(".r41, .r42, .r51, .r52, .r61, .r62").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 250) {
+                $(".r41, .r42, .r43, .r51, .r52, .r53, .r61, .r62, .r63")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 250) {
+                $(".r42, .r43, .r44, .r52, .r53, .r54, .r62, .r63, .r64")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 250) {
+                $(".r43, .r44, .r45, .r53, .r54, .r55, .r63, .r64, .r65")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 250) {
+                $(".r44, .r45, .r46, .r54, .r55, .r56, .r64, .r65, .r66")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 250) {
+                $(".r45, .r46, .r47, .r55, .r56, .r57, .r65, .r66, .r67")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 250) {
+                $(".r46, .r47, .r48, .r56, .r57, .r58, .r66, .r67, .r68")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 250) {
+                $(".r47, .r48, .r49, .r57, .r58, .r59, .r67, .r68, .r69")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 250) {
+                $(".r48, .r49, .r58, .r59, .r68, .r69").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 300) {
+                $(".r71, .r72, .r51, .r52, .r61, .r62").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 300) {
+                $(".r71, .r72, .r73, .r51, .r52, .r53, .r61, .r62, .r63")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 300) {
+                $(".r72, .r73, .r74, .r52, .r53, .r54, .r62, .r63, .r64")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 300) {
+                $(".r73, .r74, .r75, .r53, .r54, .r55, .r63, .r64, .r65")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 300) {
+                $(".r74, .r75, .r76, .r54, .r55, .r56, .r64, .r65, .r66")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 300) {
+                $(".r75, .r76, .r77, .r55, .r56, .r57, .r65, .r66, .r67")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 300) {
+                $(".r76, .r77, .r78, .r56, .r57, .r58, .r66, .r67, .r68")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 300) {
+                $(".r77, .r78, .r79, .r57, .r58, .r59, .r67, .r68, .r69")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 300) {
+                $(".r78, .r79, .r58 .r59, .r68, .r69").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 350) {
+                $(".r71, .r72, .r81, .r82, .r61, .r62").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 350) {
+                $(".r71, .r72, .r73, .r81, .r82, .r83, .r61, .r62, .r63")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 350) {
+                $(".r72, .r73, .r74, .r82, .r83, .r84, .r62, .r63, .r64")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 350) {
+                $(".r73, .r74, .r75, .r83, .r84, .r85, .r63, .r64, .r65")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 350) {
+                $(".r74, .r75, .r76, .r84, .r85, .r86, .r64, .r65, .r66")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 350) {
+                $(".r75, .r76, .r77, .r85, .r86, .r87, .r65, .r66, .r67")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 350) {
+                $(".r76, .r77, .r78, .r86, .r87, .r88, .r66, .r67, .r68")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 350) {
+                $(".r77, .r78, .r79, .r87, .r88, .r89, .r67, .r68, .r69")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 350) {
+                $(".r78, .r79, .r88 .r89, .r68, .r69").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 400) {
+                $(".r71, .r72, .r81, .r82, .r91, .r92").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 400) {
+                $(".r71, .r72, .r73, .r81, .r82, .r83, .r91, .r92, .r93")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 150 && UD == 400) {
+                $(".r72, .r73, .r74, .r82, .r83, .r84, .r92, .r93, .r94")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 200 && UD == 400) {
+                $(".r73, .r74, .r75, .r83, .r84, .r85, .r93, .r94, .r95")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 250 && UD == 400) {
+                $(".r74, .r75, .r76, .r84, .r85, .r86, .r94, .r95, .r96")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 300 && UD == 400) {
+                $(".r75, .r76, .r77, .r85, .r86, .r87, .r95, .r96, .r97")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 350 && UD == 400) {
+                $(".r76, .r77, .r78, .r86, .r87, .r88, .r96, .r97, .r98")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 400 && UD == 400) {
+                $(".r77, .r78, .r79, .r87, .r88, .r89, .r97, .r98, .r99")
+                    .fadeIn(1000)
+                    .removeClass("hidden");
+            }
+            if (LR == 450 && UD == 400) {
+                $(".r78, .r79, .r88 .r89, .r98, .r99").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 50 && UD == 450) {
+                $(".r81, .r82, .r91, .r92").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 100 && UD == 450) {
+                $(".r81, .r82, .r83, .r91, .r92, .r93").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 150 && UD == 450) {
+                $(".r82, .r83, .r84, .r92, .r93, .r94").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 200 && UD == 450) {
+                $(".r83, .r84, .r85, .r93, .r94, .r95").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 250 && UD == 450) {
+                $(".r84, .r85, .r86, .r94, .r95, .r96").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 300 && UD == 450) {
+                $(".r85, .r86, .r87, .r95, .r96, .r97").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 350 && UD == 450) {
+                $(".r86, .r87, .r88, .r96, .r97, .r98").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 400 && UD == 450) {
+                $(".r87, .r88, .r89, .r97, .r98, .r99").fadeIn(1000).removeClass("hidden");
+            }
+            if (LR == 450 && UD == 450) {
+                $(".r88, .r89, .r98, .r99").fadeIn(1000).removeClass("hidden");
+            }
+        }
+
+        document.addEventListener("keydown", eheckKey, false); // 키보드 이벤트 생성 코드
+
+        function eheckKey(e) {
+            // 키보드 이벤트 발생하면
+            console.clear();
+            if (e.keyCode === 37) {
+                // 왼쪽 방향키가 눌렸는지 확인하고
+                left(); // 맞다면 왼쪽 메소드 실행
+            } else if (e.keyCode === 38) {
+                // 아니라면 위쪽 방향키가 눌렸는지 확인하고
+                up(); // 맞다면 위쪽 메소드 실행
+            } else if (e.keyCode === 39) {
+                // 아니라면 오른쪽 방향키가 눌렸는지 확인하고
+                right(); // 맞다면 오른쪽 메소드 실행
+            } else if (e.keyCode === 40) {
+                // 아니라면 아래쪽 방향키가 눌렸는지 확인하고
+                down(); // 맞다면 아래쪽 메소드 실행
+            }
+        }
+
+        $(".key-left").mouseenter(function () {
+            // 화면 조작키 왼쪽을 클릭하면
+            left(); // 왼쪽 메소드 실행
+        });
+        $(".key-up").mouseenter(function () {
+            // 화면 조작키 윗쪽을 클릭하면
+            up(); // 윗쪽 메소드 실행
+        });
+        $(".key-right").mouseenter(function () {
+            // 화면 조작키 오른쪽을 클릭하면
+            right(); // 오른쪽 메소드 실행
+        });
+        $(".key-down").mouseenter(function () {
+            // 화면 조작키 아래쪽을 클릭하면
+            down(); // 아래쪽 메소드 실행
+        });
+
+// 엔딩 (게임 동작중 바뀐것들 초기화)
+        $(".goal_chick").click(function () {
+            // 골인을 클릭하면
+            $(".road").fadeOut(1000).addClass("hidden"); // 맵 화면의 길을 전부 없에고
+            $(".goal").addClass("hidden"); // 골인 화면을 없에고
+            $(".game_start").removeClass("hidden"); // 초기 화면을 살리고
+            $(".dragon").addClass("hidden"); // 드래곤 캐릭터를 없에고
+            $(".otter").addClass("hidden"); // 수달 캐릭터를 없에고
+            $(".ghost").addClass("hidden"); // 유령 캐릭터를 없에고
+            UD = 50; // 상하 값을 초기값 50으로 변경하고
+            LR = 50; // 좌우 값을 초기값 50으로 변경하고
+            key = false; // 키의 값을 false로 바꾸고
+            $(".character").css("top", "50px").css("left", "50px"); // 캐릭터의 초기 위치를 초기값으로 바꾸고
+            $(".key").css("top", "250px").css("left", "250px"); // 키의 초기 위치를 초기값으로 바꾸고
+            $(".r11, .r12, .r21, .r22, .r55").fadeIn(1000).removeClass("hidden"); // 처음 위치에서 보여질 길을 살리고
+            $(".key").removeClass("bg-yellow-300"); // 키의 배경색을 없엔다
+        });
+
+    });
+</script>
+</body>
+</html>
