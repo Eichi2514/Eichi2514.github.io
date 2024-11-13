@@ -43,6 +43,7 @@
         .sug {
             top: 450px;
             left: 450px;
+            color: white;
         }
 
         /* 기본 테두리 */
@@ -287,6 +288,8 @@
             margin: auto;
             width: 550px;
             height: 200px;
+            top: 50px;
+            left: calc(50% + 325px);
         }
 
         /* 화면 조작키 버튼 이미지 */
@@ -302,9 +305,13 @@
             width: 200px;
             height: 200px;
             border: 1px solid;
-            top: -500px;
-            left: 600px;
             background-color: #fff;
+        }
+
+        .keybord_text{
+            padding-top: 20px;
+            font-size: 2rem;
+            color : white;
         }
 
         /* 위쪽 버튼 위치 */
@@ -841,7 +848,7 @@
 <!-- 처음화면 -->
 
 <!-- 높이 조정 -->
-<div>
+<div class="main-body">
     <div class="h-12"></div>
 
     <!-- 배경 -->
@@ -1048,9 +1055,9 @@
     <!-- 메인 모바일 키보드 -->
 
     <!-- 화면 조작키 영역 -->
-    <div class="keybord_box relative hidden">
+    <div class="keybord_box absolute hidden">
         <!-- 화면 조작키 배경 -->
-        <div class="keybord absolute rounded-full">
+        <div class="keybord relative rounded-full">
             <!-- 화면 조작키 위쪽 버튼 영역 -->
             <div class="key-up absolute cursor-pointer">
                 <!-- 화면 조작키 위쪽 버튼 이미지 -->
@@ -1072,6 +1079,8 @@
                 <div class="absolute key-img t_75">◀</div>
             </div>
         </div>
+        <div class="keybord_text">키보드의 방향키로</div>
+        <div class="keybord_text">이동할 수 있습니다.</div>
     </div>
 
     <!-- 엔딩 -->
