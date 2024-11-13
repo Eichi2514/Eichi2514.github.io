@@ -61,9 +61,10 @@
         /* 제목 틀 */
         .title {
             display: inline-block;
-            border: 5px solid black;
+            border: 5px solid white;
             border-left: 0;
             border-right: 0;
+            color:white;
         }
 
         /* 시작 버튼 */
@@ -812,6 +813,12 @@
         .gform button:hover {
             background-color: #4338ca;
         }
+
+        .mouse__follow-image {
+            left: 15px;
+            position: absolute;
+            pointer-events: none; /* 이미지가 클릭되지 않도록 */
+        }
     </style>
 </head>
 <body>
@@ -829,351 +836,304 @@
 <!-- 처음화면 -->
 
 <!-- 높이 조정 -->
-<div class="h-12"></div>
-
-<!-- 배경 -->
-<div class="relative game_start flex flex-col">
-    <!-- 높이 조정 -->
-    <div class="h-24"></div>
-    <!-- 제목 배경 -->
-    <div class="text-center">
-        <!-- 제목 -->
-        <div class="title">
-            <!-- 왼쪽 제목 -->
-            <div class="title1 dancing-script">MAZE</div>
-            <!-- 오른쪽 제목 -->
-            <div class="title3 dancing-script">MAZE</div>
-        </div>
-    </div>
-    <!-- 높이 조정 -->
-    <div class="h-48"></div>
-    <!-- 버튼 배경 -->
-    <div class="start_btn text-center">
-        <!-- 시작 버튼 글자 -->
-        <div class="start_btn_text cursor-pointer rounded-2xl">시작</div>
-    </div>
-    <!-- 환경설정(기능 없음) -->
-    <div class="sug absolute cursor-pointer">
-        <!-- 환경설정 이미지 -->
-        <i class="fa-solid fa-gear fa-2x"></i>
-    </div>
-</div>
-
-<!-- 캐릭터 선택 -->
-
-<!-- 배경 -->
-<div class="choice hidden relative">
-    <!-- 캐릭터 선택 알림창 배경 -->
-    <div class="choice_t absolute">
-        <!-- 캐릭터1(드래곤) 선택창 -->
-        <div class="p1t hidden text-center bg-white rounded-2xl">
-            <!-- 캐릭터1(드래곤) 선택 알림창 -->
-            <div class="p1t_ti p-3">용 캐릭터를 선택하시겠습니까?</div>
-            <!-- 캐릭터1(드래곤) 선택 버튼 배경 -->
-            <div class="p1t_bo">
-                <!-- 캐릭터1(드래곤) 선택 확인 버튼 -->
-                <div class="p1t_yes p-3 cursor-pointer inline-block">확인</div>
-                <!-- 캐릭터1(드래곤) 선택 취소 버튼 -->
-                <div class="p1t_no p-3 cursor-pointer inline-block">취소</div>
-            </div>
-        </div>
-        <!-- 캐릭터2(수달) 선택창 -->
-        <div class="p2t hidden text-center bg-white rounded-2xl">
-            <!-- 캐릭터2(수달) 선택 알림창 -->
-            <div class="p2t_ti p-3">수달 캐릭터를 선택하시겠습니까?</div>
-            <!-- 캐릭터2(수달) 선택 버튼 배경 -->
-            <div class="p2t_bo">
-                <!-- 캐릭터2(수달) 선택 확인 버튼 -->
-                <div class="p2t_yes p-3 cursor-pointer inline-block">확인</div>
-                <!-- 캐릭터2(수달) 선택 취소 버튼 -->
-                <div class="p2t_no p-3 cursor-pointer inline-block">취소</div>
-            </div>
-        </div>
-        <!-- 캐릭터3(유령) 선택창 -->
-        <div class="p3t hidden text-center bg-white rounded-2xl">
-            <!-- 캐릭터3(유령) 선택 알림창 -->
-            <div class="p3t_ti p-3">유령 캐릭터를 선택하시겠습니까?</div>
-            <!-- 캐릭터3(유령) 선택 버튼 배경 -->
-            <div class="p3t_bo">
-                <!-- 캐릭터3(유령) 선택 확인 버튼 -->
-                <div class="p3t_yes p-3 cursor-pointer inline-block">확인</div>
-                <!-- 캐릭터3(유령) 선택 취소 버튼 -->
-                <div class="p3t_no p-3 cursor-pointer inline-block">취소</div>
-            </div>
-        </div>
-    </div>
-
-    <!--  높이 조정  -->
+<div>
     <div class="h-12"></div>
-    <!-- 캐릭터 선택 제목 배경-->
-    <div class="text-center">
-        <!-- 캐릭터 선택 제목-->
-        <div class="title">
-            <!-- 캐릭터 선택 왼쪽 제목-->
-            <div class="title1 noon">캐 릭 터</div>
-            <!-- 캐릭터 선택 오른쪽 제목-->
-            <div class="title3 noon">선 택</div>
-        </div>
-    </div>
-    <!-- 캐릭터 선택 이미지 배경-->
-    <div class="characters relative cursor-pointer">
-        <!-- 캐릭터1 이미지 배경-->
-        <div class="ps p1 text-center content-center absolute rounded-2xl">
-            <!-- 캐릭터1 이미지-->
-            <i class="fa-duotone fa-solid fa-dragon fa-4x"></i>
-        </div>
-        <!-- 캐릭터2 이미지 배경-->
-        <div class="ps p2 text-center content-center absolute rounded-2xl">
-            <!-- 캐릭터2 이미지-->
-            <i class="fa-solid fa-otter fa-4x"></i>
-        </div>
-        <!-- 캐릭터3 이미지 배경-->
-        <div class="ps p3 text-center content-center absolute rounded-2xl">
-            <!-- 캐릭터3 이미지-->
-            <i class="fa-solid fa-ghost fa-4x"></i>
-        </div>
-    </div>
-</div>
 
-<!-- 메인 -->
-
-<!-- 메인 배경 -->
-<div class="relative map hidden">
-    <!-- 배경 이미지 -->
-    <img src="https://picsum.photos/id/127/550/550" alt="">
-
-    <!-- 캐릭터1 배경 -->
-    <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
-        <!-- 캐릭터1 이미지 -->
-        <i class="fa-duotone fa-solid fa-dragon fa-2x"></i>
-    </div>
-    <!-- 캐릭터2 배경 -->
-    <div class="character otter hidden text-center content-center absolute rounded-full bg-yellow-900 z-20">
-        <!-- 캐릭터2 이미지 -->
-        <i class="fa-solid fa-otter fa-2x"></i>
-    </div>
-    <!-- 캐릭터3 배경 -->
-    <div class="character ghost hidden text-center content-center absolute rounded-full bg-black text-white z-20">
-        <!-- 캐릭터3 이미지 -->
-        <i class="fa-solid fa-ghost fa-2x"></i>
-    </div>
-
-    <!-- 열쇠 배경 -->
-    <div class="key text-center content-center absolute rounded-full z-10">
-        <!-- 열쇠 이미지 -->
-        <i class="fa-duotone fa-solid fa-key"></i>
-    </div>
-
-    <!-- 골인지점 배경 -->
-    <div class="goolin text-center content-center absolute z-10">
-        <!-- 골인지점 배경 이미지-->
-        <i class="fa-solid fa-door-open fa-2x"></i>
-    </div>
-
-    <!-- 길 -->
-    <!-- road 클래스는 모든 길을 한번에 정의할 경우를 위해서 -->
-    <!--  t 클래스는 TOP 위에서부터 떨어진 거리를 의미
-          ex) t1은 첫번째열 t2는 두전째열  -->
-    <!--  l 클래스는 left 왼쪽에서부터 떨어진 거리를 의미
-          ex) l1은 첫번째행 l2는 두전째행  -->
-    <!--  r 클래스는 ROAD 길을 각각 정의할 경우를 위해서
-          ex) r11은 ROAD중에 1열 1행에 있는 길
-              r12는 ROAD중에 1열 2행에 있는 길 -->
-    <!--  hidden은 처음에는 안보이다가 이벤트 발생 시 보여주기 위해서
-          hidden이 없는 길은 초기 위치에서 보여지는 길-->
-    <div class="road t1 l1 r11">11</div>
-    <div class="road t1 l2 r12">12</div>
-    <div class="road t1 l4 r14 hidden">14</div>
-    <div class="road t1 l5 r15 hidden">15</div>
-    <div class="road t1 l6 r16 hidden">16</div>
-    <div class="road t1 l7 r17 hidden">17</div>
-    <div class="road t1 l8 r18 hidden">18</div>
-    <div class="road t1 l9 r19 hidden">19</div>
-    <div class="road t2 l1 r21">21</div>
-    <div class="road t2 l4 r24 hidden">24</div>
-    <div class="road t2 l7 r27 hidden">27</div>
-    <div class="road t3 l1 r31 hidden">31</div>
-    <div class="road t3 l2 r32 hidden">32</div>
-    <div class="road t3 l3 r33 hidden">33</div>
-    <div class="road t3 l4 r34 hidden">34</div>
-    <div class="road t3 l5 r35 hidden">35</div>
-    <div class="road t3 l7 r37 hidden">37</div>
-    <div class="road t3 l8 r38 hidden">38</div>
-    <div class="road t3 l9 r39 hidden">39</div>
-    <div class="road t4 l1 r41 hidden">41</div>
-    <div class="road t4 l5 r45 hidden">45</div>
-    <div class="road t4 l9 r49 hidden">49</div>
-    <div class="road t5 l1 r51 hidden">51</div>
-    <div class="road t5 l2 r52 hidden">52</div>
-    <div class="road t5 l3 r53 hidden">53</div>
-    <div class="road t5 l5 r55">55</div>
-    <div class="road t5 l7 r57 hidden">57</div>
-    <div class="road t5 l8 r58 hidden">58</div>
-    <div class="road t5 l9 r59 hidden">59</div>
-    <div class="road t6 l1 r61 hidden">61</div>
-    <div class="road t6 l3 r63 hidden">63</div>
-    <div class="road t6 l7 r67 hidden">67</div>
-    <div class="road t7 l3 r73 hidden">73</div>
-    <div class="road t7 l4 r74 hidden">74</div>
-    <div class="road t7 l5 r75 hidden">75</div>
-    <div class="road t7 l7 r77 hidden">77</div>
-    <div class="road t7 l8 r78 hidden">78</div>
-    <div class="road t7 l9 r79 hidden">79</div>
-    <div class="road t8 l1 r81 hidden">81</div>
-    <div class="road t8 l2 r82 hidden">82</div>
-    <div class="road t8 l3 r83 hidden">83</div>
-    <div class="road t8 l5 r85 hidden">85</div>
-    <div class="road t8 l7 r87 hidden">87</div>
-    <div class="road t8 l9 r89 hidden">89</div>
-    <div class="road t9 l1 r91 hidden">91</div>
-    <div class="road t9 l3 r93 hidden">93</div>
-    <div class="road t9 l5 r95 hidden">95</div>
-    <div class="road t9 l7 r97 hidden">97</div>
-    <div class="road t9 l9 r99 hidden">99</div>
-</div>
-
-<!-- 메인 모바일 키보드 -->
-
-<!-- 화면 조작키 영역 -->
-<div class="keybord_box relative hidden">
-    <!-- 화면 조작키 배경 -->
-    <div class="keybord absolute rounded-full">
-        <!-- 화면 조작키 위쪽 버튼 영역 -->
-        <div class="key-up absolute cursor-pointer">
-            <!-- 화면 조작키 위쪽 버튼 이미지 -->
-            <div class="absolute key-img l_75">▲</div>
-        </div>
-        <!-- 화면 조작키 오른쪽 버튼 영역 -->
-        <div class="key-right absolute cursor-pointer">
-            <!-- 화면 조작키 오른쪽 버튼 이미지 -->
-            <div class="absolute key-img t_75">▶</div>
-        </div>
-        <!-- 화면 조작키 아래쪽 버튼 영역 -->
-        <div class="key-down absolute cursor-pointer">
-            <!-- 화면 조작키 아래쪽 버튼 이미지 -->
-            <div class="absolute key-img l_75">▼</div>
-        </div>
-        <!-- 화면 조작키 왼쪽 버튼 영역 -->
-        <div class="key-left absolute cursor-pointer">
-            <!-- 화면 조작키 왼쪽 버튼 이미지 -->
-            <div class="absolute key-img t_75">◀</div>
-        </div>
-    </div>
-</div>
-
-<!-- 엔딩 -->
-
-<!-- 골 배경 -->
-<div class="wrapper goal relative hidden">
-    <!-- 위쪽 삼각형 도형-->
-    <div class="clip absolute clip-top"></div>
-    <!-- 왼쪽 삼각형 도형-->
-    <div class="clip absolute clip-left"></div>
-    <!-- 오른쪽 삼각형 도형-->
-    <div class="clip absolute clip-right"></div>
-    <!-- 아래쪽 삼각형 도형-->
-    <div class="clip absolute clip-bottom"></div>
-
-    <!--  사각형1 도형  -->
-    <div class="square absolute square-1"></div>
-    <!--  사각형2 도형  -->
-    <div class="square absolute square-2"></div>
-    <!--  원형 도형  -->
-    <div class="circle absolute circle-1"></div>
-    <!--  삼각형 도형  -->
-    <div class="triangle absolute triangle-1"></div>
-    <!--  엑스자 도형  -->
-    <div class="close absolute close-1"></div>
-    <!--  별1 도형  -->
-    <div class="star absolute star-1"></div>
-    <!--  별2 도형  -->
-    <div class="star absolute star-2"></div>
-    <!--  확인버튼 위치조정을 위한 배경  -->
-    <div class="goal-t flex flex-col">
-        <!--  골 텍스트 및 확인버튼 배경  -->
+    <!-- 배경 -->
+    <div class="relative game_start flex flex-col">
+        <!-- 높이 조정 -->
+        <div class="h-24"></div>
+        <!-- 제목 배경 -->
         <div class="text-center">
-            <!--  골 텍스트 배경  -->
-            <div class="goal_title z-101  dancing-script">g o a l</div>
-            <!--    높이조정    -->
-            <div class="h-24"></div>
-            <!--  확인 버튼 배경  -->
-            <div class="goal_chick z-101 cursor-pointer noon"> 확인</div>
-        </div>
-    </div>
-</div>
-<div class="info_text flex justify-center">
-    <div class="pr-4 animate-scroll">
-        <i class="fa-solid fa-angles-down"></i>
-    </div>
-    <div> 아래에서 더 보기</div>
-    <div class="pl-4 animate-scroll">
-        <i class="fa-solid fa-angles-down"></i>
-    </div>
-</div>
-<div class="portfolio">
-    <div class="portfolio-box">
-        <div class="portfolio-title">
-            협업을 통한 성장을 추구하는 개발자 유건혁 입니다.
-        </div>
-        <div class="portfolio-body">
-            <div class="my_poto flex flex-col">
-                <img class="my_poto rounded-full"
-                     src="https://github.com/user-attachments/assets/ac814b54-840a-4456-95a3-3064d5208f91" alt="내 사진">
-                <div class="flex justify-around items-center w-full">
-                    <a target="blank" href="https://github.com/Eichi2514" class="inline-block mr-2">
-                        <img class="github-icon"
-                             src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
-                    </a>
-                    <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/posts">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
-                             viewBox="0 0 192 192">
-                            <path fill-rule="evenodd"
-                                  d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
-                                  clip-rule="evenodd"></path>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-            <div class="my_introduction">
-                <div class="mb-3">
-                    <strong>이름 : </strong> 유건혁
-                </div>
-                <div class="mb-3">
-                    <strong>전화번호 : </strong> 010-2229-6877
-                </div>
-                <div class="mb-3">
-                    <strong>이메일 : </strong> picon1317@gmail.com
-                </div>
-                <div class="mb-3">
-                    <strong>학력 : </strong><br>
-                    충남기계공업고등학교<br> (2012.03 ~ 2015.02)
-                </div>
-                <div class="mb-3">
-                    <strong>교육과정 : </strong><br>
-                    [산대특] 공공데이터를 활용한 웹앱개발자 양성과정
-                    <br> (2024.05 ~ 2024.12)
-                </div>
+            <!-- 제목 -->
+            <div class="title">
+                <!-- 왼쪽 제목 -->
+                <div class="title1 dancing-script">MAZE</div>
+                <!-- 오른쪽 제목 -->
+                <div class="title3 dancing-script">MAZE</div>
             </div>
         </div>
-    </div>
-    <div class="portfolio-box">
-        <div class="portfolio-title">
-            프로젝트
+        <!-- 높이 조정 -->
+        <div class="h-48"></div>
+        <!-- 버튼 배경 -->
+        <div class="start_btn text-center">
+            <!-- 시작 버튼 글자 -->
+            <div class="start_btn_text cursor-pointer rounded-2xl">시작</div>
         </div>
-        <div class="portfolio-body">
-            <div class="project">
-                <div class="project-title">개인 : 로그라이크 형식 브라우저 게임</div>
-                <div class="images">
-                    <img class="project-image"
-                         src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780"
-                         alt="개인프로젝트 사진">
-                    <div class="flex justify-around items-center w-full pt-10">
-                        <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
+        <!-- 환경설정(기능 없음) -->
+        <div class="sug absolute cursor-pointer">
+            <!-- 환경설정 이미지 -->
+            <i class="fa-solid fa-gear fa-2x"></i>
+        </div>
+    </div>
+
+    <!-- 캐릭터 선택 -->
+
+    <!-- 배경 -->
+    <div class="choice hidden relative">
+        <!-- 캐릭터 선택 알림창 배경 -->
+        <div class="choice_t absolute">
+            <!-- 캐릭터1(드래곤) 선택창 -->
+            <div class="p1t hidden text-center bg-white rounded-2xl">
+                <!-- 캐릭터1(드래곤) 선택 알림창 -->
+                <div class="p1t_ti p-3">용 캐릭터를 선택하시겠습니까?</div>
+                <!-- 캐릭터1(드래곤) 선택 버튼 배경 -->
+                <div class="p1t_bo">
+                    <!-- 캐릭터1(드래곤) 선택 확인 버튼 -->
+                    <div class="p1t_yes p-3 cursor-pointer inline-block">확인</div>
+                    <!-- 캐릭터1(드래곤) 선택 취소 버튼 -->
+                    <div class="p1t_no p-3 cursor-pointer inline-block">취소</div>
+                </div>
+            </div>
+            <!-- 캐릭터2(수달) 선택창 -->
+            <div class="p2t hidden text-center bg-white rounded-2xl">
+                <!-- 캐릭터2(수달) 선택 알림창 -->
+                <div class="p2t_ti p-3">수달 캐릭터를 선택하시겠습니까?</div>
+                <!-- 캐릭터2(수달) 선택 버튼 배경 -->
+                <div class="p2t_bo">
+                    <!-- 캐릭터2(수달) 선택 확인 버튼 -->
+                    <div class="p2t_yes p-3 cursor-pointer inline-block">확인</div>
+                    <!-- 캐릭터2(수달) 선택 취소 버튼 -->
+                    <div class="p2t_no p-3 cursor-pointer inline-block">취소</div>
+                </div>
+            </div>
+            <!-- 캐릭터3(유령) 선택창 -->
+            <div class="p3t hidden text-center bg-white rounded-2xl">
+                <!-- 캐릭터3(유령) 선택 알림창 -->
+                <div class="p3t_ti p-3">유령 캐릭터를 선택하시겠습니까?</div>
+                <!-- 캐릭터3(유령) 선택 버튼 배경 -->
+                <div class="p3t_bo">
+                    <!-- 캐릭터3(유령) 선택 확인 버튼 -->
+                    <div class="p3t_yes p-3 cursor-pointer inline-block">확인</div>
+                    <!-- 캐릭터3(유령) 선택 취소 버튼 -->
+                    <div class="p3t_no p-3 cursor-pointer inline-block">취소</div>
+                </div>
+            </div>
+        </div>
+
+        <!--  높이 조정  -->
+        <div class="h-12"></div>
+        <!-- 캐릭터 선택 제목 배경-->
+        <div class="text-center">
+            <!-- 캐릭터 선택 제목-->
+            <div class="title">
+                <!-- 캐릭터 선택 왼쪽 제목-->
+                <div class="title1 noon">캐 릭 터</div>
+                <!-- 캐릭터 선택 오른쪽 제목-->
+                <div class="title3 noon">선 택</div>
+            </div>
+        </div>
+        <!-- 캐릭터 선택 이미지 배경-->
+        <div class="characters relative cursor-pointer">
+            <!-- 캐릭터1 이미지 배경-->
+            <div class="ps p1 text-center content-center absolute rounded-2xl">
+                <!-- 캐릭터1 이미지-->
+                <i class="fa-duotone fa-solid fa-dragon fa-4x"></i>
+            </div>
+            <!-- 캐릭터2 이미지 배경-->
+            <div class="ps p2 text-center content-center absolute rounded-2xl">
+                <!-- 캐릭터2 이미지-->
+                <i class="fa-solid fa-otter fa-4x"></i>
+            </div>
+            <!-- 캐릭터3 이미지 배경-->
+            <div class="ps p3 text-center content-center absolute rounded-2xl">
+                <!-- 캐릭터3 이미지-->
+                <i class="fa-solid fa-ghost fa-4x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 -->
+
+    <!-- 메인 배경 -->
+    <div class="relative map hidden">
+        <!-- 배경 이미지 -->
+        <img src="https://picsum.photos/id/127/550/550" alt="">
+
+        <!-- 캐릭터1 배경 -->
+        <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
+            <!-- 캐릭터1 이미지 -->
+            <i class="fa-duotone fa-solid fa-dragon fa-2x"></i>
+        </div>
+        <!-- 캐릭터2 배경 -->
+        <div class="character otter hidden text-center content-center absolute rounded-full bg-yellow-900 z-20">
+            <!-- 캐릭터2 이미지 -->
+            <i class="fa-solid fa-otter fa-2x"></i>
+        </div>
+        <!-- 캐릭터3 배경 -->
+        <div class="character ghost hidden text-center content-center absolute rounded-full bg-black text-white z-20">
+            <!-- 캐릭터3 이미지 -->
+            <i class="fa-solid fa-ghost fa-2x"></i>
+        </div>
+
+        <!-- 열쇠 배경 -->
+        <div class="key text-center content-center absolute rounded-full z-10">
+            <!-- 열쇠 이미지 -->
+            <i class="fa-duotone fa-solid fa-key"></i>
+        </div>
+
+        <!-- 골인지점 배경 -->
+        <div class="goolin text-center content-center absolute z-10">
+            <!-- 골인지점 배경 이미지-->
+            <i class="fa-solid fa-door-open fa-2x"></i>
+        </div>
+
+        <!-- 길 -->
+        <!-- road 클래스는 모든 길을 한번에 정의할 경우를 위해서 -->
+        <!--  t 클래스는 TOP 위에서부터 떨어진 거리를 의미
+              ex) t1은 첫번째열 t2는 두전째열  -->
+        <!--  l 클래스는 left 왼쪽에서부터 떨어진 거리를 의미
+              ex) l1은 첫번째행 l2는 두전째행  -->
+        <!--  r 클래스는 ROAD 길을 각각 정의할 경우를 위해서
+              ex) r11은 ROAD중에 1열 1행에 있는 길
+                  r12는 ROAD중에 1열 2행에 있는 길 -->
+        <!--  hidden은 처음에는 안보이다가 이벤트 발생 시 보여주기 위해서
+              hidden이 없는 길은 초기 위치에서 보여지는 길-->
+        <div class="road t1 l1 r11">11</div>
+        <div class="road t1 l2 r12">12</div>
+        <div class="road t1 l4 r14 hidden">14</div>
+        <div class="road t1 l5 r15 hidden">15</div>
+        <div class="road t1 l6 r16 hidden">16</div>
+        <div class="road t1 l7 r17 hidden">17</div>
+        <div class="road t1 l8 r18 hidden">18</div>
+        <div class="road t1 l9 r19 hidden">19</div>
+        <div class="road t2 l1 r21">21</div>
+        <div class="road t2 l4 r24 hidden">24</div>
+        <div class="road t2 l7 r27 hidden">27</div>
+        <div class="road t3 l1 r31 hidden">31</div>
+        <div class="road t3 l2 r32 hidden">32</div>
+        <div class="road t3 l3 r33 hidden">33</div>
+        <div class="road t3 l4 r34 hidden">34</div>
+        <div class="road t3 l5 r35 hidden">35</div>
+        <div class="road t3 l7 r37 hidden">37</div>
+        <div class="road t3 l8 r38 hidden">38</div>
+        <div class="road t3 l9 r39 hidden">39</div>
+        <div class="road t4 l1 r41 hidden">41</div>
+        <div class="road t4 l5 r45 hidden">45</div>
+        <div class="road t4 l9 r49 hidden">49</div>
+        <div class="road t5 l1 r51 hidden">51</div>
+        <div class="road t5 l2 r52 hidden">52</div>
+        <div class="road t5 l3 r53 hidden">53</div>
+        <div class="road t5 l5 r55">55</div>
+        <div class="road t5 l7 r57 hidden">57</div>
+        <div class="road t5 l8 r58 hidden">58</div>
+        <div class="road t5 l9 r59 hidden">59</div>
+        <div class="road t6 l1 r61 hidden">61</div>
+        <div class="road t6 l3 r63 hidden">63</div>
+        <div class="road t6 l7 r67 hidden">67</div>
+        <div class="road t7 l3 r73 hidden">73</div>
+        <div class="road t7 l4 r74 hidden">74</div>
+        <div class="road t7 l5 r75 hidden">75</div>
+        <div class="road t7 l7 r77 hidden">77</div>
+        <div class="road t7 l8 r78 hidden">78</div>
+        <div class="road t7 l9 r79 hidden">79</div>
+        <div class="road t8 l1 r81 hidden">81</div>
+        <div class="road t8 l2 r82 hidden">82</div>
+        <div class="road t8 l3 r83 hidden">83</div>
+        <div class="road t8 l5 r85 hidden">85</div>
+        <div class="road t8 l7 r87 hidden">87</div>
+        <div class="road t8 l9 r89 hidden">89</div>
+        <div class="road t9 l1 r91 hidden">91</div>
+        <div class="road t9 l3 r93 hidden">93</div>
+        <div class="road t9 l5 r95 hidden">95</div>
+        <div class="road t9 l7 r97 hidden">97</div>
+        <div class="road t9 l9 r99 hidden">99</div>
+    </div>
+
+    <!-- 메인 모바일 키보드 -->
+
+    <!-- 화면 조작키 영역 -->
+    <div class="keybord_box relative hidden">
+        <!-- 화면 조작키 배경 -->
+        <div class="keybord absolute rounded-full">
+            <!-- 화면 조작키 위쪽 버튼 영역 -->
+            <div class="key-up absolute cursor-pointer">
+                <!-- 화면 조작키 위쪽 버튼 이미지 -->
+                <div class="absolute key-img l_75">▲</div>
+            </div>
+            <!-- 화면 조작키 오른쪽 버튼 영역 -->
+            <div class="key-right absolute cursor-pointer">
+                <!-- 화면 조작키 오른쪽 버튼 이미지 -->
+                <div class="absolute key-img t_75">▶</div>
+            </div>
+            <!-- 화면 조작키 아래쪽 버튼 영역 -->
+            <div class="key-down absolute cursor-pointer">
+                <!-- 화면 조작키 아래쪽 버튼 이미지 -->
+                <div class="absolute key-img l_75">▼</div>
+            </div>
+            <!-- 화면 조작키 왼쪽 버튼 영역 -->
+            <div class="key-left absolute cursor-pointer">
+                <!-- 화면 조작키 왼쪽 버튼 이미지 -->
+                <div class="absolute key-img t_75">◀</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 엔딩 -->
+
+    <!-- 골 배경 -->
+    <div class="wrapper goal relative hidden">
+        <!-- 위쪽 삼각형 도형-->
+        <div class="clip absolute clip-top"></div>
+        <!-- 왼쪽 삼각형 도형-->
+        <div class="clip absolute clip-left"></div>
+        <!-- 오른쪽 삼각형 도형-->
+        <div class="clip absolute clip-right"></div>
+        <!-- 아래쪽 삼각형 도형-->
+        <div class="clip absolute clip-bottom"></div>
+
+        <!--  사각형1 도형  -->
+        <div class="square absolute square-1"></div>
+        <!--  사각형2 도형  -->
+        <div class="square absolute square-2"></div>
+        <!--  원형 도형  -->
+        <div class="circle absolute circle-1"></div>
+        <!--  삼각형 도형  -->
+        <div class="triangle absolute triangle-1"></div>
+        <!--  엑스자 도형  -->
+        <div class="close absolute close-1"></div>
+        <!--  별1 도형  -->
+        <div class="star absolute star-1"></div>
+        <!--  별2 도형  -->
+        <div class="star absolute star-2"></div>
+        <!--  확인버튼 위치조정을 위한 배경  -->
+        <div class="goal-t flex flex-col">
+            <!--  골 텍스트 및 확인버튼 배경  -->
+            <div class="text-center">
+                <!--  골 텍스트 배경  -->
+                <div class="goal_title z-101  dancing-script">g o a l</div>
+                <!--    높이조정    -->
+                <div class="h-24"></div>
+                <!--  확인 버튼 배경  -->
+                <div class="goal_chick z-101 cursor-pointer noon"> 확인</div>
+            </div>
+        </div>
+    </div>
+    <div class="info_text flex justify-center">
+        <div class="pr-4 animate-scroll">
+            <i class="fa-solid fa-angles-down"></i>
+        </div>
+        <div> 아래에서 더 보기</div>
+        <div class="pl-4 animate-scroll">
+            <i class="fa-solid fa-angles-down"></i>
+        </div>
+    </div>
+    <div class="portfolio">
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                협업을 통한 성장을 추구하는 개발자 유건혁 입니다.
+            </div>
+            <div class="portfolio-body">
+                <div class="my_poto flex flex-col">
+                    <img class="my_poto rounded-full"
+                         src="https://github.com/user-attachments/assets/ac814b54-840a-4456-95a3-3064d5208f91"
+                         alt="내 사진">
+                    <div class="flex justify-around items-center w-full">
+                        <a target="blank" href="https://github.com/Eichi2514" class="inline-block mr-2">
                             <img class="github-icon"
                                  src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
                         </a>
-                        <a class="inline-block velog-icon" target="blank"
-                           href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
+                        <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/posts">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
                                  viewBox="0 0 192 192">
                                 <path fill-rule="evenodd"
@@ -1183,71 +1143,135 @@
                         </a>
                     </div>
                 </div>
-            </div>
-            <div class="project">
-                <div class="project-title">팀 : 반려견 커뮤니티 사이트</div>
-                <div class="images">
-                    <img class="project-image"
-                         src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3"
-                         alt="팀프로젝트 사진">
-                    <div class="flex justify-around items-center w-full pt-10">
-                        <a target="blank" href="" class="inline-block mr-2">
-                            <img class="github-icon"
-                                 src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
-                        </a>
-                        <a class="inline-block velog-icon" target="blank" href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
-                                 viewBox="0 0 192 192">
-                                <path fill-rule="evenodd"
-                                      d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                        </a>
+                <div class="my_introduction">
+                    <div class="mb-3">
+                        <strong>이름 : </strong> 유건혁
+                    </div>
+                    <div class="mb-3">
+                        <strong>전화번호 : </strong> 010-2229-6877
+                    </div>
+                    <div class="mb-3">
+                        <strong>이메일 : </strong> picon1317@gmail.com
+                    </div>
+                    <div class="mb-3">
+                        <strong>학력 : </strong><br>
+                        충남기계공업고등학교<br> (2012.03 ~ 2015.02)
+                    </div>
+                    <div class="mb-3">
+                        <strong>교육과정 : </strong><br>
+                        [산대특] 공공데이터를 활용한 웹앱개발자 양성과정
+                        <br> (2024.05 ~ 2024.12)
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="portfolio-box">
-        <div class="portfolio-title">
-            기술 스택
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                프로젝트
+            </div>
+            <div class="portfolio-body">
+                <div class="project">
+                    <div class="project-title">개인 : 로그라이크 형식 브라우저 게임</div>
+                    <div class="images">
+                        <img class="project-image"
+                             src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780"
+                             alt="개인프로젝트 사진">
+                        <div class="flex justify-around items-center w-full pt-10">
+                            <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
+                                <img class="github-icon"
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                            </a>
+                            <a class="inline-block velog-icon" target="blank"
+                               href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
+                                     viewBox="0 0 192 192">
+                                    <path fill-rule="evenodd"
+                                          d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project">
+                    <div class="project-title">팀 : 반려견 커뮤니티 사이트</div>
+                    <div class="images">
+                        <img class="project-image"
+                             src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3"
+                             alt="팀프로젝트 사진">
+                        <div class="flex justify-around items-center w-full pt-10">
+                            <a target="blank" href="" class="inline-block mr-2">
+                                <img class="github-icon"
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                            </a>
+                            <a class="inline-block velog-icon" target="blank" href="">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
+                                     viewBox="0 0 192 192">
+                                    <path fill-rule="evenodd"
+                                          d="M24 0h144c13.255 0 24 10.745 24 24v144c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V24C0 10.745 10.745 0 24 0Zm25 57.92v7.56h18l13.68 77.04 17.82-1.26c17.52-22.2 29.34-38.82 35.46-49.86 6.24-11.16 9.36-20.46 9.36-27.9 0-4.44-1.32-7.8-3.96-10.08-2.52-2.28-5.7-3.42-9.54-3.42-7.2 0-13.2 3.06-18 9.18 4.68 3.12 7.86 5.7 9.54 7.74 1.8 1.92 2.7 4.5 2.7 7.74 0 5.4-1.62 11.52-4.86 18.36-3.12 6.84-6.54 12.9-10.26 18.18-2.4 3.36-5.46 7.5-9.18 12.42L88.06 57.2c-.96-4.8-3.96-7.2-9-7.2-2.28 0-6.66.96-13.14 2.88-6.48 1.8-12.12 3.48-16.92 5.04Z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="portfolio-body">
-            <img src="https://github.com/user-attachments/assets/c1bea2cd-8977-40f0-89b5-cb62d504ec37" alt="">
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                기술 스택
+            </div>
+            <div class="portfolio-body">
+                <img src="https://github.com/user-attachments/assets/c1bea2cd-8977-40f0-89b5-cb62d504ec37" alt="">
+            </div>
         </div>
-    </div>
         <div class="portfolio-box">
             <div class="portfolio-title">
                 문의하기
             </div>
             <div class="portfolio-body contact-page section">
-                <form class="gform space-y-6" method="POST" data-email="picon1317@gmail.com" action="https://script.google.com/macros/s/AKfycbyvwI3cORAFClWsOGDKsrAIHD_YWaL4p3JvYuay141Z2479enNsFMeoX3cs5_mvunWS9Q/exec">
+                <form class="gform space-y-6" method="POST" data-email="picon1317@gmail.com"
+                      action="https://script.google.com/macros/s/AKfycbyvwI3cORAFClWsOGDKsrAIHD_YWaL4p3JvYuay141Z2479enNsFMeoX3cs5_mvunWS9Q/exec">
                     <div>
                         <label for="name" class="block text-white text-lg font-medium">이름</label>
-                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="name" type="text" placeholder="이름을 입력해 주세요" name="name" required />
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               id="name" type="text" placeholder="이름을 입력해 주세요" name="name" required/>
                     </div>
                     <div>
                         <label for="contact" class="block text-white text-lg font-medium">연락처</label>
-                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required />
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required/>
                     </div>
                     <div>
                         <label for="email" class="block text-white text-lg font-medium">이메일</label>
-                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="email" type="email" placeholder="이메일을 입력해 주세요 (예: id@email.com)" name="email" required />
+                        <input class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               id="email" type="email" placeholder="이메일을 입력해 주세요 (예: id@email.com)" name="email"
+                               required/>
                     </div>
                     <div>
                         <label for="body" class="block text-white text-lg font-medium">내용</label>
-                        <textarea class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="body" placeholder="메시지를 남겨주세요" name="body" required></textarea>
+                        <textarea
+                                class="w-full p-4 mt-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                id="body" placeholder="메시지를 남겨주세요" name="body" required></textarea>
                     </div>
 
                     <div class="text-center">
-                        <button class="px-6 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition duration-300" id="submitBtn" type="submit">
+                        <button class="px-6 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition duration-300"
+                                id="submitBtn" type="submit">
                             보내기
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
 </div>
+
+<img class="mouse__follow-image mouse__basic" style="display: block;"
+     src="https://github.com/user-attachments/assets/f061e9e5-d2d9-443f-84d6-a15d83a8c5ca" alt="기본 이미지"/>
+<img class="mouse__follow-image mouse__action" style="display: none;"
+     src="https://github.com/user-attachments/assets/a1641cbf-4919-4ef8-8cfb-41d9324bc895" alt="액션 이미지"/>
+
 <script>
     $(document).ready(function () {
         console.clear();
@@ -1886,6 +1910,66 @@
                     document.getElementById("submitBtn").disabled = false; // 버튼 활성화
                 });
         });
+
+        const followImageBasic = document.querySelector('.mouse__basic'); // 기본 이미지 선택
+        const followImageAction = document.querySelector('.mouse__action'); // 액션 이미지 선택
+        let posX = 0, posY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            posX = event.pageX;
+            posY = event.pageY;
+        });
+        function animate() {
+            const currentX = parseFloat(followImageAction.style.left) || 0;
+            const currentY = parseFloat(followImageAction.style.top) || 0;
+
+            const offsetX = 15; // X축 오프셋
+            const offsetY = 0;  // Y축 오프셋
+
+            // 이동 속도를 조절하는 계수 (0.1 값에서 작을수록 느려짐)
+            const speedFactor = 0.05; // 속도를 늦추기 위해 작게 설정
+
+            // 기본 이미지와 액션 이미지의 거리 계산
+            const distance = Math.sqrt((posX - currentX) ** 2 + (posY - currentY) ** 2); // 현재 이미지와 마우스 위치 간 거리 계산
+            const threshold = 16; // 거리 임계값
+
+            // 기본 이미지의 위치 업데이트
+            followImageBasic.style.left = posX + offsetX + 'px'; // 기본 이미지 위치 업데이트
+            followImageBasic.style.top = posY + offsetY + 'px';  // 기본 이미지 위치 업데이트
+
+            if (distance > threshold) {
+                followImageBasic.style.display = 'none';
+                followImageAction.style.display = 'block';
+                followImageAction.style.left = currentX + (posX + offsetX - currentX) * speedFactor + 'px'; // X축으로 오프셋 추가
+                followImageAction.style.top = currentY + (posY + offsetY - currentY) * speedFactor + 'px';  // Y축으로 오프셋 추가
+
+                // 마우스 방향을 계산하여 회전 각도 설정
+                const angle = Math.atan2(posY - currentY, posX - currentX) * (180 / Math.PI); // 라디안 값을 도로 변환
+
+                // 마우스 위치에 따라 좌우 반전 처리
+                if (posX < currentX) {
+                    // 왼쪽을 바라볼 때 (기본값)
+                    followImageAction.style.transform = `rotate(${angle + 180}deg) scaleX(1)`;
+                } else {
+                    // 오른쪽을 바라볼 때 (이미지를 뒤집음)
+                    followImageAction.style.transform = `rotate(${angle}deg) scaleX(-1)`;
+                }
+            } else {
+                followImageBasic.style.display = 'block';
+                followImageAction.style.display = 'none';
+            }
+
+            // 이미지 크기 설정
+            const imageHeight = window.innerHeight * 0.04;
+            followImageAction.style.width = imageHeight * 2 + 'px';
+            followImageAction.style.height = imageHeight * 2 + 'px';
+            followImageBasic.style.width = imageHeight * 2 + 'px';
+            followImageBasic.style.height = imageHeight * 2 + 'px';
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     });
 </script>
 </body>
