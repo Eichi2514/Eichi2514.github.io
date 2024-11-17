@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eichi portfolio</title>
-
     <style>
-
         /* 폰트1 양식 */
         .dancing-script {
             font-family: "Dancing Script", cursive;
@@ -36,7 +34,6 @@
             margin: auto;
             width: 550px;
             height: 550px;
-            background: #1e3a8a;
         }
 
         /* 환경설정 위치 */
@@ -65,7 +62,7 @@
             border: 5px solid white;
             border-left: 0;
             border-right: 0;
-            color:white;
+            color: white;
         }
 
         /* 시작 버튼 */
@@ -91,7 +88,6 @@
             margin: auto;
             width: 550px;
             height: 550px;
-            background: #1e3a8a;
         }
 
         /* 캐릭터 선택 알림창 배경 */
@@ -308,10 +304,10 @@
             background-color: #fff;
         }
 
-        .keybord_text{
+        .keybord_text {
             padding-top: 20px;
             font-size: 2rem;
-            color : white;
+            color: white;
         }
 
         /* 위쪽 버튼 위치 */
@@ -360,8 +356,8 @@
         }
 
         /* 제목 */
-        .goal_title{
-            color : white;
+        .goal_title {
+            color: white;
         }
 
         /* 여러개의 이미지가 겹칠경우를 대비해 버튼을 가장 앞으로 빼기위해서 */
@@ -378,7 +374,6 @@
         /* 골 배경 */
         .wrapper {
             margin: auto;
-            background: #1e3a8a;
             width: 550px;
             height: 550px;
             position: relative;
@@ -732,6 +727,7 @@
         .portfolio-body {
             display: flex;
             justify-content: center;
+            flex-grow: 1;
         }
 
         .my_poto {
@@ -802,6 +798,30 @@
             border-radius: 10px;
         }
 
+        .skills {
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 30px;
+        }
+
+        .skill {
+            text-align: center;
+            color: white;
+        }
+
+        .skill-title {
+            padding-bottom: 10px;
+        }
+
+        .skill-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+
         .gform input,
         .gform textarea {
             width: 1000px;
@@ -829,7 +849,14 @@
         .mouse__follow-image {
             left: 15px;
             position: absolute;
+            transition: none;
             pointer-events: none; /* 이미지가 클릭되지 않도록 */
+        }
+
+        #body1 {
+            width: 100%;
+            height: 100%;
+            position: fixed;
         }
     </style>
 </head>
@@ -845,7 +872,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
 
+<!-- three.js와 Vanta.js 라이브러리 추가 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.net.min.js"></script>
 <!-- 처음화면 -->
+<div id="body1"></div>
 
 <!-- 높이 조정 -->
 <div class="main-body">
@@ -960,7 +991,7 @@
     <!-- 메인 배경 -->
     <div class="relative map hidden">
         <!-- 배경 이미지 -->
-        <img src="https://picsum.photos/id/127/550/550" alt="">
+        <!--        <img src="https://picsum.photos/id/127/550/550" alt="">-->
 
         <!-- 캐릭터1 배경 -->
         <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
@@ -1236,7 +1267,117 @@
                 기술 스택
             </div>
             <div class="portfolio-body">
-                <img src="https://github.com/user-attachments/assets/c1bea2cd-8977-40f0-89b5-cb62d504ec37" alt="">
+                <div class="">
+                    <div class="text-center text-white text-2xl font-bold">백엔드</div>
+                    <div class="skills">
+                    <span class="skill">
+                        <div class="skill-title">Java</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/bae9f4fc-1548-4716-b1f7-975078700854"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                        <div class="skill-title">SpringBoot</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/33548eb8-398b-4c92-9db2-a469ec3bc734"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                        <div class="skill-title">VisualStudio</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/64178fbf-2015-4144-9ce0-0c663b491acc"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                        <div class="skill-title">Git</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/3bd213f2-3ceb-4a55-98b6-87c769e5cc86"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                        <div class="skill-title">Github</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/284c68e2-2e58-45ed-a7ab-ad476ffd933b"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                        <div class="skill-title">Figma</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/6f80a235-845d-44ef-b21f-3feb05157a2c"
+                             alt="">
+                    </span>
+                    </div>
+                </div>
+                <div class="self-end">
+                    <div class="text-center text-white text-2xl font-bold">개발도구</div>
+                    <div class="skills">
+                    <span class="skill">
+                        <div class="skill-title">IntelliJ</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/40c66ea6-fd81-4bd6-a758-cd8a7c49afb8"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">MySQL</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/0184943d-9d86-4c86-b054-1470dc5bc031"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">MyBatis</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/06ac752a-2b5c-474e-8a0a-f1c025cdc4c2"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">Nodejs</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/9a5bf4f4-44f2-4b7e-add6-898fbf298338"
+                             alt="">
+                    </span>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-center text-white text-2xl font-bold">프론트엔드</div>
+                    <div class="skills">
+                    <span class="skill">
+                        <div class="skill-title">HTML</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/0625f1e9-c48e-4e73-b799-37c8acec94ef"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">CSS</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/2a47d081-b943-4425-805d-8c51b80eaabb"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">JavaScript</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/e5038b0d-3ab8-435e-8f1f-3dca1e6f8892"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">Tailwind</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/05a62bcc-73bb-4b98-b42d-c35224d6dbea"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">Jquery</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/3f5a313a-b801-4cac-abc7-d9d1ee1488ab"
+                             alt="">
+                    </span>
+                    <span class="skill">
+                        <div class="skill-title">React</div>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/98d1e93d-69f5-4285-b014-c3c26332d8c2"
+                             alt="">
+                    </span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="portfolio-box">
@@ -1933,6 +2074,7 @@
             posX = event.pageX;
             posY = event.pageY;
         });
+
         function animate() {
             const currentX = parseFloat(followImageAction.style.left) || 0;
             const currentY = parseFloat(followImageAction.style.top) || 0;
@@ -1941,7 +2083,7 @@
             const offsetY = 0;  // Y축 오프셋
 
             // 이동 속도를 조절하는 계수 (0.1 값에서 작을수록 느려짐)
-            const speedFactor = 0.05; // 속도를 늦추기 위해 작게 설정
+            const speedFactor = 0.1; // 속도를 늦추기 위해 작게 설정
 
             // 기본 이미지와 액션 이미지의 거리 계산
             const distance = Math.sqrt((posX - currentX) ** 2 + (posY - currentY) ** 2); // 현재 이미지와 마우스 위치 간 거리 계산
@@ -1984,6 +2126,23 @@
         }
 
         animate();
+    });
+</script>
+
+<!-- Vanta.js 설정 스크립트 -->
+<script>
+    VANTA.NET({
+        el: "#body1",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x4a6b9c,
+        points: 20.00,
+        backgroundColor: 0x1e3a8a
     });
 </script>
 </body>
