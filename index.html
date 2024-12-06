@@ -20,6 +20,14 @@
             font-style: normal;
         }
 
+        /* 폰트2 양식 */
+        @font-face {
+            font-family: 'YOnepickTTF-Bold';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2410-1@1.0/YOnepickTTF-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
         /* 배경색 */
         body {
             margin: 0;
@@ -673,6 +681,30 @@
             }
         }
 
+        .text-animation {
+            font-family: 'YOnepickTTF-Bold';
+            opacity: 0; /* 처음에는 숨김 */
+            animation: fadeIn 3s forwards;
+            line-height: 1.8 !important;
+        }
+
+        .text-animation:nth-child(1) {
+            animation-delay: 0s; /* 첫 번째 텍스트 즉시 시작 */
+        }
+
+        .text-animation:nth-child(2) {
+            animation-delay: 2s; /* 두 번째 텍스트의 딜레이 */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0; /* 점점 투명도 제거 */
+            }
+            to {
+                opacity: 1; /* 완전히 나타남 */
+            }
+        }
+
         .info_text {
             width: 1440px;
             color: white;
@@ -698,11 +730,18 @@
             animation: scrollDown 1s infinite;
         }
 
+        /* 기본 스타일 (1440px 미만) */
         .portfolio {
-            position: absolute;
-            top: 919px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+        }
+
+        /* 1440px 이상일 때 적용 */
+        @media (min-width: 1440px) {
+            .portfolio {
+                position: relative;
+                left: 50%;
+                transform: translateX(-770px);
+            }
         }
 
         .portfolio-box {
@@ -711,7 +750,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            border-top: 1px solid white;
+            border-bottom: 1px solid white;
             overflow: hidden;
         }
 
@@ -865,6 +904,10 @@
             height: 100%;
             position: fixed;
         }
+
+        .main-body {
+            margin: auto;
+        }
     </style>
 </head>
 <body>
@@ -887,19 +930,27 @@
 
 
 <div class="main-body">
-    <div class="info_text flex justify-center">
-        <div class="pr-4 animate-scroll">
-            <i class="fa-solid fa-angles-down"></i>
-        </div>
-        <div> 아래에서 더 보기</div>
-        <div class="pl-4 animate-scroll">
-            <i class="fa-solid fa-angles-down"></i>
-        </div>
-    </div>
     <div class="portfolio">
         <div class="portfolio-box">
             <div class="portfolio-title">
-                협업을 통한 성장을 추구하는 개발자 유건혁 입니다.
+                <div class="p-10 text-animation text-7xl">🦊, 안녕하세요</div>
+                <div class="p-10 text-animation text-8xl">협업을 통한 성장을 추구하는 개발자 유건혁 입니다.</div>
+            </div>
+            <div class="portfolio-body">
+                <div class="info_text flex justify-center">
+                    <div class="pr-4 animate-scroll">
+                        <i class="fa-solid fa-angles-down"></i>
+                    </div>
+                    <div> 아래에서 더 보기</div>
+                    <div class="pl-4 animate-scroll">
+                        <i class="fa-solid fa-angles-down"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                소개
             </div>
             <div class="portfolio-body">
                 <div class="my_poto flex flex-col">
@@ -939,281 +990,6 @@
                         <strong>교육과정 : </strong><br>
                         [산대특] 공공데이터를 활용한 웹앱개발자 양성과정
                         <br> (2024.05 ~ 2024.12)
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="portfolio-box">
-
-            <!-- 배경 -->
-            <div class="relative game_start flex flex-col">
-                <!-- 높이 조정 -->
-                <div class="h-24"></div>
-                <!-- 제목 배경 -->
-                <div class="text-center">
-                    <!-- 제목 -->
-                    <div class="title">
-                        <!-- 왼쪽 제목 -->
-                        <div class="title1 dancing-script">MAZE</div>
-                        <!-- 오른쪽 제목 -->
-                        <div class="title3 dancing-script">MAZE</div>
-                    </div>
-                </div>
-                <!-- 높이 조정 -->
-                <div class="h-48"></div>
-                <!-- 버튼 배경 -->
-                <div class="start_btn text-center">
-                    <!-- 시작 버튼 글자 -->
-                    <div class="start_btn_text cursor-pointer rounded-2xl">시작</div>
-                </div>
-                <!-- 환경설정(기능 없음) -->
-                <div class="sug absolute cursor-pointer">
-                    <!-- 환경설정 이미지 -->
-                    <i class="fa-solid fa-gear fa-2x"></i>
-                </div>
-            </div>
-
-            <!-- 캐릭터 선택 -->
-
-            <!-- 배경 -->
-            <div class="choice hidden relative">
-                <!-- 캐릭터 선택 알림창 배경 -->
-                <div class="choice_t absolute">
-                    <!-- 캐릭터1(드래곤) 선택창 -->
-                    <div class="p1t hidden text-center bg-white rounded-2xl">
-                        <!-- 캐릭터1(드래곤) 선택 알림창 -->
-                        <div class="p1t_ti p-3">용 캐릭터를 선택하시겠습니까?</div>
-                        <!-- 캐릭터1(드래곤) 선택 버튼 배경 -->
-                        <div class="p1t_bo">
-                            <!-- 캐릭터1(드래곤) 선택 확인 버튼 -->
-                            <div class="p1t_yes p-3 cursor-pointer inline-block">확인</div>
-                            <!-- 캐릭터1(드래곤) 선택 취소 버튼 -->
-                            <div class="p1t_no p-3 cursor-pointer inline-block">취소</div>
-                        </div>
-                    </div>
-                    <!-- 캐릭터2(수달) 선택창 -->
-                    <div class="p2t hidden text-center bg-white rounded-2xl">
-                        <!-- 캐릭터2(수달) 선택 알림창 -->
-                        <div class="p2t_ti p-3">수달 캐릭터를 선택하시겠습니까?</div>
-                        <!-- 캐릭터2(수달) 선택 버튼 배경 -->
-                        <div class="p2t_bo">
-                            <!-- 캐릭터2(수달) 선택 확인 버튼 -->
-                            <div class="p2t_yes p-3 cursor-pointer inline-block">확인</div>
-                            <!-- 캐릭터2(수달) 선택 취소 버튼 -->
-                            <div class="p2t_no p-3 cursor-pointer inline-block">취소</div>
-                        </div>
-                    </div>
-                    <!-- 캐릭터3(유령) 선택창 -->
-                    <div class="p3t hidden text-center bg-white rounded-2xl">
-                        <!-- 캐릭터3(유령) 선택 알림창 -->
-                        <div class="p3t_ti p-3">유령 캐릭터를 선택하시겠습니까?</div>
-                        <!-- 캐릭터3(유령) 선택 버튼 배경 -->
-                        <div class="p3t_bo">
-                            <!-- 캐릭터3(유령) 선택 확인 버튼 -->
-                            <div class="p3t_yes p-3 cursor-pointer inline-block">확인</div>
-                            <!-- 캐릭터3(유령) 선택 취소 버튼 -->
-                            <div class="p3t_no p-3 cursor-pointer inline-block">취소</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  높이 조정  -->
-                <div class="h-12"></div>
-                <!-- 캐릭터 선택 제목 배경-->
-                <div class="text-center">
-                    <!-- 캐릭터 선택 제목-->
-                    <div class="title">
-                        <!-- 캐릭터 선택 왼쪽 제목-->
-                        <div class="title1 noon">캐 릭 터</div>
-                        <!-- 캐릭터 선택 오른쪽 제목-->
-                        <div class="title3 noon">선 택</div>
-                    </div>
-                </div>
-                <!-- 캐릭터 선택 이미지 배경-->
-                <div class="characters relative cursor-pointer">
-                    <!-- 캐릭터1 이미지 배경-->
-                    <div class="ps p1 text-center content-center absolute rounded-2xl">
-                        <!-- 캐릭터1 이미지-->
-                        <i class="fa-duotone fa-solid fa-dragon fa-4x"></i>
-                    </div>
-                    <!-- 캐릭터2 이미지 배경-->
-                    <div class="ps p2 text-center content-center absolute rounded-2xl">
-                        <!-- 캐릭터2 이미지-->
-                        <i class="fa-solid fa-otter fa-4x"></i>
-                    </div>
-                    <!-- 캐릭터3 이미지 배경-->
-                    <div class="ps p3 text-center content-center absolute rounded-2xl">
-                        <!-- 캐릭터3 이미지-->
-                        <i class="fa-solid fa-ghost fa-4x"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 메인 -->
-
-            <!-- 메인 배경 -->
-            <div class="relative map hidden">
-                <!-- 배경 이미지 -->
-                <!--        <img src="https://picsum.photos/id/127/550/550" alt="">-->
-
-                <!-- 캐릭터1 배경 -->
-                <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
-                    <!-- 캐릭터1 이미지 -->
-                    <i class="fa-duotone fa-solid fa-dragon fa-2x"></i>
-                </div>
-                <!-- 캐릭터2 배경 -->
-                <div class="character otter hidden text-center content-center absolute rounded-full bg-yellow-900 z-20">
-                    <!-- 캐릭터2 이미지 -->
-                    <i class="fa-solid fa-otter fa-2x"></i>
-                </div>
-                <!-- 캐릭터3 배경 -->
-                <div class="character ghost hidden text-center content-center absolute rounded-full bg-black text-white z-20">
-                    <!-- 캐릭터3 이미지 -->
-                    <i class="fa-solid fa-ghost fa-2x"></i>
-                </div>
-
-                <!-- 열쇠 배경 -->
-                <div class="key text-center content-center absolute rounded-full z-10">
-                    <!-- 열쇠 이미지 -->
-                    <i class="fa-duotone fa-solid fa-key"></i>
-                </div>
-
-                <!-- 골인지점 배경 -->
-                <div class="goolin text-center content-center absolute z-10">
-                    <!-- 골인지점 배경 이미지-->
-                    <i class="fa-solid fa-door-open fa-2x"></i>
-                </div>
-
-                <!-- 길 -->
-                <!-- road 클래스는 모든 길을 한번에 정의할 경우를 위해서 -->
-                <!--  t 클래스는 TOP 위에서부터 떨어진 거리를 의미
-                      ex) t1은 첫번째열 t2는 두전째열  -->
-                <!--  l 클래스는 left 왼쪽에서부터 떨어진 거리를 의미
-                      ex) l1은 첫번째행 l2는 두전째행  -->
-                <!--  r 클래스는 ROAD 길을 각각 정의할 경우를 위해서
-                      ex) r11은 ROAD중에 1열 1행에 있는 길
-                          r12는 ROAD중에 1열 2행에 있는 길 -->
-                <!--  hidden은 처음에는 안보이다가 이벤트 발생 시 보여주기 위해서
-                      hidden이 없는 길은 초기 위치에서 보여지는 길-->
-                <div class="road t1 l1 r11">11</div>
-                <div class="road t1 l2 r12">12</div>
-                <div class="road t1 l4 r14 hidden">14</div>
-                <div class="road t1 l5 r15 hidden">15</div>
-                <div class="road t1 l6 r16 hidden">16</div>
-                <div class="road t1 l7 r17 hidden">17</div>
-                <div class="road t1 l8 r18 hidden">18</div>
-                <div class="road t1 l9 r19 hidden">19</div>
-                <div class="road t2 l1 r21">21</div>
-                <div class="road t2 l4 r24 hidden">24</div>
-                <div class="road t2 l7 r27 hidden">27</div>
-                <div class="road t3 l1 r31 hidden">31</div>
-                <div class="road t3 l2 r32 hidden">32</div>
-                <div class="road t3 l3 r33 hidden">33</div>
-                <div class="road t3 l4 r34 hidden">34</div>
-                <div class="road t3 l5 r35 hidden">35</div>
-                <div class="road t3 l7 r37 hidden">37</div>
-                <div class="road t3 l8 r38 hidden">38</div>
-                <div class="road t3 l9 r39 hidden">39</div>
-                <div class="road t4 l1 r41 hidden">41</div>
-                <div class="road t4 l5 r45 hidden">45</div>
-                <div class="road t4 l9 r49 hidden">49</div>
-                <div class="road t5 l1 r51 hidden">51</div>
-                <div class="road t5 l2 r52 hidden">52</div>
-                <div class="road t5 l3 r53 hidden">53</div>
-                <div class="road t5 l5 r55">55</div>
-                <div class="road t5 l7 r57 hidden">57</div>
-                <div class="road t5 l8 r58 hidden">58</div>
-                <div class="road t5 l9 r59 hidden">59</div>
-                <div class="road t6 l1 r61 hidden">61</div>
-                <div class="road t6 l3 r63 hidden">63</div>
-                <div class="road t6 l7 r67 hidden">67</div>
-                <div class="road t7 l3 r73 hidden">73</div>
-                <div class="road t7 l4 r74 hidden">74</div>
-                <div class="road t7 l5 r75 hidden">75</div>
-                <div class="road t7 l7 r77 hidden">77</div>
-                <div class="road t7 l8 r78 hidden">78</div>
-                <div class="road t7 l9 r79 hidden">79</div>
-                <div class="road t8 l1 r81 hidden">81</div>
-                <div class="road t8 l2 r82 hidden">82</div>
-                <div class="road t8 l3 r83 hidden">83</div>
-                <div class="road t8 l5 r85 hidden">85</div>
-                <div class="road t8 l7 r87 hidden">87</div>
-                <div class="road t8 l9 r89 hidden">89</div>
-                <div class="road t9 l1 r91 hidden">91</div>
-                <div class="road t9 l3 r93 hidden">93</div>
-                <div class="road t9 l5 r95 hidden">95</div>
-                <div class="road t9 l7 r97 hidden">97</div>
-                <div class="road t9 l9 r99 hidden">99</div>
-            </div>
-
-            <!-- 메인 모바일 키보드 -->
-
-            <!-- 화면 조작키 영역 -->
-            <div class="keybord_box absolute hidden">
-                <!-- 화면 조작키 배경 -->
-                <div class="keybord relative rounded-full">
-                    <!-- 화면 조작키 위쪽 버튼 영역 -->
-                    <div class="key-up absolute cursor-pointer">
-                        <!-- 화면 조작키 위쪽 버튼 이미지 -->
-                        <div class="absolute key-img l_75">▲</div>
-                    </div>
-                    <!-- 화면 조작키 오른쪽 버튼 영역 -->
-                    <div class="key-right absolute cursor-pointer">
-                        <!-- 화면 조작키 오른쪽 버튼 이미지 -->
-                        <div class="absolute key-img t_75">▶</div>
-                    </div>
-                    <!-- 화면 조작키 아래쪽 버튼 영역 -->
-                    <div class="key-down absolute cursor-pointer">
-                        <!-- 화면 조작키 아래쪽 버튼 이미지 -->
-                        <div class="absolute key-img l_75">▼</div>
-                    </div>
-                    <!-- 화면 조작키 왼쪽 버튼 영역 -->
-                    <div class="key-left absolute cursor-pointer">
-                        <!-- 화면 조작키 왼쪽 버튼 이미지 -->
-                        <div class="absolute key-img t_75">◀</div>
-                    </div>
-                </div>
-                <div class="keybord_text">키보드의 방향키로</div>
-                <div class="keybord_text">이동할 수 있습니다.</div>
-            </div>
-
-            <!-- 엔딩 -->
-
-            <!-- 골 배경 -->
-            <div class="wrapper goal relative hidden">
-                <!-- 위쪽 삼각형 도형-->
-                <div class="clip absolute clip-top"></div>
-                <!-- 왼쪽 삼각형 도형-->
-                <div class="clip absolute clip-left"></div>
-                <!-- 오른쪽 삼각형 도형-->
-                <div class="clip absolute clip-right"></div>
-                <!-- 아래쪽 삼각형 도형-->
-                <div class="clip absolute clip-bottom"></div>
-
-                <!--  사각형1 도형  -->
-                <div class="square absolute square-1"></div>
-                <!--  사각형2 도형  -->
-                <div class="square absolute square-2"></div>
-                <!--  원형 도형  -->
-                <div class="circle absolute circle-1"></div>
-                <!--  삼각형 도형  -->
-                <div class="triangle absolute triangle-1"></div>
-                <!--  엑스자 도형  -->
-                <div class="close absolute close-1"></div>
-                <!--  별1 도형  -->
-                <div class="star absolute star-1"></div>
-                <!--  별2 도형  -->
-                <div class="star absolute star-2"></div>
-                <!--  확인버튼 위치조정을 위한 배경  -->
-                <div class="goal-t flex flex-col">
-                    <!--  골 텍스트 및 확인버튼 배경  -->
-                    <div class="text-center">
-                        <!--  골 텍스트 배경  -->
-                        <div class="goal_title z-101  dancing-script">g o a l</div>
-                        <!--    높이조정    -->
-                        <div class="h-24"></div>
-                        <!--  확인 버튼 배경  -->
-                        <div class="goal_chick z-101 cursor-pointer noon"> 확인</div>
                     </div>
                 </div>
             </div>
@@ -1340,6 +1116,285 @@
                                 <img class="github-icon"
                                      src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"/>
                             </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="portfolio-box">
+            <div class="portfolio-title">
+                미로찾기 프로젝트 체험 (시작 버튼을 눌러주세요)
+            </div>
+            <div class="portfolio-body relative">
+                <!-- 배경 -->
+                <div class="relative game_start flex flex-col">
+                    <!-- 높이 조정 -->
+                    <div class="h-24"></div>
+                    <!-- 제목 배경 -->
+                    <div class="text-center">
+                        <!-- 제목 -->
+                        <div class="title">
+                            <!-- 왼쪽 제목 -->
+                            <div class="title1 dancing-script">MAZE</div>
+                            <!-- 오른쪽 제목 -->
+                            <div class="title3 dancing-script">MAZE</div>
+                        </div>
+                    </div>
+                    <!-- 높이 조정 -->
+                    <div class="h-48"></div>
+                    <!-- 버튼 배경 -->
+                    <div class="start_btn text-center">
+                        <!-- 시작 버튼 글자 -->
+                        <div class="start_btn_text cursor-pointer rounded-2xl">시작</div>
+                    </div>
+                    <!-- 환경설정(기능 없음) -->
+                    <div class="sug absolute cursor-pointer">
+                        <!-- 환경설정 이미지 -->
+                        <i class="fa-solid fa-gear fa-2x"></i>
+                    </div>
+                </div>
+
+                <!-- 캐릭터 선택 -->
+
+                <!-- 배경 -->
+                <div class="choice hidden relative">
+                    <!-- 캐릭터 선택 알림창 배경 -->
+                    <div class="choice_t absolute">
+                        <!-- 캐릭터1(드래곤) 선택창 -->
+                        <div class="p1t hidden text-center bg-white rounded-2xl">
+                            <!-- 캐릭터1(드래곤) 선택 알림창 -->
+                            <div class="p1t_ti p-3">용 캐릭터를 선택하시겠습니까?</div>
+                            <!-- 캐릭터1(드래곤) 선택 버튼 배경 -->
+                            <div class="p1t_bo">
+                                <!-- 캐릭터1(드래곤) 선택 확인 버튼 -->
+                                <div class="p1t_yes p-3 cursor-pointer inline-block">확인</div>
+                                <!-- 캐릭터1(드래곤) 선택 취소 버튼 -->
+                                <div class="p1t_no p-3 cursor-pointer inline-block">취소</div>
+                            </div>
+                        </div>
+                        <!-- 캐릭터2(수달) 선택창 -->
+                        <div class="p2t hidden text-center bg-white rounded-2xl">
+                            <!-- 캐릭터2(수달) 선택 알림창 -->
+                            <div class="p2t_ti p-3">수달 캐릭터를 선택하시겠습니까?</div>
+                            <!-- 캐릭터2(수달) 선택 버튼 배경 -->
+                            <div class="p2t_bo">
+                                <!-- 캐릭터2(수달) 선택 확인 버튼 -->
+                                <div class="p2t_yes p-3 cursor-pointer inline-block">확인</div>
+                                <!-- 캐릭터2(수달) 선택 취소 버튼 -->
+                                <div class="p2t_no p-3 cursor-pointer inline-block">취소</div>
+                            </div>
+                        </div>
+                        <!-- 캐릭터3(유령) 선택창 -->
+                        <div class="p3t hidden text-center bg-white rounded-2xl">
+                            <!-- 캐릭터3(유령) 선택 알림창 -->
+                            <div class="p3t_ti p-3">유령 캐릭터를 선택하시겠습니까?</div>
+                            <!-- 캐릭터3(유령) 선택 버튼 배경 -->
+                            <div class="p3t_bo">
+                                <!-- 캐릭터3(유령) 선택 확인 버튼 -->
+                                <div class="p3t_yes p-3 cursor-pointer inline-block">확인</div>
+                                <!-- 캐릭터3(유령) 선택 취소 버튼 -->
+                                <div class="p3t_no p-3 cursor-pointer inline-block">취소</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  높이 조정  -->
+                    <div class="h-12"></div>
+                    <!-- 캐릭터 선택 제목 배경-->
+                    <div class="text-center">
+                        <!-- 캐릭터 선택 제목-->
+                        <div class="title">
+                            <!-- 캐릭터 선택 왼쪽 제목-->
+                            <div class="title1 noon">캐 릭 터</div>
+                            <!-- 캐릭터 선택 오른쪽 제목-->
+                            <div class="title3 noon">선 택</div>
+                        </div>
+                    </div>
+                    <!-- 캐릭터 선택 이미지 배경-->
+                    <div class="characters relative cursor-pointer">
+                        <!-- 캐릭터1 이미지 배경-->
+                        <div class="ps p1 text-center content-center absolute rounded-2xl">
+                            <!-- 캐릭터1 이미지-->
+                            <i class="fa-duotone fa-solid fa-dragon fa-4x"></i>
+                        </div>
+                        <!-- 캐릭터2 이미지 배경-->
+                        <div class="ps p2 text-center content-center absolute rounded-2xl">
+                            <!-- 캐릭터2 이미지-->
+                            <i class="fa-solid fa-otter fa-4x"></i>
+                        </div>
+                        <!-- 캐릭터3 이미지 배경-->
+                        <div class="ps p3 text-center content-center absolute rounded-2xl">
+                            <!-- 캐릭터3 이미지-->
+                            <i class="fa-solid fa-ghost fa-4x"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 메인 -->
+
+                <!-- 메인 배경 -->
+                <div class="relative map hidden">
+                    <!-- 배경 이미지 -->
+                    <!--        <img src="https://picsum.photos/id/127/550/550" alt="">-->
+
+                    <!-- 캐릭터1 배경 -->
+                    <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
+                        <!-- 캐릭터1 이미지 -->
+                        <i class="fa-duotone fa-solid fa-dragon fa-2x"></i>
+                    </div>
+                    <!-- 캐릭터2 배경 -->
+                    <div class="character otter hidden text-center content-center absolute rounded-full bg-yellow-900 z-20">
+                        <!-- 캐릭터2 이미지 -->
+                        <i class="fa-solid fa-otter fa-2x"></i>
+                    </div>
+                    <!-- 캐릭터3 배경 -->
+                    <div class="character ghost hidden text-center content-center absolute rounded-full bg-black text-white z-20">
+                        <!-- 캐릭터3 이미지 -->
+                        <i class="fa-solid fa-ghost fa-2x"></i>
+                    </div>
+
+                    <!-- 열쇠 배경 -->
+                    <div class="key text-center content-center absolute rounded-full z-10">
+                        <!-- 열쇠 이미지 -->
+                        <i class="fa-duotone fa-solid fa-key"></i>
+                    </div>
+
+                    <!-- 골인지점 배경 -->
+                    <div class="goolin text-center content-center absolute z-10">
+                        <!-- 골인지점 배경 이미지-->
+                        <i class="fa-solid fa-door-open fa-2x"></i>
+                    </div>
+
+                    <!-- 길 -->
+                    <!-- road 클래스는 모든 길을 한번에 정의할 경우를 위해서 -->
+                    <!--  t 클래스는 TOP 위에서부터 떨어진 거리를 의미
+                          ex) t1은 첫번째열 t2는 두전째열  -->
+                    <!--  l 클래스는 left 왼쪽에서부터 떨어진 거리를 의미
+                          ex) l1은 첫번째행 l2는 두전째행  -->
+                    <!--  r 클래스는 ROAD 길을 각각 정의할 경우를 위해서
+                          ex) r11은 ROAD중에 1열 1행에 있는 길
+                              r12는 ROAD중에 1열 2행에 있는 길 -->
+                    <!--  hidden은 처음에는 안보이다가 이벤트 발생 시 보여주기 위해서
+                          hidden이 없는 길은 초기 위치에서 보여지는 길-->
+                    <div class="road t1 l1 r11">11</div>
+                    <div class="road t1 l2 r12">12</div>
+                    <div class="road t1 l4 r14 hidden">14</div>
+                    <div class="road t1 l5 r15 hidden">15</div>
+                    <div class="road t1 l6 r16 hidden">16</div>
+                    <div class="road t1 l7 r17 hidden">17</div>
+                    <div class="road t1 l8 r18 hidden">18</div>
+                    <div class="road t1 l9 r19 hidden">19</div>
+                    <div class="road t2 l1 r21">21</div>
+                    <div class="road t2 l4 r24 hidden">24</div>
+                    <div class="road t2 l7 r27 hidden">27</div>
+                    <div class="road t3 l1 r31 hidden">31</div>
+                    <div class="road t3 l2 r32 hidden">32</div>
+                    <div class="road t3 l3 r33 hidden">33</div>
+                    <div class="road t3 l4 r34 hidden">34</div>
+                    <div class="road t3 l5 r35 hidden">35</div>
+                    <div class="road t3 l7 r37 hidden">37</div>
+                    <div class="road t3 l8 r38 hidden">38</div>
+                    <div class="road t3 l9 r39 hidden">39</div>
+                    <div class="road t4 l1 r41 hidden">41</div>
+                    <div class="road t4 l5 r45 hidden">45</div>
+                    <div class="road t4 l9 r49 hidden">49</div>
+                    <div class="road t5 l1 r51 hidden">51</div>
+                    <div class="road t5 l2 r52 hidden">52</div>
+                    <div class="road t5 l3 r53 hidden">53</div>
+                    <div class="road t5 l5 r55">55</div>
+                    <div class="road t5 l7 r57 hidden">57</div>
+                    <div class="road t5 l8 r58 hidden">58</div>
+                    <div class="road t5 l9 r59 hidden">59</div>
+                    <div class="road t6 l1 r61 hidden">61</div>
+                    <div class="road t6 l3 r63 hidden">63</div>
+                    <div class="road t6 l7 r67 hidden">67</div>
+                    <div class="road t7 l3 r73 hidden">73</div>
+                    <div class="road t7 l4 r74 hidden">74</div>
+                    <div class="road t7 l5 r75 hidden">75</div>
+                    <div class="road t7 l7 r77 hidden">77</div>
+                    <div class="road t7 l8 r78 hidden">78</div>
+                    <div class="road t7 l9 r79 hidden">79</div>
+                    <div class="road t8 l1 r81 hidden">81</div>
+                    <div class="road t8 l2 r82 hidden">82</div>
+                    <div class="road t8 l3 r83 hidden">83</div>
+                    <div class="road t8 l5 r85 hidden">85</div>
+                    <div class="road t8 l7 r87 hidden">87</div>
+                    <div class="road t8 l9 r89 hidden">89</div>
+                    <div class="road t9 l1 r91 hidden">91</div>
+                    <div class="road t9 l3 r93 hidden">93</div>
+                    <div class="road t9 l5 r95 hidden">95</div>
+                    <div class="road t9 l7 r97 hidden">97</div>
+                    <div class="road t9 l9 r99 hidden">99</div>
+                </div>
+
+                <!-- 메인 모바일 키보드 -->
+
+                <!-- 화면 조작키 영역 -->
+                <div class="keybord_box absolute hidden">
+                    <!-- 화면 조작키 배경 -->
+                    <div class="keybord relative rounded-full">
+                        <!-- 화면 조작키 위쪽 버튼 영역 -->
+                        <div class="key-up absolute cursor-pointer">
+                            <!-- 화면 조작키 위쪽 버튼 이미지 -->
+                            <div class="absolute key-img l_75">▲</div>
+                        </div>
+                        <!-- 화면 조작키 오른쪽 버튼 영역 -->
+                        <div class="key-right absolute cursor-pointer">
+                            <!-- 화면 조작키 오른쪽 버튼 이미지 -->
+                            <div class="absolute key-img t_75">▶</div>
+                        </div>
+                        <!-- 화면 조작키 아래쪽 버튼 영역 -->
+                        <div class="key-down absolute cursor-pointer">
+                            <!-- 화면 조작키 아래쪽 버튼 이미지 -->
+                            <div class="absolute key-img l_75">▼</div>
+                        </div>
+                        <!-- 화면 조작키 왼쪽 버튼 영역 -->
+                        <div class="key-left absolute cursor-pointer">
+                            <!-- 화면 조작키 왼쪽 버튼 이미지 -->
+                            <div class="absolute key-img t_75">◀</div>
+                        </div>
+                    </div>
+                    <div class="keybord_text">키보드의 방향키로</div>
+                    <div class="keybord_text">이동할 수 있습니다.</div>
+                </div>
+
+                <!-- 엔딩 -->
+
+                <!-- 골 배경 -->
+                <div class="wrapper goal relative hidden">
+                    <!-- 위쪽 삼각형 도형-->
+                    <div class="clip absolute clip-top"></div>
+                    <!-- 왼쪽 삼각형 도형-->
+                    <div class="clip absolute clip-left"></div>
+                    <!-- 오른쪽 삼각형 도형-->
+                    <div class="clip absolute clip-right"></div>
+                    <!-- 아래쪽 삼각형 도형-->
+                    <div class="clip absolute clip-bottom"></div>
+
+                    <!--  사각형1 도형  -->
+                    <div class="square absolute square-1"></div>
+                    <!--  사각형2 도형  -->
+                    <div class="square absolute square-2"></div>
+                    <!--  원형 도형  -->
+                    <div class="circle absolute circle-1"></div>
+                    <!--  삼각형 도형  -->
+                    <div class="triangle absolute triangle-1"></div>
+                    <!--  엑스자 도형  -->
+                    <div class="close absolute close-1"></div>
+                    <!--  별1 도형  -->
+                    <div class="star absolute star-1"></div>
+                    <!--  별2 도형  -->
+                    <div class="star absolute star-2"></div>
+                    <!--  확인버튼 위치조정을 위한 배경  -->
+                    <div class="goal-t flex flex-col">
+                        <!--  골 텍스트 및 확인버튼 배경  -->
+                        <div class="text-center">
+                            <!--  골 텍스트 배경  -->
+                            <div class="goal_title z-101  dancing-script">g o a l</div>
+                            <!--    높이조정    -->
+                            <div class="h-24"></div>
+                            <!--  확인 버튼 배경  -->
+                            <div class="goal_chick z-101 cursor-pointer noon"> 확인</div>
                         </div>
                     </div>
                 </div>
