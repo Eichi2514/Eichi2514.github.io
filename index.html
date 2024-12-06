@@ -32,7 +32,10 @@
         body {
             margin: 0;
             padding: 0;
-            background: #1e3a8a;
+        }
+
+        ::-webkit-scrollbar {
+            display: none; /* 스크롤바 숨기기 (Chrome, Safari 등) */
         }
 
         /* 처음화면 */
@@ -681,6 +684,10 @@
             }
         }
 
+        .my-icon{
+            height: 130px;
+        }
+
         .text-animation {
             font-family: 'YOnepickTTF-Bold';
             opacity: 0; /* 처음에는 숨김 */
@@ -732,15 +739,17 @@
 
         /* 기본 스타일 (1440px 미만) */
         .portfolio {
+            width: 1440px;
             position: relative;
         }
 
         /* 1440px 이상일 때 적용 */
         @media (min-width: 1440px) {
             .portfolio {
+                width: 1440px;
                 position: relative;
                 left: 50%;
-                transform: translateX(-770px);
+                transform: translateX(-720px);
             }
         }
 
@@ -818,13 +827,13 @@
         }
 
         .projects {
-            width: calc(770px * 6);
+            width: calc(720px * 6);
             text-align: center;
             transition: transform 1s ease-in-out;
         }
 
         .project {
-            width: 770px;
+            width: 720px;
             text-align: center;
         }
 
@@ -933,7 +942,12 @@
     <div class="portfolio">
         <div class="portfolio-box">
             <div class="portfolio-title">
-                <div class="p-10 text-animation text-7xl">🦊, 안녕하세요</div>
+                <div class="text-animation text-7xl flex items-end justify-center">
+                    <img class="my-icon"
+                         src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                         alt="내 캐릭터">
+                    <span>, 안녕하세요</span>
+                </div>
                 <div class="p-10 text-animation text-8xl">협업을 통한 성장을 추구하는 개발자 유건혁 입니다.</div>
             </div>
             <div class="portfolio-body">
@@ -2195,7 +2209,7 @@
 
         setInterval(() => {
             currentIndex = (currentIndex + 1) % totalProjects; // 현재 인덱스 갱신
-            const offset = currentIndex * -770; // 770px씩 이동
+            const offset = currentIndex * -720; // 720px씩 이동
             $projects.css('transform', `translateX(${offset}px)`);
         }, 5000);
 
