@@ -2156,29 +2156,79 @@
             }
         }
 
-        document.addEventListener("keydown", eheckKey, false); // 키보드 이벤트 생성 코드
+        let moveActionChack = null; // 현재 움직이고 있는 방향 추적
+        let lastMoveTime = 0; // 마지막 이동 시간 추적
+        let moveSpeed = 50; // 이동 속도 (밀리초 단위, 높을수록 느려짐)
 
-        function eheckKey(e) {
-            // 키보드 이벤트 발생하면
-            console.clear();
-            if (e.keyCode === 37) {
-                // 왼쪽 방향키가 눌렸는지 확인하고
-                e.preventDefault(); // 기본 스크롤 동작 방지
-                left(); // 맞다면 왼쪽 메소드 실행
-            } else if (e.keyCode === 38) {
-                // 아니라면 위쪽 방향키가 눌렸는지 확인하고
-                e.preventDefault(); // 기본 스크롤 동작 방지
-                up(); // 맞다면 위쪽 메소드 실행
-            } else if (e.keyCode === 39) {
-                // 아니라면 오른쪽 방향키가 눌렸는지 확인하고
-                e.preventDefault(); // 기본 스크롤 동작 방지
-                right(); // 맞다면 오른쪽 메소드 실행
-            } else if (e.keyCode === 40) {
-                // 아니라면 아래쪽 방향키가 눌렸는지 확인하고
-                e.preventDefault(); // 기본 스크롤 동작 방지
-                down(); // 맞다면 아래쪽 메소드 실행
-            }
+        function startMoving(moveAction) {
+            // 이미 해당 방향으로 움직이고 있으면 중복 방지
+            if (moveActionChack === moveAction) return;
+
+            // 새로운 방향으로 이동 시작
+            stopMoving(); // 이전 움직임을 중지하고 새로운 움직임 시작
+            moveActionChack = moveAction;
+
+            // 애니메이션 시작
+            move();
         }
+
+        function move() {
+            let currentTime = Date.now();
+
+            // 일정 시간이 지나지 않으면 이동하지 않도록 속도 제한
+            if (currentTime - lastMoveTime < moveSpeed) {
+                requestAnimationFrame(move); // 빠르게 반복하지 않도록 대기
+                return;
+            }
+
+            // 이동 처리
+            if (moveActionChack === 'left') {
+                left();
+            } else if (moveActionChack === 'up') {
+                up();
+            } else if (moveActionChack === 'right') {
+                right();
+            } else if (moveActionChack === 'down') {
+                down();
+            }
+
+            // 마지막 이동 시간을 기록
+            lastMoveTime = currentTime;
+
+            // 다음 프레임을 요청
+            requestAnimationFrame(move);
+        }
+
+        function stopMoving() {
+            moveActionChack = null; // 현재 방향 초기화
+        }
+
+// 캐릭터 이동
+        $(window).keydown(function(e) {
+            e.preventDefault();
+
+            // 이미 눌린 키가 아닐 때만 동작
+            if (e.keyCode === 37 && moveActionChack !== 'left') {
+                startMoving('left');
+            } else if (e.keyCode === 38 && moveActionChack !== 'up') {
+                startMoving('up');
+            } else if (e.keyCode === 39 && moveActionChack !== 'right') {
+                startMoving('right');
+            } else if (e.keyCode === 40 && moveActionChack !== 'down') {
+                startMoving('down');
+            }
+        });
+
+// 키에서 손을 뗄 때 움직임 멈춤
+        $(window).keyup(function(e) {
+            // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
+            if ((e.keyCode === 37 && moveActionChack === 'left') ||
+                (e.keyCode === 38 && moveActionChack === 'up') ||
+                (e.keyCode === 39 && moveActionChack === 'right') ||
+                (e.keyCode === 40 && moveActionChack === 'down')) {
+                stopMoving();
+            }
+        });
 
         $(".key-left").mouseenter(function () {
             // 화면 조작키 왼쪽을 클릭하면
@@ -2311,7 +2361,7 @@
             requestAnimationFrame(animate);
         }
 
-        animate();
+        animate()
     });
 </script>
 
