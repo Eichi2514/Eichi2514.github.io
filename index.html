@@ -684,7 +684,7 @@
             }
         }
 
-        .my-icon{
+        .my-icon {
             height: 130px;
         }
 
@@ -942,13 +942,18 @@
     <div class="portfolio">
         <div class="portfolio-box">
             <div class="portfolio-title">
-                <div class="text-animation text-7xl flex items-end justify-center">
-                    <img class="my-icon"
-                         src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
-                         alt="내 캐릭터">
-                    <span>, 안녕하세요</span>
+                <div class="flex">
+                    <div class="flex flex-col justify-center">
+                        <div class="text-animation text-6xl flex items-end justify-center">
+                            <img class="my-icon"
+                                 src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                                 alt="내 캐릭터">
+                            <span>, 안녕하세요</span>
+                        </div>
+                        <div class="p-10 text-animation text-6xl">협업을 통한 성장을 추구하는 개발자 유건혁 입니다.</div>
+                    </div>
+                    <img class="rounded-3xl" src="https://github.com/user-attachments/assets/657aead5-85f0-4fa7-bbd0-8cd18b157c0b" alt="환영 사진">
                 </div>
-                <div class="p-10 text-animation text-8xl">협업을 통한 성장을 추구하는 개발자 유건혁 입니다.</div>
             </div>
             <div class="portfolio-body">
                 <div class="info_text flex justify-center">
@@ -2211,7 +2216,7 @@
             currentIndex = (currentIndex + 1) % totalProjects; // 현재 인덱스 갱신
             const offset = currentIndex * -720; // 720px씩 이동
             $projects.css('transform', `translateX(${offset}px)`);
-        }, 5000);
+        }, 3000);
 
         document.querySelector(".gform").addEventListener("submit", function (event) {
             event.preventDefault(); // 폼 기본 동작 중지
