@@ -1421,7 +1421,7 @@
                 <!-- 화면 조작키 영역 -->
                 <div class="keybord_box absolute hidden">
                     <!-- 화면 조작키 배경 -->
-                    <div class="keybord relative rounded-full">
+                    <div class="keybord relative rounded-full sm:hidden">
                         <!-- 화면 조작키 위쪽 버튼 영역 -->
                         <div class="key-up absolute cursor-pointer">
                             <!-- 화면 조작키 위쪽 버튼 이미지 -->
@@ -2285,7 +2285,7 @@
             }
         });
 
-// 키에서 손을 뗄 때 움직임 멈춤
+        // 키에서 손을 뗄 때 움직임 멈춤
         $(window).keyup(function (e) {
             // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
             if ((e.keyCode === 37 && moveActionChack === 'left') ||
@@ -2296,21 +2296,60 @@
             }
         });
 
-        $(".key-left").mouseenter(function () {
-            // 화면 조작키 왼쪽을 클릭하면
-            left(); // 왼쪽 메소드 실행
+        $(".key-left").on("touchstart", function () {
+            // 화면 조작키 왼쪽을 터치하면
+            if (moveActionChack !== 'left') {
+                startMoving('left'); // 왼쪽 메소드 실행
+            }
         });
-        $(".key-up").mouseenter(function () {
-            // 화면 조작키 윗쪽을 클릭하면
-            up(); // 윗쪽 메소드 실행
+
+        $(".key-up").on("touchstart", function () {
+            // 화면 조작키 윗쪽을 터치하면
+            if (moveActionChack !== 'up') {
+                startMoving('up'); // 윗쪽 메소드 실행
+            }
         });
-        $(".key-right").mouseenter(function () {
-            // 화면 조작키 오른쪽을 클릭하면
-            right(); // 오른쪽 메소드 실행
+
+        $(".key-right").on("touchend", function () {
+            // 화면 조작키 오른쪽을 터치하면
+            if (moveActionChack !== 'right') {
+                startMoving('right'); // 오른쪽 메소드 실행
+            }
         });
-        $(".key-down").mouseenter(function () {
-            // 화면 조작키 아래쪽을 클릭하면
-            down(); // 아래쪽 메소드 실행
+
+        $(".key-down").on("touchstart", function () {
+            // 화면 조작키 아래쪽을 터치하면
+            if (moveActionChack !== 'down') {
+                startMoving('down'); // 아래쪽 메소드 실행
+            }
+        });
+
+        $(".key-left").on("touchend", function () {
+            // 화면 조작키 왼쪽 터치끝나면
+            if (moveActionChack === 'left') {
+                stopMoving(); // 종료
+            }
+        });
+
+        $(".key-up").on("touchend", function () {
+            // 화면 조작키 윗쪽 터치끝나면
+            if (moveActionChack === 'up') {
+                stopMoving(); // 종료
+            }
+        });
+
+        $(".key-right").on("touchend", function () {
+            // 화면 조작키 오른쪽 터치끝나면
+            if (moveActionChack === 'right') {
+                stopMoving(); // 종료
+            }
+        });
+
+        $(".key-down").on("touchend", function () {
+            // 화면 조작키 아래쪽 터치끝나면
+            if (moveActionChack === 'down') {
+                stopMoving(); // 종료
+            }
         });
 
 // 엔딩 (게임 동작중 바뀐것들 초기화)
