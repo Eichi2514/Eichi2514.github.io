@@ -1323,8 +1323,6 @@
 
                 <!-- 메인 배경 -->
                 <div class="relative map hidden">
-                    <!-- 배경 이미지 -->
-                    <!--        <img src="https://picsum.photos/id/127/550/550" alt="">-->
 
                     <!-- 캐릭터1 배경 -->
                     <div class="character dragon text-center content-center absolute rounded-full rounded-full bg-red-500 z-20">
@@ -1421,26 +1419,26 @@
                 <!-- 화면 조작키 영역 -->
                 <div class="keybord_box absolute hidden">
                     <!-- 화면 조작키 배경 -->
-                    <div class="keybord relative rounded-full sm:hidden">
+                    <div class="keybord relative rounded-full">
                         <!-- 화면 조작키 위쪽 버튼 영역 -->
                         <div class="key-up absolute cursor-pointer">
                             <!-- 화면 조작키 위쪽 버튼 이미지 -->
-                            <div class="absolute key-img l_75">▲</div>
+                            <div class="absolute key-img l_75"><i class="fa-solid fa-arrow-up"></i></div>
                         </div>
                         <!-- 화면 조작키 오른쪽 버튼 영역 -->
                         <div class="key-right absolute cursor-pointer">
                             <!-- 화면 조작키 오른쪽 버튼 이미지 -->
-                            <div class="absolute key-img t_75">▶</div>
+                            <div class="absolute key-img t_75"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <!-- 화면 조작키 아래쪽 버튼 영역 -->
                         <div class="key-down absolute cursor-pointer">
                             <!-- 화면 조작키 아래쪽 버튼 이미지 -->
-                            <div class="absolute key-img l_75">▼</div>
+                            <div class="absolute key-img l_75"><i class="fa-solid fa-arrow-down"></i></div>
                         </div>
                         <!-- 화면 조작키 왼쪽 버튼 영역 -->
                         <div class="key-left absolute cursor-pointer">
                             <!-- 화면 조작키 왼쪽 버튼 이미지 -->
-                            <div class="absolute key-img t_75">◀</div>
+                            <div class="absolute key-img t_75"><i class="fa-solid fa-arrow-left"></i></div>
                         </div>
                     </div>
                     <div class="keybord_text">키보드의 방향키로</div>
@@ -2270,18 +2268,18 @@
         $(window).keydown(function (e) {
 
             // 이미 눌린 키가 아닐 때만 동작
-            if (e.keyCode === 37 && moveActionChack !== 'left') {
+            if (e.keyCode === 37) {
                 e.preventDefault();
-                startMoving('left');
-            } else if (e.keyCode === 38 && moveActionChack !== 'up') {
+                if (moveActionChack !== 'left') startMoving('left');
+            } else if (e.keyCode === 38) {
                 e.preventDefault();
-                startMoving('up');
-            } else if (e.keyCode === 39 && moveActionChack !== 'right') {
+                if(moveActionChack !== 'up') startMoving('up');
+            } else if (e.keyCode === 39) {
                 e.preventDefault();
-                startMoving('right');
-            } else if (e.keyCode === 40 && moveActionChack !== 'down') {
+                if(moveActionChack !== 'right') startMoving('right');
+            } else if (e.keyCode === 40) {
                 e.preventDefault();
-                startMoving('down');
+                if(moveActionChack !== 'down') startMoving('down');
             }
         });
 
@@ -2296,28 +2294,36 @@
             }
         });
 
-        $(".key-left").on("touchstart", function () {
+        $(".key-left").on("touchstart", function (e) {
+            e.preventDefault();
+
             // 화면 조작키 왼쪽을 터치하면
             if (moveActionChack !== 'left') {
                 startMoving('left'); // 왼쪽 메소드 실행
             }
         });
 
-        $(".key-up").on("touchstart", function () {
+        $(".key-up").on("touchstart", function (e) {
+            e.preventDefault();
+
             // 화면 조작키 윗쪽을 터치하면
             if (moveActionChack !== 'up') {
                 startMoving('up'); // 윗쪽 메소드 실행
             }
         });
 
-        $(".key-right").on("touchstart", function () {
+        $(".key-right").on("touchstart", function (e) {
+            e.preventDefault();
+
             // 화면 조작키 오른쪽을 터치하면
             if (moveActionChack !== 'right') {
                 startMoving('right'); // 오른쪽 메소드 실행
             }
         });
 
-        $(".key-down").on("touchstart", function () {
+        $(".key-down").on("touchstart", function (e) {
+            e.preventDefault();
+
             // 화면 조작키 아래쪽을 터치하면
             if (moveActionChack !== 'down') {
                 startMoving('down'); // 아래쪽 메소드 실행
@@ -2467,6 +2473,11 @@
         }
 
         animate()
+    });
+
+    $(document).on('contextmenu', function(event) {
+        event.preventDefault(); // 기본 우클릭 메뉴 방지
+        alert('우클릭은 사용할 수 없습니다.'); // 알림창 (선택 사항)
     });
 </script>
 
