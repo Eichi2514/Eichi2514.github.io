@@ -684,6 +684,11 @@
             }
         }
 
+        .link:hover {
+            text-decoration: underline;
+            text-underline-offset: 10px;
+        }
+
         .my-icon {
             height: 130px;
         }
@@ -716,9 +721,6 @@
             width: 1440px;
             color: white;
             font-size: 2.5rem;
-            position: absolute;
-            left: calc(50% - 720px);
-            top: 700px;
         }
 
         @keyframes scrollDown {
@@ -755,12 +757,15 @@
 
         .portfolio-box {
             width: 1440px;
-            height: 919px;
+            min-height: 920px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
             border-bottom: 1px solid white;
             overflow: hidden;
+            justify-content: center;
+            align-items: center;
         }
 
         .portfolio-title {
@@ -776,7 +781,7 @@
         .portfolio-body {
             display: flex;
             justify-content: center;
-            flex-grow: 1;
+            margin-bottom: 50px;
         }
 
         .my_poto {
@@ -827,7 +832,6 @@
         }
 
         .projects {
-            width: calc(720px * 6);
             text-align: center;
             transition: transform 1s ease-in-out;
         }
@@ -851,6 +855,7 @@
             width: 500px;
             height: 500px;
             border-radius: 10px;
+            border: 1px solid #4A6B9C;
         }
 
         .skills {
@@ -1025,8 +1030,20 @@
                 프로젝트
             </div>
             <div class="portfolio-body projects">
+                <div class="project">공백</div>
+                <div class="project">공백</div>
+                <div class="project">공백</div>
+                <div class="project">공백</div>
+                <div class="project">공백</div>
+                <div class="project">공백</div>
                 <div class="project">
-                    <div class="project-title">AscentLime(로그라이크 게임)</div>
+                    <div class="project-title link">
+                        <a target="blank"
+                           href="https://g-sa.koreaisacademy.com/community/project_view.asp?idxnum=320&clkMater=&txtMenu=&txtCurPage=1&selMater=">AscentLime(로그라이크
+                            게임)
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780"
@@ -1049,7 +1066,12 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">TailsRoute(반려견 커뮤니티 사이트)</div>
+                    <div class="project-title link">
+                        <a target="blank"
+                           href="">TailsRoute(반려견 종합 플랫폼)
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3"
@@ -1086,7 +1108,28 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">AscentLime(로그라이크 게임)</div>
+                    <div class="project-title">My Portfolio(포트폴리오)</div>
+                    <div class="images">
+                        <img class="project-image"
+                             src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
+                             alt="포트폴리오 사진">
+                        <div class="flex justify-around items-center w-full pt-10">
+                            <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
+                               class="inline-block mr-2">
+                                <img class="github-icon"
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project">
+                    <div class="project-title link">
+                        <a target="blank"
+                           href="https://g-sa.koreaisacademy.com/community/project_view.asp?idxnum=320&clkMater=&txtMenu=&txtCurPage=1&selMater=">AscentLime(로그라이크
+                            게임)
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/e5f358d5-5af8-4212-abbc-e43de67e3780"
@@ -1109,7 +1152,12 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">TailsRoute(반려견 커뮤니티 사이트)</div>
+                    <div class="project-title link">
+                        <a target="blank"
+                           href="">TailsRoute(반려견 종합 플랫폼)
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/6195aa73-e245-4e8c-a25a-a8e7055a15f3"
@@ -1141,6 +1189,21 @@
                             <a target="blank" href="https://codepen.io/Eichi2514/pen/GRbmwdm" class="inline-block mr-2">
                                 <img class="github-icon"
                                      src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project">
+                    <div class="project-title">My Portfolio(포트폴리오)</div>
+                    <div class="images">
+                        <img class="project-image"
+                             src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
+                             alt="포트폴리오 사진">
+                        <div class="flex justify-around items-center w-full pt-10">
+                            <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
+                               class="inline-block mr-2">
+                                <img class="github-icon"
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
                             </a>
                         </div>
                     </div>
@@ -1430,8 +1493,8 @@
             <div class="portfolio-title">
                 기술 스택
             </div>
-            <div class="portfolio-body">
-                <div class="">
+            <div class="portfolio-body flex-grow">
+                <div>
                     <div class="text-center text-white text-2xl font-bold">백엔드</div>
                     <div class="skills">
                     <span class="skill">
@@ -2204,23 +2267,26 @@
         }
 
 // 캐릭터 이동
-        $(window).keydown(function(e) {
-            e.preventDefault();
+        $(window).keydown(function (e) {
 
             // 이미 눌린 키가 아닐 때만 동작
             if (e.keyCode === 37 && moveActionChack !== 'left') {
+                e.preventDefault();
                 startMoving('left');
             } else if (e.keyCode === 38 && moveActionChack !== 'up') {
+                e.preventDefault();
                 startMoving('up');
             } else if (e.keyCode === 39 && moveActionChack !== 'right') {
+                e.preventDefault();
                 startMoving('right');
             } else if (e.keyCode === 40 && moveActionChack !== 'down') {
+                e.preventDefault();
                 startMoving('down');
             }
         });
 
 // 키에서 손을 뗄 때 움직임 멈춤
-        $(window).keyup(function(e) {
+        $(window).keyup(function (e) {
             // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
             if ((e.keyCode === 37 && moveActionChack === 'left') ||
                 (e.keyCode === 38 && moveActionChack === 'up') ||
@@ -2266,7 +2332,7 @@
         });
 
         const $projects = $('.projects');
-        const totalProjects = $('.project').length - 1;
+        const totalProjects = $('.project').length - 7;
         let currentIndex = 0;
 
         setInterval(() => {
