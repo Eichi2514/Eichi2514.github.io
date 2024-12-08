@@ -2310,7 +2310,7 @@
             }
         });
 
-        $(".key-right").on("touchend", function () {
+        $(".key-right").on("touchstart", function () {
             // 화면 조작키 오른쪽을 터치하면
             if (moveActionChack !== 'right') {
                 startMoving('right'); // 오른쪽 메소드 실행
