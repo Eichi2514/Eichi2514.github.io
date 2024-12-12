@@ -690,30 +690,65 @@
         }
 
         .my-icon {
-            height: 130px;
+            height: 100px;
+            vertical-align: middle;
+            margin-right: 8px;
         }
 
         .text-animation {
             font-family: 'YOnepickTTF-Bold';
-            opacity: 0; /* 처음에는 숨김 */
-            animation: fadeIn 3s forwards;
-            line-height: 1.8 !important;
+            display: inline-block;
+            position: relative;
+
         }
 
-        .text-animation:nth-child(1) {
-            animation-delay: 0s; /* 첫 번째 텍스트 즉시 시작 */
+        .text {
+            height: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 3s steps(30) forwards, typing 3s steps(30) forwards, blink 0.7s step-end 5;
+            text-align: center;
         }
 
-        .text-animation:nth-child(2) {
-            animation-delay: 2s; /* 두 번째 텍스트의 딜레이 */
+        .text-animation:nth-child(1) .text {
+            animation-delay: 0s;
+        }
+
+        .text-animation:nth-child(2) .text {
+            animation-delay: 3s;
+        }
+
+        .text-animation:nth-child(3) .text {
+            animation-delay: 6s;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
         }
 
         @keyframes fadeIn {
             from {
-                opacity: 0; /* 점점 투명도 제거 */
+                opacity: 0;
             }
             to {
-                opacity: 1; /* 완전히 나타남 */
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                border-right: 6px solid #fff;
+            }
+            51%, 100% {
+                border: none;
             }
         }
 
@@ -953,19 +988,28 @@
             <div class="portfolio-title">
                 <div class="flex">
                     <div class="flex flex-col justify-center">
-                        <div class="text-animation text-6xl flex items-end justify-center">
-                            <img class="my-icon"
-                                 src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
-                                 alt="내 캐릭터">
-                            <span>, 안녕하세요</span>
-                        </div>
-                        <div class="p-10 text-animation text-6xl">협업을 통한 성장을 추구하는 개발자
-                            <span
-                                    style=" color: #FAC25A;
-                                    text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);">
-                                    유건혁
-                            </span>
-                            입니다.
+                        <div class="p-10">
+                            <div class="text-animation text-6xl">
+                                <span class="text">
+                                        <img class="my-icon"
+                                         src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                                         alt="내 캐릭터">
+                                        , 안녕하세요
+                                </span>
+                            </div>
+                            <div class="text-animation text-6xl whitespace-nowrap">
+                                <span class="text">협업을 통한 성장을 추구하는 개발자</span>
+                            </div>
+                            <div class="text-animation text-6xl">
+                                <span class="text">
+                                    <span style="color: #FAC25A; text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);">
+                                        유건혁
+                                    </span>
+                                    <span class="ml-6">
+                                        입니다.
+                                    </span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="flex flex-col">
