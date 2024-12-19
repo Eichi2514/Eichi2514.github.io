@@ -871,6 +871,28 @@
             transform: scale(1.1);
         }
 
+        /* 슬라이더 버튼 스타일 */
+        .slider_btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1;
+            width: 45px;
+            border-radius: 25px;
+        }
+
+        .left_btn {
+            left: 10px;
+        }
+
+        .right_btn {
+            right: 10px;
+        }
+
         .projects {
             text-align: center;
             transition: transform 1s ease-in-out;
@@ -900,11 +922,11 @@
 
         .skills {
             width: 400px;
-            height: 400px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            padding: 30px;
+            padding: 0 30px;
+            gap: 10px 0;
         }
 
         .skill {
@@ -1082,6 +1104,8 @@
                 <div>프로젝트</div>
                 <div class="text-sm pt-5">* 프로젝트에 마우스를 올리면 슬라이드가 일시정지됩니다</div>
             </div>
+            <button class="slider_btn left_btn">&#10094;</button>
+            <button class="slider_btn right_btn">&#10095;</button>
             <div class="portfolio-body projects">
                 <div class="project">공백</div>
                 <div class="project">공백</div>
@@ -1096,6 +1120,7 @@
                             게임)
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <div class="text-sm">제작기간 : 2024.08.20 ~ 2024.09.22</div>
                     </div>
                     <div class="images">
                         <img class="project-image"
@@ -1125,6 +1150,7 @@
                             종합 플랫폼)
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <div class="text-sm">제작기간 : 2024.10.02 ~ 2024.12.11</div>
                     </div>
                     <div class="images">
                         <img class="project-image"
@@ -1149,7 +1175,10 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">MAZE MAZE(미로찾기)</div>
+                    <div class="project-title">
+                        <div>MAZE MAZE(미로찾기)</div>
+                        <div class="text-sm">제작기간 : 2024.08.01 ~ 2024.08.05</div>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/298073cd-69c1-4642-911c-d341bf6ab42a"
@@ -1163,7 +1192,10 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">My Portfolio(포트폴리오)</div>
+                    <div class="project-title">
+                        <div>My Portfolio(포트폴리오)</div>
+                        <div class="text-sm">제작기간 : 2024.11.13 ~ 2024.11.13</div>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
@@ -1184,6 +1216,7 @@
                             게임)
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <div class="text-sm">제작기간 : 2024.08.20 ~ 2024.09.22</div>
                     </div>
                     <div class="images">
                         <img class="project-image"
@@ -1213,6 +1246,7 @@
                             종합 플랫폼)
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <div class="text-sm">제작기간 : 2024.10.02 ~ 2024.12.11</div>
                     </div>
                     <div class="images">
                         <img class="project-image"
@@ -1237,7 +1271,10 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">MAZE MAZE(미로찾기)</div>
+                    <div class="project-title">
+                        <div>MAZE MAZE(미로찾기)</div>
+                        <div class="text-sm">제작기간 : 2024.08.01 ~ 2024.08.05</div>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/298073cd-69c1-4642-911c-d341bf6ab42a"
@@ -1251,7 +1288,10 @@
                     </div>
                 </div>
                 <div class="project">
-                    <div class="project-title">My Portfolio(포트폴리오)</div>
+                    <div class="project-title">
+                        <div>My Portfolio(포트폴리오)</div>
+                        <div class="text-sm">제작기간 : 2024.11.13 ~ 2024.11.13</div>
+                    </div>
                     <div class="images">
                         <img class="project-image"
                              src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
@@ -1566,29 +1606,65 @@
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">VisualStudio</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/64178fbf-2015-4144-9ce0-0c663b491acc"
-                             alt="">
-                    </span>
+                            <div class="skill-title">C++</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/aae9ba9e-0fc4-440e-b775-803b616fa155"
+                                 alt="">
+                        </span>
                         <span class="skill">
                         <div class="skill-title">Git</div>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/3bd213f2-3ceb-4a55-98b6-87c769e5cc86"
                              alt="">
-                    </span>
+                        </span>
                         <span class="skill">
-                        <div class="skill-title">Github</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/284c68e2-2e58-45ed-a7ab-ad476ffd933b"
-                             alt="">
-                    </span>
+                            <div class="skill-title">Github</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/284c68e2-2e58-45ed-a7ab-ad476ffd933b"
+                                 alt="">
+                        </span>
                         <span class="skill">
-                        <div class="skill-title">Figma</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/6f80a235-845d-44ef-b21f-3feb05157a2c"
-                             alt="">
-                    </span>
+                            <div class="skill-title">VisualStudio</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/64178fbf-2015-4144-9ce0-0c663b491acc"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">MySQL</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/0184943d-9d86-4c86-b054-1470dc5bc031"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">H2</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/0597ba4f-1a03-4946-ba57-7559f7b15ea6"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Postgre</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/eac76e3b-d01e-4713-a6db-cae846417eba"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">MyBatis</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/06ac752a-2b5c-474e-8a0a-f1c025cdc4c2"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Docker</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/247412d2-4a94-47d8-acc1-dff8b9587f35"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Terraform</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/b7c6f6f1-3589-45ce-a554-af80198c2476"
+                                 alt="">
+                        </span>
                     </div>
                 </div>
                 <div class="self-end">
@@ -1600,6 +1676,12 @@
                              src="https://github.com/user-attachments/assets/40c66ea6-fd81-4bd6-a758-cd8a7c49afb8"
                              alt="">
                     </span>
+                        <span class="skill">
+                            <div class="skill-title">CLion</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/7a52f098-2f0b-4667-adb6-53fd6bc98851"
+                                 alt="">
+                        </span>
                         <span class="skill">
                         <div class="skill-title">STS4</div>
                         <img class="skill-img"
@@ -1613,29 +1695,47 @@
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">MySQL</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/0184943d-9d86-4c86-b054-1470dc5bc031"
-                             alt="">
-                    </span>
+                            <div class="skill-title">XAMPP</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/84a74d5d-8767-45db-87dd-1e8ad7ca24d3"
+                                 alt="">
+                        </span>
                         <span class="skill">
-                        <div class="skill-title">MyBatis</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/06ac752a-2b5c-474e-8a0a-f1c025cdc4c2"
-                             alt="">
-                    </span>
+                            <div class="skill-title">ARDUINO</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/e038bb6c-d494-492b-824d-a6698478b16c"
+                                 alt="">
+                        </span>
                         <span class="skill">
-                        <div class="skill-title">XAMPP</div>
-                        <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/84a74d5d-8767-45db-87dd-1e8ad7ca24d3"
-                             alt="">
-                    </span>
+                            <div class="skill-title">Postman</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/45c1597a-d317-43bc-bd38-8ce74d088556"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">DBeaver</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/f20a0990-65e5-4e01-9fb4-241a003f40ff"
+                                 alt="">
+                        </span>
                     </div>
                 </div>
                 <div>
                     <div class="text-center text-white text-2xl font-bold">프론트엔드</div>
                     <div class="skills">
-                    <span class="skill">
+                        <span class="skill">
+                            <div class="skill-title">Thymeleaf</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/7c602923-c5f5-4245-91e7-e3bb78779354"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Jsp</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/39db089f-5392-49df-85fa-a5dc2193b9dc"
+                                 alt="">
+                        </span>
+                        <span class="skill">
                         <div class="skill-title">HTML</div>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/0625f1e9-c48e-4e73-b799-37c8acec94ef"
@@ -1666,11 +1766,35 @@
                              alt="">
                     </span>
                         <span class="skill">
+                            <div class="skill-title">ajax</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/a49b88cb-68c5-4988-9d39-dbeba2ed0a3d"
+                                 alt="">
+                        </span>
+                        <span class="skill">
                         <div class="skill-title">React</div>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/98d1e93d-69f5-4285-b014-c3c26332d8c2"
                              alt="">
                     </span>
+                        <span class="skill">
+                            <div class="skill-title">Figma</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/6f80a235-845d-44ef-b21f-3feb05157a2c"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Font Awesome</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/efdc65cb-e0f4-4187-b724-b7bed70a4186"
+                                 alt="">
+                        </span>
+                        <span class="skill">
+                            <div class="skill-title">Noonnu</div>
+                            <img class="skill-img"
+                                 src="https://github.com/user-attachments/assets/f7d941b4-ff8c-4b3f-af76-b8af0287666a"
+                                 alt="">
+                        </span>
                     </div>
                 </div>
             </div>
@@ -2438,6 +2562,8 @@
 
         const $projects = $('.projects');
         const $project = $('.project');
+        const $left_btn = $('.left_btn');
+        const $right_btn = $('.right_btn');
         const totalProjects = $('.project').length - 7;
         let currentIndex = 0;
         let intervalId;
@@ -2456,15 +2582,39 @@
             clearInterval(intervalId);
         }
 
+        // 슬라이드 이동 함수 (왼쪽, 오른쪽 버튼 클릭 시)
+        function moveSlide(direction) {
+            if (direction === 'left') {
+                currentIndex = (currentIndex - 1 + totalProjects) % totalProjects;
+            } else if (direction === 'right') {
+                currentIndex = (currentIndex + 1) % totalProjects;
+            }
+            const offset = currentIndex * -720; // 720px씩 이동
+            $projects.css('transform', `translateX(${offset}px)`);
+        }
+
         // 슬라이드를 시작
         startSlider();
 
         // 마우스가 .projects 위에 올라가면 슬라이드 멈추기
         $project.on('mouseenter', stopSlider);
+        $left_btn.on('mouseenter', stopSlider);
+        $right_btn.on('mouseenter', stopSlider);
 
         // 마우스가 .projects를 떠나면 슬라이드 재시작
         $project.on('mouseleave', startSlider);
+        $left_btn.on('mouseleave', startSlider);
+        $right_btn.on('mouseleave', startSlider);
 
+        // 왼쪽 버튼 클릭 시 슬라이드 이동
+        $('.left_btn').on('click', function () {
+            moveSlide('left');
+        });
+
+        // 오른쪽 버튼 클릭 시 슬라이드 이동
+        $('.right_btn').on('click', function () {
+            moveSlide('right');
+        });
 
         document.querySelector(".gform").addEventListener("submit", function (event) {
             event.preventDefault(); // 폼 기본 동작 중지
