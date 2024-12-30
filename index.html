@@ -1096,7 +1096,9 @@
                     </div>
                     <div class="mb-3">
                         <strong>기타 활동사항 : </strong>
-                        <div>[코지컬 : 100] 본선 진출 (<a href="https://github.com/user-attachments/assets/60a82092-cca5-4202-b7a5-ca334ab9c817" target="blank" class="whitespace-nowrap">링크)</a></div>
+                        <div>[코지컬 : 100] 본선 진출 (<a
+                                href="https://github.com/user-attachments/assets/60a82092-cca5-4202-b7a5-ca334ab9c817"
+                                target="blank" class="whitespace-nowrap">링크)</a></div>
                     </div>
                 </div>
             </div>
@@ -2036,12 +2038,22 @@
             goal_hidden(); // 골 이벤트 발생 확인
         }
 
+        let alertShown = false; // 알림창이 표시되었는지 여부를 저장
+
         function goal_hidden() {
+            if (LR == 450 && UD == 450 && !key) {
+                if (!alertShown) { // 알림창이 아직 표시되지 않았다면
+                    alert("열쇠가 필요합니다.");
+                    alertShown = true; // 알림창 표시 상태를 true로 변경
+                }
+                return; // 이후 코드를 실행하지 않음
+            }
+
             if (LR == 450 && UD == 450 && key) {
-                // 골인 위치 좌우 450, 상하 450을 달성하고 키의 값이 true면
-                $(".map").addClass("hidden"); // 맵을 없에고
-                $(".keybord_box").addClass("hidden"); // 화면 조작키를 없에고
-                $(".goal").removeClass("hidden"); // 골인 화면을 살린다
+                // 골인 조건을 충족한 경우
+                $(".map").addClass("hidden"); // 맵을 없애고
+                $(".keybord_box").addClass("hidden"); // 화면 조작키를 없애고
+                $(".goal").removeClass("hidden"); // 골인 화면을 표시
             }
         }
 
@@ -2722,7 +2734,7 @@
             isAnimating = true; // 애니메이션 시작
 
             // 페이지 스크롤을 부드럽게 이동
-            $('html, body').animate({ scrollTop: targetPosition }, 500, function () {
+            $('html, body').animate({scrollTop: targetPosition}, 500, function () {
                 isAnimating = false; // 애니메이션 완료 후, 스크롤 가능
             });
         }
