@@ -21,15 +21,13 @@ $(document).ready(function () {
         // name, floor, room, hp, power, speed, weaponId, clearTime
         if (!localStorage.getItem(nickname)) {
             localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
+            alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
 
         // 닉네임 입력창 교체
         $(".logout").addClass("hidden");
         $(".login").removeClass("hidden");
         $(".member_name1").text(nickname + "님")
-
-        // 확인 메시지
-        alert('닉네임이 저장되었습니다: ' + nickname);
     });
 
     function login_chack() {
