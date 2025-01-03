@@ -52,17 +52,13 @@
         <a class="TOP3_list_bt absolute z-30" href="../list">리스트</a>
     </div>
     <!-- 로그인 상태일 경우 -->
-    <div>
-        <div class="id absolute">
-            <input class="text-center" type="text" placeholder="닉네임을 입력해주세요" name="loginId"/>
-        </div>
+    <div class="logout">
+        <input class="id absolute text-center" type="text" placeholder="닉네임을 입력해주세요" name="loginId"/>
         <button class="pw absolute">
             등 록
         </button>
     </div>
-    <div class="hidden">
-        <a class="join_bt text-center absolute" href="/index">내 정 보</a>
-
+    <div class="login">
         <div class="member_name1 absolute text-center">Tester님</div>
         <div class="member_name2 absolute text-center">환영합니다</div>
         <div class="start absolute cursor-pointer">
@@ -79,9 +75,10 @@
                  alt="게임 시작 버튼"/>
         </div>
         <div>
-            <a class="login_out_bt absolute text-center" href="../index">로그아웃</a>
+            <button class="login_out_bt absolute text-center">로그아웃</button>
         </div>
     </div>
 </div>
+<script src="../ascentlime.js" defer></script>
 </body>
 </html>

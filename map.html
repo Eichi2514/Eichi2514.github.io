@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>AscentLime(test)</title>
 
-    <link rel="stylesheet" href="../common.css"/>
+    <link rel="stylesheet" href="../ascentlime.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -34,6 +34,11 @@
 
     <div id="tutorialContainer"></div>
 
+    <!-- 타이머 -->
+    <div class="timer absolute">
+        <div class="time"></div>
+    </div>
+
     <!-- 캐릭터 -->
     <div class="front_charac charac absolute">
         <div class="characHP_bar_text absolute"></div>
@@ -50,39 +55,503 @@
 
         <!-- 왼쪽 공격 -->
         <img class="attackSize Aattack1 CharacAttack hidden absolute"
-             src="${charac.extra__weapon}" alt="" />
+             src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
         <!-- 위쪽 공격 -->
         <img class="attackSize Wattack1 CharacAttack hidden absolute"
-             src="${charac.extra__weapon}" alt="" />
+             src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
         <!-- 오른쪽 공격 -->
         <img class="attackSize Dattack1 CharacAttack hidden absolute"
-             src="${charac.extra__weapon}" alt="" />
+             src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
         <!-- 아래쪽 공격 -->
         <img class="attackSize Sattack1 CharacAttack hidden absolute"
-             src="${charac.extra__weapon}" alt="" />
+             src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
         <!-- 캐릭터 이미지 -->
         <img class="front_charac_img rounded-full"
              src="https://github.com/user-attachments/assets/aaa05c2c-d55a-4111-b367-9231727e7050"
-             alt="" />
+             alt=""/>
         <!-- 캐릭터 데미지 -->
         <div class="damage1 absolute z-20"></div>
     </div>
-
+    <!-- <script src="../map.js" defer></script> -->
     <script>
-        $(document).ready(function () {
-            // URL에서 'stage' 파라미터 값을 가져오는 함수
-            function getUrlParam(param) {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get(param);
-            }
+        let weapon = [
+            'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
+            'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
+            'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
+            'https://github.com/user-attachments/assets/bab07e9b-6bcc-4cc6-9782-d2e5491ed42e',
+            'https://github.com/user-attachments/assets/351cb011-e0d8-4b97-ade0-e591aecd63f2',
+            'https://github.com/user-attachments/assets/df28a7ef-027e-4b9c-9dfe-5333945f79b4',
+            'https://github.com/user-attachments/assets/402dde9c-aeba-4543-a5a2-77d95ec25bba',
+            'https://github.com/user-attachments/assets/c9258612-c30a-4e6b-8f43-d63518485e72',
+            'https://github.com/user-attachments/assets/33899c93-1223-4e71-9113-7d7702c20b03',
+            'https://github.com/user-attachments/assets/ead726f4-fa9f-4fd8-935a-0c665b173069',
+            'https://github.com/user-attachments/assets/a6dcabfb-34c7-41bc-ad0e-94228de15519',
+            'https://github.com/user-attachments/assets/2e6e4dc2-3b84-4521-b9c1-7eb469d8d861',
+            'https://github.com/user-attachments/assets/44dc4242-4cc1-4bd9-bf1d-501625f79981',
+            'https://github.com/user-attachments/assets/e0cd5573-f9ae-4a94-98b8-933b0317f6cd',
+            'https://github.com/user-attachments/assets/221e2115-c9fe-4777-90de-b690b272268b',
+            'https://github.com/user-attachments/assets/90731980-1fc7-49cb-8a99-f103082727ac',
+            'https://github.com/user-attachments/assets/74c267ea-fa2f-494b-923e-fd8728e7346c',
+            'https://github.com/user-attachments/assets/e3ac88c9-4c23-4f76-8a66-4780e32afcf7',
+            'https://github.com/user-attachments/assets/47452f52-d6f9-4561-b984-59bf1abc6b0a',
+            'https://github.com/user-attachments/assets/6435b887-2b87-4367-a088-28e13d0a9b59',
+            'https://github.com/user-attachments/assets/fceed0f8-5b68-4263-b9f2-63d9dcb9eaa8',
+            'https://github.com/user-attachments/assets/a08e3986-994d-4449-adb1-10e575714188',
+            'https://github.com/user-attachments/assets/e8f0f8ed-0d14-4bed-8f14-d58a6ce6c537',
+            'https://github.com/user-attachments/assets/5f99f1a8-cce0-43f4-9bd0-b01aff7ed337',
+            'https://github.com/user-attachments/assets/b007b848-66f2-404f-9452-e4ca17e4ebf2',
+            'https://github.com/user-attachments/assets/c6d3d271-dc7c-4cc1-908b-1960ece2ed80',
+            'https://github.com/user-attachments/assets/157e3ef6-ca2b-47f8-96ba-4a4451534fec',
+            'https://github.com/user-attachments/assets/40a08051-7223-4472-ab42-42bdbfeca35c',
+            'https://github.com/user-attachments/assets/62dedd0e-9806-4fca-a7fb-d06fea28d1c4',
+            'https://github.com/user-attachments/assets/d3e44839-8d46-4c0f-9e26-169bab080fdd',
+            'https://github.com/user-attachments/assets/1afae587-dff3-42dd-a663-6730f5766187',
+            'https://github.com/user-attachments/assets/a114d57e-9995-4036-93be-e73087b93dee',
+            'https://github.com/user-attachments/assets/fefa8e4d-6ce4-4258-9988-c6bee58defa6',
+            'https://github.com/user-attachments/assets/44fc98a6-87f8-4444-b6af-6fb31c513ed9',
+            'https://github.com/user-attachments/assets/2de1f608-83ba-42ad-b0b1-8ac51dea567a',
+            'https://github.com/user-attachments/assets/a8369e91-a67f-44f0-9c4a-ef8fbb8cfe2a',
+            'https://github.com/user-attachments/assets/388af076-05e8-452f-a501-a56f64c992c9',
+            'https://github.com/user-attachments/assets/96270c25-7a7b-4086-ac06-5634555b70ef',
+            'https://github.com/user-attachments/assets/89cf8667-6f45-440e-aa48-de352197809f',
+            'https://github.com/user-attachments/assets/87a96719-bbac-410c-8a33-d7f67d39a2a2',
+            'https://github.com/user-attachments/assets/4c81b6d8-1ab6-41e3-99e8-e289eb7510de',
+            'https://github.com/user-attachments/assets/34b8096b-643c-4323-adb9-384198f35a05',
+            'https://github.com/user-attachments/assets/e745c414-919e-45a0-8ee8-b6708c677c97',
+            'https://github.com/user-attachments/assets/98c2a891-0148-4b10-8ce8-1509fecdb511',
+            'https://github.com/user-attachments/assets/417ceca3-7c5a-4b46-b7ba-597320a7280b',
+            'https://github.com/user-attachments/assets/076ae1bc-5a66-4db3-be82-6f22e0b52155',
+            'https://github.com/user-attachments/assets/c5b27034-7754-4a7c-b212-67bb919e60c1',
+            'https://github.com/user-attachments/assets/6e8c1158-10dd-4769-8d3f-27d0df7e1ac6',
+            'https://github.com/user-attachments/assets/7cd68d64-55c6-4da3-98d6-ec641e4d139b',
+            'https://github.com/user-attachments/assets/7b8523d2-e443-44fc-9f79-dbebcf385b29',
+            'https://github.com/user-attachments/assets/2ea0d667-6c8b-42c2-9eac-435e19422256',
+            'https://github.com/user-attachments/assets/330ad6aa-ead1-485b-900e-dea99d69abbc',
+            'https://github.com/user-attachments/assets/4ba220d2-1c7f-4f84-bb1e-bc5eb8b4f531',
+            'https://github.com/user-attachments/assets/791c3025-5ee3-4528-8cc2-8bbe8daf4bc0',
+            'https://github.com/user-attachments/assets/1dd703a6-d7be-48ad-8eec-11960337c59c',
+            'https://github.com/user-attachments/assets/87660691-5b05-427a-9471-94af0105d66d',
+            'https://github.com/user-attachments/assets/c1776b21-dae8-4890-a91c-c93198a28d2a',
+            'https://github.com/user-attachments/assets/03def50a-b4a8-4ccc-80de-e9f570d03dc5',
+            'https://github.com/user-attachments/assets/2ac29faa-dba5-46b1-9a15-665ce62596ba',
+            'https://github.com/user-attachments/assets/3e3ebf0f-e700-4a6f-91f5-ffbf9f16d69f',
+            'https://github.com/user-attachments/assets/383a1c05-7a15-4974-8842-a4f0d3f3b747',
+            'https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6',
+            'https://github.com/user-attachments/assets/ca527de8-3ca6-44bb-9845-625e9f30ab89',
+            'https://github.com/user-attachments/assets/91200c6c-bd4d-44eb-98df-96a7af967552',
+            'https://github.com/user-attachments/assets/7403b724-19d1-49bf-9781-f97ac6936d68',
+            'https://github.com/user-attachments/assets/eafa86a5-ff3c-4a3d-86e9-8f485c4905e1',
+            'https://github.com/user-attachments/assets/fd1692a4-c906-4f24-b47d-1e2ac54fed56',
+            'https://github.com/user-attachments/assets/f4621a93-e6db-4003-9e49-02fe7543491f',
+            'https://github.com/user-attachments/assets/027a11ed-96fa-4587-9b7f-c3efde0e40b1',
+            'https://github.com/user-attachments/assets/f531f906-2147-45b5-8af9-e0877201552c',
+            'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41'
+        ];
 
-            // stage 값이 10일 때만 알림창을 표시
-            if (getUrlParam("stage") == "10") {
+        const nickname = localStorage.getItem('nickname')
+        const storage = localStorage.getItem(nickname);
+
+        // 정보를 슬래시(/) 기준으로 분리
+        const [name, floor, room, hp, power, speed, weaponId, clearTime] = storage.split("/");
+
+        // 객체로 변환
+        const charac = {
+            name,
+            floor: parseInt(floor, 10),
+            room: parseInt(room, 10),
+            hp: parseInt(hp, 10),
+            power: parseInt(power, 10),
+            speed: parseInt(speed, 10),
+            weaponId: parseInt(weaponId, 10),
+            clearTime: parseInt(clearTime, 10)
+        };
+
+        $(document).ready(function () {
+
+            // 알림창을 표시
+            if (charac.floor == 1 && charac.room == 0) {
                 // guide1 추가
                 $("#tutorialContainer").append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
                 // guide2 추가
                 $("#tutorialContainer").append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
             }
+
+            // 프론트 js
+            // 캐릭터 위치 변수
+            let LR = 10;
+            let UD = 44; // 44.1
+
+            // 윈도우 로딩 체크
+            var windowChack = false;
+
+            // 페이지가 시작될 때 시간 기록
+            const startTime = new Date().getTime();
+            let estimatedLoadTime = 1500; // 예상 로드 시간
+
+            // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
+            const interval = setInterval(function () {
+                const currentTime = new Date().getTime();
+                const elapsedTime = currentTime - startTime;
+
+                // 경과된 시간에 비례해 로딩 바 너비 설정 (최대 80vh)
+                const width = Math.min((elapsedTime / estimatedLoadTime) * 80, 80);
+                $(".loding_bar").css("width", width + "vh");
+
+                // 페이지가 로드되기 전에 80vh에 도달하지 않도록 안전하게 제한
+                if (width >= 80) {
+                    clearInterval(interval); // 최대 너비에 도달하면 애니메이션 정지
+                }
+            }, 100); // 100ms마다 로딩 바 업데이트
+
+            // window.onload 이벤트 감지
+            window.onload = function () {
+                windowChack = true;
+                const loadTime = new Date().getTime() - startTime;
+
+                if (floor >= 0) {
+                    startTimer();
+                    updateTime();
+                }
+
+                // 실제 로드 시간이 예상 시간을 초과하지 않으면, 비율로 로딩 바 채우기
+                const finalWidth = Math.min((loadTime / estimatedLoadTime) * 80, 80);
+                $(".loding_bar").css("width", finalWidth + "vh");
+
+                // 로딩 바가 완료된 후 로딩 화면 서서히 제거
+                setTimeout(function () {
+                    $(".loding").fadeOut(500);
+                }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
+            }
+
+            var moveInterval; // 캐릭터 이동을 위한 interval
+            var moveActionChack = null; // 현재 움직이고 있는 방향 추적
+
+            function startMoving(moveAction) {
+                // 이미 해당 방향으로 움직이고 있으면 중복 방지
+                if (moveActionChack === moveAction) return;
+
+                // 새로운 방향으로 이동 시작
+                stopMoving(); // 이전 움직임을 중지하고 새로운 움직임 시작
+                moveActionChack = moveAction;
+
+                moveInterval = setInterval(function () {
+                    if (moveAction === 'left') {
+                        Left(1);
+                    } else if (moveAction === 'up') {
+                        Up(1);
+                    } else if (moveAction === 'right') {
+                        Right(1);
+                        // console.log(moveSpeed);
+                    } else if (moveAction === 'down') {
+                        Down(1);
+                    }
+                }, charac.speed);
+            }
+
+            function stopMoving() {
+                if (moveInterval) {
+                    clearInterval(moveInterval); // 이전 움직임 중지
+                    moveInterval = null; // interval 초기화
+                }
+                moveActionChack = null; // 현재 방향 초기화
+            }
+
+            // 캐릭터 이동
+            $(window).keydown(function (e) {
+
+                // 이미 눌린 키가 아닐 때만 동작
+                if (e.keyCode === 37 && moveActionChack !== 'left') {
+                    startMoving('left');
+                } else if (e.keyCode === 38 && moveActionChack !== 'up') {
+                    startMoving('up');
+                } else if (e.keyCode === 39 && moveActionChack !== 'right') {
+                    startMoving('right');
+                } else if (e.keyCode === 40 && moveActionChack !== 'down') {
+                    startMoving('down');
+                }
+
+            });
+
+            // 키에서 손을 뗄 때 움직임 멈춤
+            $(window).keyup(function (e) {
+
+                // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
+                if ((e.keyCode === 37 && moveActionChack === 'left') ||
+                    (e.keyCode === 38 && moveActionChack === 'up') ||
+                    (e.keyCode === 39 && moveActionChack === 'right') ||
+                    (e.keyCode === 40 && moveActionChack === 'down')) {
+                    stopMoving();
+                }
+
+            });
+
+            $(window).keyup(function (e) {
+                if (e.keyCode === 65) {
+                    // console.log('A키 눌림')
+                    attackA(1);
+                } else if (e.keyCode === 87) {
+                    // console.log('W키 눌림')
+                    attackW(1);
+                } else if (e.keyCode === 68) {
+                    // console.log('D키 눌림')
+                    attackD(1);
+                } else if (e.keyCode === 83) {
+                    // console.log('S키 눌림')
+                    attackS(1);
+                }
+            });
+
+            function Up(something) {
+                if (windowChack) {
+                    if (something == 1 && UD > 10) {
+                        UD -= 2;
+                        $(".charac").css("top", UD + "vh");
+                        console.log("UD :" + UD + ", LR : " + LR);
+                        showDoor();
+                        stageUp();
+                        showItem_text();
+                        showRandomItem_text();
+                    }
+                }
+            }
+
+            function Down(something) {
+                if (windowChack) {
+                    if (something == 1 && UD < 80) {
+                        UD += 2;
+                        $(".charac").css("top", UD + "vh");
+                        console.log("UD :" + UD + ", LR : " + LR);
+                        showDoor();
+                        stageUp();
+                        showItem_text();
+                        showRandomItem_text();
+                    }
+                }
+            }
+
+            function Left(something) {
+                if (windowChack) {
+                    if (something == 1 && LR > 10) {
+                        LR -= 2;
+                        $(".charac").css("left", LR + "vh");
+                        console.log("UD :" + UD + ", LR : " + LR);
+                        showDoor();
+                        stageUp();
+                        showItem_text();
+                        showRandomItem_text();
+                    }
+                }
+            }
+
+            function Right(something) {
+                if (windowChack) {
+                    if (something == 1 && LR < 80) {
+                        LR += 2;
+                        $(".charac").css("left", LR + "vh");
+                        console.log("UD :" + UD + ", LR : " + LR);
+                        showDoor();
+                        stageUp();
+                        showItem_text();
+                        showRandomItem_text();
+                    }
+                }
+            }
+
+            // 스테이지 이동
+            function stageUp() {
+                let floor = charac.floor;
+                let room = charac.room;
+
+                if(room + 1 < 5){room++;}
+                else {
+                    room = 0;
+                    floor++;
+                }
+
+                var doorChack = $(".door").hasClass("hidden");
+                if (LR > 79 && 38 < UD && UD < 52 && !doorChack) {
+                    windowChack = false;
+                    localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + charac.hp + "/" + charac.power + "/" + charac.speed + "/" + charac.weaponId + "/" + seconds);
+                    setTimeout(function () {
+                        location.href = '../map';
+                    }, 100);
+                    /* console.log("HP:", front_hp);
+                    console.log("Stage:", stage);
+                    console.log("Weapon ID:", front_weaponId); */
+                }
+            }
+
+            // 인게임 헤드 js
+            var mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
+            var mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
+            var mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
+            var mob__dictionaryWidth = mob__cardWidth * mob__itemsPerPage; // 몬스터 도감 한 번에 보여줄 전체 너비
+            var mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
+
+            var weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
+            var weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
+            var weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
+            var weapon__dictionaryWidth = weapon__cardWidth * weapon__itemsPerPage; // 무기 도감 한 번에 보여줄 전체 너비
+            var weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
+
+            function mob__updateSlide() {
+                // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
+                var mob__translateX = -mob__currentIndex * (mob__cardWidth + 3.5);
+                $('.mob__dictionary_inner').css('transform', 'translateX(' + mob__translateX + 'vh)');
+            }
+
+            function mob__next() {
+                if (mob__currentIndex + mob__itemsPerPage < mob__totalItems) {
+                    mob__currentIndex++;
+                } else {
+                    mob__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
+                }
+                mob__updateSlide();
+            }
+
+            function mob__prev() {
+                if (mob__currentIndex > 0) {
+                    mob__currentIndex--;
+                } else {
+                    mob__currentIndex = mob__totalItems - mob__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
+                }
+                mob__updateSlide();
+            }
+
+            function weapon__updateSlide() {
+                // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
+                var weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
+                console.log("weapon__currentIndex : " + weapon__currentIndex);
+                console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
+                console.log("weapon__totalItems : " + weapon__totalItems);
+                console.log("weapon__cardWidth : " + weapon__cardWidth);
+                console.log("weapon__translateX : " + weapon__translateX);
+                $('.weapon__dictionary_inner').css('transform', 'translateX(' + weapon__translateX + 'vh)');
+            }
+
+            function weapon__next() {
+                if (weapon__currentIndex + weapon__itemsPerPage < weapon__totalItems) {
+                    weapon__currentIndex++;
+                } else {
+                    weapon__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
+                }
+                weapon__updateSlide();
+            }
+
+            function weapon__prev() {
+                if (weapon__currentIndex > 0) {
+                    weapon__currentIndex--;
+                } else {
+                    weapon__currentIndex = weapon__totalItems - weapon__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
+                }
+                weapon__updateSlide();
+            }
+
+            // 몬스터 도감 버튼 클릭했을때 적용되는 함수
+            function showMob__dictionary() {
+                $('.mob__dictionary').toggleClass('hidden');
+                $('.mob__prev_bt').toggleClass('hidden');
+                $('.mob__list_bt').toggleClass('hidden');
+                $('.mob__next_bt').toggleClass('hidden');
+                $('.mob__dictionary_bt').toggleClass('play');
+                $('.mob__dictionary_bt').toggleClass('pause');
+            }
+
+            function showWeapon__dictionary() {
+                $('.weapon__dictionary').toggleClass('hidden');
+                $('.weapon__prev_bt').toggleClass('hidden');
+                $('.weapon__list_bt').toggleClass('hidden');
+                $('.weapon__next_bt').toggleClass('hidden');
+                $('.weapon__dictionary_bt').toggleClass('play');
+                $('.weapon__dictionary_bt').toggleClass('pause');
+            }
+
+            // 데미지 화면에 보여주기
+            function damage__motion(data, damage) {
+                // console.log(data, damage)
+                mobHpDown(data);
+                $(".damage" + data).text(damage);
+                setTimeout(function () {
+                    $(".damage" + data).text('');
+                }, 1000);
+            }
+
+            // 몬스터 hp 셋팅
+            var mob2_hp = 0;
+            var mob3_hp = 0;
+            var mob4_hp = 0;
+            var mob5_hp = 0;
+            var mob6_hp = 0;
+
+            // 몬스터의 체력 부여
+            if (charac.room > 0 && charac.room < 5) {
+                mob2_hp = charac.floor * 10;
+            }
+            if (charac.room > 1 && charac.room < 5) {
+                mob3_hp = charac.floor * 10;
+            }
+            if (charac.room > 2 && charac.room < 5) {
+                mob4_hp = charac.floor * 10;
+            }
+            if (charac.room > 3 && charac.room < 5) {
+                mob5_hp = charac.floor * 10;
+            }
+            if (charac.floor > 1 && charac.room == 0) {
+                mob6_hp = (charac.floor - 1) * 100;
+            }
+
+            // 문 개방
+            function showDoor() {
+                if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
+                    $(".door").fadeIn(1000).removeClass('hidden');
+                }
+            }
+
+            let seconds = charac.clearTime;
+
+            function updateTime() {
+                const hrs = Math.floor(seconds / 3600);
+                const mins = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                // 1초 단위로 형식화
+                $(".time").text(
+                    hrs.toString().padStart(2, '0') + ":" +
+                    mins.toString().padStart(2, '0') + ":" +
+                    secs.toString().padStart(2, '0')
+                );
+            }
+
+            function startTimer() {
+                setInterval(() => {
+                    seconds++;
+                    updateTime();
+                }, 1000);
+            }
+
+            let timeoutId;
+
+            // 마우스가 움직이면 호출되는 함수
+            function resetCursorTimer() {
+                // 커서를 다시 보이도록 설정
+                $('body').css('cursor', 'default');
+
+                // 이전 타이머가 있다면 취소
+                clearTimeout(timeoutId);
+
+                // 설정한 시간 후에 커서를 숨김
+                timeoutId = setTimeout(function () {
+                    $('body').css('cursor', 'none');
+                }, 1000);
+            }
+
+            // 페이지가 처음 로드될 때 타이머 시작
+            timeoutId = setTimeout(function () {
+                $('body').css('cursor', 'none');
+            }, 3000);
+
+            // 마우스가 움직일 때마다 타이머를 리셋
+            $(document).on('mousemove', resetCursorTimer);
         });
     </script>
 </div>
