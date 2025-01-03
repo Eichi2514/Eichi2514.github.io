@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AscentLime(test)</title>
+
+    <link rel="stylesheet" href="../common.css"/>
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 폰트어썸 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+</head>
+<body>
+<div class="body">
+    <!-- p2 맵 배경 -->
+    <img class="bg_img"
+         src="https://github.com/user-attachments/assets/e92471f8-4b53-4df2-9b42-e4fe0abe9d5e"
+         alt=""/>
+
+    <!-- p2 문 -->
+    <img class="door_right door hidden absolute"
+         src="https://github.com/user-attachments/assets/5234ea4f-b28d-4528-87d7-44ead643cc33"
+         alt=""/>
+
+    <div id="tutorialContainer"></div>
+
+    <!-- 캐릭터 -->
+    <div class="front_charac charac absolute">
+        <div class="characHP_bar_text absolute"></div>
+        <div class="characHP_bar0 absolute bg-red-300"></div>
+        <div class="characHP_bar1 absolute bg-red-500"></div>
+        <div class="characHP_bar2 absolute bg-yellow-500"></div>
+        <div class="characHP_bar3 absolute bg-yellow-300"></div>
+        <div class="characHP_bar4 absolute bg-green-300"></div>
+        <div class="characHP_bar5 absolute bg-green-500"></div>
+        <div class="characHP_bar6 absolute bg-blue-300"></div>
+        <div class="characHP_bar7 absolute bg-blue-500"></div>
+        <div class="characHP_bar8 absolute bg-purple-300"></div>
+        <div class="characHP_bar9 absolute bg-purple-500"></div>
+
+        <!-- 왼쪽 공격 -->
+        <img class="attackSize Aattack1 CharacAttack hidden absolute"
+             src="${charac.extra__weapon}" alt="" />
+        <!-- 위쪽 공격 -->
+        <img class="attackSize Wattack1 CharacAttack hidden absolute"
+             src="${charac.extra__weapon}" alt="" />
+        <!-- 오른쪽 공격 -->
+        <img class="attackSize Dattack1 CharacAttack hidden absolute"
+             src="${charac.extra__weapon}" alt="" />
+        <!-- 아래쪽 공격 -->
+        <img class="attackSize Sattack1 CharacAttack hidden absolute"
+             src="${charac.extra__weapon}" alt="" />
+        <!-- 캐릭터 이미지 -->
+        <img class="front_charac_img rounded-full"
+             src="https://github.com/user-attachments/assets/aaa05c2c-d55a-4111-b367-9231727e7050"
+             alt="" />
+        <!-- 캐릭터 데미지 -->
+        <div class="damage1 absolute z-20"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // URL에서 'stage' 파라미터 값을 가져오는 함수
+            function getUrlParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // stage 값이 10일 때만 알림창을 표시
+            if (getUrlParam("stage") == "10") {
+                // guide1 추가
+                $("#tutorialContainer").append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
+                // guide2 추가
+                $("#tutorialContainer").append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
+            }
+        });
+    </script>
+</div>
+</body>
+</html>
