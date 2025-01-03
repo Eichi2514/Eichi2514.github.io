@@ -20,7 +20,7 @@ $(document).ready(function () {
         // 로컬스토리지 있는지 확인 후 저장
         // name, floor, room, hp, power, speed, weaponId, clearTime
         if (!localStorage.getItem(nickname)) {
-            localStorage.setItem(nickname, nickname + "/0/0/100/0/50/1/0");
+            localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
         }
 
         // 닉네임 입력창 교체
