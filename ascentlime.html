@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>AscentLime(test)</title>
 
-    <link rel="stylesheet" href="../common.css"/>
+    <link rel="stylesheet" href="../ascentlime.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -52,25 +52,35 @@
         <a class="TOP3_list_bt absolute z-30" href="../list">리스트</a>
     </div>
     <!-- 로그인 상태일 경우 -->
-    <a class="join_bt text-center absolute" href="/index">내 정 보</a>
-
-    <div class="member_name1 absolute text-center">Tester님</div>
-    <div class="member_name2 absolute text-center">환영합니다</div>
-    <div class="start absolute cursor-pointer">
-        <a class="start-text absolute" href="../map?stage=10">게임시작</a>
-        <!-- p2 게임시작 호버 전 -->
-        <i class="fa-solid fa-square-up-right arrow1 absolute"></i>
-        <i class="fa-solid fa-square-up-right arrow2 absolute"></i>
-        <img class="start-1"
-             src="https://github.com/user-attachments/assets/dddce550-c44d-45df-adfb-479191d45307"
-             alt="게임 시작 버튼"/>
-        <!-- p2 게임시작 호버 후 -->
-        <img class="start-2"
-             src="https://github.com/user-attachments/assets/7afa0678-efe6-4107-ab0f-a154bd841994"
-             alt="게임 시작 버튼"/>
-    </div>
     <div>
-        <a class="login_out_bt absolute text-center" href="../index">로그아웃</a>
+        <div class="id absolute">
+            <input class="text-center" type="text" placeholder="닉네임을 입력해주세요" name="loginId"/>
+        </div>
+        <button class="pw absolute">
+            등 록
+        </button>
+    </div>
+    <div class="hidden">
+        <a class="join_bt text-center absolute" href="/index">내 정 보</a>
+
+        <div class="member_name1 absolute text-center">Tester님</div>
+        <div class="member_name2 absolute text-center">환영합니다</div>
+        <div class="start absolute cursor-pointer">
+            <a class="start-text absolute" href="../map?stage=10">게임시작</a>
+            <!-- p2 게임시작 호버 전 -->
+            <i class="fa-solid fa-square-up-right arrow1 absolute"></i>
+            <i class="fa-solid fa-square-up-right arrow2 absolute"></i>
+            <img class="start-1"
+                 src="https://github.com/user-attachments/assets/dddce550-c44d-45df-adfb-479191d45307"
+                 alt="게임 시작 버튼"/>
+            <!-- p2 게임시작 호버 후 -->
+            <img class="start-2"
+                 src="https://github.com/user-attachments/assets/7afa0678-efe6-4107-ab0f-a154bd841994"
+                 alt="게임 시작 버튼"/>
+        </div>
+        <div>
+            <a class="login_out_bt absolute text-center" href="../index">로그아웃</a>
+        </div>
     </div>
 </div>
 </body>

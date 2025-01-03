@@ -154,22 +154,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .id {
-	height: 5vh;
-	left: 30vh;
-	top: 47vh;
+	left: 27.5vh;
+	top: 40vh;
 	-webkit-text-stroke: 0.05vh white;
-	padding-left: 0.7vh;
 }
 
 .pw {
-	height: 5vh;
-	left: 30vh;
-	top: 53vh;
-	-webkit-text-stroke: 0.05vh white;
+	text-align: center;
+	width: 18vh;
+	left: 40vh;
+	top: 49vh;
+	border: 0.3vh solid;
+	padding: 0.7vh;
+	border-radius: 1vh;
+	background: rgb(255, 71, 48);
 }
 
 .id>input, .pw>input {
-	width: 34vh;
+	padding: 0.7vh;
 }
 
 .join_bt {
