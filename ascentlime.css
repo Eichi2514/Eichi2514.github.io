@@ -882,7 +882,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .characHP_bar1, .characHP_bar2, .characHP_bar3, .characHP_bar4, .characHP_bar5, .characHP_bar6, .characHP_bar7, .characHP_bar8, .characHP_bar9, .characHP_bar0, .mob2HP_bar, .mob3HP_bar, .mob4HP_bar, .mob5HP_bar{
 	top: -2vh;
 	left: 1vh;
-	height: 1vh;		
+	height: 1vh;
+	width: 8vh;
 	transition: width 0.5s ease;
 }
 

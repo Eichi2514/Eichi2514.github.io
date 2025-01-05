@@ -55,7 +55,8 @@
         <!-- 아래쪽 공격 -->
         <img class="mobAttack Sattack2 attackSize hidden absolute"
              src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
-        <img class="front_mob_img" src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+        <img class="front_mob_img mob_img"
+             src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
              alt=""/>
         <!-- 몬스터 데미지 -->
         <div class="damage2 absolute z-20"></div>
@@ -77,7 +78,8 @@
         <!-- 아래쪽 공격 -->
         <img class="mobAttack Sattack3 attackSize hidden absolute"
              src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
-        <img class="front_mob_img" src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+        <img class="front_mob_img mob_img"
+             src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
              alt=""/>
         <!-- 몬스터 데미지 -->
         <div class="damage3 absolute z-20"></div>
@@ -99,7 +101,8 @@
         <!-- 아래쪽 공격 -->
         <img class="mobAttack Sattack4 attackSize hidden absolute"
              src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
-        <img class="front_mob_img" src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+        <img class="front_mob_img mob_img"
+             src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
              alt=""/>
         <!-- 몬스터 데미지 -->
         <div class="damage4 absolute z-20"></div>
@@ -121,7 +124,8 @@
         <!-- 아래쪽 공격 -->
         <img class="mobAttack Sattack5 attackSize hidden absolute"
              src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
-        <img class="front_mob_img" src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+        <img class="front_mob_img mob_img"
+             src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
              alt=""/>
         <!-- 몬스터 데미지 -->
         <div class="damage5 absolute z-20"></div>
@@ -146,7 +150,7 @@
         <!-- 아래쪽 공격 -->
         <img class="mobAttack Sattack6 attackSize hidden absolute"
              src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
-        <img class="front_bossMob_img"
+        <img class="front_bossMob_img mob_img"
              src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt=""/>
         <!-- 보스 데미지 -->
         <div class="damage6 absolute z-20"></div>
@@ -283,6 +287,63 @@
             'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41'
         ];
 
+        let mobs = [
+            'https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0',
+            'https://github.com/user-attachments/assets/76d8bc9f-d814-4f60-b99f-e6688a60acd5',
+            'https://github.com/user-attachments/assets/b7a6c561-9176-4f1e-98c5-0d6723bcca2b',
+            'https://github.com/user-attachments/assets/49a90ef1-1246-4a74-933e-b78e180e2f30',
+            'https://github.com/user-attachments/assets/34ce9a88-ab95-45a8-956b-a6c8ee129674',
+            'https://github.com/user-attachments/assets/1314824d-d8a6-44f2-9672-ba5a0e7f3d6c',
+            'https://github.com/user-attachments/assets/c5004b20-a313-41cd-b012-33c91f271664',
+            'https://github.com/user-attachments/assets/d7afdd47-5dfe-4824-b456-841439908a6b',
+            'https://github.com/user-attachments/assets/b39165ea-6d79-434c-a885-dc7aca00ac7a',
+            'https://github.com/user-attachments/assets/11b950e4-9387-4547-8439-cc68568ee4d4',
+            'https://github.com/user-attachments/assets/0814b836-a0a2-4a26-8f1e-caafee604a3b',
+            'https://github.com/user-attachments/assets/30d1131c-5db0-4abb-97a1-b5bb9127f19d',
+            'https://github.com/user-attachments/assets/b43717db-90e0-49cb-a80f-5d9144e8555d',
+            'https://github.com/user-attachments/assets/6a623aaa-ebf6-4b76-b55b-cc4a80576060',
+            'https://github.com/user-attachments/assets/7765f401-da7e-4d07-9ce2-a565e92a6651',
+            'https://github.com/user-attachments/assets/80eb8427-67d6-41bb-831e-9fc95e0dc718',
+            'https://github.com/user-attachments/assets/9c5464fa-5de4-475a-a601-8313e9d4070c',
+            'https://github.com/user-attachments/assets/b86834e5-65d3-4e7a-91b0-96cf616dc0c1',
+            'https://github.com/user-attachments/assets/24af62fa-4b25-4db8-83ca-edcd8b2a1cdd',
+            'https://github.com/user-attachments/assets/1af80f91-f449-45f0-8553-0914dfa0e9a3',
+            'https://github.com/user-attachments/assets/efc773bc-aa2d-4586-baa1-3cc313d2a059',
+            'https://github.com/user-attachments/assets/05ca3139-c237-4110-86fa-ec1797db2d96',
+            'https://github.com/user-attachments/assets/d120300e-a485-45b4-b4f0-e833092fe7a5',
+            'https://github.com/user-attachments/assets/1c76742c-b8c8-4985-ac61-1ed71152ba6d',
+            'https://github.com/user-attachments/assets/76d03e1c-9456-4edc-97be-2dbe41ef2ab0',
+            'https://github.com/user-attachments/assets/5ee073e4-e111-4712-aea9-d07c4e00cf13',
+            'https://github.com/user-attachments/assets/3760b544-5e2b-4c11-ac17-417c81dfe4f2',
+            'https://github.com/user-attachments/assets/c711a2ae-ba08-431d-9695-bd198f19f0e0',
+            'https://github.com/user-attachments/assets/064a8937-beb2-4dee-8ae5-ae4dd5fe6c24',
+            'https://github.com/user-attachments/assets/136cda85-bf27-4d0d-8e79-5fbe36b7ac1f',
+            'https://github.com/user-attachments/assets/cfbe7f09-078b-4056-82f9-2f70983d0f52',
+            'https://github.com/user-attachments/assets/0bc0f092-e535-4c6d-8631-07c87e80014f',
+            'https://github.com/user-attachments/assets/397fa4af-9a52-48d1-8bd0-629f575198c2',
+            'https://github.com/user-attachments/assets/e426c503-1da8-4ad1-865a-a4fb6b9db70c',
+            'https://github.com/user-attachments/assets/e815cb6a-6778-4110-9934-9a64f3174b98',
+            'https://github.com/user-attachments/assets/75270bfd-b910-4e23-9e3a-b71af9cb0761',
+            'https://github.com/user-attachments/assets/0df7b7a3-6625-4485-b3bc-646992ff0641',
+            'https://github.com/user-attachments/assets/13d39b53-ee46-461d-a57d-06d54b5bb6f2',
+            'https://github.com/user-attachments/assets/f6be058b-d91c-46a7-9eac-cf168701c133',
+            'https://github.com/user-attachments/assets/fed7ffa9-3a4e-4aef-b6dd-40b715089f21',
+            'https://github.com/user-attachments/assets/2672c70c-8d37-46de-acba-e9b1c2f4fbfc',
+            'https://github.com/user-attachments/assets/1a25b242-de00-4b05-8bb8-47901f9e15b8',
+            'https://github.com/user-attachments/assets/923bf658-6ded-439f-80a9-173689429f47',
+            'https://github.com/user-attachments/assets/f7ac2d6e-1ae5-4b0e-988c-b1b7471f312a',
+            'https://github.com/user-attachments/assets/50a96d00-65d3-422c-8ad0-01aef2c29ae7',
+            'https://github.com/user-attachments/assets/648819e7-cbdb-43a3-a1dc-3bac31332dfc',
+            'https://github.com/user-attachments/assets/e3d332b0-4a6c-473f-b6ac-0ade6db763aa',
+            'https://github.com/user-attachments/assets/3aa893dd-fe2e-440c-a114-70d1290119f3',
+            'https://github.com/user-attachments/assets/0c363b9c-6048-4e07-b304-d1a0283fb35b',
+            'https://github.com/user-attachments/assets/66b9b527-566c-4a76-8a1b-3c7be2c695ef',
+            'https://github.com/user-attachments/assets/b9dac1d9-afc9-4ce8-a6df-1c945dbc68db',
+            'https://github.com/user-attachments/assets/53fd6e00-c519-41e2-adc1-3d848d34f3a7',
+            'https://github.com/user-attachments/assets/1f52c6f6-40e8-48b6-907e-4e64b8907a27'
+        ];
+
+
         $(document).ready(function () {
             if (!localStorage.getItem('nickname')) {
                 alert('잘못된 접근 방식입니다.')
@@ -307,6 +368,10 @@
                 clearTime: parseInt(clearTime, 10)
             };
 
+            $('.attackSize').attr('src', weapon[charac.weaponId]);
+            if (charac.room == 0) $('.mob_img').attr('src', mobs[charac.floor - 1]);
+            else $('.mob_img').attr('src', mobs[charac.floor]);
+
             var damage = ((Math.floor(charac.weaponId / 10)) * 10) + charac.power;
             if ((charac.weaponId % 10) != 0) {
                 damage += 10;
@@ -323,19 +388,29 @@
 
             // 몬스터 좌표 셋팅
             var UD2 = getRandom(10, 70);
+            if (UD2 % 2 != 0) UD2++;
             var LR2 = getRandom(30, 70);
+            if (LR2 % 2 != 0) LR2++;
 
             var UD3 = getRandom(10, 70);
+            if (UD3 % 2 != 0) UD3++;
             var LR3 = getRandom(30, 70);
+            if (LR3 % 2 != 0) LR3++;
 
             var UD4 = getRandom(10, 70);
+            if (UD4 % 2 != 0) UD4++;
             var LR4 = getRandom(30, 70);
+            if (LR4 % 2 != 0) LR4++;
 
             var UD5 = getRandom(10, 70);
+            if (UD5 % 2 != 0) UD5++;
             var LR5 = getRandom(30, 70);
+            if (LR5 % 2 != 0) LR5++;
 
             var UD6 = getRandom(10, 40);
+            if (UD6 % 2 != 0) UD6++;
             var LR6 = getRandom(30, 40);
+            if (LR6 % 2 != 0) LR6++;
 
             var mobDamage = charac.floor;
             if (charac.room == 0) {
@@ -505,7 +580,6 @@
                     if (mob2_hp <= 0) {
                         mobHidden(2);
                         clearInterval(stop2);
-                        doDelete(2);
                     }
                 } else if (something == 1 && data == 3) {
                     mob3_hp -= damage;
@@ -513,7 +587,6 @@
                     if (mob3_hp <= 0) {
                         mobHidden(3);
                         clearInterval(stop3);
-                        doDelete(3);
                     }
                 } else if (something == 1 && data == 4) {
                     mob4_hp -= damage;
@@ -521,7 +594,6 @@
                     if (mob4_hp <= 0) {
                         mobHidden(4);
                         clearInterval(stop4);
-                        doDelete(4);
                     }
                 } else if (something == 1 && data == 5) {
                     mob5_hp -= damage;
@@ -529,7 +601,6 @@
                     if (mob5_hp <= 0) {
                         mobHidden(5);
                         clearInterval(stop5);
-                        doDelete(5);
                     }
                 } else if (something == 1 && data == 6) {
                     mob6_hp -= damage;
@@ -537,39 +608,41 @@
                     if (mob6_hp <= 0) {
                         mobHidden(6);
                         clearInterval(stop6);
-                        doDelete(6);
                         showItem();
                     }
                     BossHpDown();
                 }
+                showDoor();
             }
 
-            let rows = 42;
-            let cols = 42;
+            //몬스터 사라지게하는 함수
+            function mobHidden(num) {
+                $(".mob" + num).fadeOut(2000, function () {
+                    $(this).addClass('hidden');
+                });
+            }
+
+            let rows = 40;
+            let cols = 40;
 
             let map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
 
             // 공격 대상 확인 함수
             function attackChack(something, direction) {
-                let Xcode = somethingXcode(something);
-                let Ycode = somethingYcode(something);
-                let height = something > 5 ? 10 : 20;
-                let width = something > 5 ? 10 : 20;
+                let Xcode = somethingXcode(something) - 5;
+                let Ycode = somethingYcode(something) - 5;
+                let height = something > 5 ? 10 : 5;
+                let width = something > 5 ? 10 : 5;
+
+                console.log('Xcode : ' + Xcode);
+                console.log('Ycode : ' + Ycode);
 
                 let distance = somethingDistance(something, charac.weaponId, charac.floor);
 
                 // 맵 생성
                 map = mapChack(something);
 
-                for (i = 0; i < 40; i++) {
-                    let log = '';
-                    for (j = 0; j < 40; j++) {
-                        log += '[' + map[i][j] + ']';
-                    }
-                    console.log(log)
-                }
-
-                if (distance == 'A') {
+                if (direction == 'A') {
                     let x = Xcode + ((height - 1) / 2);
                     let y = Ycode - distance;
 
@@ -578,16 +651,16 @@
                             return map[x][i];
                         }
                     }
-                } else if (distance == 'W') {
+                } else if (direction == 'W') {
                     let x = Xcode - distance;
                     let y = Ycode + ((width - 1) / 2);
 
                     for (i = Xcode - 1; i > x; i--) {
-                        if (map[i][y] != 0) {
+                        if (map[i][y] !== 0) {
                             return map[i][y];
                         }
                     }
-                } else if (distance == 'D') {
+                } else if (direction == 'D') {
                     let x = Xcode + ((height - 1) / 2);
                     let y = Ycode + width + distance;
 
@@ -596,7 +669,7 @@
                             return map[x][i];
                         }
                     }
-                } else if (distance == 'S') {
+                } else if (direction == 'S') {
                     let x = Xcode + height + distance;
                     let y = Ycode + ((width - 1) / 2);
 
@@ -609,41 +682,112 @@
                 return 0;
             }
 
+            // 아이템 안내창 공개
+            function showItem_text() {
+                var itemChack = $(".item").hasClass('hidden');
+                // console.log("아이템 공개 여부"+itemChack);
+                if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && charac.floor > 1 && charac.room == 0) {
+                    $(".item_text").fadeIn(1000).removeClass('hidden');
+                }
+            }
+
+            //아이템 안내창 교체 버튼 눌렀을 떄
+            function Item_change() {
+                $.ajax({
+                    url: '/usr/charac/weaponChange',
+                    type: 'POST',
+                    dataType: 'text',
+                    success: function (data) {
+                        var changeImg = "${weapon}";
+                        $('.weapon_img').attr('src', changeImg);
+                        $('.CharacAttack').attr('src', changeImg);
+                        $(".item").fadeOut(1000).addClass('hidden');
+                        $(".item_text").fadeOut(1000).addClass('hidden');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('오류 발생 : ' + textStatus);
+                    }
+                });
+            }
+
+            //아이템 안내창 조합 버튼 눌렀을 떄
+            function Item_mix() {
+                $.ajax({
+                    url: '/usr/charac/weaponMix',
+                    type: 'POST',
+                    dataType: 'text',
+                    success: function (data) {
+                        // console.log("무기정보 : " + data);
+                        var changeImg = data;
+                        $('.weapon_img').attr('src', changeImg);
+                        $('.CharacAttack').attr('src', changeImg);
+                        $(".item").fadeOut(1000).addClass('hidden');
+                        $(".item_text").fadeOut(1000).addClass('hidden');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('오류 발생 : ' + textStatus);
+                    }
+                });
+            }
+
+            //아이템 안내창 취소 버튼 눌렀을 떄
+            function Item_exit() {
+                $(".item_text").fadeOut(1000).addClass('hidden');
+                $(".random_item_text").fadeOut(1000).addClass('hidden');
+            }
+
+            // 아이템 공개
+            function showItem() {
+                $(".item").fadeIn(1000).removeClass('hidden');
+            }
+
+
+            // 랜덤아이템 안내창 공개
+            function showRandomItem_text() {
+                var randomItemChack = $(".random_item").hasClass('hidden');
+                // console.log("아이템 공개 여부"+itemChack);
+                if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
+                    $(".random_item_text").fadeIn(1000).removeClass('hidden');
+                }
+            }
+
             function somethingXcode(something) {
-                if (something == 1) (LR / 2) - 5;
-                else if (something == 2) (LR2 / 2) - 5;
-                else if (something == 3) (LR3 / 2) - 5;
-                else if (something == 4) (LR4 / 2) - 5;
-                else if (something == 5) (LR5 / 2) - 5;
-                else if (something == 6) (LR6 / 2) - 5;
+                if (something == 1) return UD / 2;
+                else if (something == 2) return UD2 / 2;
+                else if (something == 3) return UD3 / 2;
+                else if (something == 4) return UD4 / 2;
+                else if (something == 5) return UD5 / 2;
+                else if (something == 6) return UD6 / 2;
+                return 0;
             }
 
             function somethingYcode(something) {
-                if (something == 1) return (UD / 2) - 5;
-                else if (something == 2) (UD2 / 2) - 5;
-                else if (something == 3) (UD3 / 2) - 5;
-                else if (something == 4) (UD4 / 2) - 5;
-                else if (something == 5) (UD5 / 2) - 5;
-                else if (something == 6) (UD6 / 2) - 5;
+                if (something == 1) return LR / 2;
+                else if (something == 2) return LR2 / 2;
+                else if (something == 3) return LR3 / 2;
+                else if (something == 4) return LR4 / 2;
+                else if (something == 5) return LR5 / 2;
+                else if (something == 6) return LR6 / 2;
+                return 0;
             }
 
             function mapChack(something) {
-                let characXCode = (LR / 2) - 5;
-                let characYCode = (UD / 2) - 5;
-                let mob2XCode = (LR2 / 2) - 5;
-                let mob2YCode = (UD2 / 2) - 5;
+                let characXCode = (UD / 2) - 5;
+                let characYCode = (LR / 2) - 5;
+                let mob2XCode = (UD2 / 2) - 5;
+                let mob2YCode = (LR2 / 2) - 5;
                 let mob2life = mob2_hp > 0;
-                let mob3XCode = (LR3 / 2) - 5;
-                let mob3YCode = (UD3 / 2) - 5;
+                let mob3XCode = (UD3 / 2) - 5;
+                let mob3YCode = (LR3 / 2) - 5;
                 let mob3life = mob3_hp > 0;
-                let mob4XCode = (LR4 / 2) - 5;
-                let mob4YCode = (UD4 / 2) - 5;
+                let mob4XCode = (UD4 / 2) - 5;
+                let mob4YCode = (LR4 / 2) - 5;
                 let mob4life = mob4_hp > 0;
-                let mob5XCode = (LR5 / 2) - 5;
-                let mob5YCode = (UD5 / 2) - 5;
+                let mob5XCode = (UD5 / 2) - 5;
+                let mob5YCode = (LR5 / 2) - 5;
                 let mob5life = mob5_hp > 0;
-                let mob6XCode = (LR6 / 2) - 5;
-                let mob6YCode = (UD6 / 2) - 5;
+                let mob6XCode = (UD6 / 2) - 5;
+                let mob6YCode = (LR6 / 2) - 5;
                 let mob6life = mob6_hp > 0;
                 let floor = charac.floor;
                 let room = charac.room;
@@ -668,28 +812,28 @@
                 if (room > 1 && room < 5 && mob3life && something != 3) {
                     for (x = mob3XCode; x < mob3XCode + 5; x++) {
                         for (y = mob3YCode; y < mob3YCode + 5; y++) {
-                            map[x][y] = mob3;
+                            map[x][y] = 3;
                         }
                     }
                 }
                 if (room > 2 && room < 5 && mob4life && something != 4) {
                     for (x = mob4XCode; x < mob4XCode + 5; x++) {
                         for (y = mob4YCode; y < mob4YCode + 5; y++) {
-                            map[x][y] = mob4;
+                            map[x][y] = 4;
                         }
                     }
                 }
                 if (room > 3 && room < 5 && mob5life && something != 5) {
                     for (x = mob5XCode; x < mob5XCode + 5; x++) {
                         for (y = mob5YCode; y < mob5YCode + 5; y++) {
-                            map[x][y] = mob5;
+                            map[x][y] = 5;
                         }
                     }
                 }
                 if (floor > 1 && room == 0 && mob6life && something != 6) {
                     for (x = mob6XCode; x < mob6XCode + 10; x++) {
                         for (y = mob6YCode; y < mob6YCode + 10; y++) {
-                            map[x][y] = mob6;
+                            map[x][y] = 6;
                         }
                     }
                 }
@@ -922,6 +1066,30 @@
                 }, 1000);
             }
 
+            // 몬스터 체력바 변화 함수
+            function mobHpDown(something) {
+                let mob_hp = 0;
+                if (something == 2) {
+                    mob_hp = mob2_hp;
+                } else if (something == 3) {
+                    mob_hp = mob3_hp;
+                } else if (something == 4) {
+                    mob_hp = mob4_hp;
+                } else if (something == 5) {
+                    mob_hp = mob5_hp;
+                }
+                let new_mobHp_width = (8 / (charac.floor * 10)) * mob_hp;
+                if (mob_hp <= 0) new_mobHp_width = 0;
+                $(".mob" + something + "HP_bar").css('width', new_mobHp_width + 'vh');
+            }
+
+            // 보스 체력바 변화 함수
+            function BossHpDown() {
+                let new_bossHp_width = (50 / ((charac.floor - 1) * 100) * mob6_hp);
+                if (mob6_hp <= 0) new_bossHp_width = 0;
+                $(".bossHP_bar").css('width', new_bossHp_width + 'vh');
+            }
+
             // 몬스터 hp 셋팅
             var mob2_hp = 0;
             var mob3_hp = 0;
@@ -948,6 +1116,7 @@
             }
             if (charac.floor > 1 && charac.room == 0) {
                 $('.mob6').removeClass('hidden');
+                $('.bossHP').removeClass('hidden');
                 mob6_hp = (charac.floor - 1) * 100;
             }
 
