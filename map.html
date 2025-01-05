@@ -540,6 +540,20 @@
                     stageUp();
                     showItem_text();
                     showRandomItem_text();
+                } else if (something == 2) {
+                    if (moveAction == 'up' && UD2 > 10) {
+                        UD2 -= 2;
+                        $(".mob" + something).css("top", UD + "vh");
+                    } else if (moveAction == 'down' && UD2 < 80) {
+                        UD2 += 2;
+                        $(".mob" + something).css("top", UD + "vh");
+                    } else if (moveAction == 'left' && LR2 > 10) {
+                        LR2 -= 2;
+                        $(".mob" + something).css("left", LR + "vh");
+                    } else if (moveAction == 'right' && LR2 < 80) {
+                        LR2 += 2;
+                        $(".mob" + something).css("left", LR + "vh");
+                    }
                 }
             }
 
@@ -1120,6 +1134,79 @@
                 mob6_hp = (charac.floor - 1) * 100;
             }
 
+            // 자동 실행 move 함수 담아놓을 변수 생성
+            var stop2, stop3, stop4, stop5, stop6;
+
+            //일정 시간마다 move 함수를 호출
+            function show() {
+                // console.log("페이지가 모두 로드된 후 실행됩니다.");
+                // console.log(((8 / 100) * front_hp));
+
+                // setTimeout(characHpDown, 1000);
+                // setTimeout(() => mobHpDown(2), 1000);
+                // setTimeout(() => mobHpDown(3), 1000);
+                // setTimeout(() => mobHpDown(4), 1000);
+                // setTimeout(() => mobHpDown(5), 1000);
+                $('body').css('cursor', 'none');
+
+                if (charac.floor <= 10) {
+                    if (charac.room > 0 && charac.room < 5) {
+                        stop2 = setInterval(move(2), 1000);
+                    }
+                    if (charac.room > 1 && charac.room < 5) {
+                        stop3 = setInterval(move(3), 800);
+                    }
+                    if (charac.room > 2 && charac.room < 5) {
+                        stop4 = setInterval(move(4), 500);
+                    }
+                    if (charac.room > 3 && charac.room < 5) {
+                        stop5 = setInterval(move5, 200);
+                    }
+                    if (charac.floor > 1 && charac.room == 0) {
+                        stop6 = setInterval(move6, 100);
+                    }
+                } else {
+                    if (charac.room > 0 && room < 5) {
+                        stop2 = setInterval(move(2), 300);
+                    }
+                    if (charac.room > 1 && room < 5) {
+                        stop3 = setInterval(move(3), 200);
+                    }
+                    if (charac.room > 2 && room < 5) {
+                        stop4 = setInterval(move(4), 120);
+                    }
+                    if (charac.room > 3 && room < 5) {
+                        stop5 = setInterval(move(5), 70);
+                    }
+                    if (charac.floor > 1 && room == 0) {
+                        stop6 = setInterval(move(6), 30);
+                    }
+                }
+            }
+
+            // 랜덤 행동을 사용하는 함수
+            function move(something) {
+                var random;
+                // 1에서 5까지의 랜덤 숫자 생성
+                if (charac.floor < 4) {
+                    random = getRandom(1, 4);
+                } else {
+                    random = getRandom(1, 5);
+                }
+
+                if (random == 1 && windowChack) {
+                    moveCharacter('left', something)
+                } else if (random == 2 && windowChack) {
+                    moveCharacter('up', something)
+                } else if (random == 3 && windowChack) {
+                    moveCharacter('right', something)
+                } else if (random == 4 && windowChack) {
+                    moveCharacter('down', something)
+                } else if (random == 5 && windowChack) {
+                    mobAttack(2);
+                }
+            }
+
             // 문 개방
             function showDoor() {
                 if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
@@ -1172,6 +1259,8 @@
 
             // 마우스가 움직일 때마다 타이머를 리셋
             $(document).on('mousemove', resetCursorTimer);
+
+            show();
         });
     </script>
 </div>
