@@ -211,6 +211,15 @@
          src="https://github.com/user-attachments/assets/64a8dc0c-b9bc-41a7-a500-8a9466c0dd04"
          alt=""/>
 
+    <div class="loding absolute z-50">
+        <img class="loding_img"
+             src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
+             alt="" />
+
+        <div class="loding_text absolute">로딩중</div>
+        <div class="loding_bar absolute"></div>
+    </div>
+
     <!-- <script src="../map.js" defer></script> -->
     <script>
         let weapon = [
@@ -344,31 +353,94 @@
             'https://github.com/user-attachments/assets/1f52c6f6-40e8-48b6-907e-4e64b8907a27'
         ];
 
+        if (!localStorage.getItem('nickname')) {
+            alert('잘못된 접근 방식입니다.')
+            history.back();
+        }
 
-        $(document).ready(function () {
-            if (!localStorage.getItem('nickname')) {
-                alert('잘못된 접근 방식입니다.')
-                history.back();
+        const nickname = localStorage.getItem('nickname')
+        const storage = localStorage.getItem(nickname);
+
+        // 정보를 슬래시(/) 기준으로 분리
+        const [name, floor, room, hp, power, speed, weaponId, clearTime] = storage.split("/");
+
+        // 객체로 변환
+        const charac = {
+            name,
+            floor: parseInt(floor, 10),
+            room: parseInt(room, 10),
+            hp: parseInt(hp, 10),
+            power: parseInt(power, 10),
+            speed: parseInt(speed, 10),
+            weaponId: parseInt(weaponId, 10),
+            clearTime: parseInt(clearTime, 10)
+        };
+
+        // 페이지가 시작될 때 시간 기록
+        const startTime = new Date().getTime();
+        let estimatedLoadTime = 1500; // 예상 로드 시간
+
+        // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
+        const interval = setInterval(function () {
+            const currentTime = new Date().getTime();
+            const elapsedTime = currentTime - startTime;
+
+            // 경과된 시간에 비례해 로딩 바 너비 설정 (최대 80vh)
+            const width = Math.min((elapsedTime / estimatedLoadTime) * 80, 80);
+            $(".loding_bar").css("width", width + "vh");
+
+            // 페이지가 로드되기 전에 80vh에 도달하지 않도록 안전하게 제한
+            if (width >= 80) {
+                clearInterval(interval); // 최대 너비에 도달하면 애니메이션 정지
+            }
+        }, 100); // 100ms마다 로딩 바 업데이트
+
+        // 윈도우 로딩 체크
+        var windowChack = true;
+
+        // window.onload 이벤트 감지
+        window.onload = function () {
+            windowChack = true;
+            const loadTime = new Date().getTime() - startTime;
+
+            if (charac.floor >= 0) {
+                startTimer();
+                updateTime();
             }
 
-            const nickname = localStorage.getItem('nickname')
-            const storage = localStorage.getItem(nickname);
+            // 실제 로드 시간이 예상 시간을 초과하지 않으면, 비율로 로딩 바 채우기
+            const finalWidth = Math.min((loadTime / estimatedLoadTime) * 80, 80);
+            $(".loding_bar").css("width", finalWidth + "vh");
 
-            // 정보를 슬래시(/) 기준으로 분리
-            const [name, floor, room, hp, power, speed, weaponId, clearTime] = storage.split("/");
+            // 로딩 바가 완료된 후 로딩 화면 서서히 제거
+            setTimeout(function () {
+               $(".loding").fadeOut(500);
+            }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
+        }
 
-            // 객체로 변환
-            const charac = {
-                name,
-                floor: parseInt(floor, 10),
-                room: parseInt(room, 10),
-                hp: parseInt(hp, 10),
-                power: parseInt(power, 10),
-                speed: parseInt(speed, 10),
-                weaponId: parseInt(weaponId, 10),
-                clearTime: parseInt(clearTime, 10)
-            };
+        let seconds = charac.clearTime;
 
+        function updateTime() {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+
+            // 1초 단위로 형식화
+            $(".time").text(
+                hrs.toString().padStart(2, '0') + ":" +
+                mins.toString().padStart(2, '0') + ":" +
+                secs.toString().padStart(2, '0')
+            );
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                seconds++;
+                updateTime();
+            }, 1000);
+        }
+
+        $(document).ready(function () {
             $('.attackSize').attr('src', weapon[charac.weaponId]);
             if (charac.room == 0) $('.mob_img').attr('src', mobs[charac.floor - 1]);
             else $('.mob_img').attr('src', mobs[charac.floor]);
@@ -438,48 +510,6 @@
             $(".mob5").css("left", LR5 + "vh");
             $(".mob6").css("left", LR6 + "vh");
 
-            // 윈도우 로딩 체크
-            var windowChack = false;
-
-            // 페이지가 시작될 때 시간 기록
-            const startTime = new Date().getTime();
-            let estimatedLoadTime = 1500; // 예상 로드 시간
-
-            // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
-            const interval = setInterval(function () {
-                const currentTime = new Date().getTime();
-                const elapsedTime = currentTime - startTime;
-
-                // 경과된 시간에 비례해 로딩 바 너비 설정 (최대 80vh)
-                const width = Math.min((elapsedTime / estimatedLoadTime) * 80, 80);
-                $(".loding_bar").css("width", width + "vh");
-
-                // 페이지가 로드되기 전에 80vh에 도달하지 않도록 안전하게 제한
-                if (width >= 80) {
-                    clearInterval(interval); // 최대 너비에 도달하면 애니메이션 정지
-                }
-            }, 100); // 100ms마다 로딩 바 업데이트
-
-            // window.onload 이벤트 감지
-            window.onload = function () {
-                windowChack = true;
-                const loadTime = new Date().getTime() - startTime;
-
-                if (floor >= 0) {
-                    startTimer();
-                    updateTime();
-                }
-
-                // 실제 로드 시간이 예상 시간을 초과하지 않으면, 비율로 로딩 바 채우기
-                const finalWidth = Math.min((loadTime / estimatedLoadTime) * 80, 80);
-                $(".loding_bar").css("width", finalWidth + "vh");
-
-                // 로딩 바가 완료된 후 로딩 화면 서서히 제거
-                setTimeout(function () {
-                    $(".loding").fadeOut(500);
-                }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
-            }
-
             var moveInterval; // 캐릭터 이동을 위한 interval
             var moveActionChack = null; // 현재 움직이고 있는 방향 추적
 
@@ -521,6 +551,7 @@
             });
 
             function moveCharacter(moveAction, something) {
+                console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
                 if (something == 1) {
                     if (moveAction == 'up' && UD > 10) {
                         UD -= 2;
@@ -544,16 +575,16 @@
                 } else if (something == 2) {
                     if (moveAction == 'up' && UD2 > 10) {
                         UD2 -= 2;
-                        $(".mob" + something).css("top", UD + "vh");
+                        $(".mob" + something).css("top", UD2 + "vh");
                     } else if (moveAction == 'down' && UD2 < 80) {
                         UD2 += 2;
-                        $(".mob" + something).css("top", UD + "vh");
+                        $(".mob" + something).css("top", UD2 + "vh");
                     } else if (moveAction == 'left' && LR2 > 10) {
                         LR2 -= 2;
-                        $(".mob" + something).css("left", LR + "vh");
+                        $(".mob" + something).css("left", LR2 + "vh");
                     } else if (moveAction == 'right' && LR2 < 80) {
                         LR2 += 2;
-                        $(".mob" + something).css("left", LR + "vh");
+                        $(".mob" + something).css("left", LR2 + "vh");
                     }
                 }
             }
@@ -1140,7 +1171,7 @@
 
             //일정 시간마다 move 함수를 호출
             function show() {
-                // console.log("페이지가 모두 로드된 후 실행됩니다.");
+                console.log("페이지가 모두 로드된 후 실행됩니다.");
                 // console.log(((8 / 100) * front_hp));
 
                 // setTimeout(characHpDown, 1000);
@@ -1195,6 +1226,10 @@
                     random = getRandom(1, 5);
                 }
 
+                console.log('random : ' + random);
+                console.log('windowChack : ' + windowChack);
+                console.log('something : ' + something);
+
                 if (random == 1 && windowChack) {
                     moveCharacter('left', something)
                 } else if (random == 2 && windowChack) {
@@ -1204,7 +1239,23 @@
                 } else if (random == 4 && windowChack) {
                     moveCharacter('down', something)
                 } else if (random == 5 && windowChack) {
-                    mobAttack(2);
+                    mobAttack(something);
+                }
+            }
+
+
+
+            // 몬스터의 공격
+            function mobAttack(something){
+                var randomAttack = getRandom(1, 4);
+                if (randomAttack == 1){
+                    attack('A', something);
+                } else if (randomAttack == 2){
+                    attack('W', something);
+                } else if (randomAttack == 3){
+                    attack('D', something);
+                } else if (randomAttack == 4){
+                    attack('S', something);
                 }
             }
 
@@ -1213,28 +1264,6 @@
                 if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
                     $(".door").fadeIn(1000).removeClass('hidden');
                 }
-            }
-
-            let seconds = charac.clearTime;
-
-            function updateTime() {
-                const hrs = Math.floor(seconds / 3600);
-                const mins = Math.floor((seconds % 3600) / 60);
-                const secs = seconds % 60;
-
-                // 1초 단위로 형식화
-                $(".time").text(
-                    hrs.toString().padStart(2, '0') + ":" +
-                    mins.toString().padStart(2, '0') + ":" +
-                    secs.toString().padStart(2, '0')
-                );
-            }
-
-            function startTimer() {
-                setInterval(() => {
-                    seconds++;
-                    updateTime();
-                }, 1000);
             }
 
             let timeoutId;

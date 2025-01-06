@@ -1,926 +1,935 @@
 @charset "UTF-8";
 
 /* 공용 */
-html>body, button, input, select {
-	font-family: Galmuri11;
-	font-weight: 800;
-	font-size: 3vh;
-	margin: 0;
-	padding: 0;
+html > body, button, input, select {
+    font-family: Galmuri11;
+    font-weight: 800;
+    font-size: 3vh;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-	margin: 0;
-	padding: 0;
-	font-size: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
 }
 
 /* 기본 스타일 (1440px 미만) */
 .body {
-	width: 100vh;
-	position: relative;
+    width: 100vh;
+    position: relative;
 }
 
 /* 1440px 이상일 때 적용 */
 @media (min-width: 1440px) {
-	.body {
-		width: 100vh;
-		position: relative;
-		left: 50%;
-		transform: translateX(-50vh);
-	}
+    .body {
+        width: 100vh;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50vh);
+    }
 }
 
 img {
-	/* mix-blend-mode: multiply; */
-	/* opacity: 0.9; */
-	
+    /* mix-blend-mode: multiply; */
+    /* opacity: 0.9; */
+
 }
 
 body {
-	background: rgb(0, 0, 30);
+    background: rgb(0, 0, 30);
 }
 
 input {
-	padding-left: 1vh !important;
-	/* background-color: transparent; */
+    padding-left: 1vh !important;
+    /* background-color: transparent; */
 }
 
 input::placeholder {
-	color: black !important;
+    color: black !important;
 }
 
 input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
-	color: black;
+    color: black;
 }
 
 input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
-	color: black;
+    color: black;
 }
 
 input::-ms-input-placeholder { /* 엣지 */
-	color: black;
+    color: black;
 }
 
 input::-moz-placeholder { /* 파이어폭스 19+ */
-	color: black;
+    color: black;
 }
 
 input:-moz-placeholder { /* 파이어폭스 4-18 */
-	color: black;
+    color: black;
 }
 
 .bg {
-	width: 100vh;
-	height: 100vh;
+    width: 100vh;
+    height: 100vh;
 }
 
 .bg_img {
-	width: 100vh;
-	height: 100vh;
+    width: 100vh;
+    height: 100vh;
 }
 
 .bo {
-	border: 0.1vh solid;
+    border: 1vh solid red;
 }
 
 /* 배경음악 */
 .audioPlayer {
-	left: 0;
-	top: 0;
+    left: 0;
+    top: 0;
 }
 
 .play::after {
-	display: block;
-	padding-left: 1vh;
-	padding-right: 1vh;
-	content: "켜기";
+    display: block;
+    padding-left: 1vh;
+    padding-right: 1vh;
+    content: "켜기";
 }
 
 .pause::after {
-	display: block;
-	padding-left: 1vh;
-	padding-right: 1vh;
-	content: "끄기";
+    display: block;
+    padding-left: 1vh;
+    padding-right: 1vh;
+    content: "끄기";
 }
 
 .audio_bt {
-	top: 1vh;
-	left: 101vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    top: 1vh;
+    left: 101vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 /* 메인화면 */
 .logo {
-	left: 1vh;
-	top: 1vh;
-	width: 10vh;
-	height: 10vh;
+    left: 1vh;
+    top: 1vh;
+    width: 10vh;
+    height: 10vh;
 }
 
 .TOP3 {
-	left: 70vh;
-	top: 1vh;
-	width: 30vh;
-	height: 30vh;
+    left: 70vh;
+    top: 1vh;
+    width: 30vh;
+    height: 30vh;
 }
 
 .TOP3_img {
-	width: 30vh;
-	height: 30vh;
+    width: 30vh;
+    height: 30vh;
 }
 
 .TOP3_table {
-	top: 6vh;
-	left: 5vh;
-	font-size: 2vh;
+    top: 6vh;
+    left: 5vh;
+    font-size: 2vh;
 }
 
 .TOP3_list_bt {
-	top: 22.7vh;
-	left: 16vh;
-	width: 10vh;
-	height: 2vh;
-	font-size: 1.5vh;
+    top: 22.7vh;
+    left: 16vh;
+    width: 10vh;
+    height: 2vh;
+    font-size: 1.5vh;
 }
 
 .id {
-	left: 27.5vh;
-	top: 40vh;
-	-webkit-text-stroke: 0.05vh white;
+    left: 27.5vh;
+    top: 40vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .pw {
-	text-align: center;
-	width: 18vh;
-	left: 40vh;
-	top: 49vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    text-align: center;
+    width: 18vh;
+    left: 40vh;
+    top: 49vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
-.id>input, .pw>input {
-	padding: 0.7vh;
+.id > input, .pw > input {
+    padding: 0.7vh;
 }
 
 .join_bt {
-	width: 18vh;
-	left: 30vh;
-	top: 36vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    width: 18vh;
+    left: 30vh;
+    top: 36vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 .login_out_bt {
-	width: 19vh;
-	left: 51vh;
-	top: 36vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    width: 19vh;
+    left: 51vh;
+    top: 36vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 .start, .start-1, .start-2, start-text {
-	width: 15vh;
-	height: 15vh;
-	top: 46vh;
-	left: 53vh;
+    width: 15vh;
+    height: 15vh;
+    top: 46vh;
+    left: 53vh;
 }
 
 .start-2, .start-text {
-	display: none;
+    display: none;
 }
 
 .start-text {
-	left: 1.8vh;
-	top: 7vh;
-	z-index: 10;
+    left: 1.8vh;
+    top: 7vh;
+    z-index: 10;
 }
 
-.arrow1{
-	left:0;
-	font-size: 4.5vh;
-	transform: rotate(90deg);
+.arrow1 {
+    left: 0;
+    font-size: 4.5vh;
+    transform: rotate(90deg);
 }
 
-.arrow2{
-	left: 10.6vh;
-	font-size: 4.5vh;
-	transform: rotate(180deg);
-	background: rgb(255, 71, 48);	
+.arrow2 {
+    left: 10.6vh;
+    font-size: 4.5vh;
+    transform: rotate(180deg);
+    background: rgb(255, 71, 48);
 }
 
-.start:hover>.start-2, .start:hover>.start-text {
-	display: block;
+.start:hover > .start-2, .start:hover > .start-text {
+    display: block;
 }
 
-.start:hover>.start-1, .start:hover>.arrow1, .start:hover>.arrow2 {
-	display: none;
+.start:hover > .start-1, .start:hover > .arrow1, .start:hover > .arrow2 {
+    display: none;
 }
 
 .member_name1, .member_name2 {
-	-webkit-text-stroke: 0.05vh white;
-	width: 20vh;
+    -webkit-text-stroke: 0.05vh white;
+    width: 20vh;
 }
 
 .member_name1 {
-	font-size: 4vh;
-	width: 25vh;
-	left: 27vh;
-	top: 45vh;
-	-webkit-text-stroke: 0.05vh white;
-	padding: 0.7vh;
+    font-size: 4vh;
+    width: 25vh;
+    left: 27vh;
+    top: 45vh;
+    -webkit-text-stroke: 0.05vh white;
+    padding: 0.7vh;
 }
 
 .member_name2 {
-	font-size: 4vh;
-	width: 25vh;
-	left: 27vh;
-	top: 51vh;
-	-webkit-text-stroke: 0.05vh white;
-	padding: 0.7vh;
+    font-size: 4vh;
+    width: 25vh;
+    left: 27vh;
+    top: 51vh;
+    -webkit-text-stroke: 0.05vh white;
+    padding: 0.7vh;
 }
 
 /* 회원가입 화면 */
 .doJoin_bg {
-	top: 15vh;
-	left: 10vh;
-	width: 80vh;
-	height: 80vh;
+    top: 15vh;
+    left: 10vh;
+    width: 80vh;
+    height: 80vh;
 }
 
 .doJoin_title {
-	top: 8.5vh;
-	left: 5vh;
-	width: 70vh;
-	font-size: 8vh;
-	-webkit-text-stroke: 0.1vh white;
+    top: 8.5vh;
+    left: 5vh;
+    width: 70vh;
+    font-size: 8vh;
+    -webkit-text-stroke: 0.1vh white;
 }
 
 .label {
-	padding-bottom: 1vh;
+    padding-bottom: 1vh;
 }
 
 .doJoin_id {
-	top: 25vh;
-	left: 5vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    top: 25vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_pw {
-	top: 35vh;
-	left: 5vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    top: 35vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_pw2 {
-	top: 45vh;
-	left: 5vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    top: 45vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_name {
-	top: 55vh;
-	left: 5vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    top: 55vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_nickname {
-	top: 65vh;
-	left: 5vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    top: 65vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_gender {
-	width: 10vh;
-	height: 5vh;
-	top: 25vh;
-	left: 50vh;
-	-webkit-text-stroke: 0.05vh white;
-	font-size: 2.8vh;
+    width: 10vh;
+    height: 5vh;
+    top: 25vh;
+    left: 50vh;
+    -webkit-text-stroke: 0.05vh white;
+    font-size: 2.8vh;
 }
 
 .doJoin_bt {
-	top: 55vh;
-	left: 50vh;
-	width: 20vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    top: 55vh;
+    left: 50vh;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 .doJoin_exit {
-	top: 65vh;
-	left: 50vh;
-	width: 20vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    top: 65vh;
+    left: 50vh;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 /* 내 정보 화면 */
 .myPage_label {
-	height: 6vh;
-	width: 20vh;
-	display: inline-block;
+    height: 6vh;
+    width: 20vh;
+    display: inline-block;
 }
 
 .myPage_body {
-	height: 6vh;
-	width: 45vh;
-	display: inline-block;
+    height: 6vh;
+    width: 45vh;
+    display: inline-block;
 }
 
 .myPage_bg {
-	top: 15vh;
-	left: 10vh;
-	width: 80vh;
-	height: 80vh;
+    top: 15vh;
+    left: 10vh;
+    width: 80vh;
+    height: 80vh;
 }
 
 .myPage_title {
-	top: 8.5vh;
-	left: 5vh;
-	width: 70vh;
-	font-size: 8vh;
-	-webkit-text-stroke: 0.1vh white;
+    top: 8.5vh;
+    left: 5vh;
+    width: 70vh;
+    font-size: 8vh;
+    -webkit-text-stroke: 0.1vh white;
 }
 
 .myPage_1 {
-	top: 33vh;
-	left: 8vh;
-	-webkit-text-stroke: 0.05vh white;
+    top: 33vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .myPage_2 {
-	top: 39vh;
-	left: 8vh;
-	-webkit-text-stroke: 0.05vh white;
+    top: 39vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .myPage_3 {
-	top: 45vh;
-	left: 8vh;
-	-webkit-text-stroke: 0.05vh white;
+    top: 45vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .myPage_4 {
-	top: 51vh;
-	left: 8vh;
-	-webkit-text-stroke: 0.05vh white;
+    top: 51vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .myPage_5 {
-	top: 57vh;
-	left: 8vh;
-	-webkit-text-stroke: 0.05vh white;
+    top: 57vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .myPage_bt {
-	top: 68vh;
-	left: 12vh;
-	width: 20vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    top: 68vh;
+    left: 12vh;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 .myPage_exit {
-	top: 68vh;
-	left: 45vh;
-	width: 20vh;
-	border: 0.3vh solid;
-	padding: 0.7vh;
-	border-radius: 1vh;
-	background: rgb(255, 71, 48);
+    top: 68vh;
+    left: 45vh;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
 }
 
 /* 점수기록 */
 .scoreboard_bg {
-	top: 15vh;
-	left: 10vh;
-	width: 80vh;
-	height: 80vh;
+    top: 15vh;
+    left: 10vh;
+    width: 80vh;
+    height: 80vh;
 }
 
 .scoreboard_table {
-	top: 4vh;
-	left: 16vh;
-	width: 45vh;
-	text-align: center;
+    top: 4vh;
+    left: 16vh;
+    width: 45vh;
+    text-align: center;
 }
 
-.scoreboard_clearTime{
-	font-size: 1.5vh;
-	bottom: 0;
+.scoreboard_clearTime {
+    font-size: 1.5vh;
+    bottom: 0;
 }
 
 .pagination {
-	width: 80vh;
-	top: 69.5vh;
+    width: 80vh;
+    top: 69.5vh;
 }
 
-.pagination>a {
-	padding: 0.5vh;
-	-webkit-text-stroke: 0.05vh gray;
+.pagination > a {
+    padding: 0.5vh;
+    -webkit-text-stroke: 0.05vh gray;
 }
 
 .scoreboard_exit_bt {
-	top: 61vh;
-	left: 46vh;
-	padding-right: 10vh;
+    top: 61vh;
+    left: 46vh;
+    padding-right: 10vh;
 }
 
 .pagination_left {
-	top: 33vh;
-	left: 12vh;
+    top: 33vh;
+    left: 12vh;
 }
 
 .pagination_right {
-	top: 33vh;
-	left: 60vh;
+    top: 33vh;
+    left: 60vh;
 }
 
 /* 인게임 헤드 */
 .loding_img {
-  width: 100vh;
-  height: 100vh;
+    width: 100vh;
+    height: 100vh;
 }
+
+.loding {
+    left: 0;
+    top: 0;
+}
+
 .loding_text {
-  top: 36vh;
-  left: 27vh;
-  font-size: 15vh;
-  -webkit-text-stroke: 0.1vh white;
+    top: 36vh;
+    left: 27vh;
+    font-size: 15vh;
+    -webkit-text-stroke: 0.1vh white;
 }
+
 .loding_bar {
-  height: 5vh;
-  left: 10vh;
-  bottom: 10vh;
-  background: red;
-  border-radius: 0.3vh;
-  transition: transform 1000s;
+    height: 5vh;
+    left: 10vh;
+    bottom: 10vh;
+    background: red;
+    border-radius: 0.3vh;
+    transition: transform 1000s;
 }
 
 .ingame_logo {
-	left: -18vh;
-	top: 1vh;
-	width: 16vh;
-	height: 16vh;
+    left: -18vh;
+    top: 1vh;
+    width: 16vh;
+    height: 16vh;
 }
 
 .bar {
-	width: 20vh;
-	height: 100vh;
-	top: 0;
-	left: -20.5vh;
+    width: 20vh;
+    height: 100vh;
+    top: 0;
+    left: -20.5vh;
 }
 
 .door_top {
-	left: 45vh;
-	top: 0vh;
-	width: 10vh;
-	height: 10vh;
+    left: 45vh;
+    top: 0vh;
+    width: 10vh;
+    height: 10vh;
 }
 
 .door_bottom {
-	left: 45vh;
-	top: 90vh;
-	width: 10vh;
-	height: 10vh;
-	transform: rotate(180deg);
+    left: 45vh;
+    top: 90vh;
+    width: 10vh;
+    height: 10vh;
+    transform: rotate(180deg);
 }
 
 .door_left {
-	left: 0vh;
-	top: 45vh;
-	width: 10vh;
-	height: 10vh;
-	transform: rotate(270deg);
+    left: 0vh;
+    top: 45vh;
+    width: 10vh;
+    height: 10vh;
+    transform: rotate(270deg);
 }
 
 .door_right {
-	left: 90vh;
-	top: 45vh;
-	width: 10vh;
-	height: 10vh;
-	transform: rotate(90deg);
+    left: 90vh;
+    top: 45vh;
+    width: 10vh;
+    height: 10vh;
+    transform: rotate(90deg);
 }
 
 .floor_room {
-	left: 0;
-	top: 18vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 18vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .hp {
-	left: 0;
-	top: 28vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 28vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .power {
-	left: 0;
-	top: 38vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 38vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .speed {
-	left: 0;
-	top: 48vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 48vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .mob__dictionary_bt {
-	left: 0;
-	top: 58vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 58vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .mob__dictionary {
-	top: 15vh;
-	left: 25vh;
-	width: 90vh;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	overflow: hidden;
-	z-index: 20;
+    top: 15vh;
+    left: 25vh;
+    width: 90vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    z-index: 20;
 }
 
 .mob__dictionary_inner {
-	display: flex;
-	gap: 3.5vh;
-	transition: transform 0.5s ease;
+    display: flex;
+    gap: 3.5vh;
+    transition: transform 0.5s ease;
 }
 
 .mob__dictionary_card {
-	width: 20vh;
-	background: white;
-	border: 0.1vh solid;
-	flex-shrink: 0;
+    width: 20vh;
+    background: white;
+    border: 0.1vh solid;
+    flex-shrink: 0;
 }
 
 .mob__dictionary_title {
-	height: 20vh;
-	width: 20vh;
+    height: 20vh;
+    width: 20vh;
 }
 
 .mob__dictionary_body {
-	padding-top: 3vh;
-	width: 20vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    padding-top: 3vh;
+    width: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .mob__prev_bt {
-	width: 10vh;
-	height: 10vh;
-	font-size: 5vh;
-	top: 3vh;
-	left: 30vh;
-	z-index: 21;
-	border-radius: 100vh;
-	background: white;
+    width: 10vh;
+    height: 10vh;
+    font-size: 5vh;
+    top: 3vh;
+    left: 30vh;
+    z-index: 21;
+    border-radius: 100vh;
+    background: white;
 }
 
 .mob__list_bt {
-	width: 25vh;
-	top: 3vh;
-	left: 57vh;
-	font-size: 5vh;
-	padding: 1vh;
-	border-radius: 1vh;
-	background: white;
-	text-align: center;
+    width: 25vh;
+    top: 3vh;
+    left: 57vh;
+    font-size: 5vh;
+    padding: 1vh;
+    border-radius: 1vh;
+    background: white;
+    text-align: center;
 }
 
 .mob__next_bt {
-	width: 10vh;
-	height: 10vh;
-	font-size: 5vh;
-	top: 3vh;
-	left: 100vh;
-	z-index: 21;
-	border-radius: 100vh;
-	background: white;
+    width: 10vh;
+    height: 10vh;
+    font-size: 5vh;
+    top: 3vh;
+    left: 100vh;
+    z-index: 21;
+    border-radius: 100vh;
+    background: white;
 }
 
 .weapon__dictionary_bt {
-	left: 0;
-	top: 68vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 68vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .weapon__dictionary {
-	top: 65vh;
-	left: 25vh;
-	width: 90vh;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	overflow: hidden;
-	z-index: 20;
+    top: 65vh;
+    left: 25vh;
+    width: 90vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    z-index: 20;
 }
 
 .weapon__dictionary_inner {
-	display: flex;
-	gap: 3.5vh;
-	transition: transform 0.5s ease;
+    display: flex;
+    gap: 3.5vh;
+    transition: transform 0.5s ease;
 }
 
 .weapon__dictionary_card {
-	width: 20vh;
-	background: white;
-	border: 0.1vh solid;
-	flex-shrink: 0;
+    width: 20vh;
+    background: white;
+    border: 0.1vh solid;
+    flex-shrink: 0;
 }
 
 .weapon__dictionary_title {
-	height: 20vh;
-	width: 20vh;
+    height: 20vh;
+    width: 20vh;
 }
 
 .weapon__dictionary_body {
-	padding-top: 3vh;
-	width: 20vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    padding-top: 3vh;
+    width: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .weapon__prev_bt {
-	width: 10vh;
-	height: 10vh;
-	font-size: 5vh;
-	top: 53vh;
-	left: 30vh;
-	z-index: 21;
-	border-radius: 100vh;
-	background: white;
+    width: 10vh;
+    height: 10vh;
+    font-size: 5vh;
+    top: 53vh;
+    left: 30vh;
+    z-index: 21;
+    border-radius: 100vh;
+    background: white;
 }
 
 .weapon__list_bt {
-	width: 25vh;
-	top: 53vh;
-	left: 57vh;
-	font-size: 5vh;
-	padding: 1vh;
-	border-radius: 1vh;
-	background: white;
-	text-align: center;
+    width: 25vh;
+    top: 53vh;
+    left: 57vh;
+    font-size: 5vh;
+    padding: 1vh;
+    border-radius: 1vh;
+    background: white;
+    text-align: center;
 }
 
 .weapon__next_bt {
-	width: 10vh;
-	height: 10vh;
-	font-size: 5vh;
-	top: 53vh;
-	left: 100vh;
-	z-index: 21;
-	border-radius: 100vh;
-	background: white;
+    width: 10vh;
+    height: 10vh;
+    font-size: 5vh;
+    top: 53vh;
+    left: 100vh;
+    z-index: 21;
+    border-radius: 100vh;
+    background: white;
 }
 
 .weapon {
-	left: 0;
-	top: 78vh;
-	width: 20vh;
-	height: 20vh;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    left: 0;
+    top: 78vh;
+    width: 20vh;
+    height: 20vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .weapon_img {
-	left: 5vh;
-	top: 7vh;
-	width: 10vh;
-	height: 10vh;
+    left: 5vh;
+    top: 7vh;
+    width: 10vh;
+    height: 10vh;
 }
+
 /* 풋(채팅) */
 .chat {
-	top: 11vh;
-	left: 101vh;
-	width: 41vh;
-	height: 82.5vh;
-	color: white;	
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-top-left-radius: 1vh;
-	border-bottom-left-radius: 1vh;
-	overflow: auto;
-}
-.who_chat{
-	padding-left: 1vh;
-	width: 30vh;	
-	text-align: left;
-	margin-right:auto;
+    top: 11vh;
+    left: 101vh;
+    width: 41vh;
+    height: 82.5vh;
+    color: white;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-top-left-radius: 1vh;
+    border-bottom-left-radius: 1vh;
+    overflow: auto;
 }
 
-.my_chat{
-	padding-right: 1vh;
-	width: 30vh;
-	text-align: right;
-	margin-left:auto;	
+.who_chat {
+    padding-left: 1vh;
+    width: 30vh;
+    text-align: left;
+    margin-right: auto;
 }
 
-.chat_writer{
-	font-size: 1vh;
+.my_chat {
+    padding-right: 1vh;
+    width: 30vh;
+    text-align: right;
+    margin-left: auto;
 }
 
-.chat_body{
-	font-size: 2vh;
-	word-break: keep-all;
+.chat_writer {
+    font-size: 1vh;
 }
 
-.chat_var{
-	width: 32vh;
-	left: 101vh;
-	bottom: 1vh;
-	color: white;	
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	background: inherit;
+.chat_body {
+    font-size: 2vh;
+    word-break: keep-all;
 }
 
-.chat_bt{
-	width: 8vh;
-	left: 134vh;
-	bottom: 1vh;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+.chat_var {
+    width: 32vh;
+    left: 101vh;
+    bottom: 1vh;
+    color: white;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    background: inherit;
+}
+
+.chat_bt {
+    width: 8vh;
+    left: 134vh;
+    bottom: 1vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 /* 인게임 맵 */
 .guide1 {
-	top: 30vh;
-	left: 15vh;
-	width: 30vh;
-	padding: 1vh;
-	border:0.3vh solid rgba(156, 163, 175);
-	border-radius: 1vh;
+    top: 30vh;
+    left: 15vh;
+    width: 30vh;
+    padding: 1vh;
+    border: 0.3vh solid rgba(156, 163, 175);
+    border-radius: 1vh;
 }
 
 .guide2 {
-	top: 30vh;
-	left: 55vh;
-	width: 30vh;
-	padding: 1vh;
-	width: 30vh;
-	border:0.3vh solid rgba(156, 163, 175);
-	border-radius: 1vh;
+    top: 30vh;
+    left: 55vh;
+    width: 30vh;
+    padding: 1vh;
+    width: 30vh;
+    border: 0.3vh solid rgba(156, 163, 175);
+    border-radius: 1vh;
 }
 
-.timer{
-	top: 1vh;
-	left: 122vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+.timer {
+    top: 1vh;
+    left: 122vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .front_charac {
-	left: 10vh;
-	top: 44vh; /* 44.1 */
-	width: 10vh;
-	height: 10vh;
+    left: 10vh;
+    top: 44vh; /* 44.1 */
+    width: 10vh;
+    height: 10vh;
 }
 
 .front_charac_img {
-	width: 10vh;
-	height: 10vh;
+    width: 10vh;
+    height: 10vh;
 }
 
-.characHP_bar1, .characHP_bar2, .characHP_bar3, .characHP_bar4, .characHP_bar5, .characHP_bar6, .characHP_bar7, .characHP_bar8, .characHP_bar9, .characHP_bar0, .mob2HP_bar, .mob3HP_bar, .mob4HP_bar, .mob5HP_bar{
-	top: -2vh;
-	left: 1vh;
-	height: 1vh;
-	width: 8vh;
-	transition: width 0.5s ease;
+.characHP_bar1, .characHP_bar2, .characHP_bar3, .characHP_bar4, .characHP_bar5, .characHP_bar6, .characHP_bar7, .characHP_bar8, .characHP_bar9, .characHP_bar0, .mob2HP_bar, .mob3HP_bar, .mob4HP_bar, .mob5HP_bar {
+    top: -2vh;
+    left: 1vh;
+    height: 1vh;
+    width: 8vh;
+    transition: width 0.5s ease;
 }
 
-.characHP_bar_text{
-	top: -2vh;
-	left: 1vh;
-	height: 1vh;
-	width: 8vh;
-	text-align: right;
-	font-size:0.7vh;
-	padding-right:0.1vh;
-	z-index: 30;
+.characHP_bar_text {
+    top: -2vh;
+    left: 1vh;
+    height: 1vh;
+    width: 8vh;
+    text-align: right;
+    font-size: 0.7vh;
+    padding-right: 0.1vh;
+    z-index: 30;
 }
 
-.damage1{
-	top: -5vh;
-	left: 0;
-	width: 10vh;
-	text-align:center;
-	color: blue;
-	
+.damage1 {
+    top: -5vh;
+    left: 0;
+    width: 10vh;
+    text-align: center;
+    color: blue;
+
 }
 
 .damage2, .damage3, .damage4, .damage5 {
-	top: -5vh;
-	left: 0;
-	width: 10vh;
-	text-align:center;
-	color: red;
+    top: -5vh;
+    left: 0;
+    width: 10vh;
+    text-align: center;
+    color: red;
 }
 
-.damage6{
-	top: -5vh;
-	left: 0;
-	width: 20vh;
-	text-align:center;
-	color: red;
+.damage6 {
+    top: -5vh;
+    left: 0;
+    width: 20vh;
+    text-align: center;
+    color: red;
 }
 
 /* [class^='Aattack'] {
@@ -929,49 +938,49 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 	transform: scaleX(-1);
 } */
 .attackSize {
-	width: 2vh;
-	height: 2vh;
+    width: 2vh;
+    height: 2vh;
 }
 
 .Aattack1 {
-	left: 4vh;
-	top: 4vh;
-	transform: scaleX(-1);
-	transition: left 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: scaleX(-1);
+    transition: left 0.5s ease;
 }
 
 .Wattack1 {
-	left: 4vh;
-	top: 4vh;
-	transform: rotate(270deg);
-	transition: top 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: rotate(270deg);
+    transition: top 0.5s ease;
 }
 
 .Dattack1 {
-	left: 4vh;
-	top: 4vh;
-	transition: left 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transition: left 0.5s ease;
 }
 
 .Sattack1 {
-	left: 4vh;
-	top: 4vh;
-	transform: rotate(90deg);
-	transition: top 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: rotate(90deg);
+    transition: top 0.5s ease;
 }
 
 .Aattack2, .Aattack3, .Aattack4, .Aattack5 {
-	left: 4vh;
-	top: 4vh;
-	transform: scaleX(-1);
-	transition: left 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: scaleX(-1);
+    transition: left 0.5s ease;
 }
 
 .Aattack6 {
-	left: 9vh;
-	top: 9vh;
-	transform: scaleX(-1);
-	transition: left 0.5s ease;
+    left: 9vh;
+    top: 9vh;
+    transform: scaleX(-1);
+    transition: left 0.5s ease;
 }
 
 /* [class^="Wattack"] {
@@ -980,17 +989,17 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 	transform: rotate(270deg);
 } */
 .Wattack2, .Wattack3, .Wattack4, .Wattack5 {
-	left: 4vh;
-	top: 4vh;
-	transform: rotate(270deg);
-	transition: top 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: rotate(270deg);
+    transition: top 0.5s ease;
 }
 
 .Wattack6 {
-	left: 4vh;
-	top: 4vh;
-	transform: rotate(270deg);
-	transition: top 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: rotate(270deg);
+    transition: top 0.5s ease;
 }
 
 /* [class^="Dattack"] {
@@ -998,15 +1007,15 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 	top: 4vh;
 } */
 .Dattack2, .Dattack3, .Dattack4, .Dattack5 {
-	left: 4vh;
-	top: 4vh;
-	transition: left 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transition: left 0.5s ease;
 }
 
 .Dattack6 {
-	left: 9vh;
-	top: 9vh;
-	transition: left 0.5s ease;
+    left: 9vh;
+    top: 9vh;
+    transition: left 0.5s ease;
 }
 
 /* [class^="Sattack"] {
@@ -1015,273 +1024,273 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 	transform: rotate(90deg);
 } */
 .Sattack2, .Sattack3, .Sattack4, .Sattack5 {
-	left: 4vh;
-	top: 4vh;
-	transform: rotate(90deg);
-	transition: top 0.5s ease;
+    left: 4vh;
+    top: 4vh;
+    transform: rotate(90deg);
+    transition: top 0.5s ease;
 }
 
 .Sattack6 {
-	left: 9vh;
-	top: 9vh;
-	transform: rotate(90deg);
-	transition: top 0.5s ease;
+    left: 9vh;
+    top: 9vh;
+    transform: rotate(90deg);
+    transition: top 0.5s ease;
 }
 
 .front_mob_img {
-	width: 10vh;
-	height: 10vh;
+    width: 10vh;
+    height: 10vh;
 }
 
 .front_bossMob_img {
-	width: 20vh;
-	height: 20vh;
+    width: 20vh;
+    height: 20vh;
 }
 
 .item {
-	top: 45vh;
-	left: 75vh;
-	width: 10vh;
-	height: 10vh;
+    top: 45vh;
+    left: 75vh;
+    width: 10vh;
+    height: 10vh;
 }
 
 .random_item {
-	top: 75vh;
-	left: 45vh;
-	width: 10vh;
-	height: 10vh;
+    top: 75vh;
+    left: 45vh;
+    width: 10vh;
+    height: 10vh;
 }
 
 /* 게임오버화면 */
 .over {
-	top: 0;
-	left: 0;
-	height: 100vh;
-	width: 100vh;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vh;
 }
 
 .over_bt {
-	font-size: 15vh;
-	-webkit-text-stroke: 0.05vh white;
-	padding: 25vh;
+    font-size: 15vh;
+    -webkit-text-stroke: 0.05vh white;
+    padding: 25vh;
 }
 
 .item_text {
-	top: 40vh;
-	left: 25vh;
-	height: 20vh;
-	width: 50vh;
-	-webkit-text-stroke: 0.05vh white;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	background: rgb(0, 0, 30);
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    top: 40vh;
+    left: 25vh;
+    height: 20vh;
+    width: 50vh;
+    -webkit-text-stroke: 0.05vh white;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    background: rgb(0, 0, 30);
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .random_item_text {
-	top: 40vh;
-	left: 25vh;
-	height: 20vh;
-	width: 50vh;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	background: rgb(0, 0, 30);
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    top: 40vh;
+    left: 25vh;
+    height: 20vh;
+    width: 50vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    background: rgb(0, 0, 30);
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .item_img {
-	height: 20vh;
-	width: 50vh;
-	transform: scaleY(-1);
+    height: 20vh;
+    width: 50vh;
+    transform: scaleY(-1);
 }
 
-.item_text>div, .item_text>button {
-	z-index: 20;
+.item_text > div, .item_text > button {
+    z-index: 20;
 }
 
 .item_title {
-	top: 5vh;
-	left: 3vh;
+    top: 5vh;
+    left: 3vh;
 }
 
 .item_change {
-	top: 14vh;
-	left: 4vh;
-	width: 10vh;
-	text-align:center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
+    top: 14vh;
+    left: 4vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
 }
 
 .item_get {
-	top: 14vh;
-	left: 4vh;
-	width: 10vh;
-	text-align:center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
+    top: 14vh;
+    left: 4vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
 }
 
 .item_mix {
-	top: 14vh;
-	left: 19vh;
-	width: 10vh;
-	text-align:center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
+    top: 14vh;
+    left: 19vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
 }
 
 .item_exit {
-	top: 14vh;
-	left: 35vh;
-	width: 10vh;
-	text-align:center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
+    top: 14vh;
+    left: 35vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
 }
 
 .bossHP {
-	top: 0.5vh;
-	left: 15vh;
+    top: 0.5vh;
+    left: 15vh;
 }
 
 .bossHP_title {
-	font-size: 5vh;
-	display: inline-block;
-	-webkit-text-stroke: 0.05vh white;
+    font-size: 5vh;
+    display: inline-block;
+    -webkit-text-stroke: 0.05vh white;
 }
 
 .bossHP_bar {
-	height: 5vh;
-	width: 50vh;
-	background: red;
-	display: inline-block;
+    height: 5vh;
+    width: 50vh;
+    background: red;
+    display: inline-block;
 }
 
 /* 몬스터 도감 */
 .dictionary_exit_bt {
-	top: 1vh;
-	left: 122vh;
-	width: 20vh;
-	height: 9vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 0.3vh solid rgb(174, 0, 27);
-	border-radius: 1vh;
-	/* background: rgb(255, 71, 48); */
-	color: rgb(156, 163, 175);
-	-webkit-text-stroke: 0.1vh black;
+    top: 1vh;
+    left: 122vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
 }
 
 .mob__dictionary_title {
-	top: 0;
-	left: 20vh;
-	width: 60vh;
-	font-size: 6vh;
-	text-align: center;
-	-webkit-text-stroke: 0.1vh white;
+    top: 0;
+    left: 20vh;
+    width: 60vh;
+    font-size: 6vh;
+    text-align: center;
+    -webkit-text-stroke: 0.1vh white;
 }
 
 .mob__dictionary2 {
-	top: 10vh;
-	left: 10vh;
-	height: 80vh;
-	width: 80vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between
+    top: 10vh;
+    left: 10vh;
+    height: 80vh;
+    width: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
 }
 
 .mob__dictionary_inner2 {
-	display: flex;
-	justify-content: space-between
+    display: flex;
+    justify-content: space-between
 }
 
 .mob__dictionary_card2 {
-	height: 10vh;
-	width: 7vh;
-	background: white;
-	border: 0.1vh solid;
-	flex-shrink: 0;
+    height: 10vh;
+    width: 7vh;
+    background: white;
+    border: 0.1vh solid;
+    flex-shrink: 0;
 }
 
 .mob__dictionary_title2 {
-	padding: 0.5vh;
+    padding: 0.5vh;
 }
 
 .mob__dictionary_body2 {
-	padding-top: 1vh;
-	display: flex;
-	font-size: 1vh;
-	justify-content: center;
-	align-items: center;
+    padding-top: 1vh;
+    display: flex;
+    font-size: 1vh;
+    justify-content: center;
+    align-items: center;
 }
 
 /* 무기 도감 */
 .weapon__dictionary_title {
-	top: 0;
-	left: 20vh;
-	width: 60vh;
-	font-size: 6vh;
-	text-align: center;
-	-webkit-text-stroke: 0.1vh white;
+    top: 0;
+    left: 20vh;
+    width: 60vh;
+    font-size: 6vh;
+    text-align: center;
+    -webkit-text-stroke: 0.1vh white;
 }
 
 .weapon__dictionary2 {
-	top: 10vh;
-	left: 10vh;
-	height: 80vh;
-	width: 80vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between
+    top: 10vh;
+    left: 10vh;
+    height: 80vh;
+    width: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
 }
 
 .weapon__dictionary_inner2 {
-	display: flex;
-	justify-content: space-between
+    display: flex;
+    justify-content: space-between
 }
 
 .weapon__dictionary_card2 {
-	height: 10vh;
-	width: 7vh;
-	background: white;
-	border: 0.1vh solid;
-	flex-shrink: 0;
-	position: relative;
-	cursor: pointer;
+    height: 10vh;
+    width: 7vh;
+    background: white;
+    border: 0.1vh solid;
+    flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
 }
 
 .weapon__dictionary_title2 {
-	height: 7vh;
-	width: 7vh;
-	padding: 0.5vh;
+    height: 7vh;
+    width: 7vh;
+    padding: 0.5vh;
 }
 
 .weapon__dictionary_body2 {
-	padding-top: 1vh;
-	display: flex;
-	font-size: 1vh;
-	justify-content: center;
-	align-items: center;
+    padding-top: 1vh;
+    display: flex;
+    font-size: 1vh;
+    justify-content: center;
+    align-items: center;
 }
 
 .weapon__dictionary_body_text {
-	display: none;
-	top: 3vh;
-	left: 3vh;
-	padding: 1vh;
-	width: 14vh;
-	background: white;
-	font-size: 2vh;
-	z-index: 20;
-	text-align: center;
-	border: 0.1vh solid;
+    display: none;
+    top: 3vh;
+    left: 3vh;
+    padding: 1vh;
+    width: 14vh;
+    background: white;
+    font-size: 2vh;
+    z-index: 20;
+    text-align: center;
+    border: 0.1vh solid;
 }
 
-.weapon__dictionary_card2:hover>.weapon__dictionary_body_text {
-	display: block;
+.weapon__dictionary_card2:hover > .weapon__dictionary_body_text {
+    display: block;
 }
