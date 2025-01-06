@@ -214,7 +214,7 @@
     <div class="loding absolute z-50">
         <img class="loding_img"
              src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
-             alt="" />
+             alt=""/>
 
         <div class="loding_text absolute">로딩중</div>
         <div class="loding_bar absolute"></div>
@@ -376,6 +376,8 @@
             clearTime: parseInt(clearTime, 10)
         };
 
+        var front_hp = charac.hp;
+
         // 페이지가 시작될 때 시간 기록
         const startTime = new Date().getTime();
         let estimatedLoadTime = 1500; // 예상 로드 시간
@@ -414,7 +416,7 @@
 
             // 로딩 바가 완료된 후 로딩 화면 서서히 제거
             setTimeout(function () {
-               $(".loding").fadeOut(500);
+                $(".loding").fadeOut(500);
             }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
         }
 
@@ -551,7 +553,21 @@
             });
 
             function moveCharacter(moveAction, something) {
-                console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
+                // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
+
+                let data = moveChack(moveAction, something);
+
+
+                console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
+
+                if (something != 1 && data == 1) {
+                    hpDown(mobDamage);
+                    damage__motion('1', mobDamage);
+                } else if (something == 1 && data > 1) {
+                    hpDown(mobDamage);
+                    damage__motion('1', mobDamage);
+                }
+
                 if (something == 1) {
                     if (moveAction == 'up' && UD > 10) {
                         UD -= 2;
@@ -567,7 +583,7 @@
                         $(".charac").css("left", LR + "vh");
                     }
 
-                    console.log("UD :" + UD + ", LR : " + LR);
+                    // console.log("UD :" + UD + ", LR : " + LR);
                     showDoor();
                     stageUp();
                     showItem_text();
@@ -585,6 +601,62 @@
                     } else if (moveAction == 'right' && LR2 < 80) {
                         LR2 += 2;
                         $(".mob" + something).css("left", LR2 + "vh");
+                    }
+                } else if (something == 3) {
+                    if (moveAction == 'up' && UD3 > 10) {
+                        UD3 -= 2;
+                        $(".mob" + something).css("top", UD3 + "vh");
+                    } else if (moveAction == 'down' && UD3 < 80) {
+                        UD3 += 2;
+                        $(".mob" + something).css("top", UD3 + "vh");
+                    } else if (moveAction == 'left' && LR3 > 10) {
+                        LR3 -= 2;
+                        $(".mob" + something).css("left", LR3 + "vh");
+                    } else if (moveAction == 'right' && LR3 < 80) {
+                        LR3 += 2;
+                        $(".mob" + something).css("left", LR3 + "vh");
+                    }
+                } else if (something == 4) {
+                    if (moveAction == 'up' && UD4 > 10) {
+                        UD4 -= 2;
+                        $(".mob" + something).css("top", UD4 + "vh");
+                    } else if (moveAction == 'down' && UD4 < 80) {
+                        UD4 += 2;
+                        $(".mob" + something).css("top", UD4 + "vh");
+                    } else if (moveAction == 'left' && LR4 > 10) {
+                        LR4 -= 2;
+                        $(".mob" + something).css("left", LR4 + "vh");
+                    } else if (moveAction == 'right' && LR4 < 80) {
+                        LR4 += 2;
+                        $(".mob" + something).css("left", LR4 + "vh");
+                    }
+                } else if (something == 5) {
+                    if (moveAction == 'up' && UD5 > 10) {
+                        UD5 -= 2;
+                        $(".mob" + something).css("top", UD5 + "vh");
+                    } else if (moveAction == 'down' && UD5 < 80) {
+                        UD5 += 2;
+                        $(".mob" + something).css("top", UD5 + "vh");
+                    } else if (moveAction == 'left' && LR5 > 10) {
+                        LR5 -= 2;
+                        $(".mob" + something).css("left", LR5 + "vh");
+                    } else if (moveAction == 'right' && LR5 < 80) {
+                        LR5 += 2;
+                        $(".mob" + something).css("left", LR5 + "vh");
+                    }
+                } else if (something == 6) {
+                    if (moveAction == 'up' && UD6 > 10) {
+                        UD6 -= 2;
+                        $(".mob" + something).css("top", UD6 + "vh");
+                    } else if (moveAction == 'down' && UD6 < 70) {
+                        UD6 += 2;
+                        $(".mob" + something).css("top", UD6 + "vh");
+                    } else if (moveAction == 'left' && LR6 > 10) {
+                        LR6 -= 2;
+                        $(".mob" + something).css("left", LR6 + "vh");
+                    } else if (moveAction == 'right' && LR6 < 70) {
+                        LR6 += 2;
+                        $(".mob" + something).css("left", LR6 + "vh");
                     }
                 }
             }
@@ -611,7 +683,7 @@
                 attack_motion(something, direction);
 
                 let data = attackChack(something, direction);
-                console.log(data);
+                // console.log(data);
                 if (something != 1 && data == 1) {
                     if (something < 6) {
                         hpDown(mobDamage);
@@ -661,6 +733,39 @@
                 showDoor();
             }
 
+            // hp 감소
+            function hpDown(mobDamage) {
+                front_hp -= mobDamage;
+                // $('.hp_count').text(front_hp);
+                if (front_hp <= 0) {
+                    // scoreboardLog();
+                    // location.href = '../over';
+                }
+                characHpDown();
+            }
+
+            // 캐릭 체력바 변화 함수
+            function characHpDown() {
+                let new_characHp_width = (8 / 10) * (front_hp % 10);
+                // console.log(new_characHp_width);
+                let characHp_number = Math.floor(front_hp / 10);
+                if (front_hp % 10 == 0) {
+                    new_characHp_width = 8;
+                    characHp_number--;
+                }
+                // console.log("체력 넓이 : " + new_characHp_width + ", 줄 수 : " + characHp_number);
+                for (var i = characHp_number - 1; i >= 0; i--) {
+                    $(".characHP_bar" + i).css('width', '8vh');
+                }
+                for (var i = characHp_number + 1; i < 11; i++) {
+                    $(".characHP_bar" + i).css('width', '0vh');
+                }
+
+                // console.log(".characHP_bar"+(characHp_number-1));
+                $(".characHP_bar" + characHp_number).css('width', new_characHp_width + 'vh');
+                $(".characHP_bar_text").text('x' + (characHp_number + 1));
+            }
+
             //몬스터 사라지게하는 함수
             function mobHidden(num) {
                 $(".mob" + num).fadeOut(2000, function () {
@@ -668,60 +773,112 @@
                 });
             }
 
-            let rows = 40;
-            let cols = 40;
-
-            let map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
-
-            // 공격 대상 확인 함수
-            function attackChack(something, direction) {
+            function moveChack(moveAction, something) {
                 let Xcode = somethingXcode(something) - 5;
                 let Ycode = somethingYcode(something) - 5;
                 let height = something > 5 ? 10 : 5;
                 let width = something > 5 ? 10 : 5;
 
-                console.log('Xcode : ' + Xcode);
-                console.log('Ycode : ' + Ycode);
+                // 맵 생성
+                const map2 = mapChack(something);
+
+                for (i = 0; i < 40; i++) {
+                    let log = '';
+                    for (j = 0; j < 40; j++) {
+                        log += '[' + map2[i][j] + ']';
+                    }
+                    console.log(log);
+                }
+
+                // something 주위 공간 확인
+                if (moveAction == 'up') {
+                    for (y = Ycode; y < Ycode + width; y++) {
+                        if (map2[Xcode - 1][y] != 0) {
+                            return map2[Xcode - 1][y];
+                        }
+                    }
+                } else if (moveAction == 'down') {
+                    for (y = Ycode; y < Ycode + width; y++) {
+                        if (map2[Xcode + height][y] != 0) {
+                            return map2[Xcode + height][y];
+                        }
+                    }
+                } else if (moveAction == 'left') {
+                    for (x = Xcode; x < Xcode + height; x++) {
+                        if (map2[x][Ycode - 1] != 0) {
+                            return map2[x][Ycode - 1];
+                        }
+                    }
+                } else if (moveAction == 'right') {
+                    for (x = Xcode; x < Xcode + height; x++) {
+                        if (map2[x][Ycode + width] != 0) {
+                            return map2[x][Ycode + width];
+                        }
+                    }
+                }
+
+                return 0;
+            }
+
+            // 공격 대상 확인 함수
+            function attackChack(something, direction) {
+                let Xcode = somethingXcode(something) - 5;
+                let Ycode = somethingYcode(something) - 5;
+                let height = something > 5 ? 8 : 4;
+                let width = something > 5 ? 8 : 4;
+
+                // console.log('Xcode : ' + Xcode);
+                // console.log('Ycode : ' + Ycode);
 
                 let distance = somethingDistance(something, charac.weaponId, charac.floor);
 
+                // console.log('something : ' + something);
+
                 // 맵 생성
-                map = mapChack(something);
+                const map3 = mapChack(something);
 
                 if (direction == 'A') {
-                    let x = Xcode + ((height - 1) / 2);
+                    let x = Xcode + (height / 2);
                     let y = Ycode - distance;
+                    // console.log('x : ' + x);
+                    // console.log('y : ' + y);
 
                     for (i = Ycode - 1; i > y; i--) {
-                        if (map[x][i] != 0) {
-                            return map[x][i];
+                        if (map3[x][i] != 0) {
+                            return map3[x][i];
                         }
                     }
                 } else if (direction == 'W') {
                     let x = Xcode - distance;
-                    let y = Ycode + ((width - 1) / 2);
+                    let y = Ycode + (width / 2);
+                    // console.log('x : ' + x);
+                    // console.log('y : ' + y);
 
                     for (i = Xcode - 1; i > x; i--) {
-                        if (map[i][y] !== 0) {
-                            return map[i][y];
+                        if (map3[i][y] !== 0) {
+                            return map3[i][y];
                         }
                     }
                 } else if (direction == 'D') {
-                    let x = Xcode + ((height - 1) / 2);
+                    let x = Xcode + (height / 2);
                     let y = Ycode + width + distance;
+                    // console.log('x : ' + x);
+                    // console.log('y : ' + y);
 
                     for (i = Ycode + width; i < y; i++) {
-                        if (map[x][i] != 0) {
-                            return map[x][i];
+                        if (map3[x][i] != 0) {
+                            return map3[x][i];
                         }
                     }
                 } else if (direction == 'S') {
                     let x = Xcode + height + distance;
-                    let y = Ycode + ((width - 1) / 2);
+                    let y = Ycode + (width / 2);
+                    // console.log('x : ' + x);
+                    // console.log('y : ' + y);
 
                     for (i = Xcode + height; i < x; i++) {
-                        if (map[i][y] != 0) {
-                            return map[i][y];
+                        if (map3[i][y] != 0) {
+                            return map3[i][y];
                         }
                     }
                 }
@@ -837,6 +994,11 @@
                 let mob6life = mob6_hp > 0;
                 let floor = charac.floor;
                 let room = charac.room;
+
+                let rows = 40;
+                let cols = 40;
+
+                const map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
 
                 // 캐릭터 위치 부여
                 if (something != 1) {
@@ -1010,7 +1172,7 @@
                     }
 
                     windowChack = false;
-                    localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + charac.hp + "/" + charac.power + "/" + charac.speed + "/" + charac.weaponId + "/" + seconds);
+                    localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + front_hp + "/" + charac.power + "/" + charac.speed + "/" + charac.weaponId + "/" + seconds);
                     setTimeout(function () {
                         location.reload();
                     }, 100);
@@ -1057,11 +1219,11 @@
             function weapon__updateSlide() {
                 // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
                 var weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
-                console.log("weapon__currentIndex : " + weapon__currentIndex);
-                console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
-                console.log("weapon__totalItems : " + weapon__totalItems);
-                console.log("weapon__cardWidth : " + weapon__cardWidth);
-                console.log("weapon__translateX : " + weapon__translateX);
+                // console.log("weapon__currentIndex : " + weapon__currentIndex);
+                // console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
+                // console.log("weapon__totalItems : " + weapon__totalItems);
+                // console.log("weapon__cardWidth : " + weapon__cardWidth);
+                // console.log("weapon__translateX : " + weapon__translateX);
                 $('.weapon__dictionary_inner').css('transform', 'translateX(' + weapon__translateX + 'vh)');
             }
 
@@ -1174,44 +1336,44 @@
                 console.log("페이지가 모두 로드된 후 실행됩니다.");
                 // console.log(((8 / 100) * front_hp));
 
-                // setTimeout(characHpDown, 1000);
-                // setTimeout(() => mobHpDown(2), 1000);
-                // setTimeout(() => mobHpDown(3), 1000);
-                // setTimeout(() => mobHpDown(4), 1000);
-                // setTimeout(() => mobHpDown(5), 1000);
+                setTimeout(characHpDown, 1000);
+                setTimeout(() => mobHpDown(2), 1000);
+                setTimeout(() => mobHpDown(3), 1000);
+                setTimeout(() => mobHpDown(4), 1000);
+                setTimeout(() => mobHpDown(5), 1000);
                 $('body').css('cursor', 'none');
 
                 if (charac.floor <= 10) {
                     if (charac.room > 0 && charac.room < 5) {
-                        stop2 = setInterval(move(2), 1000);
+                        stop2 = setInterval(() => move(2), 1000);
                     }
                     if (charac.room > 1 && charac.room < 5) {
-                        stop3 = setInterval(move(3), 800);
+                        stop3 = setInterval(() => move(3), 800);
                     }
                     if (charac.room > 2 && charac.room < 5) {
-                        stop4 = setInterval(move(4), 500);
+                        stop4 = setInterval(() => move(4), 500);
                     }
                     if (charac.room > 3 && charac.room < 5) {
-                        stop5 = setInterval(move5, 200);
+                        stop5 = setInterval(() => move(5), 200);
                     }
                     if (charac.floor > 1 && charac.room == 0) {
-                        stop6 = setInterval(move6, 100);
+                        stop6 = setInterval(() => move(6), 100);
                     }
                 } else {
                     if (charac.room > 0 && room < 5) {
-                        stop2 = setInterval(move(2), 300);
+                        stop2 = setInterval(() => move(2), 300);
                     }
                     if (charac.room > 1 && room < 5) {
-                        stop3 = setInterval(move(3), 200);
+                        stop3 = setInterval(() => move(3), 200);
                     }
                     if (charac.room > 2 && room < 5) {
-                        stop4 = setInterval(move(4), 120);
+                        stop4 = setInterval(() => move(4), 120);
                     }
                     if (charac.room > 3 && room < 5) {
-                        stop5 = setInterval(move(5), 70);
+                        stop5 = setInterval(() => move(5), 70);
                     }
                     if (charac.floor > 1 && room == 0) {
-                        stop6 = setInterval(move(6), 30);
+                        stop6 = setInterval(() => move(6), 30);
                     }
                 }
             }
@@ -1226,9 +1388,9 @@
                     random = getRandom(1, 5);
                 }
 
-                console.log('random : ' + random);
-                console.log('windowChack : ' + windowChack);
-                console.log('something : ' + something);
+                // console.log('random : ' + random);
+                // console.log('windowChack : ' + windowChack);
+                // console.log('something : ' + something);
 
                 if (random == 1 && windowChack) {
                     moveCharacter('left', something)
@@ -1244,17 +1406,16 @@
             }
 
 
-
             // 몬스터의 공격
-            function mobAttack(something){
+            function mobAttack(something) {
                 var randomAttack = getRandom(1, 4);
-                if (randomAttack == 1){
+                if (randomAttack == 1) {
                     attack('A', something);
-                } else if (randomAttack == 2){
+                } else if (randomAttack == 2) {
                     attack('W', something);
-                } else if (randomAttack == 3){
+                } else if (randomAttack == 3) {
                     attack('D', something);
-                } else if (randomAttack == 4){
+                } else if (randomAttack == 4) {
                     attack('S', something);
                 }
             }
