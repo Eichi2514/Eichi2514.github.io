@@ -994,7 +994,7 @@
                 onclick="weapon__prev()">◀
         </button>
         <a class="weapon__list_bt absolute hidden z-20"
-           href="../dictionary/weapon">전체보기</a>
+           href="../weapon">전체보기</a>
         <button class="weapon__next_bt absolute hidden"
                 onclick="weapon__next()">▶
         </button>
@@ -1254,6 +1254,8 @@
         if (weaponMax > 70) weaponMax = 70;
         var $randomWeapon = getRandom(1, weaponMax);
 
+        var randomItem = getRandom(1, 3);
+
         //아이템 안내창 교체 버튼 눌렀을 떄
         function Item_change() {
             let changeImg = weapon[$randomWeapon];
@@ -1281,6 +1283,113 @@
         function Item_exit() {
             $(".item_text").fadeOut(1000).addClass('hidden');
             $(".random_item_text").fadeOut(1000).addClass('hidden');
+        }
+
+        //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
+        function Item_get() {
+            let randomMax = floor * 50;
+            if (randomMax > 2000) {
+                randomMax = 2000;
+            }
+            let random_ability = getRandom(1, randomMax);
+            let probability = 0;
+
+            if (random_ability <= (probability += 200)) {
+                updateStats('power', 'up', 1);
+            } else if (random_ability <= (probability += 70)) {
+                updateStats('power', 'up', 2);
+            } else if (random_ability <= (probability += 50)) {
+                updateStats('power', 'up', 3);
+            } else if (random_ability <= (probability += 40)) {
+                updateStats('power', 'up', 4);
+            } else if (random_ability <= (probability += 35)) {
+                updateStats('power', 'up', 5);
+            } else if (random_ability <= (probability += 50)) {
+                updateStats('speed', 'up', 10);
+            } else if (random_ability <= (probability += 50)) {
+                updateStats('speed', 'down', 10);
+            } else if (random_ability <= (probability += 100)) {
+                updateStats('power', 'down', 1);
+            } else if (random_ability <= (probability += 70)) {
+                updateStats('power', 'down', 2);
+            } else if (random_ability <= (probability += 50)) {
+                updateStats('power', 'down', 3);
+            } else if (random_ability <= (probability += 40)) {
+                updateStats('power', 'down', 4);
+            } else if (random_ability <= (probability += 35)) {
+                updateStats('power', 'down', 5);
+            } else if (random_ability <= (probability += 25)) {
+                updateStats('power', 'up', 6);
+            } else if (random_ability <= (probability += 15)) {
+                updateStats('power', 'up', 7);
+            } else if (random_ability <= (probability += 10)) {
+                updateStats('power', 'up', 8);
+            } else if (random_ability <= (probability += 4)) {
+                updateStats('power', 'up', 9);
+            } else if (random_ability <= (probability += 1)) {
+                updateStats('power', 'up', 10);
+            } else if (random_ability <= (probability += 25)) {
+                updateStats('power', 'down', 6);
+            } else if (random_ability <= (probability += 15)) {
+                updateStats('power', 'down', 7);
+            } else if (random_ability <= (probability += 10)) {
+                updateStats('power', 'down', 8);
+            } else if (random_ability <= (probability += 4)) {
+                updateStats('power', 'down', 9);
+            } else if (random_ability <= (probability += 1)) {
+                updateStats('power', 'down', 10);
+            } else if (random_ability <= (probability += 30)) {
+                updateStats('speed', 'up', 20);
+            } else if (random_ability <= (probability += 30)) {
+                updateStats('speed', 'down', 20);
+            } else if (random_ability <= (probability += 15)) {
+                updateStats('speed', 'up', 30);
+            } else if (random_ability <= (probability += 15)) {
+                updateStats('speed', 'down', 30);
+            } else if (random_ability <= (probability += 4)) {
+                updateStats('speed', 'up', 40);
+            } else if (random_ability <= (probability += 4)) {
+                updateStats('speed', 'down', 40);
+            } else if (random_ability <= (probability += 1)) {
+                updateStats('speed', 'up', 50);
+            } else if (random_ability <= (probability += 1)) {
+                updateStats('speed', 'down', 50);
+            } else {
+                alert('꽝');
+            }
+            $(".random_item").fadeOut(1000).addClass('hidden');
+            $(".random_item_text").fadeOut(1000).addClass('hidden');
+        }
+
+        function updateStats(stats, action, number) {
+            if (stats == 'power') {
+                stats = '힘';
+                if (action == 'up') {
+                    front_power += number;
+                    action = '+';
+                } else if (action == 'down') {
+                    front_power -= number;
+                    action = '-';
+                }
+            } else if (stats == 'speed') {
+                stats = '속도';
+                if (action == 'up') {
+                    front_speed += number;
+                    action = '+';
+                } else if (action == 'down') {
+                    front_speed -= number;
+                    action = '-';
+                }
+            }
+
+            if (front_power < 0) front_power = 0;
+            if (front_speed < 0) front_speed = 0;
+            if (front_speed > 100) front_speed = 100;
+
+            $('.power_count').text(front_power);
+            $('.speed_count').text(50 - front_speed);
+
+            alert(stats + action + number);
         }
 
         $(document).ready(function () {
@@ -1575,6 +1684,7 @@
                     BossHpDown();
                 }
                 showDoor();
+                showRandomItem();
             }
 
             // hp 감소
@@ -1743,13 +1853,20 @@
                 $(".item").fadeIn(1000).removeClass('hidden');
             }
 
-
             // 랜덤아이템 안내창 공개
             function showRandomItem_text() {
                 let randomItemChack = $(".random_item").hasClass('hidden');
                 // console.log("아이템 공개 여부"+itemChack);
                 if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
                     $(".random_item_text").fadeIn(1000).removeClass('hidden');
+                }
+            }
+
+            // 랜덤아이템 공개
+            function showRandomItem() {
+                if (charac.floor == 1 && charac.room == 0) {
+                } else if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0 && randomItem == 3) {
+                    $(".random_item").fadeIn(1000).removeClass('hidden');
                 }
             }
 
@@ -1963,6 +2080,9 @@
                     floor++;
                 }
 
+                if (room == 0) front_hp += 10;
+                if (front_hp > 100) front_hp = 100;
+
                 let doorChack = $(".door").hasClass("hidden");
                 if (LR > 79 && 38 < UD && UD < 52 && !doorChack) {
 
@@ -1978,91 +2098,6 @@
                         location.reload();
                     }, 100);
                 }
-            }
-
-            // 인게임 헤드 js
-            var mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
-            var mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
-            var mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
-            var mob__dictionaryWidth = mob__cardWidth * mob__itemsPerPage; // 몬스터 도감 한 번에 보여줄 전체 너비
-            var mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
-
-            var weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
-            var weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
-            var weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
-            var weapon__dictionaryWidth = weapon__cardWidth * weapon__itemsPerPage; // 무기 도감 한 번에 보여줄 전체 너비
-            var weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
-
-            function mob__updateSlide() {
-                // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
-                let mob__translateX = -mob__currentIndex * (mob__cardWidth + 3.5);
-                $('.mob__dictionary_inner').css('transform', 'translateX(' + mob__translateX + 'vh)');
-            }
-
-            function mob__next() {
-                if (mob__currentIndex + mob__itemsPerPage < mob__totalItems) {
-                    mob__currentIndex++;
-                } else {
-                    mob__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
-                }
-                mob__updateSlide();
-            }
-
-            function mob__prev() {
-                if (mob__currentIndex > 0) {
-                    mob__currentIndex--;
-                } else {
-                    mob__currentIndex = mob__totalItems - mob__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
-                }
-                mob__updateSlide();
-            }
-
-            function weapon__updateSlide() {
-                // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
-                let weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
-                // console.log("weapon__currentIndex : " + weapon__currentIndex);
-                // console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
-                // console.log("weapon__totalItems : " + weapon__totalItems);
-                // console.log("weapon__cardWidth : " + weapon__cardWidth);
-                // console.log("weapon__translateX : " + weapon__translateX);
-                $('.weapon__dictionary_inner').css('transform', 'translateX(' + weapon__translateX + 'vh)');
-            }
-
-            function weapon__next() {
-                if (weapon__currentIndex + weapon__itemsPerPage < weapon__totalItems) {
-                    weapon__currentIndex++;
-                } else {
-                    weapon__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
-                }
-                weapon__updateSlide();
-            }
-
-            function weapon__prev() {
-                if (weapon__currentIndex > 0) {
-                    weapon__currentIndex--;
-                } else {
-                    weapon__currentIndex = weapon__totalItems - weapon__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
-                }
-                weapon__updateSlide();
-            }
-
-            // 몬스터 도감 버튼 클릭했을때 적용되는 함수
-            function showMob__dictionary() {
-                $('.mob__dictionary').toggleClass('hidden');
-                $('.mob__prev_bt').toggleClass('hidden');
-                $('.mob__list_bt').toggleClass('hidden');
-                $('.mob__next_bt').toggleClass('hidden');
-                $('.mob__dictionary_bt').toggleClass('play');
-                $('.mob__dictionary_bt').toggleClass('pause');
-            }
-
-            function showWeapon__dictionary() {
-                $('.weapon__dictionary').toggleClass('hidden');
-                $('.weapon__prev_bt').toggleClass('hidden');
-                $('.weapon__list_bt').toggleClass('hidden');
-                $('.weapon__next_bt').toggleClass('hidden');
-                $('.weapon__dictionary_bt').toggleClass('play');
-                $('.weapon__dictionary_bt').toggleClass('pause');
             }
 
             // 데미지 화면에 보여주기
@@ -2254,6 +2289,107 @@
 
             show();
         });
+
+        var mobFind = localStorage.getItem(nickname + 'MobFind');
+
+        if (charac.room == 1) {
+            if (mobFind || mobFind < charac.floor) {
+                localStorage.setItem(nickname + 'MobFind', charac.floor);
+                mobFind = charac.floor;
+            }
+        }
+
+        if (mobFind > 53) mobFind = 53;
+
+        for (i = 1; i <= mobFind; i++) {
+            $('.mobImeage' + i).attr('src', mobs[i])
+        }
+
+
+        // 인게임 헤드 js
+        var mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
+        var mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
+        var mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
+        var mob__dictionaryWidth = mob__cardWidth * mob__itemsPerPage; // 몬스터 도감 한 번에 보여줄 전체 너비
+        var mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
+
+        var weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
+        var weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
+        var weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
+        var weapon__dictionaryWidth = weapon__cardWidth * weapon__itemsPerPage; // 무기 도감 한 번에 보여줄 전체 너비
+        var weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
+
+        function mob__updateSlide() {
+            // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
+            let mob__translateX = -mob__currentIndex * (mob__cardWidth + 3.5);
+            $('.mob__dictionary_inner').css('transform', 'translateX(' + mob__translateX + 'vh)');
+        }
+
+        function mob__next() {
+            if (mob__currentIndex + mob__itemsPerPage < mob__totalItems) {
+                mob__currentIndex++;
+            } else {
+                mob__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
+            }
+            mob__updateSlide();
+        }
+
+        function mob__prev() {
+            if (mob__currentIndex > 0) {
+                mob__currentIndex--;
+            } else {
+                mob__currentIndex = mob__totalItems - mob__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
+            }
+            mob__updateSlide();
+        }
+
+        function weapon__updateSlide() {
+            // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
+            let weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
+            // console.log("weapon__currentIndex : " + weapon__currentIndex);
+            // console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
+            // console.log("weapon__totalItems : " + weapon__totalItems);
+            // console.log("weapon__cardWidth : " + weapon__cardWidth);
+            // console.log("weapon__translateX : " + weapon__translateX);
+            $('.weapon__dictionary_inner').css('transform', 'translateX(' + weapon__translateX + 'vh)');
+        }
+
+        function weapon__next() {
+            if (weapon__currentIndex + weapon__itemsPerPage < weapon__totalItems) {
+                weapon__currentIndex++;
+            } else {
+                weapon__currentIndex = 0; // 마지막 카드에 도달하면 처음으로 돌아가기
+            }
+            weapon__updateSlide();
+        }
+
+        function weapon__prev() {
+            if (weapon__currentIndex > 0) {
+                weapon__currentIndex--;
+            } else {
+                weapon__currentIndex = weapon__totalItems - weapon__itemsPerPage; // 처음으로 돌아가면 마지막 페이지로 이동
+            }
+            weapon__updateSlide();
+        }
+
+        // 몬스터 도감 버튼 클릭했을때 적용되는 함수
+        function showMob__dictionary() {
+            $('.mob__dictionary').toggleClass('hidden');
+            $('.mob__prev_bt').toggleClass('hidden');
+            $('.mob__list_bt').toggleClass('hidden');
+            $('.mob__next_bt').toggleClass('hidden');
+            $('.mob__dictionary_bt').toggleClass('play');
+            $('.mob__dictionary_bt').toggleClass('pause');
+        }
+
+        function showWeapon__dictionary() {
+            $('.weapon__dictionary').toggleClass('hidden');
+            $('.weapon__prev_bt').toggleClass('hidden');
+            $('.weapon__list_bt').toggleClass('hidden');
+            $('.weapon__next_bt').toggleClass('hidden');
+            $('.weapon__dictionary_bt').toggleClass('play');
+            $('.weapon__dictionary_bt').toggleClass('pause');
+        }
     </script>
 </div>
 </body>
