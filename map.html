@@ -206,7 +206,7 @@
         <button class="item_exit absolute z-20" onclick="Item_exit()">취소</button>
     </div>
 
-
+    <!-- 랜덤 아이템 (알약) -->
     <img class="random_item hidden absolute"
          src="https://github.com/user-attachments/assets/64a8dc0c-b9bc-41a7-a500-8a9466c0dd04"
          alt=""/>
@@ -222,7 +222,7 @@
 
     <!-- <script src="../map.js" defer></script> -->
     <script>
-        let weapon = [
+        var weapon = [
             'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
             'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
             'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
@@ -296,7 +296,7 @@
             'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41'
         ];
 
-        let mobs = [
+        var mobs = [
             'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
             'https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0',
             'https://github.com/user-attachments/assets/76d8bc9f-d814-4f60-b99f-e6688a60acd5',
@@ -377,10 +377,13 @@
         };
 
         var front_hp = charac.hp;
+        var front_power = charac.power;
+        var front_speed = charac.speed;
+        var front_weaponId = charac.weaponId;
 
         // 페이지가 시작될 때 시간 기록
         const startTime = new Date().getTime();
-        let estimatedLoadTime = 1500; // 예상 로드 시간
+        var estimatedLoadTime = 1500; // 예상 로드 시간
 
         // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
         const interval = setInterval(function () {
@@ -398,10 +401,11 @@
         }, 100); // 100ms마다 로딩 바 업데이트
 
         // 윈도우 로딩 체크
-        var windowChack = true;
+        var windowChack = false;
 
         // window.onload 이벤트 감지
         window.onload = function () {
+            console.clear();
             windowChack = true;
             const loadTime = new Date().getTime() - startTime;
 
@@ -420,7 +424,7 @@
             }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
         }
 
-        let seconds = charac.clearTime;
+        var seconds = charac.clearTime;
 
         function updateTime() {
             const hrs = Math.floor(seconds / 3600);
@@ -442,24 +446,65 @@
             }, 1000);
         }
 
-        $(document).ready(function () {
-            $('.attackSize').attr('src', weapon[charac.weaponId]);
-            if (charac.room == 0) $('.mob_img').attr('src', mobs[charac.floor - 1]);
-            else $('.mob_img').attr('src', mobs[charac.floor]);
+        // 랜덤 수 불러오는 함수 생성
+        function getRandom(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
-            var damage = ((Math.floor(charac.weaponId / 10)) * 10) + charac.power;
-            if ((charac.weaponId % 10) != 0) {
+        var weaponMax = (charac.floor - 1) * 10;
+        if (weaponMax > 70) weaponMax = 70;
+        var $randomWeapon = getRandom(1, weaponMax);
+
+        //아이템 안내창 교체 버튼 눌렀을 떄
+        function Item_change() {
+            let changeImg = weapon[$randomWeapon];
+            front_weaponId = $randomWeapon;
+            $('.weapon_img').attr('src', changeImg);
+            $('.CharacAttack').attr('src', changeImg);
+            $(".item").fadeOut(1000).addClass('hidden');
+            $(".item_text").fadeOut(1000).addClass('hidden');
+        }
+
+        //아이템 안내창 조합 버튼 눌렀을 떄
+        function Item_mix() {
+            let changeNum = charac.weaponId + ($randomWeapon % 10);
+            if ($randomWeapon % 10 == 0) changeNum += 10;
+            if (changeNum > 70) changeNum -= 10;
+            let changeImg = weapon[changeNum];
+            front_weaponId = changeNum;
+            $('.weapon_img').attr('src', changeImg);
+            $('.CharacAttack').attr('src', changeImg);
+            $(".item").fadeOut(1000).addClass('hidden');
+            $(".item_text").fadeOut(1000).addClass('hidden');
+        }
+
+        //아이템 안내창 취소 버튼 눌렀을 떄
+        function Item_exit() {
+            $(".item_text").fadeOut(1000).addClass('hidden');
+            $(".random_item_text").fadeOut(1000).addClass('hidden');
+        }
+
+        $(document).ready(function () {
+            var $mob_index = charac.floor;
+
+            if ($mob_index > 53) {
+                $mob_index = getRandom(1, 53);
+            }
+
+            $('.attackSize').attr('src', weapon[front_weaponId]);
+            $('.item').attr('src', weapon[$randomWeapon]);
+
+            if (charac.room == 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
+            else $('.mob_img').attr('src', mobs[$mob_index]);
+
+            var damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power;
+            if ((front_weaponId % 10) != 0) {
                 damage += 10;
             }
 
             // 캐릭터 위치 변수
             var LR = 10;
             var UD = 44;
-
-            // 랜덤 수 불러오는 함수 생성
-            function getRandom(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
 
             // 몬스터 좌표 셋팅
             var UD2 = getRandom(10, 70);
@@ -525,7 +570,7 @@
 
                 moveInterval = setInterval(function () {
                     moveCharacter(moveAction, 1)
-                }, charac.speed);
+                }, front_speed);
             }
 
             function stopMoving() {
@@ -558,7 +603,7 @@
                 let data = moveChack(moveAction, something);
 
 
-                console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
+                // console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
 
                 if (something != 1 && data == 1) {
                     hpDown(mobDamage);
@@ -754,10 +799,10 @@
                     characHp_number--;
                 }
                 // console.log("체력 넓이 : " + new_characHp_width + ", 줄 수 : " + characHp_number);
-                for (var i = characHp_number - 1; i >= 0; i--) {
+                for (i = characHp_number - 1; i >= 0; i--) {
                     $(".characHP_bar" + i).css('width', '8vh');
                 }
-                for (var i = characHp_number + 1; i < 11; i++) {
+                for (i = characHp_number + 1; i < 11; i++) {
                     $(".characHP_bar" + i).css('width', '0vh');
                 }
 
@@ -782,13 +827,13 @@
                 // 맵 생성
                 const map2 = mapChack(something);
 
-                for (i = 0; i < 40; i++) {
-                    let log = '';
-                    for (j = 0; j < 40; j++) {
-                        log += '[' + map2[i][j] + ']';
-                    }
-                    console.log(log);
-                }
+                // for (i = 0; i < 40; i++) {
+                //    let log = '';
+                //    for (j = 0; j < 40; j++) {
+                //        log += '[' + map2[i][j] + ']';
+                //    }
+                //    console.log(log);
+                //}
 
                 // something 주위 공간 확인
                 if (moveAction == 'up') {
@@ -830,7 +875,7 @@
                 // console.log('Xcode : ' + Xcode);
                 // console.log('Ycode : ' + Ycode);
 
-                let distance = somethingDistance(something, charac.weaponId, charac.floor);
+                let distance = somethingDistance(something, front_weaponId, charac.floor);
 
                 // console.log('something : ' + something);
 
@@ -887,56 +932,11 @@
 
             // 아이템 안내창 공개
             function showItem_text() {
-                var itemChack = $(".item").hasClass('hidden');
+                let itemChack = $(".item").hasClass('hidden');
                 // console.log("아이템 공개 여부"+itemChack);
                 if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && charac.floor > 1 && charac.room == 0) {
                     $(".item_text").fadeIn(1000).removeClass('hidden');
                 }
-            }
-
-            //아이템 안내창 교체 버튼 눌렀을 떄
-            function Item_change() {
-                $.ajax({
-                    url: '/usr/charac/weaponChange',
-                    type: 'POST',
-                    dataType: 'text',
-                    success: function (data) {
-                        var changeImg = "${weapon}";
-                        $('.weapon_img').attr('src', changeImg);
-                        $('.CharacAttack').attr('src', changeImg);
-                        $(".item").fadeOut(1000).addClass('hidden');
-                        $(".item_text").fadeOut(1000).addClass('hidden');
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert('오류 발생 : ' + textStatus);
-                    }
-                });
-            }
-
-            //아이템 안내창 조합 버튼 눌렀을 떄
-            function Item_mix() {
-                $.ajax({
-                    url: '/usr/charac/weaponMix',
-                    type: 'POST',
-                    dataType: 'text',
-                    success: function (data) {
-                        // console.log("무기정보 : " + data);
-                        var changeImg = data;
-                        $('.weapon_img').attr('src', changeImg);
-                        $('.CharacAttack').attr('src', changeImg);
-                        $(".item").fadeOut(1000).addClass('hidden');
-                        $(".item_text").fadeOut(1000).addClass('hidden');
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert('오류 발생 : ' + textStatus);
-                    }
-                });
-            }
-
-            //아이템 안내창 취소 버튼 눌렀을 떄
-            function Item_exit() {
-                $(".item_text").fadeOut(1000).addClass('hidden');
-                $(".random_item_text").fadeOut(1000).addClass('hidden');
             }
 
             // 아이템 공개
@@ -947,7 +947,7 @@
 
             // 랜덤아이템 안내창 공개
             function showRandomItem_text() {
-                var randomItemChack = $(".random_item").hasClass('hidden');
+                let randomItemChack = $(".random_item").hasClass('hidden');
                 // console.log("아이템 공개 여부"+itemChack);
                 if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
                     $(".random_item_text").fadeIn(1000).removeClass('hidden');
@@ -1051,25 +1051,25 @@
             function somethingDistance(something, weaponId, floor) {
                 if (something == 1) {
                     if (weaponId % 10 == 1) {
-                        return 3;
-                    } else if (weaponId % 10 == 2) {
                         return 4;
-                    } else if (weaponId % 10 == 3) {
+                    } else if (weaponId % 10 == 2) {
                         return 5;
-                    } else if (weaponId % 10 == 4) {
+                    } else if (weaponId % 10 == 3) {
                         return 6;
-                    } else if (weaponId % 10 == 5) {
+                    } else if (weaponId % 10 == 4) {
                         return 7;
-                    } else if (weaponId % 10 == 6) {
+                    } else if (weaponId % 10 == 5) {
                         return 8;
-                    } else if (weaponId % 10 == 7) {
+                    } else if (weaponId % 10 == 6) {
                         return 9;
-                    } else if (weaponId % 10 == 8) {
+                    } else if (weaponId % 10 == 7) {
                         return 10;
-                    } else if (weaponId % 10 == 9) {
+                    } else if (weaponId % 10 == 8) {
                         return 11;
-                    } else if (weaponId % 10 == 0) {
+                    } else if (weaponId % 10 == 9) {
                         return 12;
+                    } else if (weaponId % 10 == 0) {
+                        return 13;
                     }
                 } else {
                     if (floor <= 4) {
@@ -1099,11 +1099,13 @@
 
             // 공격 모션 실행 함수
             function attack_motion(something, motion) {
-                var Distance = 0;
+                let Distance = 0;
+
+                console.log(front_weaponId);
 
                 if (something == 1) {
-                    Distance = charac.weaponId % 10; // 소수점 아래 버림
-                    if (charac.weaponId % 10 == 0) {
+                    Distance = front_weaponId % 10; // 소수점 아래 버림
+                    if (front_weaponId % 10 == 0) {
                         Distance = 10;
                     }
                 } else {
@@ -1162,7 +1164,7 @@
                     floor++;
                 }
 
-                var doorChack = $(".door").hasClass("hidden");
+                let doorChack = $(".door").hasClass("hidden");
                 if (LR > 79 && 38 < UD && UD < 52 && !doorChack) {
 
                     for (i = 2; i < 7; i++) {
@@ -1172,7 +1174,7 @@
                     }
 
                     windowChack = false;
-                    localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + front_hp + "/" + charac.power + "/" + charac.speed + "/" + charac.weaponId + "/" + seconds);
+                    localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + front_hp + "/" + front_power + "/" + front_speed + "/" + front_weaponId + "/" + seconds);
                     setTimeout(function () {
                         location.reload();
                     }, 100);
@@ -1194,7 +1196,7 @@
 
             function mob__updateSlide() {
                 // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
-                var mob__translateX = -mob__currentIndex * (mob__cardWidth + 3.5);
+                let mob__translateX = -mob__currentIndex * (mob__cardWidth + 3.5);
                 $('.mob__dictionary_inner').css('transform', 'translateX(' + mob__translateX + 'vh)');
             }
 
@@ -1218,7 +1220,7 @@
 
             function weapon__updateSlide() {
                 // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
-                var weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
+                let weapon__translateX = -weapon__currentIndex * (weapon__cardWidth + 3.5);
                 // console.log("weapon__currentIndex : " + weapon__currentIndex);
                 // console.log("weapon__itemsPerPage : " + weapon__itemsPerPage);
                 // console.log("weapon__totalItems : " + weapon__totalItems);
@@ -1380,7 +1382,7 @@
 
             // 랜덤 행동을 사용하는 함수
             function move(something) {
-                var random;
+                let random;
                 // 1에서 5까지의 랜덤 숫자 생성
                 if (charac.floor < 4) {
                     random = getRandom(1, 4);
@@ -1408,7 +1410,7 @@
 
             // 몬스터의 공격
             function mobAttack(something) {
-                var randomAttack = getRandom(1, 4);
+                let randomAttack = getRandom(1, 4);
                 if (randomAttack == 1) {
                     attack('A', something);
                 } else if (randomAttack == 2) {
@@ -1427,7 +1429,7 @@
                 }
             }
 
-            let timeoutId;
+            var timeoutId;
 
             // 마우스가 움직이면 호출되는 함수
             function resetCursorTimer() {
