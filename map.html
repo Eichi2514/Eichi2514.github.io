@@ -1693,11 +1693,37 @@
             function hpDown(mobDamage) {
                 front_hp -= mobDamage;
                 $('.hp_count').text(front_hp);
-                if (front_hp <= 0) {
-                    // scoreboardLog();
-                    // location.href = '../over';
-                }
                 characHpDown();
+                if (front_hp <= 0) {
+                    localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
+                    // localStorage.setItem('log', nickname + "/:/" + charac.floor + "층/" + charac.room + "번방/" + seconds + '초');
+                    saveLog();
+                    location.href = '../over';
+                }
+            }
+
+            let saveCooldown = false; // 저장 쿨타임 변수
+
+            function saveLog() {
+                if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
+
+                // 기존 로그 읽기
+                let logs = JSON.parse(localStorage.getItem('log')) || [];
+
+                // 새 로그 생성
+                const newLog = {
+                    name : nickname,
+                    floor: parseInt(charac.floor, 10),
+                    room: parseInt(charac.room, 10),
+                    clearTime: parseInt(seconds, 10)
+                };
+
+                logs.push(newLog);
+                localStorage.setItem('log', JSON.stringify(logs));
+
+                // 쿨타임 설정 (1초)
+                saveCooldown = true;
+                setTimeout(() => saveCooldown = false, 3000);
             }
 
             // 캐릭 체력바 변화 함수
@@ -2312,7 +2338,7 @@
             if(weaponFind) $('.weaponImage' + i).attr('src', weapon[i])
         }*/
 
-        $.each(Object.keys(localStorage), function(_, key) {
+        $.each(Object.keys(localStorage), function (_, key) {
             if (key.startsWith(`${nickname}weaponFind`)) {
                 const index = key.replace(`${nickname}weaponFind`, ''); // 숫자 추출
                 if (weapon[index]) {
