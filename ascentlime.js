@@ -21,6 +21,7 @@ $(document).ready(function () {
         // name, floor, room, hp, power, speed, weaponId, clearTime
         if (!localStorage.getItem(nickname)) {
             localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
+            localStorage.setItem(nickname + 'weaponFind1', true);
             alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
 
