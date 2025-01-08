@@ -23,18 +23,23 @@ function updateTop3Table() {
     // 상위 3개 데이터 추가
     top3.forEach((log) => {
         const row = tableBody.insertRow();
-
         row.innerHTML = `
-            <tbody>
-                <tr>
-                    <td style="text-align: center; padding: 0;">${log.name}</td>
-                    <td style="text-align: center; padding: 0 1vh;">:</td>
-                    <td style="text-align: center; padding: 0 0.5vh;">${log.floor}층</td>
-                    <td style="text-align: center; padding: 0;">${log.room}번방</td>
-                </tr>
-            </tbody>            
-        `;
+        <tbody>
+            <tr>                    
+                <td style="text-align: center; padding: 0;">
+                    ${log.floor}층
+                </td>
+                <td style="text-align: center; padding: 0;">
+                    ${log.room === 0 ? '보스방' : log.room + '번방'}
+                </td>
+                <td style="text-align: center; padding: 0;">
+                    ${log.clearTime}초
+                </td>
+            </tr>
+        </tbody>            
+    `;
     });
+
 }
 
 updateTop3Table();
@@ -53,6 +58,12 @@ $(document).ready(function () {
         // 값이 비어있는지 확인
         if (nickname.trim() === '') {
             alert('닉네임을 입력해주세요!');
+            return;
+        }
+
+        // 닉네임 글자수 제한
+        if (nickname.length > 7) {
+            alert('닉네임은 7글자 이하로 입력해주세요!');
             return;
         }
 
