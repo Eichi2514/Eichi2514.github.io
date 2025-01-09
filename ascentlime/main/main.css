@@ -2,11 +2,12 @@
 
 /* 공용 */
 html > body, button, input, select {
-    font-family: Galmuri11;
+    font-family: Galmuri11, serif;
     font-weight: 800;
     font-size: 3vh;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 body {
@@ -196,7 +197,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: rgb(255, 71, 48);
 }
 
-.start, .start-1, .start-2, start-text {
+.start, .start-1, .start-2, .start-text {
     width: 15vh;
     height: 15vh;
     top: 46vh;
@@ -508,7 +509,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .door_top {
     left: 45vh;
-    top: 0vh;
+    top: 0;
     width: 10vh;
     height: 10vh;
 }
@@ -522,7 +523,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .door_left {
-    left: 0vh;
+    left: 0;
     top: 45vh;
     width: 10vh;
     height: 10vh;
@@ -858,7 +859,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     left: 55vh;
     width: 30vh;
     padding: 1vh;
-    width: 30vh;
     border: 0.3vh solid rgba(156, 163, 175);
     border-radius: 1vh;
 }
@@ -1124,7 +1124,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     left: 25vh;
     height: 20vh;
     width: 50vh;
-    -webkit-text-stroke: 0.05vh white;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
     background: rgb(0, 0, 30);
@@ -1340,14 +1339,52 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 /* 404 페이지 */
-
 .restricted_text {
     min-width: 120vh;
     height: 100vh;
     -webkit-text-stroke: 0.05vh white;
-    background-image: url('https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017');
-    background-size: 100% 100%;
-    background-position: center;
+    z-index: 2;
+    position: relative;
+}
+
+.restricted_bg {
+    min-width: 120vh;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.restricted_sun {
+    width: 70vh;
+    height: 70vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 70vh;
+    z-index: 1;
+    box-shadow: 0 0 15vh 5vh rgba(255, 0, 0, 0.7), inset 0 0 15vh 5vh rgba(255, 0, 0, 0.7);
+}
+
+.restricted_sun > img{
+    width: 100%;
+    height: 100%;
+    animation: spin 10s infinite linear;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .restricted_title {
@@ -1357,4 +1394,15 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .restricted_body {
     margin-bottom: 4vh;
+}
+
+.restricted_slime {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10vh;
+    height: 10vh;
+    border-radius: 3vh;
+    z-index: 3;
+    transition: left 5s, top 5s;
 }
