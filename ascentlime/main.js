@@ -13,7 +13,7 @@ function updateTop3Table() {
     const top3 = logs.slice(0, 3);
 
     // 테이블 요소 선택
-    const tableBody = document.querySelector(".TOP3_table");
+    const tableBody = document.querySelector(".TOP3_table tbody");
 
     // 기존 데이터 제거
     while (tableBody.rows.length > 1) {
@@ -23,23 +23,22 @@ function updateTop3Table() {
     // 상위 3개 데이터 추가
     top3.forEach((log) => {
         const row = tableBody.insertRow();
-        row.innerHTML = `
-        <tbody>
-            <tr>                    
-                <td style="text-align: center; padding: 0;">
-                    ${log.floor}층
-                </td>
-                <td style="text-align: center; padding: 0;">
-                    ${log.room === 0 ? '보스방' : log.room + '번방'}
-                </td>
-                <td style="text-align: center; padding: 0;">
-                    ${log.clearTime}초
-                </td>
-            </tr>
-        </tbody>            
+        row.innerHTML = `        
+        <tr>                    
+            <td style="text-align: center; padding: 0;">
+                ${log.floor}층
+            </td>
+            <td style="text-align: center; padding: 0;">
+                ${log.room === 0 ? '보스방' : log.room + '번방'}
+            </td>
+            <td style="text-align: center; padding: 0;">
+                ${log.clearTime}초
+            </td>
+        </tr>                    
     `;
     });
 
+    localStorage.setItem('log', JSON.stringify(top3));
 }
 
 updateTop3Table();

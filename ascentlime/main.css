@@ -890,6 +890,48 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 10vh;
 }
 
+@keyframes move_action1 {
+    0% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-1vh, 1vh);
+    }
+    40% {
+        transform: translate(-1vh, -1vh);
+    }
+    60% {
+        transform: translate(1vh, 1vh);
+    }
+    80% {
+        transform: translate(1vh, -1vh);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
+@keyframes move_action-1 {
+    0% {
+        transform: translate(0) scaleX(-1);
+    }
+    20% {
+        transform: translate(-1vh, 1vh) scaleX(-1);
+    }
+    40% {
+        transform: translate(-1vh, -1vh) scaleX(-1);
+    }
+    60% {
+        transform: translate(1vh, 1vh) scaleX(-1);
+    }
+    80% {
+        transform: translate(1vh, -1vh) scaleX(-1);
+    }
+    100% {
+        transform: translate(0) scaleX(-1);
+    }
+}
+
 .characHP_bar1, .characHP_bar2, .characHP_bar3, .characHP_bar4, .characHP_bar5, .characHP_bar6, .characHP_bar7, .characHP_bar8, .characHP_bar9, .characHP_bar0, .mob2HP_bar, .mob3HP_bar, .mob4HP_bar, .mob5HP_bar {
     top: -2vh;
     left: 1vh;
