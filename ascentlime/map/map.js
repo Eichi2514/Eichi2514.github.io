@@ -136,22 +136,8 @@ if (!localStorage.getItem('nickname')) {
 }
 
 const nickname = localStorage.getItem('nickname')
-const storage = localStorage.getItem(nickname);
-
-// 정보를 슬래시(/) 기준으로 분리
-const [name, floor, room, hp, power, speed, weaponId, clearTime] = storage.split("/");
-
-// 객체로 변환
-const charac = {
-    name,
-    floor: parseInt(floor, 10),
-    room: parseInt(room, 10),
-    hp: parseInt(hp, 10),
-    power: parseInt(power, 10),
-    speed: parseInt(speed, 10),
-    weaponId: parseInt(weaponId, 10),
-    clearTime: parseInt(clearTime, 10)
-};
+const characString = localStorage.getItem(nickname);  // 문자열로 가져옴
+const charac = characString ? JSON.parse(characString) : {};  // JSON 파싱하여 객체로 변환
 
 var front_hp = charac.hp;
 var front_power = charac.power;
@@ -277,7 +263,7 @@ function Item_exit() {
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
 function Item_get() {
-    let randomMax = floor * 50;
+    let randomMax = charac.floor * 50;
     if (randomMax > 2000) {
         randomMax = 2000;
     }
@@ -734,8 +720,17 @@ $(document).ready(function () {
         $('.hp_count').text(front_hp);
         characHpDown();
         if (front_hp <= 0) {
-            localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
-            // localStorage.setItem('log', nickname + "/:/" + charac.floor + "층/" + charac.room + "번방/" + seconds + '초');
+            /* localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0"); */
+            localStorage.setItem(nickname, JSON.stringify({
+                name: nickname,
+                floor: 1,
+                room: 0,
+                hp: 100,
+                power: 0,
+                speed: 50,
+                weaponId: 1,
+                clearTime: 0
+            }));
             saveLog();
             location.href = '../over/over';
         }
@@ -1182,9 +1177,28 @@ $(document).ready(function () {
         }
 
         setTimeout(function () {
-            if (charac.room != 0) localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + front_hp + "/" + front_power + "/" + front_speed + "/" + front_weaponId + "/" + seconds);
-            else if (front_hp + 10 > 100) localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/100/" + front_power + "/" + front_speed + "/" + front_weaponId + "/" + seconds);
-            else if (charac.room == 0) localStorage.setItem(nickname, nickname + "/" + floor + "/" + room + "/" + (front_hp + 10) + "/" + front_power + "/" + front_speed + "/" + front_weaponId + "/" + seconds);
+            const charac = {
+                name: nickname,
+                floor: floor,
+                room: room,
+                hp: front_hp,
+                power: front_power,
+                speed: front_speed,
+                weaponId: front_weaponId,
+                clearTime: seconds
+            };
+
+            if (charac.room !== 1) {
+                charac.hp = front_hp;
+                localStorage.setItem(nickname, JSON.stringify(charac));
+            } else if (front_hp + 10 > 100) {
+                charac.hp = 100;
+                localStorage.setItem(nickname, JSON.stringify(charac));
+            } else if (charac.room === 0) {
+                charac.hp = front_hp + 10;
+                localStorage.setItem(nickname, JSON.stringify(charac));
+            }
+
             location.reload();
         }, 100);
     }

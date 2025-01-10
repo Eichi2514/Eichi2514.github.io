@@ -74,6 +74,8 @@ function randomString() {
     return randomString;
 }
 
+const nicknames = ['chi', 'Eichi', '에이치', '이치', '치', '빨간이치', 'G에이치'];
+
 $(document).ready(function () {
     $('.login_out_bt').on('click', function () {
         localStorage.removeItem('nickname');
@@ -89,9 +91,13 @@ $(document).ready(function () {
         if (nickname.trim() === '') {
             alert('닉네임을 입력해주세요!');
             return;
-        } else if (nickname.trim() === 'chi') {
-            alert('사용할 수 없는 닉네임 입니다.');
-            return;
+        } else {
+            for (let i = 0; i < nicknames.length; i++){
+                if (nickname.trim() === nicknames[i]) {
+                    alert('사용할 수 없는 닉네임 입니다.');
+                    return;
+                }
+            }
         }
 
         // 닉네임 글자수 제한
@@ -105,7 +111,16 @@ $(document).ready(function () {
         // 로컬스토리지 있는지 확인 후 저장
         // name, floor, room, hp, power, speed, weaponId, clearTime
         if (!localStorage.getItem(nickname)) {
-            localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0");
+            localStorage.setItem(nickname, JSON.stringify({
+                name: nickname,
+                floor: 1,
+                room: 0,
+                hp: 100,
+                power: 0,
+                speed: 50,
+                weaponId: 1,
+                clearTime: 0
+            }));
             localStorage.setItem(nickname + 'weaponFind1', true);
             alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
