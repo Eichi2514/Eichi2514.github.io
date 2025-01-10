@@ -235,6 +235,7 @@ function Item_change() {
     localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
     let changeImg = weapon[$randomWeapon];
     front_weaponId = $randomWeapon;
+    console.log('교체'+front_weaponId);
     $('.weapon_img').attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
     $(".item").fadeOut(1000).addClass('hidden');
@@ -249,6 +250,7 @@ function Item_mix() {
     localStorage.setItem(nickname + 'weaponFind' + changeNum, true);
     let changeImg = weapon[changeNum];
     front_weaponId = changeNum;
+    console.log('합성'+front_weaponId);
     $('.weapon_img').attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
     $(".item").fadeOut(1000).addClass('hidden');
@@ -1194,7 +1196,7 @@ $(document).ready(function () {
             } else if (front_hp + 10 > 100) {
                 charac.hp = 100;
                 localStorage.setItem(nickname, JSON.stringify(charac));
-            } else if (charac.room === 0) {
+            } else if (charac.room === 1) {
                 charac.hp = front_hp + 10;
                 localStorage.setItem(nickname, JSON.stringify(charac));
             }
