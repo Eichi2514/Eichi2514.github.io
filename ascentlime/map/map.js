@@ -190,7 +190,7 @@ var windowChack = false;
 
 // window.onload 이벤트 감지
 window.onload = function () {
-    console.clear();
+    // console.clear();
     windowChack = true;
     const loadTime = new Date().getTime() - startTime;
 
@@ -483,6 +483,13 @@ $(document).ready(function () {
 
     $(window).keydown(function (e) {
         const $characImg = $('.front_charac_img');
+        const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
+
+        // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
+        if (chatInputFocused) {
+            return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
+        }
+
         const keyMap = {
             37: {direction: 'left', scale: -1},
             38: {direction: 'up'},
@@ -527,6 +534,12 @@ $(document).ready(function () {
     // 키에서 손을 뗄 때 움직임 멈춤
     $(window).keyup(function (e) {
         const $characImg = $('.front_charac_img');
+        const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
+
+        // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
+        if (chatInputFocused) {
+            return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
+        }
 
         // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
         if ((e.keyCode === 37 && moveActionChack === 'left') ||
@@ -549,7 +562,6 @@ $(document).ready(function () {
         } else if (e.keyCode === 83) {
             attack('S', 1);
         }
-
     });
 
     function moveCharacter(moveAction, something) {
@@ -763,10 +775,10 @@ $(document).ready(function () {
             characHp_number--;
         }
         // console.log("체력 넓이 : " + new_characHp_width + ", 줄 수 : " + characHp_number);
-        for (i = characHp_number - 1; i >= 0; i--) {
+        for (let i = characHp_number - 1; i >= 0; i--) {
             $(".characHP_bar" + i).css('width', '8vh');
         }
-        for (i = characHp_number + 1; i < 11; i++) {
+        for (let i = characHp_number + 1; i < 11; i++) {
             $(".characHP_bar" + i).css('width', '0vh');
         }
 
@@ -801,25 +813,25 @@ $(document).ready(function () {
 
         // something 주위 공간 확인
         if (moveAction == 'up') {
-            for (y = Ycode; y < Ycode + width; y++) {
+            for (let y = Ycode; y < Ycode + width; y++) {
                 if (map2[Xcode - 1][y] != 0) {
                     return map2[Xcode - 1][y];
                 }
             }
         } else if (moveAction == 'down') {
-            for (y = Ycode; y < Ycode + width; y++) {
+            for (let y = Ycode; y < Ycode + width; y++) {
                 if (map2[Xcode + height][y] != 0) {
                     return map2[Xcode + height][y];
                 }
             }
         } else if (moveAction == 'left') {
-            for (x = Xcode; x < Xcode + height; x++) {
+            for (let x = Xcode; x < Xcode + height; x++) {
                 if (map2[x][Ycode - 1] != 0) {
                     return map2[x][Ycode - 1];
                 }
             }
         } else if (moveAction == 'right') {
-            for (x = Xcode; x < Xcode + height; x++) {
+            for (let x = Xcode; x < Xcode + height; x++) {
                 if (map2[x][Ycode + width] != 0) {
                     return map2[x][Ycode + width];
                 }
@@ -852,7 +864,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (i = Ycode - 1; i > y; i--) {
+            for (let i = Ycode - 1; i > y; i--) {
                 if (map3[x][i] != 0) {
                     return map3[x][i];
                 }
@@ -863,7 +875,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (i = Xcode - 1; i > x; i--) {
+            for (let i = Xcode - 1; i > x; i--) {
                 if (map3[i][y] !== 0) {
                     return map3[i][y];
                 }
@@ -874,7 +886,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (i = Ycode + width; i < y; i++) {
+            for (let i = Ycode + width; i < y; i++) {
                 if (map3[x][i] != 0) {
                     return map3[x][i];
                 }
@@ -885,7 +897,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (i = Xcode + height; i < x; i++) {
+            for (let i = Xcode + height; i < x; i++) {
                 if (map3[i][y] != 0) {
                     return map3[i][y];
                 }
@@ -973,8 +985,8 @@ $(document).ready(function () {
 
         // 캐릭터 위치 부여
         if (something != 1) {
-            for (x = characXCode; x < characXCode + 5; x++) {
-                for (y = characYCode; y < characYCode + 5; y++) {
+            for (let x = characXCode; x < characXCode + 5; x++) {
+                for (let y = characYCode; y < characYCode + 5; y++) {
                     map[x][y] = 1;
                 }
             }
@@ -982,36 +994,36 @@ $(document).ready(function () {
 
         // 몬스터 위치 부여
         if (room > 0 && room < 5 && mob2life && something != 2) {
-            for (x = mob2XCode; x < mob2XCode + 5; x++) {
-                for (y = mob2YCode; y < mob2YCode + 5; y++) {
+            for (let x = mob2XCode; x < mob2XCode + 5; x++) {
+                for (let y = mob2YCode; y < mob2YCode + 5; y++) {
                     map[x][y] = 2;
                 }
             }
         }
         if (room > 1 && room < 5 && mob3life && something != 3) {
-            for (x = mob3XCode; x < mob3XCode + 5; x++) {
-                for (y = mob3YCode; y < mob3YCode + 5; y++) {
+            for (let x = mob3XCode; x < mob3XCode + 5; x++) {
+                for (let y = mob3YCode; y < mob3YCode + 5; y++) {
                     map[x][y] = 3;
                 }
             }
         }
         if (room > 2 && room < 5 && mob4life && something != 4) {
-            for (x = mob4XCode; x < mob4XCode + 5; x++) {
-                for (y = mob4YCode; y < mob4YCode + 5; y++) {
+            for (let x = mob4XCode; x < mob4XCode + 5; x++) {
+                for (let y = mob4YCode; y < mob4YCode + 5; y++) {
                     map[x][y] = 4;
                 }
             }
         }
         if (room > 3 && room < 5 && mob5life && something != 5) {
-            for (x = mob5XCode; x < mob5XCode + 5; x++) {
-                for (y = mob5YCode; y < mob5YCode + 5; y++) {
+            for (let x = mob5XCode; x < mob5XCode + 5; x++) {
+                for (let y = mob5YCode; y < mob5YCode + 5; y++) {
                     map[x][y] = 5;
                 }
             }
         }
         if (floor > 1 && room == 0 && mob6life && something != 6) {
-            for (x = mob6XCode; x < mob6XCode + 10; x++) {
-                for (y = mob6YCode; y < mob6YCode + 10; y++) {
+            for (let x = mob6XCode; x < mob6XCode + 10; x++) {
+                for (let y = mob6YCode; y < mob6YCode + 10; y++) {
                     map[x][y] = 6;
                 }
             }
@@ -1376,7 +1388,7 @@ if (charac.room == 1) {
 
 if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
 
-for (i = 1; i <= mobFind; i++) {
+for (let i = 1; i <= mobFind; i++) {
     $('.mobImage' + i).attr('src', mobs[i])
 }
 
