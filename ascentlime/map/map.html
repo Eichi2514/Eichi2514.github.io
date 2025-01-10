@@ -1022,7 +1022,6 @@
         <input class="chat_var absolute" name="body" autocomplete="off"/>
         <button type="submit" class="chat_bt absolute">전송</button>
     </form>
-    <script src="../map/map.js" defer></script>
     <script type="module">
         const chatName = localStorage.getItem('nickname');
 
@@ -1056,6 +1055,7 @@
 
         // 채팅 데이터베이스 참조
         const chatRef = ref(database, 'chats');
+        const logRef = ref(database, 'logs');
 
         // 채팅 전송 함수 (전역 함수로 만들어야 함)
         window.Chat__Write = function (form) {
@@ -1099,7 +1099,21 @@
             var chat = $(".chat");
             chat.scrollTop(chat[0].scrollHeight); // 새 메시지가 오면 스크롤 맨 아래로
         });
+
+        window.saveFirebaseLogs = function (charac, seconds){
+            // 새 기록을 Firebase에 저장
+            const newLogRef = push(logRef);
+            set(newLogRef, {
+                name: nickname,
+                floor: parseInt(charac.floor, 10),
+                room: parseInt(charac.room, 10),
+                clearTime: parseInt(seconds, 10)
+            }).then(() => {
+                $(form).find('input[name="body"]').val('');  // 채팅 입력창 비우기
+            });
+        }
     </script>
+    <script src="../map/map.js" defer></script>
 </div>
 </body>
 </html>

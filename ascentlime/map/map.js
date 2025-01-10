@@ -760,6 +760,8 @@ $(document).ready(function () {
         logs.push(newLog);
         localStorage.setItem('log', JSON.stringify(logs));
 
+        saveFirebaseLogs(charac, seconds);
+
         // 쿨타임 설정 (1초)
         saveCooldown = true;
         setTimeout(() => saveCooldown = false, 3000);
