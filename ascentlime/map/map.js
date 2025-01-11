@@ -144,13 +144,21 @@ var front_power = charac.power;
 var front_speed = charac.speed;
 var front_weaponId = charac.weaponId;
 
-if (charac.floor == 1 && charac.room == 0) $('.floor_room').text('튜토리얼');
-else if (charac.room != 0) $('.floor_room').text(charac.floor + '층 ' + charac.room + '번방');
+if (charac.floor === 1 && charac.room === 0) $('.floor_room').text('튜토리얼');
+else if (charac.room !== 0) $('.floor_room').text(charac.floor + '층 ' + charac.room + '번방');
 else $('.floor_room').text((charac.floor - 1) + '층 보스방');
-$('.hp_count').text(front_hp);
-$('.power_count').text(front_power);
-$('.speed_count').text(50 - front_speed);
-$('.weapon_img').attr('src', weapon[front_weaponId]);
+
+const $hp_count = $('.hp_count');
+$hp_count.text(front_hp);
+
+const $power_count = $('.power_count');
+$power_count.text(front_power);
+
+const $speed_count = $('.speed_count');
+$speed_count.text(50 - front_speed);
+
+const $weapon_img = $('.weapon_img');
+$weapon_img.attr('src', weapon[front_weaponId]);
 
 // 페이지가 시작될 때 시간 기록
 const startTime = new Date().getTime();
@@ -177,7 +185,6 @@ var windowChack = false;
 // window.onload 이벤트 감지
 window.onload = function () {
     // console.clear();
-    windowChack = true;
     const loadTime = new Date().getTime() - startTime;
 
     if (charac.floor >= 0) {
@@ -193,6 +200,10 @@ window.onload = function () {
     setTimeout(function () {
         $(".loding").fadeOut(500);
     }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
+
+    setTimeout(function () {
+        windowChack = true;
+    }, 1000);
 }
 
 var seconds = charac.clearTime;
@@ -222,45 +233,50 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+const $item = $(".item");
+const $item_text = $(".item_text");
+const $random_item = $(".random_item");
+const $random_item_text = $(".random_item_text");
+
 var weaponMax = (charac.floor - 1) * 10;
 if (weaponMax > 70) weaponMax = 70;
 var $randomWeapon = getRandom(1, weaponMax);
 
 var randomItem = getRandom(1, 3);
 
-console.log(randomItem);
+if(randomItem === 3) $('.random_item_effect').removeClass('hidden');
 
 //아이템 안내창 교체 버튼 눌렀을 떄
 function Item_change() {
     localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
     let changeImg = weapon[$randomWeapon];
     front_weaponId = $randomWeapon;
-    console.log('교체'+front_weaponId);
-    $('.weapon_img').attr('src', changeImg);
+    console.log('교체' + front_weaponId);
+    $weapon_img.attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
-    $(".item").fadeOut(1000).addClass('hidden');
-    $(".item_text").fadeOut(1000).addClass('hidden');
+    $item.fadeOut(1000).addClass('hidden');
+    $item_text.fadeOut(1000).addClass('hidden');
 }
 
 //아이템 안내창 조합 버튼 눌렀을 떄
 function Item_mix() {
     let changeNum = charac.weaponId + ($randomWeapon % 10);
-    if ($randomWeapon % 10 == 0) changeNum += 10;
+    if ($randomWeapon % 10 === 0) changeNum += 10;
     if (changeNum > 70) changeNum -= 10;
     localStorage.setItem(nickname + 'weaponFind' + changeNum, true);
     let changeImg = weapon[changeNum];
     front_weaponId = changeNum;
-    console.log('합성'+front_weaponId);
-    $('.weapon_img').attr('src', changeImg);
+    console.log('합성' + front_weaponId);
+    $weapon_img.attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
-    $(".item").fadeOut(1000).addClass('hidden');
-    $(".item_text").fadeOut(1000).addClass('hidden');
+    $item.fadeOut(1000).addClass('hidden');
+    $item_text.fadeOut(1000).addClass('hidden');
 }
 
 //아이템 안내창 취소 버튼 눌렀을 떄
 function Item_exit() {
-    $(".item_text").fadeOut(1000).addClass('hidden');
-    $(".random_item_text").fadeOut(1000).addClass('hidden');
+    $item_text.fadeOut(1000).addClass('hidden');
+    $random_item_text.fadeOut(1000).addClass('hidden');
 }
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
@@ -330,31 +346,31 @@ function Item_get() {
         updateStats('speed', 'down', 40);
     } else if (random_ability <= (probability += 1)) {
         updateStats('speed', 'up', 50);
-    } else if (random_ability <= (probability += 1)) {
+    } else if (random_ability <= (probability + 1)) {
         updateStats('speed', 'down', 50);
     } else {
         alert('꽝');
     }
-    $(".random_item").fadeOut(1000).addClass('hidden');
-    $(".random_item_text").fadeOut(1000).addClass('hidden');
+    $random_item.fadeOut(1000).addClass('hidden');
+    $random_item_text.fadeOut(1000).addClass('hidden');
 }
 
 function updateStats(stats, action, number) {
-    if (stats == 'power') {
+    if (stats === 'power') {
         stats = '힘';
-        if (action == 'up') {
+        if (action === 'up') {
             front_power += number;
             action = '+';
-        } else if (action == 'down') {
+        } else if (action === 'down') {
             front_power -= number;
             action = '-';
         }
-    } else if (stats == 'speed') {
+    } else if (stats === 'speed') {
         stats = '속도';
-        if (action == 'up') {
+        if (action === 'up') {
             front_speed += number;
             action = '+';
-        } else if (action == 'down') {
+        } else if (action === 'down') {
             front_speed -= number;
             action = '-';
         }
@@ -364,8 +380,8 @@ function updateStats(stats, action, number) {
     if (front_speed < 0) front_speed = 0;
     if (front_speed > 100) front_speed = 100;
 
-    $('.power_count').text(front_power);
-    $('.speed_count').text(50 - front_speed);
+    $power_count.text(front_power);
+    $speed_count.text(50 - front_speed);
 
     alert(stats + action + number);
 }
@@ -378,13 +394,13 @@ $(document).ready(function () {
     }
 
     $('.attackSize').attr('src', weapon[front_weaponId]);
-    $('.item').attr('src', weapon[$randomWeapon]);
+    $item.attr('src', weapon[$randomWeapon]);
 
-    if (charac.room == 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
+    if (charac.room === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
     else $('.mob_img').attr('src', mobs[$mob_index]);
 
     var damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power;
-    if ((front_weaponId % 10) != 0) {
+    if ((front_weaponId % 10) !== 0) {
         damage += 10;
     }
 
@@ -394,54 +410,61 @@ $(document).ready(function () {
 
     // 몬스터 좌표 셋팅
     var UD2 = getRandom(10, 70);
-    if (UD2 % 2 != 0) UD2++;
+    if (UD2 % 2 !== 0) UD2++;
     var LR2 = getRandom(30, 70);
-    if (LR2 % 2 != 0) LR2++;
+    if (LR2 % 2 !== 0) LR2++;
 
     var UD3 = getRandom(10, 70);
-    if (UD3 % 2 != 0) UD3++;
+    if (UD3 % 2 !== 0) UD3++;
     var LR3 = getRandom(30, 70);
-    if (LR3 % 2 != 0) LR3++;
+    if (LR3 % 2 !== 0) LR3++;
 
     var UD4 = getRandom(10, 70);
-    if (UD4 % 2 != 0) UD4++;
+    if (UD4 % 2 !== 0) UD4++;
     var LR4 = getRandom(30, 70);
-    if (LR4 % 2 != 0) LR4++;
+    if (LR4 % 2 !== 0) LR4++;
 
     var UD5 = getRandom(10, 70);
-    if (UD5 % 2 != 0) UD5++;
+    if (UD5 % 2 !== 0) UD5++;
     var LR5 = getRandom(30, 70);
-    if (LR5 % 2 != 0) LR5++;
+    if (LR5 % 2 !== 0) LR5++;
 
     var UD6 = getRandom(10, 40);
-    if (UD6 % 2 != 0) UD6++;
+    if (UD6 % 2 !== 0) UD6++;
     var LR6 = getRandom(30, 40);
-    if (LR6 % 2 != 0) LR6++;
+    if (LR6 % 2 !== 0) LR6++;
 
     var mobDamage = charac.floor;
-    if (charac.room == 0) {
+    if (charac.room === 0) {
         mobDamage--;
     }
 
     // 알림창을 표시
-    if (charac.floor == 1 && charac.room == 0) {
+    if (charac.floor === 1 && charac.room === 0) {
+        let $tutorialContainer = $("#tutorialContainer");
         // guide1 추가
-        $("#tutorialContainer").append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
+        $tutorialContainer.append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
         // guide2 추가
-        $("#tutorialContainer").append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
+        $tutorialContainer.append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
     }
 
-    $(".mob2").css("top", UD2 + "vh");
-    $(".mob3").css("top", UD3 + "vh");
-    $(".mob4").css("top", UD4 + "vh");
-    $(".mob5").css("top", UD5 + "vh");
-    $(".mob6").css("top", UD6 + "vh");
+    const $mob2 = $(".mob2");
+    const $mob3 = $(".mob3");
+    const $mob4 = $(".mob4");
+    const $mob5 = $(".mob5");
+    const $mob6 = $(".mob6");
 
-    $(".mob2").css("left", LR2 + "vh");
-    $(".mob3").css("left", LR3 + "vh");
-    $(".mob4").css("left", LR4 + "vh");
-    $(".mob5").css("left", LR5 + "vh");
-    $(".mob6").css("left", LR6 + "vh");
+    $mob2.css("top", UD2 + "vh");
+    $mob3.css("top", UD3 + "vh");
+    $mob4.css("top", UD4 + "vh");
+    $mob5.css("top", UD5 + "vh");
+    $mob6.css("top", UD6 + "vh");
+
+    $mob2.css("left", LR2 + "vh");
+    $mob3.css("left", LR3 + "vh");
+    $mob4.css("left", LR4 + "vh");
+    $mob5.css("left", LR5 + "vh");
+    $mob6.css("left", LR6 + "vh");
 
     var moveInterval; // 캐릭터 이동을 위한 interval
     var moveActionChack = null; // 현재 움직이고 있는 방향 추적
@@ -474,7 +497,7 @@ $(document).ready(function () {
         const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
 
         // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
-        if (chatInputFocused) {
+        if (chatInputFocused || !windowChack) {
             return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
         }
 
@@ -513,7 +536,7 @@ $(document).ready(function () {
             var isRandomItemHidden = $('.random_item_text').hasClass('hidden');
 
             // 보여질때만 실행
-            if (!isRandomItemHidden && randomItem == 3 && charac.floor != 1 && charac.room != 0) {
+            if (!isRandomItemHidden && randomItem === 3 && charac.floor !== 1 && charac.room !== 0) {
                 Item_get();
             }
         }
@@ -535,7 +558,7 @@ $(document).ready(function () {
             (e.keyCode === 39 && moveActionChack === 'right') ||
             (e.keyCode === 40 && moveActionChack === 'down')) {
             lastKeyDirection = null; // 키 입력 상태 초기화
-            $('.front_charac_img').css('animation', 'none');
+            $characImg.css('animation', 'none');
             stopMoving();
         }
 
@@ -560,25 +583,25 @@ $(document).ready(function () {
 
         // console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
 
-        if (something != 1 && data == 1) {
+        if (something !== 1 && data === 1) {
             hpDown(mobDamage);
             damage__motion('1', mobDamage);
-        } else if (something == 1 && data > 1) {
+        } else if (something === 1 && data > 1) {
             hpDown(mobDamage);
             damage__motion('1', mobDamage);
         }
 
-        if (something == 1) {
-            if (moveAction == 'up' && UD > 10) {
+        if (something === 1) {
+            if (moveAction === 'up' && UD > 10) {
                 UD -= 2;
                 $(".charac").css("top", UD + "vh");
-            } else if (moveAction == 'down' && UD < 80) {
+            } else if (moveAction === 'down' && UD < 80) {
                 UD += 2;
                 $(".charac").css("top", UD + "vh");
-            } else if (moveAction == 'left' && LR > 10) {
+            } else if (moveAction === 'left' && LR > 10) {
                 LR -= 2;
                 $(".charac").css("left", LR + "vh");
-            } else if (moveAction == 'right' && LR < 80) {
+            } else if (moveAction === 'right' && LR < 80) {
                 LR += 2;
                 $(".charac").css("left", LR + "vh");
             }
@@ -588,73 +611,73 @@ $(document).ready(function () {
             stageUp();
             showItem_text();
             showRandomItem_text();
-        } else if (something == 2) {
-            if (moveAction == 'up' && UD2 > 10) {
+        } else if (something === 2) {
+            if (moveAction === 'up' && UD2 > 10) {
                 UD2 -= 2;
                 $(".mob" + something).css("top", UD2 + "vh");
-            } else if (moveAction == 'down' && UD2 < 80) {
+            } else if (moveAction === 'down' && UD2 < 80) {
                 UD2 += 2;
                 $(".mob" + something).css("top", UD2 + "vh");
-            } else if (moveAction == 'left' && LR2 > 10) {
+            } else if (moveAction === 'left' && LR2 > 10) {
                 LR2 -= 2;
                 $(".mob" + something).css("left", LR2 + "vh");
-            } else if (moveAction == 'right' && LR2 < 80) {
+            } else if (moveAction === 'right' && LR2 < 80) {
                 LR2 += 2;
                 $(".mob" + something).css("left", LR2 + "vh");
             }
-        } else if (something == 3) {
-            if (moveAction == 'up' && UD3 > 10) {
+        } else if (something === 3) {
+            if (moveAction === 'up' && UD3 > 10) {
                 UD3 -= 2;
                 $(".mob" + something).css("top", UD3 + "vh");
-            } else if (moveAction == 'down' && UD3 < 80) {
+            } else if (moveAction === 'down' && UD3 < 80) {
                 UD3 += 2;
                 $(".mob" + something).css("top", UD3 + "vh");
-            } else if (moveAction == 'left' && LR3 > 10) {
+            } else if (moveAction === 'left' && LR3 > 10) {
                 LR3 -= 2;
                 $(".mob" + something).css("left", LR3 + "vh");
-            } else if (moveAction == 'right' && LR3 < 80) {
+            } else if (moveAction === 'right' && LR3 < 80) {
                 LR3 += 2;
                 $(".mob" + something).css("left", LR3 + "vh");
             }
-        } else if (something == 4) {
-            if (moveAction == 'up' && UD4 > 10) {
+        } else if (something === 4) {
+            if (moveAction === 'up' && UD4 > 10) {
                 UD4 -= 2;
                 $(".mob" + something).css("top", UD4 + "vh");
-            } else if (moveAction == 'down' && UD4 < 80) {
+            } else if (moveAction === 'down' && UD4 < 80) {
                 UD4 += 2;
                 $(".mob" + something).css("top", UD4 + "vh");
-            } else if (moveAction == 'left' && LR4 > 10) {
+            } else if (moveAction === 'left' && LR4 > 10) {
                 LR4 -= 2;
                 $(".mob" + something).css("left", LR4 + "vh");
-            } else if (moveAction == 'right' && LR4 < 80) {
+            } else if (moveAction === 'right' && LR4 < 80) {
                 LR4 += 2;
                 $(".mob" + something).css("left", LR4 + "vh");
             }
-        } else if (something == 5) {
-            if (moveAction == 'up' && UD5 > 10) {
+        } else if (something === 5) {
+            if (moveAction === 'up' && UD5 > 10) {
                 UD5 -= 2;
                 $(".mob" + something).css("top", UD5 + "vh");
-            } else if (moveAction == 'down' && UD5 < 80) {
+            } else if (moveAction === 'down' && UD5 < 80) {
                 UD5 += 2;
                 $(".mob" + something).css("top", UD5 + "vh");
-            } else if (moveAction == 'left' && LR5 > 10) {
+            } else if (moveAction === 'left' && LR5 > 10) {
                 LR5 -= 2;
                 $(".mob" + something).css("left", LR5 + "vh");
-            } else if (moveAction == 'right' && LR5 < 80) {
+            } else if (moveAction === 'right' && LR5 < 80) {
                 LR5 += 2;
                 $(".mob" + something).css("left", LR5 + "vh");
             }
-        } else if (something == 6) {
-            if (moveAction == 'up' && UD6 > 10) {
+        } else if (something === 6) {
+            if (moveAction === 'up' && UD6 > 10) {
                 UD6 -= 2;
                 $(".mob" + something).css("top", UD6 + "vh");
-            } else if (moveAction == 'down' && UD6 < 70) {
+            } else if (moveAction === 'down' && UD6 < 70) {
                 UD6 += 2;
                 $(".mob" + something).css("top", UD6 + "vh");
-            } else if (moveAction == 'left' && LR6 > 10) {
+            } else if (moveAction === 'left' && LR6 > 10) {
                 LR6 -= 2;
                 $(".mob" + something).css("left", LR6 + "vh");
-            } else if (moveAction == 'right' && LR6 < 70) {
+            } else if (moveAction === 'right' && LR6 < 70) {
                 LR6 += 2;
                 $(".mob" + something).css("left", LR6 + "vh");
             }
@@ -662,58 +685,64 @@ $(document).ready(function () {
     }
 
     function attack(direction, something) {
+        // 먼저 attack_motion을 즉시 실행
         attack_motion(something, direction);
 
-        let data = attackChack(something, direction);
-        // console.log(data);
-        if (something != 1 && data == 1) {
-            if (something < 6) {
-                hpDown(mobDamage);
-                damage__motion('1', mobDamage);
-            } else {
-                hpDown(mobDamage * 2);
-                damage__motion('1', mobDamage * 2);
+        // 나머지 로직은 0.5초 뒤에 실행
+        setTimeout(() => {
+            let data = attackChack(something, direction);
+            // console.log(data);
+            if (something !== 1 && data === 1) {
+                if (something < 6) {
+                    hpDown(mobDamage);
+                    damage__motion('1', mobDamage);
+                } else {
+                    hpDown(mobDamage * 2);
+                    damage__motion('1', mobDamage * 2);
+                }
+            } else if (something === 1 && data === 2) {
+                mob2_hp -= damage;
+                damage__motion(data, damage);
+                if (mob2_hp <= 0) {
+                    mobHidden(2);
+                    clearInterval(stop2);
+                }
+            } else if (something === 1 && data === 3) {
+                mob3_hp -= damage;
+                damage__motion(data, damage);
+                if (mob3_hp <= 0) {
+                    mobHidden(3);
+                    clearInterval(stop3);
+                }
+            } else if (something === 1 && data === 4) {
+                mob4_hp -= damage;
+                damage__motion(data, damage);
+                if (mob4_hp <= 0) {
+                    mobHidden(4);
+                    clearInterval(stop4);
+                }
+            } else if (something === 1 && data === 5) {
+                mob5_hp -= damage;
+                damage__motion(data, damage);
+                if (mob5_hp <= 0) {
+                    mobHidden(5);
+                    clearInterval(stop5);
+                }
+            } else if (something === 1 && data === 6) {
+                mob6_hp -= damage;
+                damage__motion(data, damage);
+                if (mob6_hp <= 0) {
+                    mobHidden(6);
+                    clearInterval(stop6);
+                    showItem();
+                }
+                BossHpDown();
             }
-        } else if (something == 1 && data == 2) {
-            mob2_hp -= damage;
-            damage__motion(data, damage);
-            if (mob2_hp <= 0) {
-                mobHidden(2);
-                clearInterval(stop2);
+            if (something === 1) {
+                showDoor();
+                showRandomItem();
             }
-        } else if (something == 1 && data == 3) {
-            mob3_hp -= damage;
-            damage__motion(data, damage);
-            if (mob3_hp <= 0) {
-                mobHidden(3);
-                clearInterval(stop3);
-            }
-        } else if (something == 1 && data == 4) {
-            mob4_hp -= damage;
-            damage__motion(data, damage);
-            if (mob4_hp <= 0) {
-                mobHidden(4);
-                clearInterval(stop4);
-            }
-        } else if (something == 1 && data == 5) {
-            mob5_hp -= damage;
-            damage__motion(data, damage);
-            if (mob5_hp <= 0) {
-                mobHidden(5);
-                clearInterval(stop5);
-            }
-        } else if (something == 1 && data == 6) {
-            mob6_hp -= damage;
-            damage__motion(data, damage);
-            if (mob6_hp <= 0) {
-                mobHidden(6);
-                clearInterval(stop6);
-                showItem();
-            }
-            BossHpDown();
-        }
-        showDoor();
-        showRandomItem();
+        }, 400);
     }
 
     // hp 감소
@@ -769,7 +798,7 @@ $(document).ready(function () {
         let new_characHp_width = (8 / 10) * (front_hp % 10);
         // console.log(new_characHp_width);
         let characHp_number = Math.floor(front_hp / 10);
-        if (front_hp % 10 == 0) {
+        if (front_hp % 10 === 0) {
             new_characHp_width = 8;
             characHp_number--;
         }
@@ -811,27 +840,27 @@ $(document).ready(function () {
         //}
 
         // something 주위 공간 확인
-        if (moveAction == 'up') {
+        if (moveAction === 'up') {
             for (let y = Ycode; y < Ycode + width; y++) {
-                if (map2[Xcode - 1][y] != 0) {
+                if (map2[Xcode - 1][y] !== 0) {
                     return map2[Xcode - 1][y];
                 }
             }
-        } else if (moveAction == 'down') {
+        } else if (moveAction === 'down') {
             for (let y = Ycode; y < Ycode + width; y++) {
-                if (map2[Xcode + height][y] != 0) {
+                if (map2[Xcode + height][y] !== 0) {
                     return map2[Xcode + height][y];
                 }
             }
-        } else if (moveAction == 'left') {
+        } else if (moveAction === 'left') {
             for (let x = Xcode; x < Xcode + height; x++) {
-                if (map2[x][Ycode - 1] != 0) {
+                if (map2[x][Ycode - 1] !== 0) {
                     return map2[x][Ycode - 1];
                 }
             }
-        } else if (moveAction == 'right') {
+        } else if (moveAction === 'right') {
             for (let x = Xcode; x < Xcode + height; x++) {
-                if (map2[x][Ycode + width] != 0) {
+                if (map2[x][Ycode + width] !== 0) {
                     return map2[x][Ycode + width];
                 }
             }
@@ -857,18 +886,18 @@ $(document).ready(function () {
         // 맵 생성
         const map3 = mapChack(something);
 
-        if (direction == 'A') {
+        if (direction === 'A') {
             let x = Xcode + (height / 2);
             let y = Ycode - distance;
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
             for (let i = Ycode - 1; i > y; i--) {
-                if (map3[x][i] != 0) {
+                if (map3[x][i] !== 0) {
                     return map3[x][i];
                 }
             }
-        } else if (direction == 'W') {
+        } else if (direction === 'W') {
             let x = Xcode - distance;
             let y = Ycode + (width / 2);
             // console.log('x : ' + x);
@@ -879,25 +908,25 @@ $(document).ready(function () {
                     return map3[i][y];
                 }
             }
-        } else if (direction == 'D') {
+        } else if (direction === 'D') {
             let x = Xcode + (height / 2);
             let y = Ycode + width + distance;
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
             for (let i = Ycode + width; i < y; i++) {
-                if (map3[x][i] != 0) {
+                if (map3[x][i] !== 0) {
                     return map3[x][i];
                 }
             }
-        } else if (direction == 'S') {
+        } else if (direction === 'S') {
             let x = Xcode + height + distance;
             let y = Ycode + (width / 2);
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
             for (let i = Xcode + height; i < x; i++) {
-                if (map3[i][y] != 0) {
+                if (map3[i][y] !== 0) {
                     return map3[i][y];
                 }
             }
@@ -907,16 +936,16 @@ $(document).ready(function () {
 
     // 아이템 안내창 공개
     function showItem_text() {
-        let itemChack = $(".item").hasClass('hidden');
+        let itemChack = $item.hasClass('hidden');
         // console.log("아이템 공개 여부"+itemChack);
-        if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && charac.floor > 1 && charac.room == 0) {
-            $(".item_text").fadeIn(1000).removeClass('hidden');
+        if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && charac.floor > 1 && charac.room === 0) {
+            $item_text.fadeIn(1000).removeClass('hidden');
         }
     }
 
     // 아이템 공개
     function showItem() {
-        $(".item").fadeIn(1000).removeClass('hidden');
+        $item.fadeIn(1000).removeClass('hidden');
     }
 
     // 랜덤아이템 안내창 공개
@@ -928,31 +957,37 @@ $(document).ready(function () {
         }
     }
 
-    // 랜덤아이템 공개
+    var isItem = true;
+
     function showRandomItem() {
-        if (charac.floor == 1 && charac.room == 0) {
-        } else if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0 && randomItem == 3) {
+        const isSpecialRoom = (charac.floor === 8 && charac.room === 0);
+        const allMobsDefeated = (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0);
+        const isSpecialItem = (randomItem === 3);
+        const isExcludedRoom = (charac.floor === 1 && charac.room === 0);
+
+        if (!isExcludedRoom && allMobsDefeated && isSpecialItem && (isSpecialRoom || isItem)) {
+            isItem = false;
             $(".random_item").fadeIn(1000).removeClass('hidden');
         }
     }
 
     function somethingXcode(something) {
-        if (something == 1) return UD / 2;
-        else if (something == 2) return UD2 / 2;
-        else if (something == 3) return UD3 / 2;
-        else if (something == 4) return UD4 / 2;
-        else if (something == 5) return UD5 / 2;
-        else if (something == 6) return UD6 / 2;
+        if (something === 1) return UD / 2;
+        else if (something === 2) return UD2 / 2;
+        else if (something === 3) return UD3 / 2;
+        else if (something === 4) return UD4 / 2;
+        else if (something === 5) return UD5 / 2;
+        else if (something === 6) return UD6 / 2;
         return 0;
     }
 
     function somethingYcode(something) {
-        if (something == 1) return LR / 2;
-        else if (something == 2) return LR2 / 2;
-        else if (something == 3) return LR3 / 2;
-        else if (something == 4) return LR4 / 2;
-        else if (something == 5) return LR5 / 2;
-        else if (something == 6) return LR6 / 2;
+        if (something === 1) return LR / 2;
+        else if (something === 2) return LR2 / 2;
+        else if (something === 3) return LR3 / 2;
+        else if (something === 4) return LR4 / 2;
+        else if (something === 5) return LR5 / 2;
+        else if (something === 6) return LR6 / 2;
         return 0;
     }
 
@@ -983,7 +1018,7 @@ $(document).ready(function () {
         const map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
 
         // 캐릭터 위치 부여
-        if (something != 1) {
+        if (something !== 1) {
             for (let x = characXCode; x < characXCode + 5; x++) {
                 for (let y = characYCode; y < characYCode + 5; y++) {
                     map[x][y] = 1;
@@ -992,35 +1027,35 @@ $(document).ready(function () {
         }
 
         // 몬스터 위치 부여
-        if (room > 0 && room < 5 && mob2life && something != 2) {
+        if (room > 0 && room < 5 && mob2life && something !== 2) {
             for (let x = mob2XCode; x < mob2XCode + 5; x++) {
                 for (let y = mob2YCode; y < mob2YCode + 5; y++) {
                     map[x][y] = 2;
                 }
             }
         }
-        if (room > 1 && room < 5 && mob3life && something != 3) {
+        if (room > 1 && room < 5 && mob3life && something !== 3) {
             for (let x = mob3XCode; x < mob3XCode + 5; x++) {
                 for (let y = mob3YCode; y < mob3YCode + 5; y++) {
                     map[x][y] = 3;
                 }
             }
         }
-        if (room > 2 && room < 5 && mob4life && something != 4) {
+        if (room > 2 && room < 5 && mob4life && something !== 4) {
             for (let x = mob4XCode; x < mob4XCode + 5; x++) {
                 for (let y = mob4YCode; y < mob4YCode + 5; y++) {
                     map[x][y] = 4;
                 }
             }
         }
-        if (room > 3 && room < 5 && mob5life && something != 5) {
+        if (room > 3 && room < 5 && mob5life && something !== 5) {
             for (let x = mob5XCode; x < mob5XCode + 5; x++) {
                 for (let y = mob5YCode; y < mob5YCode + 5; y++) {
                     map[x][y] = 5;
                 }
             }
         }
-        if (floor > 1 && room == 0 && mob6life && something != 6) {
+        if (floor > 1 && room === 0 && mob6life && something !== 6) {
             for (let x = mob6XCode; x < mob6XCode + 10; x++) {
                 for (let y = mob6YCode; y < mob6YCode + 10; y++) {
                     map[x][y] = 6;
@@ -1031,26 +1066,26 @@ $(document).ready(function () {
     }
 
     function somethingDistance(something, weaponId, floor) {
-        if (something == 1) {
-            if (weaponId % 10 == 1) {
+        if (something === 1) {
+            if (weaponId % 10 === 1) {
                 return 4;
-            } else if (weaponId % 10 == 2) {
+            } else if (weaponId % 10 === 2) {
                 return 5;
-            } else if (weaponId % 10 == 3) {
+            } else if (weaponId % 10 === 3) {
                 return 6;
-            } else if (weaponId % 10 == 4) {
+            } else if (weaponId % 10 === 4) {
                 return 7;
-            } else if (weaponId % 10 == 5) {
+            } else if (weaponId % 10 === 5) {
                 return 8;
-            } else if (weaponId % 10 == 6) {
+            } else if (weaponId % 10 === 6) {
                 return 9;
-            } else if (weaponId % 10 == 7) {
+            } else if (weaponId % 10 === 7) {
                 return 10;
-            } else if (weaponId % 10 == 8) {
+            } else if (weaponId % 10 === 8) {
                 return 11;
-            } else if (weaponId % 10 == 9) {
+            } else if (weaponId % 10 === 9) {
                 return 12;
-            } else if (weaponId % 10 == 0) {
+            } else if (weaponId % 10 === 0) {
                 return 13;
             }
         } else {
@@ -1085,9 +1120,9 @@ $(document).ready(function () {
 
         // console.log(front_weaponId);
 
-        if (something == 1) {
+        if (something === 1) {
             Distance = front_weaponId % 10; // 소수점 아래 버림
-            if (front_weaponId % 10 == 0) {
+            if (front_weaponId % 10 === 0) {
                 Distance = 10;
             }
         } else {
@@ -1104,20 +1139,20 @@ $(document).ready(function () {
 
         // 약간의 딜레이 후에 css를 변경해 이동하는 모습을 표현
         setTimeout(function () {
-            if (motion == 'A') {
+            if (motion === 'A') {
                 $attackElement.css('left', (-4 - (Distance * 2)) + "vh");
-            } else if (motion == 'W') {
+            } else if (motion === 'W') {
                 $attackElement.css('top', (-4 - (Distance * 2)) + "vh");
-            } else if (motion == 'D') {
+            } else if (motion === 'D') {
                 if (something < 6) {
                     $attackElement.css('left', (12 + (Distance * 2)) + "vh");
-                } else if (something == 6) {
+                } else if (something === 6) {
                     $attackElement.css('left', (22 + (Distance * 2)) + "vh");
                 }
-            } else if (motion == 'S') {
+            } else if (motion === 'S') {
                 if (something < 6) {
                     $attackElement.css('top', (12 + (Distance * 2)) + "vh");
-                } else if (something == 6) {
+                } else if (something === 6) {
                     $attackElement.css('top', (22 + (Distance * 2)) + "vh");
                 }
             }
@@ -1128,7 +1163,7 @@ $(document).ready(function () {
             $attackElement.addClass('hidden'); // 다시 hidden 추가
             if (something < 6) {
                 $attackElement.css({top: "4vh", left: "4vh"}); // 원래 위치로 복귀
-            } else if (something == 6) {
+            } else if (something === 6) {
                 $attackElement.css({top: "9vh", left: "9vh"}); // 원래 위치로 복귀
             }
         }, 500);  // 애니메이션 시간 500ms 이후
@@ -1141,14 +1176,13 @@ $(document).ready(function () {
         let doorChack = $(".door").hasClass("hidden");
         if (LR > 79 && 38 < UD && UD < 52 && !doorChack) {
             stopMoving();
-            const isItemHidden = $('.item').hasClass('hidden');
+            const isItemHidden = $item.hasClass('hidden');
             if (!isItemHidden && isConfirm && charac.floor <= 5) {
                 console.log('2단계 진입' + isConfirm);
                 // isConfirm이 true일 때만 confirm() 실행
                 if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
                     console.log('3단계 진입' + isConfirm);
                     isConfirm = false; // 취소한 경우, 이동하지 않음
-                    return; // 함수를 종료하여 새로고침을 막음
                 } else {
                     console.log('4단계 진입' + isConfirm);
                     stageSave();
@@ -1159,7 +1193,7 @@ $(document).ready(function () {
             } else if (charac.floor > 5) {
                 console.log('6단계 진입' + isConfirm);
                 stageSave();
-            } else if (isItemHidden){
+            } else if (isItemHidden) {
                 console.log('7단계 진입' + isConfirm);
                 stageSave();
             }
@@ -1218,13 +1252,13 @@ $(document).ready(function () {
     // 몬스터 체력바 변화 함수
     function mobHpDown(something) {
         let mob_hp = 0;
-        if (something == 2) {
+        if (something === 2) {
             mob_hp = mob2_hp;
-        } else if (something == 3) {
+        } else if (something === 3) {
             mob_hp = mob3_hp;
-        } else if (something == 4) {
+        } else if (something === 4) {
             mob_hp = mob4_hp;
-        } else if (something == 5) {
+        } else if (something === 5) {
             mob_hp = mob5_hp;
         }
         let new_mobHp_width = (8 / (charac.floor * 10)) * mob_hp;
@@ -1263,7 +1297,7 @@ $(document).ready(function () {
         $('.mob5').removeClass('hidden');
         mob5_hp = charac.floor * 10;
     }
-    if (charac.floor > 1 && charac.room == 0) {
+    if (charac.floor > 1 && charac.room === 0) {
         $('.mob6').removeClass('hidden');
         $('.bossHP').removeClass('hidden');
         mob6_hp = (charac.floor - 1) * 100;
@@ -1297,7 +1331,7 @@ $(document).ready(function () {
             if (charac.room > 3 && charac.room < 5) {
                 stop5 = setInterval(() => move(5), 200);
             }
-            if (charac.floor > 1 && charac.room == 0) {
+            if (charac.floor > 1 && charac.room === 0) {
                 stop6 = setInterval(() => move(6), 100);
             }
         } else {
@@ -1313,7 +1347,7 @@ $(document).ready(function () {
             if (charac.room > 3 && room < 5) {
                 stop5 = setInterval(() => move(5), 70);
             }
-            if (charac.floor > 1 && room == 0) {
+            if (charac.floor > 1 && room === 0) {
                 stop6 = setInterval(() => move(6), 30);
             }
         }
@@ -1333,15 +1367,15 @@ $(document).ready(function () {
         // console.log('windowChack : ' + windowChack);
         // console.log('something : ' + something);
 
-        if (random == 1 && windowChack) {
+        if (random === 1 && windowChack) {
             moveCharacter('left', something)
-        } else if (random == 2 && windowChack) {
+        } else if (random === 2 && windowChack) {
             moveCharacter('up', something)
-        } else if (random == 3 && windowChack) {
+        } else if (random === 3 && windowChack) {
             moveCharacter('right', something)
-        } else if (random == 4 && windowChack) {
+        } else if (random === 4 && windowChack) {
             moveCharacter('down', something)
-        } else if (random == 5 && windowChack) {
+        } else if (random === 5 && windowChack) {
             mobAttack(something);
         }
     }
@@ -1350,13 +1384,13 @@ $(document).ready(function () {
     // 몬스터의 공격
     function mobAttack(something) {
         let randomAttack = getRandom(1, 4);
-        if (randomAttack == 1) {
+        if (randomAttack === 1) {
             attack('A', something);
-        } else if (randomAttack == 2) {
+        } else if (randomAttack === 2) {
             attack('W', something);
-        } else if (randomAttack == 3) {
+        } else if (randomAttack === 3) {
             attack('D', something);
-        } else if (randomAttack == 4) {
+        } else if (randomAttack === 4) {
             attack('S', something);
         }
     }
@@ -1397,7 +1431,7 @@ $(document).ready(function () {
 
 var mobFind = localStorage.getItem(nickname + 'MobFind');
 
-if (charac.room == 1) {
+if (charac.room === 1) {
     if (mobFind || mobFind < charac.floor) {
         localStorage.setItem(nickname + 'MobFind', charac.floor);
         mobFind = charac.floor;
@@ -1428,13 +1462,11 @@ $.each(Object.keys(localStorage), function (_, key) {
 var mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
 var mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
 var mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
-var mob__dictionaryWidth = mob__cardWidth * mob__itemsPerPage; // 몬스터 도감 한 번에 보여줄 전체 너비
 var mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
 
 var weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
 var weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
 var weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
-var weapon__dictionaryWidth = weapon__cardWidth * weapon__itemsPerPage; // 무기 도감 한 번에 보여줄 전체 너비
 var weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
 
 function mob__updateSlide() {
@@ -1496,8 +1528,9 @@ function showMob__dictionary() {
     $('.mob__prev_bt').toggleClass('hidden');
     $('.mob__list_bt').toggleClass('hidden');
     $('.mob__next_bt').toggleClass('hidden');
-    $('.mob__dictionary_bt').toggleClass('play');
-    $('.mob__dictionary_bt').toggleClass('pause');
+    const $mob__dictionary_bt = $('.mob__dictionary_bt');
+    $mob__dictionary_bt.toggleClass('play');
+    $mob__dictionary_bt.toggleClass('pause');
 }
 
 function showWeapon__dictionary() {
@@ -1505,6 +1538,7 @@ function showWeapon__dictionary() {
     $('.weapon__prev_bt').toggleClass('hidden');
     $('.weapon__list_bt').toggleClass('hidden');
     $('.weapon__next_bt').toggleClass('hidden');
-    $('.weapon__dictionary_bt').toggleClass('play');
-    $('.weapon__dictionary_bt').toggleClass('pause');
+    const $weapon__dictionary_bt = $('.weapon__dictionary_bt');
+    $weapon__dictionary_bt.toggleClass('play');
+    $weapon__dictionary_bt.toggleClass('pause');
 }

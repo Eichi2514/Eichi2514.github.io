@@ -174,7 +174,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: rgb(255, 71, 48);
 }
 
-.localStorageClear{
+.localStorageClear {
     right: 1vh;
     bottom: 1vh;
 }
@@ -1111,6 +1111,15 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 10vh;
 }
 
+.random_item_effect {
+    top: 74vh;
+    left: 44vh;
+    width: 12vh;
+    height: 12vh;
+    border-radius: 10vh;
+    box-shadow: 0 0 1.5vh 0.5vh rgba(0, 0, 0, 0.1);
+}
+
 /* 게임오버화면 */
 .over {
     top: 0;
@@ -1375,7 +1384,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     box-shadow: 0 0 15vh 5vh rgba(255, 0, 0, 0.7), inset 0 0 15vh 5vh rgba(255, 0, 0, 0.7);
 }
 
-.restricted_sun > img{
+.restricted_sun > img {
     width: 100%;
     height: 100%;
     animation: spin 10s infinite linear;
