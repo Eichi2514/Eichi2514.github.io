@@ -244,7 +244,7 @@ var $randomWeapon = getRandom(1, weaponMax);
 
 var randomItem = getRandom(1, 3);
 
-if(randomItem === 3) $('.random_item_effect').removeClass('hidden');
+if (randomItem === 3) $('.random_item_effect').removeClass('hidden');
 
 //아이템 안내창 교체 버튼 눌렀을 떄
 function Item_change() {
@@ -689,60 +689,60 @@ $(document).ready(function () {
         attack_motion(something, direction);
 
         // 나머지 로직은 0.5초 뒤에 실행
-        setTimeout(() => {
-            let data = attackChack(something, direction);
-            // console.log(data);
-            if (something !== 1 && data === 1) {
-                if (something < 6) {
-                    hpDown(mobDamage);
-                    damage__motion('1', mobDamage);
-                } else {
-                    hpDown(mobDamage * 2);
-                    damage__motion('1', mobDamage * 2);
-                }
-            } else if (something === 1 && data === 2) {
-                mob2_hp -= damage;
-                damage__motion(data, damage);
-                if (mob2_hp <= 0) {
-                    mobHidden(2);
-                    clearInterval(stop2);
-                }
-            } else if (something === 1 && data === 3) {
-                mob3_hp -= damage;
-                damage__motion(data, damage);
-                if (mob3_hp <= 0) {
-                    mobHidden(3);
-                    clearInterval(stop3);
-                }
-            } else if (something === 1 && data === 4) {
-                mob4_hp -= damage;
-                damage__motion(data, damage);
-                if (mob4_hp <= 0) {
-                    mobHidden(4);
-                    clearInterval(stop4);
-                }
-            } else if (something === 1 && data === 5) {
-                mob5_hp -= damage;
-                damage__motion(data, damage);
-                if (mob5_hp <= 0) {
-                    mobHidden(5);
-                    clearInterval(stop5);
-                }
-            } else if (something === 1 && data === 6) {
-                mob6_hp -= damage;
-                damage__motion(data, damage);
-                if (mob6_hp <= 0) {
-                    mobHidden(6);
-                    clearInterval(stop6);
-                    showItem();
-                }
-                BossHpDown();
+        // setTimeout(() => {
+        let data = attackChack(something, direction);
+        // console.log(data);
+        if (something !== 1 && data === 1) {
+            if (something < 6) {
+                hpDown(mobDamage);
+                damage__motion('1', mobDamage);
+            } else {
+                hpDown(mobDamage * 2);
+                damage__motion('1', mobDamage * 2);
             }
-            if (something === 1) {
-                showDoor();
-                showRandomItem();
+        } else if (something === 1 && data === 2) {
+            mob2_hp -= damage;
+            damage__motion(data, damage);
+            if (mob2_hp <= 0) {
+                mobHidden(2);
+                clearInterval(stop2);
             }
-        }, 400);
+        } else if (something === 1 && data === 3) {
+            mob3_hp -= damage;
+            damage__motion(data, damage);
+            if (mob3_hp <= 0) {
+                mobHidden(3);
+                clearInterval(stop3);
+            }
+        } else if (something === 1 && data === 4) {
+            mob4_hp -= damage;
+            damage__motion(data, damage);
+            if (mob4_hp <= 0) {
+                mobHidden(4);
+                clearInterval(stop4);
+            }
+        } else if (something === 1 && data === 5) {
+            mob5_hp -= damage;
+            damage__motion(data, damage);
+            if (mob5_hp <= 0) {
+                mobHidden(5);
+                clearInterval(stop5);
+            }
+        } else if (something === 1 && data === 6) {
+            mob6_hp -= damage;
+            damage__motion(data, damage);
+            if (mob6_hp <= 0) {
+                mobHidden(6);
+                clearInterval(stop6);
+                showItem();
+            }
+            BossHpDown();
+        }
+        if (something === 1) {
+            showDoor();
+            showRandomItem();
+        }
+        // }, 400);
     }
 
     // hp 감소
@@ -1332,23 +1332,23 @@ $(document).ready(function () {
                 stop5 = setInterval(() => move(5), 200);
             }
             if (charac.floor > 1 && charac.room === 0) {
-                stop6 = setInterval(() => move(6), 100);
+                stop6 = setInterval(() => move(6), 200);
             }
         } else {
-            if (charac.room > 0 && room < 5) {
-                stop2 = setInterval(() => move(2), 300);
+            if (charac.room > 0 && charac.room < 5) {
+                stop2 = setInterval(() => move(2), 500);
             }
-            if (charac.room > 1 && room < 5) {
-                stop3 = setInterval(() => move(3), 200);
+            if (charac.room > 1 && charac.room < 5) {
+                stop3 = setInterval(() => move(3), 400);
             }
-            if (charac.room > 2 && room < 5) {
-                stop4 = setInterval(() => move(4), 120);
+            if (charac.room > 2 && charac.room < 5) {
+                stop4 = setInterval(() => move(4), 250);
             }
-            if (charac.room > 3 && room < 5) {
-                stop5 = setInterval(() => move(5), 70);
+            if (charac.room > 3 && charac.room < 5) {
+                stop5 = setInterval(() => move(5), 100);
             }
-            if (charac.floor > 1 && room === 0) {
-                stop6 = setInterval(() => move(6), 30);
+            if (charac.floor > 1 && charac.room === 0) {
+                stop6 = setInterval(() => move(6), 100);
             }
         }
     }
@@ -1542,3 +1542,83 @@ function showWeapon__dictionary() {
     $weapon__dictionary_bt.toggleClass('play');
     $weapon__dictionary_bt.toggleClass('pause');
 }
+
+const bgTrackCount = 4;
+var roomOffset = charac.room === 0 ? 0 : 1;
+var bgTrackNumber = Math.floor((charac.floor / 10) % bgTrackCount) + roomOffset;
+
+function bgChange() {
+    $(".audios").attr('src', "../audio/bg" + bgTrackNumber + ".mp3");
+}
+
+bgChange();
+
+// 페이지를 떠나기 전, 현재 오디오의 재생 위치와 상태를 저장
+window.addEventListener('beforeunload', function () {
+    // 오디오 요소를 가져옴
+    var audio = document.getElementById('audioPlayer');
+    // 재생 위치를 저장할 키 설정
+    var storageKey = 'audioPlaybackPosition';
+    // 현재 재생 위치를 localStorage에 저장
+    localStorage.setItem(storageKey, audio.currentTime);
+    // 오디오 재생 상태도 저장 (재생 중이면 true, 멈춤이면 false)
+    localStorage.setItem('audioPlayingState', !audio.paused);
+});
+
+// 문서가 로드된 후 실행
+document.addEventListener('DOMContentLoaded', function () {
+    // 오디오 요소를 가져옴
+    var audio = document.getElementById('audioPlayer');
+    // 투글 버튼 요소를 가져옴
+    var toggleButton = document
+        .getElementById('toggleAutoplayButton');
+    // 저장된 재생 위치를 가져올 키 설정
+    var storageKey = 'audioPlaybackPosition';
+    // 저장된 재생 위치를 가져옴
+    var savedPosition = localStorage.getItem(storageKey);
+
+    // 저장된 재생 위치가 있으면 해당 위치로 이동
+    if (savedPosition) {
+        audio.currentTime = parseFloat(savedPosition);
+    }
+
+    // 저장된 재생 상태를 localStorage에서 가져옴
+    var audioPlayingState = localStorage
+        .getItem('audioPlayingState');
+
+    // 재생 상태가 true였으면 오디오를 재생하고 버튼 문구를 소리 : 꺼짐으로 변경
+    if (audioPlayingState === 'true') {
+        audio.play();
+        toggleButton.classList.remove('play');
+        toggleButton.classList.add('pause');
+    } else {
+        // 멈춤 상태였으면 오디오를 멈추고 버튼 문구를 소리 : 켜짐으로 변경
+        audio.pause();
+        toggleButton.classList.remove('pause');
+        toggleButton.classList.add('play');
+    }
+});
+
+// 오디오 재생/멈춤을 토글하는 버튼 클릭 이벤트
+document.getElementById('toggleAutoplayButton').addEventListener(
+    'click', function () {
+        // 오디오 요소를 가져옴
+        var audio = document.getElementById('audioPlayer');
+
+        // 오디오가 재생 중이면 멈추고, 버튼 상태 변경
+        if (!audio.paused) {
+            audio.pause();
+            // 재생 상태를 멈춤으로 저장
+            localStorage.setItem('audioPlayingState', false);
+            this.classList.remove('pause');
+            this.classList.add('play');
+        } else {
+            // 오디오가 멈췄으면 재생하고, 버튼 상태 변경
+            audio.play();
+            // 재생 상태를 재생 중으로 저장
+            localStorage.setItem('audioPlayingState', true);
+            this.classList.remove('play');
+            this.classList.add('pause');
+        }
+    }
+);

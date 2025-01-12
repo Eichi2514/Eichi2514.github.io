@@ -17,9 +17,6 @@
     <!-- 뷰포트 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
     </style>
@@ -1028,6 +1025,13 @@
         </label>
         <button type="submit" class="chat_bt absolute">전송</button>
     </form>
+
+    <!-- 배경음악 -->
+    <audio id="audioPlayer" class="audioPlayer hidden absolute" controls autoplay loop preload="auto">
+        <source class="audios" src="../audio/bg2.mp3" type="audio/mpeg">
+    </audio>
+    <button id="toggleAutoplayButton" class="audio_bt absolute">소리</button>
+
     <script type="module">
         const chatName = localStorage.getItem('nickname');
 
