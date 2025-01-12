@@ -1544,81 +1544,79 @@ function showWeapon__dictionary() {
 }
 
 const bgTrackCount = 4;
-var roomOffset = charac.room === 0 ? 0 : 1;
-var bgTrackNumber = Math.floor((charac.floor / 10) % bgTrackCount) + roomOffset;
+const $audioPlayer = $('#audioPlayer');
+const storageKey = 'audioPlaybackData';
+
+function calculateBgTrackNumber(floor, room) {
+    console.log(floor + ',' + room);
+    const roomOffset = (floor % 10 === 0 && room === 0) ? 0 : 1;
+    return Math.floor((floor / 10) % bgTrackCount) + roomOffset;
+}
+
+let previousFloor = charac.floor;
+let previousRoom = charac.room;
+
+// 이전 오디오 트랙 계산
+let previousTrackNumber = calculateBgTrackNumber(previousFloor - (previousRoom === 0 ? 1 : 0), previousRoom === 0 ? 4 : previousRoom - 1);
+let currentTrackNumber = calculateBgTrackNumber(charac.floor, charac.room);
 
 function bgChange() {
-    $(".audios").attr('src', "../audio/bg" + bgTrackNumber + ".mp3");
+    console.log('previousTrackNumber : ' + previousTrackNumber);
+    console.log('currentTrackNumber : ' + currentTrackNumber);
+    if (previousTrackNumber !== currentTrackNumber) {
+        const bgAudioData = {
+            currentTime: 0, // 타임을 0초로 리셋
+            isPlaying: $audioPlayer[0].paused // 현재 재생 중인지 여부를 그대로 유지
+        };
+        localStorage.setItem(storageKey, JSON.stringify(bgAudioData));
+    }
 }
 
 bgChange();
 
-// 페이지를 떠나기 전, 현재 오디오의 재생 위치와 상태를 저장
-window.addEventListener('beforeunload', function () {
-    // 오디오 요소를 가져옴
-    var audio = document.getElementById('audioPlayer');
-    // 재생 위치를 저장할 키 설정
-    var storageKey = 'audioPlaybackPosition';
-    // 현재 재생 위치를 localStorage에 저장
-    localStorage.setItem(storageKey, audio.currentTime);
-    // 오디오 재생 상태도 저장 (재생 중이면 true, 멈춤이면 false)
-    localStorage.setItem('audioPlayingState', !audio.paused);
+$(window).on('beforeunload', function () {
+    const unloadAudioData = {
+        currentTime: $audioPlayer[0].currentTime,
+        isPlaying: !$audioPlayer[0].paused
+    };
+    localStorage.setItem(storageKey, JSON.stringify(unloadAudioData));
 });
 
-// 문서가 로드된 후 실행
-document.addEventListener('DOMContentLoaded', function () {
-    // 오디오 요소를 가져옴
-    var audio = document.getElementById('audioPlayer');
-    // 투글 버튼 요소를 가져옴
-    var toggleButton = document
-        .getElementById('toggleAutoplayButton');
-    // 저장된 재생 위치를 가져올 키 설정
-    var storageKey = 'audioPlaybackPosition';
-    // 저장된 재생 위치를 가져옴
-    var savedPosition = localStorage.getItem(storageKey);
+$(document).ready(function () {
+    const $toggleButton = $('#toggleAutoplayButton');
 
-    // 저장된 재생 위치가 있으면 해당 위치로 이동
-    if (savedPosition) {
-        audio.currentTime = parseFloat(savedPosition);
-    }
+    $audioPlayer[0].pause();
+    $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
+    $audioPlayer[0].load();
+    $audioPlayer[0].play();
 
-    // 저장된 재생 상태를 localStorage에서 가져옴
-    var audioPlayingState = localStorage
-        .getItem('audioPlayingState');
-
-    // 재생 상태가 true였으면 오디오를 재생하고 버튼 문구를 소리 : 꺼짐으로 변경
-    if (audioPlayingState === 'true') {
-        audio.play();
-        toggleButton.classList.remove('play');
-        toggleButton.classList.add('pause');
-    } else {
-        // 멈춤 상태였으면 오디오를 멈추고 버튼 문구를 소리 : 켜짐으로 변경
-        audio.pause();
-        toggleButton.classList.remove('pause');
-        toggleButton.classList.add('play');
-    }
-});
-
-// 오디오 재생/멈춤을 토글하는 버튼 클릭 이벤트
-document.getElementById('toggleAutoplayButton').addEventListener(
-    'click', function () {
-        // 오디오 요소를 가져옴
-        var audio = document.getElementById('audioPlayer');
-
-        // 오디오가 재생 중이면 멈추고, 버튼 상태 변경
-        if (!audio.paused) {
-            audio.pause();
-            // 재생 상태를 멈춤으로 저장
-            localStorage.setItem('audioPlayingState', false);
-            this.classList.remove('pause');
-            this.classList.add('play');
+    const savedData = JSON.parse(localStorage.getItem(storageKey));
+    if (savedData) {
+        $audioPlayer[0].currentTime = savedData.currentTime;
+        if (savedData.isPlaying) {
+            $audioPlayer[0].play();
+            $toggleButton.removeClass('play').addClass('pause');
         } else {
-            // 오디오가 멈췄으면 재생하고, 버튼 상태 변경
-            audio.play();
-            // 재생 상태를 재생 중으로 저장
-            localStorage.setItem('audioPlayingState', true);
-            this.classList.remove('play');
-            this.classList.add('pause');
+            $audioPlayer[0].pause();
+            $toggleButton.removeClass('pause').addClass('play');
         }
     }
-);
+
+    $toggleButton.on('click', function () {
+        if ($audioPlayer[0].paused) {
+            $audioPlayer[0].play();
+            localStorage.setItem(storageKey, JSON.stringify({
+                currentTime: $audioPlayer[0].currentTime,
+                isPlaying: true
+            }));
+            $(this).removeClass('play').addClass('pause');
+        } else {
+            $audioPlayer[0].pause();
+            localStorage.setItem(storageKey, JSON.stringify({
+                currentTime: $audioPlayer[0].currentTime,
+                isPlaying: false
+            }));
+            $(this).removeClass('pause').addClass('play');
+        }
+    });
+});
