@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eichi portfolio</title>
     <link rel="stylesheet" href="../index.css"/>
+    <script src="https://unpkg.com/type-hangul@0.2.3"></script>
 </head>
 <body>
 <!-- 제이 쿼리 -->
@@ -30,28 +31,23 @@
         <div class="portfolio-box">
             <div class="portfolio-title">
                 <div class="flex">
-                    <div class="flex flex-col justify-center">
+                    <div class="w-full flex flex-col justify-center items-center">
                         <div class="p-10">
                             <div class="text-animation text-6xl">
-                                <span class="text">
-                                        <img class="my-icon"
-                                             src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
-                                             alt="내 캐릭터">
-                                        , 안녕하세요
+                                <span class="pb-5">
+                                    <img class="my-icon" src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                                        alt="내 캐릭터">
                                 </span>
+                                <span id="text1" class="text no-blink"></span>
                             </div>
                             <div class="text-animation text-6xl whitespace-nowrap">
-                                <span class="text">협업을 통한 성장을 추구하는 개발자</span>
+                                <span id="text2" class="text no-blink"></span>
                             </div>
                             <div class="text-animation text-6xl">
-                                <span class="text">
-                                    <span style="color: #FAC25A; text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);">
-                                        유건혁
-                                    </span>
-                                    <span class="ml-6">
-                                        입니다.
-                                    </span>
-                                </span>
+                                <span id="text3" class="text no-blink"
+                                    style="color: #FAC25A; text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);"></span>
+                                <span id="text4" class="text no-blink"
+                                      style="padding-left: 25px;"></span>
                             </div>
                         </div>
                     </div>
@@ -85,7 +81,8 @@
                     <div class="flex justify-around items-center w-full">
                         <a target="blank" href="https://github.com/Eichi2514" class="inline-block mr-2">
                             <img class="github-icon"
-                                 src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                 src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                 alt="깃허브 아이콘"/>
                         </a>
                         <a class="inline-block velog-icon" target="blank" href="https://velog.io/@ichi2514/posts">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="#20C997" width="100" height="100"
@@ -151,7 +148,8 @@
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://codepen.io/Eichi2514/pen/GRbmwdm" class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"/>
+                                     src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"
+                                     alt="코드펜 아이콘"/>
                             </a>
                         </div>
                     </div>
@@ -174,7 +172,8 @@
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                             <a class="inline-block velog-icon" target="blank"
                                href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
@@ -205,7 +204,8 @@
                             <a target="blank" href="https://github.com/Eichi2514/TailsRoute_Project_My"
                                class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                             <a class="inline-block velog-icon" target="blank"
                                href="https://velog.io/@ichi2514/tp1-73%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
@@ -232,7 +232,8 @@
                             <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
                                class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                         </div>
                     </div>
@@ -249,7 +250,8 @@
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://codepen.io/Eichi2514/pen/GRbmwdm" class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"/>
+                                     src="https://github.com/user-attachments/assets/a1793062-0b14-4fdf-875f-5a5b12be6ca7"
+                                     alt="코드펜 아이콘"/>
                             </a>
                         </div>
                     </div>
@@ -272,7 +274,8 @@
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://github.com/Eichi2514/2024_08_p2" class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                             <a class="inline-block velog-icon" target="blank"
                                href="https://velog.io/@ichi2514/p2-34%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
@@ -303,7 +306,8 @@
                             <a target="blank" href="https://github.com/Eichi2514/TailsRoute_Project_My"
                                class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                             <a class="inline-block velog-icon" target="blank"
                                href="https://velog.io/@ichi2514/tp1-73%EC%9D%BC%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%86%8C%EA%B0%9C">
@@ -330,7 +334,8 @@
                             <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
                                class="inline-block mr-2">
                                 <img class="github-icon"
-                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"/>
+                                     src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-social-github-256.png"
+                                     alt="깃허브 아이콘"/>
                             </a>
                         </div>
                     </div>
@@ -624,73 +629,73 @@
                     <div class="text-center text-white text-2xl font-bold">백엔드</div>
                     <div class="skills">
                     <span class="skill">
-                        <div class="skill-title">Java</div>
+                        <span class="skill-title">Java</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/bae9f4fc-1548-4716-b1f7-975078700854"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">SpringBoot</div>
+                        <span class="skill-title">SpringBoot</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/33548eb8-398b-4c92-9db2-a469ec3bc734"
                              alt="">
                     </span>
                         <span class="skill">
-                            <div class="skill-title">C++</div>
-                            <img class="skill-img"
-                                 src="https://github.com/user-attachments/assets/aae9ba9e-0fc4-440e-b775-803b616fa155"
-                                 alt="">
-                        </span>
-                        <span class="skill">
-                        <div class="skill-title">Git</div>
+                        <span class="skill-title">C++</span>
                         <img class="skill-img"
-                             src="https://github.com/user-attachments/assets/3bd213f2-3ceb-4a55-98b6-87c769e5cc86"
+                             src="https://github.com/user-attachments/assets/aae9ba9e-0fc4-440e-b775-803b616fa155"
                              alt="">
+                    </span>
+                        <span class="skill">
+                    <span class="skill-title">Git</span>
+                    <img class="skill-img"
+                         src="https://github.com/user-attachments/assets/3bd213f2-3ceb-4a55-98b6-87c769e5cc86"
+                         alt="">
+                    </span>
+                        <span class="skill">
+                        <span class="skill-title">GitHub</span>
+                        <img class="skill-img"
+                             src="https://github.com/user-attachments/assets/284c68e2-2e58-45ed-a7ab-ad476ffd933b"
+                             alt="">
+                    </span>
+                        <span class="skill">
+                    <span class="skill-title">VisualStudio</span>
+                    <img class="skill-img"
+                         src="https://github.com/user-attachments/assets/64178fbf-2015-4144-9ce0-0c663b491acc"
+                         alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Github</div>
-                            <img class="skill-img"
-                                 src="https://github.com/user-attachments/assets/284c68e2-2e58-45ed-a7ab-ad476ffd933b"
-                                 alt="">
-                        </span>
-                        <span class="skill">
-                            <div class="skill-title">VisualStudio</div>
-                            <img class="skill-img"
-                                 src="https://github.com/user-attachments/assets/64178fbf-2015-4144-9ce0-0c663b491acc"
-                                 alt="">
-                        </span>
-                        <span class="skill">
-                            <div class="skill-title">MySQL</div>
+                            <span class="skill-title">MySQL</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/0184943d-9d86-4c86-b054-1470dc5bc031"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">H2</div>
+                            <span class="skill-title">H2</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/0597ba4f-1a03-4946-ba57-7559f7b15ea6"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Postgre</div>
+                            <span class="skill-title">Postgre</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/eac76e3b-d01e-4713-a6db-cae846417eba"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">MyBatis</div>
+                            <span class="skill-title">MyBatis</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/06ac752a-2b5c-474e-8a0a-f1c025cdc4c2"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Docker</div>
+                            <span class="skill-title">Docker</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/247412d2-4a94-47d8-acc1-dff8b9587f35"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Terraform</div>
+                            <span class="skill-title">Terraform</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/b7c6f6f1-3589-45ce-a554-af80198c2476"
                                  alt="">
@@ -701,49 +706,49 @@
                     <div class="text-center text-white text-2xl font-bold">개발도구</div>
                     <div class="skills">
                     <span class="skill">
-                        <div class="skill-title">IntelliJ</div>
+                        <span class="skill-title">IntelliJ</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/40c66ea6-fd81-4bd6-a758-cd8a7c49afb8"
                              alt="">
                     </span>
                         <span class="skill">
-                            <div class="skill-title">CLion</div>
+                            <span class="skill-title">CLion</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/7a52f098-2f0b-4667-adb6-53fd6bc98851"
                                  alt="">
                         </span>
                         <span class="skill">
-                        <div class="skill-title">STS4</div>
+                        <span class="skill-title">STS4</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/8fbea74b-a64f-4e71-8269-e816401ffc53"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">Nodejs</div>
+                        <span class="skill-title">Nodejs</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/9a5bf4f4-44f2-4b7e-add6-898fbf298338"
                              alt="">
                     </span>
                         <span class="skill">
-                            <div class="skill-title">XAMPP</div>
+                            <span class="skill-title">XAMPP</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/84a74d5d-8767-45db-87dd-1e8ad7ca24d3"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">ARDUINO</div>
+                            <span class="skill-title">ARDUINO</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/e038bb6c-d494-492b-824d-a6698478b16c"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Postman</div>
+                            <span class="skill-title">Postman</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/45c1597a-d317-43bc-bd38-8ce74d088556"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">DBeaver</div>
+                            <span class="skill-title">DBeaver</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/f20a0990-65e5-4e01-9fb4-241a003f40ff"
                                  alt="">
@@ -754,73 +759,73 @@
                     <div class="text-center text-white text-2xl font-bold">프론트엔드</div>
                     <div class="skills">
                         <span class="skill">
-                            <div class="skill-title">Thymeleaf</div>
+                            <span class="skill-title">Thymeleaf</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/7c602923-c5f5-4245-91e7-e3bb78779354"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Jsp</div>
+                            <span class="skill-title">Jsp</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/39db089f-5392-49df-85fa-a5dc2193b9dc"
                                  alt="">
                         </span>
                         <span class="skill">
-                        <div class="skill-title">HTML</div>
+                        <span class="skill-title">HTML</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/0625f1e9-c48e-4e73-b799-37c8acec94ef"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">CSS</div>
+                        <span class="skill-title">CSS</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/2a47d081-b943-4425-805d-8c51b80eaabb"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">JavaScript</div>
+                        <span class="skill-title">JavaScript</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/e5038b0d-3ab8-435e-8f1f-3dca1e6f8892"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">Tailwind</div>
+                        <span class="skill-title">Tailwind</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/05a62bcc-73bb-4b98-b42d-c35224d6dbea"
                              alt="">
                     </span>
                         <span class="skill">
-                        <div class="skill-title">Jquery</div>
+                        <span class="skill-title">Jquery</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/3f5a313a-b801-4cac-abc7-d9d1ee1488ab"
                              alt="">
                     </span>
                         <span class="skill">
-                            <div class="skill-title">ajax</div>
+                            <span class="skill-title">ajax</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/a49b88cb-68c5-4988-9d39-dbeba2ed0a3d"
                                  alt="">
                         </span>
                         <span class="skill">
-                        <div class="skill-title">React</div>
+                        <span class="skill-title">React</span>
                         <img class="skill-img"
                              src="https://github.com/user-attachments/assets/98d1e93d-69f5-4285-b014-c3c26332d8c2"
                              alt="">
                     </span>
                         <span class="skill">
-                            <div class="skill-title">Figma</div>
+                            <span class="skill-title">Figma</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/6f80a235-845d-44ef-b21f-3feb05157a2c"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Font Awesome</div>
+                            <span class="skill-title">Font Awesome</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/efdc65cb-e0f4-4187-b724-b7bed70a4186"
                                  alt="">
                         </span>
                         <span class="skill">
-                            <div class="skill-title">Noonnu</div>
+                            <span class="skill-title">Noonnu</span>
                             <img class="skill-img"
                                  src="https://github.com/user-attachments/assets/f7d941b4-ff8c-4b3f-af76-b8af0287666a"
                                  alt="">

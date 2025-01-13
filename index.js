@@ -1,3 +1,55 @@
+function startTypingAnimation() {
+    // 모든 텍스트를 순서대로 처리하는 배열
+    const texts = [
+        {selector: '#text1', text: '안녕하세요!', delay: 1000},
+        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 3000},
+        {selector: '#text3', text: '유건혁', delay: 700},
+        {selector: '#text4', text: '입니다.', delay: 700}
+    ];
+
+    // 모든 텍스트 초기화
+    $.each(texts, function(i, item) {
+        const {selector} = item;
+        $(selector).text(''); // 텍스트 초기화
+    });
+
+    let totalDelay = 0; // 누적 딜레이
+
+    // 타이핑 애니메이션 시작
+    $.each(texts, function (i, item) {
+        const {selector, text, delay} = item;
+        setTimeout(function () {
+
+            $(selector).text(''); // 텍스트 초기화
+            $(selector).removeClass('no-blink'); // 깜빡임 제거 및 커서 없애기
+            $(selector).addClass('text'); // 기본 깜빡임 애니메이션 추가
+
+            TypeHangul.type(selector, {
+                text: text, // 텍스트 설정
+                intervalType: 70 // 타이핑 속도 설정
+            });
+
+            // 타이핑이 끝난 후 깜빡임 제거
+            setTimeout(function () {
+                $(selector).addClass('no-blink');
+            }, text.length * 70 + delay); // 텍스트가 모두 타이핑된 후 시간(타이핑 속도 * 글자수)
+
+        }, totalDelay);
+
+        totalDelay += text.length * 100 + delay; // 타이핑 속도와 추가 딜레이 계산
+    });
+
+    // 타이핑 애니메이션이 끝난 후 다시 시작
+    setTimeout(function () {
+        startTypingAnimation();
+    }, 10000);
+}
+
+// 애니메이션 시작
+$(window).on('load', function () {
+    startTypingAnimation();
+});
+
 $(document).ready(function () {
     console.clear();
 
@@ -12,14 +64,14 @@ $(document).ready(function () {
     console.clear();
 
 // 캐릭터 선택
-
-    $(".ps").mouseenter(function () {
+    const $ps = $('.ps');
+    $ps.mouseenter(function () {
         // 캐릭터에 마우스가 올라가면
         $(this).find("i").removeClass("fa-4x");
         $(this).find("i").addClass("fa-6x"); // 마우스가 올라간 자식의 이미지를 4x에서 6x로 키운다
     });
 
-    $(".ps").mouseleave(function () {
+    $ps.mouseleave(function () {
         // 캐릭터에서 마우스가 내려가면
         $(this).find("i").removeClass("fa-6x");
         $(this).find("i").addClass("fa-4x"); //마우스의 내려간 자식의 이미지를 6x에서 4x로 되돌린다
@@ -81,28 +133,29 @@ $(document).ready(function () {
     });
 
 // 메인
+    const $ghost = $('.ghost');
+    const $character = $('.character');
     let UD = 50; // 상하 위치를 저장할 변수
     let LR = 50; // 좌우 위치를 저장할 변수
     let key = false; // 열쇠의 획득 여부를 저장할 변수
-    let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
     function up() {
-        $(".character").css("transform", "rotate(270deg)"); // 캐릭터가 270도 회전해서 위쪽을 바라보게한다
-        let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
+        $character.css("transform", "rotate(270deg)"); // 캐릭터가 270도 회전해서 위쪽을 바라보게한다
+        let go = $ghost.hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
         if (
-            go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
-            (LR == 50 && 50 < UD && UD < 350) ||
-            (LR == 50 && 400 < UD) ||
-            (LR == 150 && 250 < UD) ||
-            (LR == 200 && 50 < UD && UD < 200) ||
-            (LR == 250 && 150 < UD && UD < 300) ||
-            (LR == 250 && 350 < UD) ||
-            (LR == 350 && 50 < UD && UD < 200) ||
-            (LR == 350 && 250 < UD) ||
-            (LR == 450 && 150 < UD && UD < 300) ||
-            (LR == 450 && 350 < UD) // 벽의 위치를 확인하는 과정
+            go === false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+            (LR === 50 && 50 < UD && UD < 350) ||
+            (LR === 50 && 400 < UD) ||
+            (LR === 150 && 250 < UD) ||
+            (LR === 200 && 50 < UD && UD < 200) ||
+            (LR === 250 && 150 < UD && UD < 300) ||
+            (LR === 250 && 350 < UD) ||
+            (LR === 350 && 50 < UD && UD < 200) ||
+            (LR === 350 && 250 < UD) ||
+            (LR === 450 && 150 < UD && UD < 300) ||
+            (LR === 450 && 350 < UD) // 벽의 위치를 확인하는 과정
         ) {
             UD -= 5; // 상하 값을 5 감소시켜서
-            $(".character").css("top", UD + "px"); // 위쪽으로 5px 옮긴다
+            $character.css("top", UD + "px"); // 위쪽으로 5px 옮긴다
         }
         console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
         key_hidden(); // 키 이벤트 발생 확인
@@ -111,20 +164,20 @@ $(document).ready(function () {
     }
 
     function down() {
-        $(".character").css("transform", "rotate(90deg)"); // 캐릭터가 90도 회전해서 아래쪽을 바라보게한다
+        $character.css("transform", "rotate(90deg)"); // 캐릭터가 90도 회전해서 아래쪽을 바라보게한다
         let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
         if (
-            go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
-            (LR == 50 && UD < 300) ||
-            (LR == 50 && 350 < UD && UD < 450) ||
-            (LR == 150 && 200 < UD && UD < 450) ||
-            (LR == 200 && UD < 150) ||
-            (LR == 250 && 100 < UD && UD < 250) ||
-            (LR == 250 && 300 < UD && UD < 450) ||
-            (LR == 350 && UD < 150) ||
-            (LR == 350 && 200 < UD && UD < 450) ||
-            (LR == 450 && 100 < UD && UD < 250) ||
-            (LR == 450 && 300 < UD && UD < 450) // 벽의 위치를 확인하는 과정
+            go === false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+            (LR === 50 && UD < 300) ||
+            (LR === 50 && 350 < UD && UD < 450) ||
+            (LR === 150 && 200 < UD && UD < 450) ||
+            (LR === 200 && UD < 150) ||
+            (LR === 250 && 100 < UD && UD < 250) ||
+            (LR === 250 && 300 < UD && UD < 450) ||
+            (LR === 350 && UD < 150) ||
+            (LR === 350 && 200 < UD && UD < 450) ||
+            (LR === 450 && 100 < UD && UD < 250) ||
+            (LR === 450 && 300 < UD && UD < 450) // 벽의 위치를 확인하는 과정
         ) {
             UD += 5; // 상하 값을 5 증가시켜서
             $(".character").css("top", UD + "px"); // 아래쪽으로 5px 옮긴다
@@ -139,19 +192,19 @@ $(document).ready(function () {
         $(".character").css("transform", "scaleX(-1)"); // 캐릭터가 왼쪽으로 뒤집혀서 왼쪽을 바라보게한다
         let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
         if (
-            go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
-            (UD == 50 && 50 < LR && LR <= 100) ||
-            (UD == 50 && 200 < LR) ||
-            (UD == 150 && 50 < LR && LR < 300) ||
-            (UD == 150 && 350 < LR) ||
-            (UD == 250 && 50 < LR && LR < 200) ||
-            (UD == 250 && 350 < LR) ||
-            (UD == 350 && 150 < LR && LR < 300) ||
-            (UD == 350 && 350 < LR) ||
-            (UD == 400 && 50 < LR && LR < 200) // 벽의 위치를 확인하는 과정
+            go === false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+            (UD === 50 && 50 < LR && LR <= 100) ||
+            (UD === 50 && 200 < LR) ||
+            (UD === 150 && 50 < LR && LR < 300) ||
+            (UD === 150 && 350 < LR) ||
+            (UD === 250 && 50 < LR && LR < 200) ||
+            (UD === 250 && 350 < LR) ||
+            (UD === 350 && 150 < LR && LR < 300) ||
+            (UD === 350 && 350 < LR) ||
+            (UD === 400 && 50 < LR && LR < 200) // 벽의 위치를 확인하는 과정
         ) {
             LR -= 5; // 좌우 값을 5 감소시켜서
-            $(".character").css("left", LR + "px"); // 왼쪽으로 5px 옮긴다
+            $character.css("left", LR + "px"); // 왼쪽으로 5px 옮긴다
         }
         console.log("LR:" + LR + ", UD:" + UD + ", key : " + key); // 현재 위치와 key의 획득 여부를 확인하기위한 코드
         key_hidden(); // 키 이벤트 발생 확인
@@ -160,19 +213,19 @@ $(document).ready(function () {
     }
 
     function right() {
-        $(".character").css("transform", "scaleX(1)"); // 캐릭터를 원래 방향으로 뒤집어서 오른쪽을 바라보게한다
+        $character.css("transform", "scaleX(1)"); // 캐릭터를 원래 방향으로 뒤집어서 오른쪽을 바라보게한다
         let go = $(".ghost").hasClass("hidden"); // 유령 캐릭터를 선택했는지 확인하는 변수
         if (
-            go == false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
-            (UD == 50 && LR < 100) ||
-            (UD == 50 && 150 < LR && LR < 450) ||
-            (UD == 150 && LR < 250) ||
-            (UD == 150 && 300 < LR && LR < 450) ||
-            (UD == 250 && LR < 150) ||
-            (UD == 250 && 300 < LR && LR < 450) ||
-            (UD == 350 && 100 < LR && LR < 250) ||
-            (UD == 350 && 300 < LR && LR < 450) ||
-            (UD == 400 && LR < 150) // 벽의 위치를 확인하는 과정
+            go === false || // 유령 캐릭터를 선택했으면 아래 제약조건과 상관없이 이동이 가능하다
+            (UD === 50 && LR < 100) ||
+            (UD === 50 && 150 < LR && LR < 450) ||
+            (UD === 150 && LR < 250) ||
+            (UD === 150 && 300 < LR && LR < 450) ||
+            (UD === 250 && LR < 150) ||
+            (UD === 250 && 300 < LR && LR < 450) ||
+            (UD === 350 && 100 < LR && LR < 250) ||
+            (UD === 350 && 300 < LR && LR < 450) ||
+            (UD === 400 && LR < 150) // 벽의 위치를 확인하는 과정
         ) {
             LR += 5; // 좌우 값을 5 증가시켜서
             $(".character").css("left", LR + "px"); // 오른쪽으로 5px 옮긴다
@@ -186,7 +239,7 @@ $(document).ready(function () {
     let alertShown = false; // 알림창이 표시되었는지 여부를 저장
 
     function goal_hidden() {
-        if (LR == 450 && UD == 450 && !key) {
+        if (LR === 450 && UD === 450 && !key) {
             if (!alertShown) { // 알림창이 아직 표시되지 않았다면
                 alert("열쇠가 필요합니다.");
                 alertShown = true; // 알림창 표시 상태를 true로 변경
@@ -194,7 +247,7 @@ $(document).ready(function () {
             return; // 이후 코드를 실행하지 않음
         }
 
-        if (LR == 450 && UD == 450 && key) {
+        if (LR === 450 && UD === 450 && key) {
             // 골인 조건을 충족한 경우
             $(".map").addClass("hidden"); // 맵을 없애고
             $(".keybord_box").addClass("hidden"); // 화면 조작키를 없애고
@@ -202,12 +255,13 @@ $(document).ready(function () {
         }
     }
 
+    const $key = $('.key');
     function key_hidden() {
-        if (LR == 250 && UD == 250) {
+        if (LR === 250 && UD === 250) {
             // 키의 위치 좌우 250, 상하 250을 달성하면
             key = true; // 키의 값을 true로 바꾸고
-            $(".key").css("top", "0px").css("left", "450px"); // key의 위치를 오른쪽 위로 옮기고
-            $(".key").addClass("bg-yellow-300"); // 키의 배경색을 노란색으로 바꾼다
+            $key.css("top", "0px").css("left", "450px"); // key의 위치를 오른쪽 위로 옮기고
+            $key.addClass("bg-yellow-300"); // 키의 배경색을 노란색으로 바꾼다
         }
     }
 
@@ -217,345 +271,345 @@ $(document).ready(function () {
         // 아래는 처음엔 인텔리제이때 만들었던거처럼 맵을 여러개 만들 생각으로
         // 모든 위치에서 길을 확인하게 짠 코드라 없는길의 class도 적혀있는데
         // 자바스크립트 만으로는 시간이 너무 오래 걸려서 맵의 추가 여부는 무기한 보류되었다
-        if (LR == 50 && UD == 50) {
+        if (LR === 50 && UD === 50) {
             $(".r11, .r12, .r21, .r22").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 50) {
+        if (LR === 100 && UD === 50) {
             $(".r11, .r12, .r13, .r21, .r22, .r23").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 150 && UD == 50) {
+        if (LR === 150 && UD === 50) {
             $(".r12, .r13, .r14, .r22, .r23, .r24").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 200 && UD == 50) {
+        if (LR === 200 && UD === 50) {
             $(".r13, .r14, .r15, .r23, .r24, .r25").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 250 && UD == 50) {
+        if (LR === 250 && UD === 50) {
             $(".r14, .r15, .r16, .r24, .r25, .r26").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 300 && UD == 50) {
+        if (LR === 300 && UD === 50) {
             $(".r15, .r16, .r17, .r25, .r26, .r27").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 350 && UD == 50) {
+        if (LR === 350 && UD === 50) {
             $(".r16, .r17, .r18, .r26, .r27, .r28").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 400 && UD == 50) {
+        if (LR === 400 && UD === 50) {
             $(".r17, .r18, .r19, .r27, .r28, .r29").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 450 && UD == 50) {
+        if (LR === 450 && UD === 50) {
             $(".r18, .r19, .r28, .r29").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 100) {
+        if (LR === 50 && UD === 100) {
             $(".r11, .r12, .r21, .r22, .r31, .r32").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 100) {
+        if (LR === 100 && UD === 100) {
             $(".r11, .r12, .r13, .r21, .r22, .r23, .r31, .r32, .r33")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 100) {
+        if (LR === 150 && UD === 100) {
             $(".r12, .r13, .r14, .r22, .r23, .r24, .r32, .r33, .r34")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 100) {
+        if (LR === 200 && UD === 100) {
             $(".r13, .r14, .r15, .r23, .r24, .r25, .r33, .r34, .r35")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 100) {
+        if (LR === 250 && UD === 100) {
             $(".r14, .r15, .r16, .r24, .r25, .r26, .r34, .r35, .r36")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 100) {
+        if (LR === 300 && UD === 100) {
             $(".r15, .r16, .r17, .r25, .r26, .r27, .r35, .r36, .r37")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 100) {
+        if (LR === 350 && UD === 100) {
             $(".r16, .r17, .r18, .r26, .r27, .r28, .r36, .r37, .r38")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 100) {
+        if (LR === 400 && UD === 100) {
             $(".r17, .r18, .r19, .r27, .r28, .r29, .r37, .r38, .r39")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 100) {
+        if (LR === 450 && UD === 100) {
             $(".r18, .r19, .r28, .r29, .r38, .r39").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 150) {
+        if (LR === 50 && UD === 150) {
             $(".r21, .r22, .r31, .r32, .r41, .r42").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 150) {
+        if (LR === 100 && UD === 150) {
             $(".r21, .r22, .r23, .r31, .r32, .r33, .r41, .r42, .r43")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 150) {
+        if (LR === 150 && UD === 150) {
             $(".r42, .r43, .r44, .r22, .r23, .r24, .r32, .r33, .r34")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 150) {
+        if (LR === 200 && UD === 150) {
             $(".r43, .r44, .r45, .r23, .r24, .r25, .r33, .r34, .r35")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 150) {
+        if (LR === 250 && UD === 150) {
             $(".r44, .r45, .r46, .r24, .r25, .r26, .r34, .r35, .r36")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 150) {
+        if (LR === 300 && UD === 150) {
             $(".r45, .r46, .r47, .r25, .r26, .r27, .r35, .r36, .r37")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 150) {
+        if (LR === 350 && UD === 150) {
             $(".r46, .r47, .r48, .r26, .r27, .r28, .r36, .r37, .r38")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 150) {
+        if (LR === 400 && UD === 150) {
             $(".r47, .r48, .r49, .r27, .r28, .r29, .r37, .r38, .r39")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 150) {
+        if (LR === 450 && UD === 150) {
             $(".r48, .r49, .r28, .r29, .r38, .r39").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 200) {
+        if (LR === 50 && UD === 200) {
             $(".r41, .r42, .r51, .r52, .r31, .r32").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 200) {
+        if (LR === 100 && UD === 200) {
             $(".r41, .r42, .r43, .r51, .r52, .r53, .r31, .r32, .r33")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 200) {
+        if (LR === 150 && UD === 200) {
             $(".r42, .r43, .r44, .r52, .r53, .r54, .r32, .r33, .r34")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 200) {
+        if (LR === 200 && UD === 200) {
             $(".r43, .r44, .r45, .r53, .r54, .r55, .r33, .r34, .r35")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 200) {
+        if (LR === 250 && UD === 200) {
             $(".r44, .r45, .r46, .r54, .r55, .r56, .r34, .r35, .r36")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 200) {
+        if (LR === 300 && UD === 200) {
             $(".r45, .r46, .r47, .r55, .r56, .r57, .r35, .r36, .r37")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 200) {
+        if (LR === 350 && UD === 200) {
             $(".r46, .r47, .r48, .r56, .r57, .r58, .r36, .r37, .r38")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 200) {
+        if (LR === 400 && UD === 200) {
             $(".r47, .r48, .r49, .r57, .r58, .r59, .r37, .r38, .r39")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 200) {
+        if (LR === 450 && UD === 200) {
             $(".r48, .r49, .r58, .r59, .r38, .r39").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 250) {
+        if (LR === 50 && UD === 250) {
             $(".r41, .r42, .r51, .r52, .r61, .r62").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 250) {
+        if (LR === 100 && UD === 250) {
             $(".r41, .r42, .r43, .r51, .r52, .r53, .r61, .r62, .r63")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 250) {
+        if (LR === 150 && UD === 250) {
             $(".r42, .r43, .r44, .r52, .r53, .r54, .r62, .r63, .r64")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 250) {
+        if (LR === 200 && UD === 250) {
             $(".r43, .r44, .r45, .r53, .r54, .r55, .r63, .r64, .r65")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 250) {
+        if (LR === 250 && UD === 250) {
             $(".r44, .r45, .r46, .r54, .r55, .r56, .r64, .r65, .r66")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 250) {
+        if (LR === 300 && UD === 250) {
             $(".r45, .r46, .r47, .r55, .r56, .r57, .r65, .r66, .r67")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 250) {
+        if (LR === 350 && UD === 250) {
             $(".r46, .r47, .r48, .r56, .r57, .r58, .r66, .r67, .r68")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 250) {
+        if (LR === 400 && UD === 250) {
             $(".r47, .r48, .r49, .r57, .r58, .r59, .r67, .r68, .r69")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 250) {
+        if (LR === 450 && UD === 250) {
             $(".r48, .r49, .r58, .r59, .r68, .r69").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 300) {
+        if (LR === 50 && UD === 300) {
             $(".r71, .r72, .r51, .r52, .r61, .r62").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 300) {
+        if (LR === 100 && UD === 300) {
             $(".r71, .r72, .r73, .r51, .r52, .r53, .r61, .r62, .r63")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 300) {
+        if (LR === 150 && UD === 300) {
             $(".r72, .r73, .r74, .r52, .r53, .r54, .r62, .r63, .r64")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 300) {
+        if (LR === 200 && UD === 300) {
             $(".r73, .r74, .r75, .r53, .r54, .r55, .r63, .r64, .r65")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 300) {
+        if (LR === 250 && UD === 300) {
             $(".r74, .r75, .r76, .r54, .r55, .r56, .r64, .r65, .r66")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 300) {
+        if (LR === 300 && UD === 300) {
             $(".r75, .r76, .r77, .r55, .r56, .r57, .r65, .r66, .r67")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 300) {
+        if (LR === 350 && UD === 300) {
             $(".r76, .r77, .r78, .r56, .r57, .r58, .r66, .r67, .r68")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 300) {
+        if (LR === 400 && UD === 300) {
             $(".r77, .r78, .r79, .r57, .r58, .r59, .r67, .r68, .r69")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 300) {
+        if (LR === 450 && UD === 300) {
             $(".r78, .r79, .r58 .r59, .r68, .r69").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 350) {
+        if (LR === 50 && UD === 350) {
             $(".r71, .r72, .r81, .r82, .r61, .r62").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 350) {
+        if (LR === 100 && UD === 350) {
             $(".r71, .r72, .r73, .r81, .r82, .r83, .r61, .r62, .r63")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 350) {
+        if (LR === 150 && UD === 350) {
             $(".r72, .r73, .r74, .r82, .r83, .r84, .r62, .r63, .r64")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 350) {
+        if (LR === 200 && UD === 350) {
             $(".r73, .r74, .r75, .r83, .r84, .r85, .r63, .r64, .r65")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 350) {
+        if (LR === 250 && UD === 350) {
             $(".r74, .r75, .r76, .r84, .r85, .r86, .r64, .r65, .r66")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 350) {
+        if (LR === 300 && UD === 350) {
             $(".r75, .r76, .r77, .r85, .r86, .r87, .r65, .r66, .r67")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 350) {
+        if (LR === 350 && UD === 350) {
             $(".r76, .r77, .r78, .r86, .r87, .r88, .r66, .r67, .r68")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 350) {
+        if (LR === 400 && UD === 350) {
             $(".r77, .r78, .r79, .r87, .r88, .r89, .r67, .r68, .r69")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 350) {
+        if (LR === 450 && UD === 350) {
             $(".r78, .r79, .r88 .r89, .r68, .r69").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 400) {
+        if (LR === 50 && UD === 400) {
             $(".r71, .r72, .r81, .r82, .r91, .r92").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 400) {
+        if (LR === 100 && UD === 400) {
             $(".r71, .r72, .r73, .r81, .r82, .r83, .r91, .r92, .r93")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 150 && UD == 400) {
+        if (LR === 150 && UD === 400) {
             $(".r72, .r73, .r74, .r82, .r83, .r84, .r92, .r93, .r94")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 200 && UD == 400) {
+        if (LR === 200 && UD === 400) {
             $(".r73, .r74, .r75, .r83, .r84, .r85, .r93, .r94, .r95")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 250 && UD == 400) {
+        if (LR === 250 && UD === 400) {
             $(".r74, .r75, .r76, .r84, .r85, .r86, .r94, .r95, .r96")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 300 && UD == 400) {
+        if (LR === 300 && UD === 400) {
             $(".r75, .r76, .r77, .r85, .r86, .r87, .r95, .r96, .r97")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 350 && UD == 400) {
+        if (LR === 350 && UD === 400) {
             $(".r76, .r77, .r78, .r86, .r87, .r88, .r96, .r97, .r98")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 400 && UD == 400) {
+        if (LR === 400 && UD === 400) {
             $(".r77, .r78, .r79, .r87, .r88, .r89, .r97, .r98, .r99")
                 .fadeIn(1000)
                 .removeClass("hidden");
         }
-        if (LR == 450 && UD == 400) {
+        if (LR === 450 && UD === 400) {
             $(".r78, .r79, .r88 .r89, .r98, .r99").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 50 && UD == 450) {
+        if (LR === 50 && UD === 450) {
             $(".r81, .r82, .r91, .r92").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 100 && UD == 450) {
+        if (LR === 100 && UD === 450) {
             $(".r81, .r82, .r83, .r91, .r92, .r93").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 150 && UD == 450) {
+        if (LR === 150 && UD === 450) {
             $(".r82, .r83, .r84, .r92, .r93, .r94").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 200 && UD == 450) {
+        if (LR === 200 && UD === 450) {
             $(".r83, .r84, .r85, .r93, .r94, .r95").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 250 && UD == 450) {
+        if (LR === 250 && UD === 450) {
             $(".r84, .r85, .r86, .r94, .r95, .r96").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 300 && UD == 450) {
+        if (LR === 300 && UD === 450) {
             $(".r85, .r86, .r87, .r95, .r96, .r97").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 350 && UD == 450) {
+        if (LR === 350 && UD === 450) {
             $(".r86, .r87, .r88, .r96, .r97, .r98").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 400 && UD == 450) {
+        if (LR === 400 && UD === 450) {
             $(".r87, .r88, .r89, .r97, .r98, .r99").fadeIn(1000).removeClass("hidden");
         }
-        if (LR == 450 && UD == 450) {
+        if (LR === 450 && UD === 450) {
             $(".r88, .r89, .r98, .r99").fadeIn(1000).removeClass("hidden");
         }
     }
@@ -637,7 +691,12 @@ $(document).ready(function () {
         }
     });
 
-    $(".key-left").on("touchstart", function (e) {
+    const $key_left = $('key-left');
+    const $key_up = $('key-up');
+    const $key_right = $('key-right');
+    const $key_down = $('key-down');
+
+    $key_left.on("touchstart", function (e) {
         e.preventDefault();
 
         // 화면 조작키 왼쪽을 터치하면
@@ -646,7 +705,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".key-up").on("touchstart", function (e) {
+    $key_up.on("touchstart", function (e) {
         e.preventDefault();
 
         // 화면 조작키 윗쪽을 터치하면
@@ -655,7 +714,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".key-right").on("touchstart", function (e) {
+    $key_right.on("touchstart", function (e) {
         e.preventDefault();
 
         // 화면 조작키 오른쪽을 터치하면
@@ -664,7 +723,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".key-down").on("touchstart", function (e) {
+    $key_down.on("touchstart", function (e) {
         e.preventDefault();
 
         // 화면 조작키 아래쪽을 터치하면
@@ -673,28 +732,28 @@ $(document).ready(function () {
         }
     });
 
-    $(".key-left").on("touchend", function () {
+    $key_left.on("touchend", function () {
         // 화면 조작키 왼쪽 터치끝나면
         if (moveActionChack === 'left') {
             stopMoving(); // 종료
         }
     });
 
-    $(".key-up").on("touchend", function () {
+    $key_up.on("touchend", function () {
         // 화면 조작키 윗쪽 터치끝나면
         if (moveActionChack === 'up') {
             stopMoving(); // 종료
         }
     });
 
-    $(".key-right").on("touchend", function () {
+    $key_right.on("touchend", function () {
         // 화면 조작키 오른쪽 터치끝나면
         if (moveActionChack === 'right') {
             stopMoving(); // 종료
         }
     });
 
-    $(".key-down").on("touchend", function () {
+    $key_down.on("touchend", function () {
         // 화면 조작키 아래쪽 터치끝나면
         if (moveActionChack === 'down') {
             stopMoving(); // 종료
@@ -714,16 +773,16 @@ $(document).ready(function () {
         LR = 50; // 좌우 값을 초기값 50으로 변경하고
         key = false; // 키의 값을 false로 바꾸고
         $(".character").css("top", "50px").css("left", "50px"); // 캐릭터의 초기 위치를 초기값으로 바꾸고
-        $(".key").css("top", "250px").css("left", "250px"); // 키의 초기 위치를 초기값으로 바꾸고
+        $key.css("top", "250px").css("left", "250px"); // 키의 초기 위치를 초기값으로 바꾸고
         $(".r11, .r12, .r21, .r22, .r55, .r99").fadeIn(1000).removeClass("hidden"); // 처음 위치에서 보여질 길을 살리고
-        $(".key").removeClass("bg-yellow-300"); // 키의 배경색을 없엔다
+        $key.removeClass("bg-yellow-300"); // 키의 배경색을 없엔다
     });
 
     const $projects = $('.projects');
     const $project = $('.project');
     const $left_btn = $('.left_btn');
     const $right_btn = $('.right_btn');
-    const totalProjects = $('.project').length - 7;
+    const totalProjects = $project.length - 7;
     let currentIndex = 0;
     let intervalId;
 
@@ -766,12 +825,12 @@ $(document).ready(function () {
     $right_btn.on('mouseleave', startSlider);
 
     // 왼쪽 버튼 클릭 시 슬라이드 이동
-    $('.left_btn').on('click', function () {
+    $left_btn.on('click', function () {
         moveSlide('left');
     });
 
     // 오른쪽 버튼 클릭 시 슬라이드 이동
-    $('.right_btn').on('click', function () {
+    $right_btn.on('click', function () {
         moveSlide('right');
     });
 
