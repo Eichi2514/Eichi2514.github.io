@@ -91,7 +91,7 @@ $(document).ready(function () {
             alert('닉네임을 입력해주세요!');
             return;
         } else {
-            for (let i = 0; i < nicknames.length; i++){
+            for (let i = 0; i < nicknames.length; i++) {
                 if (nickname.trim() === nicknames[i]) {
                     alert('사용할 수 없는 닉네임 입니다.');
                     return;
@@ -121,6 +121,7 @@ $(document).ready(function () {
                 clearTime: 0
             }));
             localStorage.setItem(nickname + 'weaponFind1', true);
+            saveInfos(nickname);
             alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
 
