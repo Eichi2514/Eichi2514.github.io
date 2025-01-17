@@ -1111,13 +1111,16 @@
         });
 
         window.saveFirebaseLogs = function (charac, seconds) {
+            const now = new Date();
+            const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
             // 새 기록을 Firebase 에 저장
             const newLogRef = push(logRef);
             set(newLogRef, {
                 name: nickname,
                 floor: parseInt(charac.floor, 10),
                 room: parseInt(charac.room, 10),
-                clearTime: parseInt(seconds, 10)
+                clearTime: parseInt(seconds, 10),
+                time: formattedTime
             });
         }
     </script>
