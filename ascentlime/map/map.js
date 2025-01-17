@@ -1,4 +1,4 @@
-var weapon = [
+const weapon = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
     'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
     'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
@@ -72,7 +72,7 @@ var weapon = [
     'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41'
 ];
 
-var mobs = [
+const mobs = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
     'https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0',
     'https://github.com/user-attachments/assets/76d8bc9f-d814-4f60-b99f-e6688a60acd5',
@@ -177,7 +177,7 @@ const interval = setInterval(function () {
     if (width >= 80) {
         clearInterval(interval); // 최대 너비에 도달하면 애니메이션 정지
     }
-}, 100); // 100ms마다 로딩 바 업데이트
+}, 100); // 100ms 마다 로딩 바 업데이트
 
 // 윈도우 로딩 체크
 var windowChack = false;
@@ -685,7 +685,7 @@ $(document).ready(function () {
     }
 
     function attack(direction, something) {
-        // 먼저 attack_motion을 즉시 실행
+        // 먼저 attack_motion 을 즉시 실행
         attack_motion(something, direction);
 
         // 나머지 로직은 0.5초 뒤에 실행
@@ -1137,7 +1137,7 @@ $(document).ready(function () {
         // hidden 클래스를 제거해서 모습을 드러냄
         $attackElement.removeClass('hidden');
 
-        // 약간의 딜레이 후에 css를 변경해 이동하는 모습을 표현
+        // 약간의 딜레이 후에 css 를 변경해 이동하는 모습을 표현
         setTimeout(function () {
             if (motion === 'A') {
                 $attackElement.css('left', (-4 - (Distance * 2)) + "vh");

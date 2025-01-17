@@ -1,10 +1,10 @@
 function startTypingAnimation() {
     // 모든 텍스트를 순서대로 처리하는 배열
     const texts = [
-        {selector: '#text1', text: '안녕하세요!', delay: 1000},
-        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 3000},
-        {selector: '#text3', text: '유건혁', delay: 700},
-        {selector: '#text4', text: '입니다.', delay: 700}
+        {selector: '#text1', text: '안녕하세요!', delay: 1700},
+        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 5200},
+        {selector: '#text3', text: '유건혁', delay: 900},
+        {selector: '#text4', text: '입니다.', delay: 900}
     ];
 
     // 모든 텍스트 초기화
@@ -26,13 +26,13 @@ function startTypingAnimation() {
 
             TypeHangul.type(selector, {
                 text: text, // 텍스트 설정
-                intervalType: 70 // 타이핑 속도 설정
+                intervalType: 10 // 타이핑 속도 설정
             });
 
             // 타이핑이 끝난 후 깜빡임 제거
             setTimeout(function () {
                 $(selector).addClass('no-blink');
-            }, text.length * 70 + delay); // 텍스트가 모두 타이핑된 후 시간(타이핑 속도 * 글자수)
+            }, text.length * 100 + delay); // 텍스트가 모두 타이핑된 후 시간(타이핑 속도 * 글자수)
 
         }, totalDelay);
 
@@ -42,7 +42,7 @@ function startTypingAnimation() {
     // 타이핑 애니메이션이 끝난 후 다시 시작
     setTimeout(function () {
         startTypingAnimation();
-    }, 10000);
+    }, 15000);
 }
 
 // 애니메이션 시작
@@ -242,7 +242,7 @@ $(document).ready(function () {
         if (LR === 450 && UD === 450 && !key) {
             if (!alertShown) { // 알림창이 아직 표시되지 않았다면
                 alert("열쇠가 필요합니다.");
-                alertShown = true; // 알림창 표시 상태를 true로 변경
+                alertShown = true; // 알림창 표시 상태를 true 로 변경
             }
             return; // 이후 코드를 실행하지 않음
         }
@@ -259,7 +259,7 @@ $(document).ready(function () {
     function key_hidden() {
         if (LR === 250 && UD === 250) {
             // 키의 위치 좌우 250, 상하 250을 달성하면
-            key = true; // 키의 값을 true로 바꾸고
+            key = true; // 키의 값을 true 로 바꾸고
             $key.css("top", "0px").css("left", "450px"); // key의 위치를 오른쪽 위로 옮기고
             $key.addClass("bg-yellow-300"); // 키의 배경색을 노란색으로 바꾼다
         }
@@ -267,9 +267,9 @@ $(document).ready(function () {
 
     function map_hidden() {
         // 각 조건문을 달성하면
-        // 상, 하, 좌, 우, 대각선 총 8방향의 길을 확인해서 1초동안 fadein하면서 살린다
+        // 상, 하, 좌, 우, 대각선 총 8방향의 길을 확인해서 1초동안 fadein 하면서 살린다
         // 아래는 처음엔 인텔리제이때 만들었던거처럼 맵을 여러개 만들 생각으로
-        // 모든 위치에서 길을 확인하게 짠 코드라 없는길의 class도 적혀있는데
+        // 모든 위치에서 길을 확인하게 짠 코드라 없는길의 class 도 적혀있는데
         // 자바스크립트 만으로는 시간이 너무 오래 걸려서 맵의 추가 여부는 무기한 보류되었다
         if (LR === 50 && UD === 50) {
             $(".r11, .r12, .r21, .r22").fadeIn(1000).removeClass("hidden");
@@ -771,7 +771,7 @@ $(document).ready(function () {
         $(".ghost").addClass("hidden"); // 유령 캐릭터를 없에고
         UD = 50; // 상하 값을 초기값 50으로 변경하고
         LR = 50; // 좌우 값을 초기값 50으로 변경하고
-        key = false; // 키의 값을 false로 바꾸고
+        key = false; // 키의 값을 false 로 바꾸고
         $(".character").css("top", "50px").css("left", "50px"); // 캐릭터의 초기 위치를 초기값으로 바꾸고
         $key.css("top", "250px").css("left", "250px"); // 키의 초기 위치를 초기값으로 바꾸고
         $(".r11, .r12, .r21, .r22, .r55, .r99").fadeIn(1000).removeClass("hidden"); // 처음 위치에서 보여질 길을 살리고
@@ -819,7 +819,7 @@ $(document).ready(function () {
     $left_btn.on('mouseenter', stopSlider);
     $right_btn.on('mouseenter', stopSlider);
 
-    // 마우스가 .projects를 떠나면 슬라이드 재시작
+    // 마우스가 .projects 를 떠나면 슬라이드 재시작
     $project.on('mouseleave', startSlider);
     $left_btn.on('mouseleave', startSlider);
     $right_btn.on('mouseleave', startSlider);
@@ -894,8 +894,8 @@ $(document).ready(function () {
             if (distance > threshold) {
                 followImageBasic.style.display = 'none';
                 followImageAction.style.display = 'block';
-                followImageAction.style.left = currentX + (posX + offsetX - currentX) * speedFactor + 'px'; // X축으로 오프셋 추가
-                followImageAction.style.top = currentY + (posY + offsetY - currentY) * speedFactor + 'px';  // Y축으로 오프셋 추가
+                followImageAction.style.left = currentX + (posX + offsetX - currentX) * speedFactor + 'px'; // X 축으로 오프셋 추가
+                followImageAction.style.top = currentY + (posY + offsetY - currentY) * speedFactor + 'px';  // Y 축으로 오프셋 추가
 
                 // 마우스 방향을 계산하여 회전 각도 설정
                 const angle = Math.atan2(posY - currentY, posX - currentX) * (180 / Math.PI); // 라디안 값을 도로 변환

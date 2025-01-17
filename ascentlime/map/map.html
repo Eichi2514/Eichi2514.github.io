@@ -1078,10 +1078,10 @@
 
             // body 가 비어있는 경우, 채팅 전송을 막음
             if (!formDataObj.body || formDataObj.body.trim().length < 1) {
-                return false; // body가 비어있으면 폼 제출을 막음
+                return false; // body 가 비어있으면 폼 제출을 막음
             }
 
-            // 새 채팅 로그를 Firebase에 저장
+            // 새 채팅 로그를 Firebase 에 저장
             const newChatRef = push(chatRef);
             set(newChatRef, {
                 name: chatName,
@@ -1111,7 +1111,7 @@
         });
 
         window.saveFirebaseLogs = function (charac, seconds) {
-            // 새 기록을 Firebase에 저장
+            // 새 기록을 Firebase 에 저장
             const newLogRef = push(logRef);
             set(newLogRef, {
                 name: nickname,

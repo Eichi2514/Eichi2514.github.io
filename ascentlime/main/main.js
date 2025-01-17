@@ -9,21 +9,21 @@ function updateTop3Table() {
         clearTime: 705
     };
 
-    // 'name'이 'chi'인 객체가 logs에 있는지 확인
+    // 'name' 이 'chi' 인 객체가 logs 에 있는지 확인
     const index = logs.findIndex(log => log.name === 'chi');
 
     if (index !== -1) {
-        // 'chi'가 이미 존재하는 경우, 기존 기록과 chiLog를 비교하여 업데이트
+        // 'chi' 가 이미 존재하는 경우, 기존 기록과 chiLog 를 비교하여 업데이트
         const existingLog = logs[index];
 
         if (chiLog.floor > existingLog.floor ||
             (chiLog.floor === existingLog.floor && chiLog.room > existingLog.room) ||
             (chiLog.floor === existingLog.floor && chiLog.room === existingLog.room && chiLog.clearTime < existingLog.clearTime)) {
-            // 조건에 맞으면 기존 데이터를 chiLog로 교체
+            // 조건에 맞으면 기존 데이터를 chiLog 로 교체
             logs[index] = chiLog;
         }
     } else {
-        // 'chi'가 없으면 chiLog를 추가
+        // 'chi' 가 없으면 chiLog 를 추가
         logs.push(chiLog);
     }
 
@@ -69,10 +69,9 @@ function updateTop3Table() {
 
 updateTop3Table();
 
-function randomString() {
-    const randomString = Math.random().toString(36).substring(2, 9); // 7자리 랜덤 문자열
-    return randomString;
-}
+/* function randomString() {
+    return Math.random().toString(36).substring(2, 9); // 7자리 랜덤 문자열
+} */
 
 const nicknames = ['chi', 'Eichi', '에이치', '이치', '치', '빨간이치', 'G에이치'];
 
