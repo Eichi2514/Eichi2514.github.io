@@ -1067,6 +1067,8 @@
 
         // 채팅 전송 함수 (전역 함수로 만들어야 함)
         window.Chat__Write = function (form) {
+            const now = new Date();
+            const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
             let formData = $(form).serialize(); // 폼 데이터를 가져오기
 
             // 폼 데이터를 객체로 변환
@@ -1085,7 +1087,8 @@
             const newChatRef = push(chatRef);
             set(newChatRef, {
                 name: chatName,
-                body: formDataObj.body
+                body: formDataObj.body,
+                time: formattedTime
             }).then(() => {
                 $(form).find('input[name="body"]').val('');  // 채팅 입력창 비우기
             });
