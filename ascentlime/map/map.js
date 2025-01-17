@@ -369,10 +369,10 @@ function updateStats(stats, action, number) {
         stats = '속도';
         if (action === 'up') {
             front_speed += number;
-            action = '+';
+            action = '-';
         } else if (action === 'down') {
             front_speed -= number;
-            action = '-';
+            action = '+';
         }
     }
 
