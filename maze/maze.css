@@ -15,12 +15,6 @@
 }
 
 /* 배경색 */
-
-html {
-    width: 100%;
-    border: 1px solid red;
-}
-
 body {
     background: #1e3a8a;
 }
