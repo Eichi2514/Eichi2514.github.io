@@ -1,10 +1,10 @@
 function startTypingAnimation() {
     // 모든 텍스트를 순서대로 처리하는 배열
     const texts = [
-        {selector: '#text1', text: '안녕하세요!', delay: 1700},
-        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 5200},
-        {selector: '#text3', text: '유건혁', delay: 900},
-        {selector: '#text4', text: '입니다.', delay: 900}
+        {selector: '#text1', text: '안녕하세요!', delay: 400},
+        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 1000},
+        {selector: '#text3', text: '유건혁', delay: 200},
+        {selector: '#text4', text: '입니다.', delay: 0}
     ];
 
     // 모든 텍스트 초기화
@@ -26,7 +26,7 @@ function startTypingAnimation() {
 
             TypeHangul.type(selector, {
                 text: text, // 텍스트 설정
-                intervalType: 10 // 타이핑 속도 설정
+                intervalType: 50 // 타이핑 속도 설정
             });
 
             // 타이핑이 끝난 후 깜빡임 제거
@@ -42,7 +42,7 @@ function startTypingAnimation() {
     // 타이핑 애니메이션이 끝난 후 다시 시작
     setTimeout(function () {
         startTypingAnimation();
-    }, 15000);
+    }, 10500);
 }
 
 // 애니메이션 시작

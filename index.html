@@ -26,37 +26,69 @@
 <!-- 배경화면 -->
 <div id="body1">
     <div class="code-line">
-        <span class="keyword">console</span>.<span class="keyword">log</span>(<span
-            class="string">'Hello, world!'</span>);
+        <span class="keyword">public class Main</span> {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;public static void main</span>(<span class="keyword">String[] args</span>) {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String</span> <span class="variable">word1</span> = <span class="string">"Hello,"</span>;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String</span> <span class="variable">word2</span> = <span class="string">"I'm Eichi"</span>;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println</span>(<span class="variable">word1</span> + <span class="string">" "</span> + <span class="variable">word2</span>);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        }<br>
     </div>
     <div class="code-line">
-        <span class="keyword">function</span> <span class="variable">greet</span>(<span class="variable">name</span>) {
-        <br> <span class="keyword">return</span> <span class="string">`Hello, ${name}!`</span>;
+        <span class="keyword">import java.util.Scanner;</span><br>
+        <br>
+        <span class="keyword">public class Main</span> {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;public static void main</span>(<span class="keyword">String[] args</span>) {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scanner sc</span> = <span class="keyword">new Scanner</span>(<span class="keyword">System.in</span>);<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int</span> <span class="variable">min</span> = <span class="keyword">sc.nextInt</span>();<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println</span>(<span class="variable">min</span>);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        }<br>
     </div>
     <div class="code-line">
-        <span class="variable">let</span> <span class="variable">user</span> = <span class="string">'John'</span>;
-        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
-            class="variable">greet</span>(<span class="variable">user</span>));
+        <span class="keyword">#include &lt;string&gt;</span><br>
+        <span class="keyword">using namespace std;</span><br>
+        <br>
+        <span class="keyword">int solution</span>(<span class="keyword">string s</span>) {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;int</span> <span class="variable">answer</span> = <span class="keyword">stoi</span>(<span class="variable">s</span>);<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;return</span> <span class="variable">answer</span>;<br>
+        }<br>
     </div>
     <div class="code-line">
-        <span class="keyword">const</span> <span class="variable">arr</span> = [1, 2, 3, 4];
-        <br> <span class="variable">arr</span>.<span class="keyword">forEach</span>(<span class="variable">num</span> =>
-        <span class="keyword">console</span>.<span class="keyword">log</span>(<span class="variable">num</span> * 2));
+        <span class="keyword">#include &lt;iostream&gt;</span><br>
+        <span class="keyword">#include &lt;string&gt;</span><br>
+        <br>
+        <span class="keyword">int main</span>() {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;std::string</span> <span class="variable">word1</span> = <span class="string">"Welcome to"</span>;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;std::string</span> <span class="variable">word2</span> = <span class="string">"My Site"</span>;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;std::cout</span> << <span class="variable">word1</span> + <span class="string">" "</span> + <span class="variable">word2</span> << <span class="keyword">std::endl</span>;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;return</span> 0;<br>
+        }<br>
     </div>
     <div class="code-line">
-        <span class="keyword">const</span> <span class="variable">sum</span> = (<span class="variable">a</span>, <span
-            class="variable">b</span>) => <span class="variable">a</span> + <span class="variable">b</span>;
-        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span class="variable">sum</span>(5,
-        10));
+        <span class="keyword">import java.io.*;</span><br>
+        <span class="keyword">import java.util.Arrays;</span><br>
+        <br>
+        <span class="keyword">public class Main</span> {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;public static void main</span>(<span class="keyword">String[] args</span>) <span class="keyword">throws IOException</span> {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BufferedReader bf</span> = <span class="keyword">new BufferedReader</span>(<span class="keyword">new InputStreamReader</span>(<span class="keyword">System.in</span>));<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BufferedWriter bw</span> = <span class="keyword">new BufferedWriter</span>(<span class="keyword">new OutputStreamWriter</span>(<span class="keyword">System.out</span>));<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String[] tmps</span> = <span class="variable">bf.readLine</span>().<span class="keyword">split</span>(<span class="string">" "</span>);<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bw.write</span>(<span class="keyword">Arrays.toString</span>(<span class="variable">tmps</span>));<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bw.flush</span>();<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        }<br>
     </div>
     <div class="code-line">
-        <span class="keyword">if</span> (<span class="keyword">true</span>) {
-        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
-            class="string">'This is true'</span>);
-        <br>} <span class="keyword">else</span> {
-        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
-            class="string">'This is false'</span>);
-        <br>}
+        <span class="keyword">#include &lt;cmath&gt;</span><br>
+        <br>
+        <span class="keyword">int solution</span>(<span class="keyword">int n</span>) {<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;int</span> <span class="variable">answer</span> = 0;<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;for</span>(<span class="keyword">int i</span> = 1; <span class="variable">i &lt;= sqrt(n)</span>; <span class="variable">i++</span>){<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer</span> += <span class="keyword">!(n%i)</span> ? <span class="keyword">i == n/i</span> ? <span class="variable">i</span> : <span class="variable">i</span> + <span class="keyword">n/i</span> : 0;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        <span class="keyword">&nbsp;&nbsp;&nbsp;&nbsp;return</span> <span class="variable">answer</span>;<br>
+        }<br>
     </div>
 </div>
 

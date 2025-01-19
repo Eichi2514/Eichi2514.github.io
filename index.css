@@ -339,28 +339,28 @@ a:hover svg {
 }
 
 .code-line:nth-child(2) {
-    animation-delay: 2s;
+    animation-delay: 4s;
     left: 15%;
 }
 
 .code-line:nth-child(3) {
-    animation-delay: 4s;
-    left: 30%;
+    animation-delay: 8s;
+    left: 20%;
 }
 
 .code-line:nth-child(4) {
-    animation-delay: 6s;
-    left: 50%;
+    animation-delay: 2s;
+    left: 55%;
 }
 
 .code-line:nth-child(5) {
-    animation-delay: 8s;
-    left: 65%;
+    animation-delay: 6s;
+    left: 45%;
 }
 
 .code-line:nth-child(6) {
     animation-delay: 10s;
-    left: 80%;
+    left: 70%;
 }
 
 .main-body {
