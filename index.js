@@ -2,7 +2,7 @@ function startTypingAnimation() {
     // 모든 텍스트를 순서대로 처리하는 배열
     const texts = [
         {selector: '#text1', text: '안녕하세요!', delay: 200},
-        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 600},
+        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 1100},
         {selector: '#text3', text: '유건혁', delay: 100},
         {selector: '#text4', text: '입니다.', delay: 0}
     ];
