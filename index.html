@@ -22,9 +22,86 @@
 <!-- three.js와 Vanta.js 라이브러리 추가 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.net.min.js"></script>
-<!-- 처음화면 -->
-<div id="body1"></div>
 
+<!-- 배경화면 -->
+<div id="body1">
+    <div class="code-line">
+        <span class="keyword">console</span>.<span class="keyword">log</span>(<span
+            class="string">'Hello, world!'</span>);
+    </div>
+    <div class="code-line">
+        <span class="keyword">function</span> <span class="variable">greet</span>(<span class="variable">name</span>) {
+        <br> <span class="keyword">return</span> <span class="string">`Hello, ${name}!`</span>;
+    </div>
+    <div class="code-line">
+        <span class="variable">let</span> <span class="variable">user</span> = <span class="string">'John'</span>;
+        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
+            class="variable">greet</span>(<span class="variable">user</span>));
+    </div>
+    <div class="code-line">
+        <span class="keyword">const</span> <span class="variable">arr</span> = [1, 2, 3, 4];
+        <br> <span class="variable">arr</span>.<span class="keyword">forEach</span>(<span class="variable">num</span> =>
+        <span class="keyword">console</span>.<span class="keyword">log</span>(<span class="variable">num</span> * 2));
+    </div>
+    <div class="code-line">
+        <span class="keyword">const</span> <span class="variable">sum</span> = (<span class="variable">a</span>, <span
+            class="variable">b</span>) => <span class="variable">a</span> + <span class="variable">b</span>;
+        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span class="variable">sum</span>(5,
+        10));
+    </div>
+    <div class="code-line">
+        <span class="keyword">if</span> (<span class="keyword">true</span>) {
+        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
+            class="string">'This is true'</span>);
+        <br>} <span class="keyword">else</span> {
+        <br> <span class="keyword">console</span>.<span class="keyword">log</span>(<span
+            class="string">'This is false'</span>);
+        <br>}
+    </div>
+</div>
+
+<!-- 사이드바 -->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul class="menu">
+            <li class="submenu-container">
+                <button class="menu-item" onclick="scrollToSection(0)">메인</button>
+            </li>
+            <li class="submenu-container">
+                <button class="menu-item" onclick="scrollToSection(1)">소개</button>
+            </li>
+            <li class="submenu-container">
+                <button class="menu-item" onclick="scrollToSection(2)">프로젝트</button>
+                <ul class="submenu">
+                    <li>
+                        <a href="../maze/maze">
+                            <div class="submenu-item">MAZE MAZE</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../ascentlime/main/main">
+                            <div class="submenu-item">AscentLime</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../index">
+                            <div class="submenu-item">My Portfolio</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="submenu-container">
+                <button class="menu-item" onclick="scrollToSection(3)">기술 스택</button>
+            </li>
+            <li class="submenu-container">
+                <button class="menu-item" onclick="scrollToSection(4)">문의하기</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- 메인 -->
 <div class="main-body">
     <div class="portfolio">
         <div class="portfolio-box">
@@ -34,8 +111,9 @@
                         <div class="p-10">
                             <div class="text-animation text-6xl">
                                 <span class="pb-5">
-                                    <img class="my-icon" src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
-                                        alt="내 캐릭터">
+                                    <img class="my-icon"
+                                         src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                                         alt="내 캐릭터">
                                 </span>
                                 <span id="text1" class="text no-blink"></span>
                             </div>
@@ -44,7 +122,7 @@
                             </div>
                             <div class="text-animation text-6xl">
                                 <span id="text3" class="text no-blink"
-                                    style="color: #FAC25A; text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);"></span>
+                                      style="color: #FAC25A; text-shadow: 2px 2px 0 #C98F38, 4px 4px 0 rgba(0, 0, 0, 0.5);"></span>
                                 <span id="text4" class="text no-blink"
                                       style="padding-left: 25px;"></span>
                             </div>
@@ -226,9 +304,11 @@
                         <div class="text-sm">제작기간 : 2024.11.13 ~ 2024.11.13</div>
                     </div>
                     <div class="images">
-                        <img class="project-image"
-                             src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
-                             alt="포트폴리오 사진">
+                        <a target="_blank" href="../">
+                            <img class="project-image"
+                                 src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
+                                 alt="포트폴리오 사진">
+                        </a>
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
                                class="inline-block mr-2">
@@ -247,8 +327,8 @@
                     <div class="images">
                         <a target="_blank" href="../maze/maze">
                             <img class="project-image"
-                                src="https://github.com/user-attachments/assets/298073cd-69c1-4642-911c-d341bf6ab42a"
-                                alt="미로찾기 사진">
+                                 src="https://github.com/user-attachments/assets/298073cd-69c1-4642-911c-d341bf6ab42a"
+                                 alt="미로찾기 사진">
                         </a>
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://codepen.io/Eichi2514/pen/GRbmwdm" class="inline-block mr-2">
@@ -330,9 +410,11 @@
                         <div class="text-sm">제작기간 : 2024.11.13 ~ 2024.11.13</div>
                     </div>
                     <div class="images">
-                        <img class="project-image"
-                             src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
-                             alt="포트폴리오 사진">
+                        <a target="_blank" href="../">
+                            <img class="project-image"
+                                 src="https://github.com/user-attachments/assets/02fd1217-192c-45e7-b924-8dd3933bc505"
+                                 alt="포트폴리오 사진">
+                        </a>
                         <div class="flex justify-around items-center w-full pt-5">
                             <a target="blank" href="https://github.com/Eichi2514/Eichi2514.github.io"
                                class="inline-block mr-2">

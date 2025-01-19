@@ -286,7 +286,7 @@ body {
     top: 550px;
 }
 
-/* 가로(width)가 세로(height)보다 클 때 (landscape 모드) */
+/* 가로(width)가 세로(height)보다 클 때 */
 @media (min-aspect-ratio: 1/1) {
     .keybord_box {
         width: 300px;
@@ -295,7 +295,7 @@ body {
     }
 }
 
-/* 세로(height)가 가로(width)보다 클 때 (portrait 모드) */
+/* 세로(height)가 가로(width)보다 클 때 */
 @media (max-aspect-ratio: 1/1) {
     .keybord_box {
         width: 500px;

@@ -141,42 +141,42 @@ $(document).ready(function () {
         }
     }
     animate()
+});
 
-    const $portfolio = $('.portfolio');
-    const $sections = $('.portfolio-box');
-    let portfolioIndex = 0;
-    let isAnimating = false; // 애니메이션 상태 추적 변수
+const $portfolio = $('.portfolio');
+const $sections = $('.portfolio-box');
+let portfolioIndex = 0;
+let isAnimating = false; // 애니메이션 상태 추적 변수
 
-    // 섹션 이동 함수
-    function scrollToSection(index) {
-        if (isAnimating) return; // 애니메이션 중에는 함수 실행을 막음
+// 섹션 이동 함수
+function scrollToSection(index) {
+    if (isAnimating) return; // 애니메이션 중에는 함수 실행을 막음
 
-        const targetPosition = $sections.eq(index).offset().top; // 해당 섹션의 위치
-        isAnimating = true; // 애니메이션 시작
+    const targetPosition = $sections.eq(index).offset().top; // 해당 섹션의 위치
+    isAnimating = true; // 애니메이션 시작
 
-        // 페이지 스크롤을 부드럽게 이동
-        $('html, body').animate({scrollTop: targetPosition}, 500, function () {
-            isAnimating = false; // 애니메이션 완료 후, 스크롤 가능
-        });
+    // 페이지 스크롤을 부드럽게 이동
+    $('html, body').animate({scrollTop: targetPosition}, 500, function () {
+        isAnimating = false; // 애니메이션 완료 후, 스크롤 가능
+    });
+}
+
+// 휠 이벤트 처리
+$portfolio.on('wheel', function (e) {
+    e.preventDefault(); // 기본 스크롤 방지
+
+    // 애니메이션이 진행 중이면 아무 동작도 하지 않음
+    if (isAnimating) return;
+
+    // 휠 방향에 따라 인덱스 변경
+    if (e.originalEvent.deltaY > 0 && portfolioIndex < $sections.length - 1) {
+        portfolioIndex++;
+    } else if (e.originalEvent.deltaY < 0 && portfolioIndex > 0) {
+        portfolioIndex--;
     }
 
-    // 휠 이벤트 처리
-    $portfolio.on('wheel', function (e) {
-        e.preventDefault(); // 기본 스크롤 방지
-
-        // 애니메이션이 진행 중이면 아무 동작도 하지 않음
-        if (isAnimating) return;
-
-        // 휠 방향에 따라 인덱스 변경
-        if (e.originalEvent.deltaY > 0 && portfolioIndex < $sections.length - 1) {
-            portfolioIndex++;
-        } else if (e.originalEvent.deltaY < 0 && portfolioIndex > 0) {
-            portfolioIndex--;
-        }
-
-        // 해당 섹션으로 이동
-        scrollToSection(portfolioIndex);
-    });
+    // 해당 섹션으로 이동
+    scrollToSection(portfolioIndex);
 });
 
 $(document).on('contextmenu', function (event) {
@@ -239,18 +239,18 @@ $right_btn.on('click', function () {
     moveSlide('right');
 });
 
-
 <!-- Vanta.js 설정 스크립트 -->
-VANTA.NET({
-    el: "#body1",
-    mouseControls: true,
-    touchControls: true,
-    gyroControls: false,
-    minHeight: 200.00,
-    minWidth: 200.00,
-    scale: 1.00,
-    scaleMobile: 1.00,
-    color: 0x4a6b9c,
-    points: 20.00,
-    backgroundColor: 0x1e3a8a
-});
+
+<!-- VANTA.NET({ -->
+<!-- el: "#body1", -->
+<!-- mouseControls: true, -->
+<!-- touchControls: true, -->
+<!-- gyroControls: false, -->
+<!-- minHeight: 200.00, -->
+<!-- minWidth: 200.00, -->
+<!-- scale: 1.00, -->
+<!-- scaleMobile: 1.00, -->
+<!-- color: 0x4a6b9c, -->
+<!-- points: 20.00, -->
+<!-- backgroundColor: 0x1e3a8a -->
+<!-- }); -->
