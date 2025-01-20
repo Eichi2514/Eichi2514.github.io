@@ -1,4 +1,12 @@
+let isTyping = false;
+
 function startTypingAnimation() {
+    console.log(isTyping);
+
+    if(isTyping) return;
+
+    isTyping = true;
+
     // 모든 텍스트를 순서대로 처리하는 배열
     const texts = [
         {selector: '#text1', text: '안녕하세요!', delay: 200},
@@ -8,7 +16,7 @@ function startTypingAnimation() {
     ];
 
     // 모든 텍스트 초기화
-    $.each(texts, function(i, item) {
+    $.each(texts, function (i, item) {
         const {selector} = item;
         $(selector).text(''); // 텍스트 초기화
     });
@@ -39,10 +47,9 @@ function startTypingAnimation() {
         totalDelay += text.length * 100 + delay; // 타이핑 속도와 추가 딜레이 계산
     });
 
-    // 타이핑 애니메이션이 끝난 후 다시 시작
     setTimeout(function () {
-        startTypingAnimation();
-    }, 10500);
+        isTyping = false;
+    }, 5000);
 }
 
 // 애니메이션 시작
@@ -151,6 +158,10 @@ let isAnimating = false; // 애니메이션 상태 추적 변수
 // 섹션 이동 함수
 function scrollToSection(index) {
     if (isAnimating) return; // 애니메이션 중에는 함수 실행을 막음
+
+    if (index === 0) setTimeout(function () {
+        startTypingAnimation()
+    }, 500);
 
     const targetPosition = $sections.eq(index).offset().top; // 해당 섹션의 위치
     isAnimating = true; // 애니메이션 시작

@@ -11,6 +11,8 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.5;
+    color: white; /* 텍스트 내부 흰색 */
+    text-shadow: 1px 1px 0 #1e3a8a, /* 오른쪽 아래 */ -1px -1px 0 #1e3a8a, /* 왼쪽 위 */ 1px -1px 0 #1e3a8a, /* 오른쪽 위 */ -1px 1px 0 #1e3a8a; /* 왼쪽 아래 */
 }
 
 ::-webkit-scrollbar {
@@ -295,9 +297,8 @@ a:hover svg {
 .code-line {
     position: absolute;
     width: 100%;
-    font-size: 14px;
     white-space: nowrap;
-    animation: codeFlow 10s linear infinite;
+    animation: codeFlow 20s linear infinite;
     visibility: hidden;
     color: #a9b7c6;
 }
@@ -321,7 +322,12 @@ a:hover svg {
 }
 
 .field {
-    color: #7F68EE;
+    color: #7f68ee;
+}
+
+.comment {
+    color: #d3d3d350;
+    font-weight: bold;
 }
 
 /* 코드 흐름 애니메이션 */
@@ -343,28 +349,89 @@ a:hover svg {
 }
 
 .code-line:nth-child(2) {
-    animation-delay: 2s;
+    animation-delay: 3s;
     left: 50%;
 }
 
 .code-line:nth-child(3) {
+    animation-delay: 7s;
+    left: 25%;
+}
+
+.code-line:nth-child(4) {
+    animation-delay: 11s;
+    left: 70%;
+}
+
+.code-line:nth-child(5) {
+    animation-delay: 15s;
+    left: 15%;
+}
+
+.code-line:nth-child(6) {
+    animation-delay: 17s;
+    left: 60%;
+}
+
+/* 2진수 코드 공통 스타일 */
+.binary-code {
+    position: absolute;
+    font-family: 'Courier New', Courier, monospace;
+    color: #4caf50;
+    white-space: nowrap;
+    animation: codeFlow 5s linear infinite;
+    visibility: hidden;
+}
+
+/* 2진수 라인 배치 */
+.binary-code:nth-child(7) {
+    animation-delay: 0s;
+    left: 10%;
+}
+
+.binary-code:nth-child(8) {
+    animation-delay: 0.5s;
+    left: 50%;
+}
+
+.binary-code:nth-child(9) {
+    animation-delay: 1s;
+    left: 70%;
+}
+
+.binary-code:nth-child(10) {
+    animation-delay: 1.5s;
+    left: 30%;
+}
+
+.binary-code:nth-child(11) {
+    animation-delay: 2s;
+    left: 50%;
+}
+
+.binary-code:nth-child(12) {
+    animation-delay: 2.5s;
+    left: 20%;
+}
+
+.binary-code:nth-child(13) {
+    animation-delay: 3s;
+    left: 40%;
+}
+
+.binary-code:nth-child(14) {
+    animation-delay: 3.5s;
+    left: 80%;
+}
+
+.binary-code:nth-child(15) {
     animation-delay: 4s;
     left: 20%;
 }
 
-.code-line:nth-child(4) {
-    animation-delay: 6s;
-    left: 65%;
-}
-
-.code-line:nth-child(5) {
-    animation-delay: 8s;
-    left: 35%;
-}
-
-.code-line:nth-child(6) {
-    animation-delay: 10s;
-    left: 80%;
+.binary-code:nth-child(16) {
+    animation-delay: 4.5s;
+    left: 60%;
 }
 
 .main-body {
@@ -374,23 +441,30 @@ a:hover svg {
 /* 사이드바 */
 /* 배경 */
 .menu-bg {
-    background: #1e3a8a;
     position: fixed;
     z-index: 50;
-    height: 100%;
-    width: 120px;
+    height: 35px;
+    width: 100%;
     right: 0;
 }
 
 /* 전체 */
 .menu-container {
-    top: 0;
+    padding-top: 10px;
+    padding-left: calc(100% - (130px * 5));
     display: flex;
 }
 
-.menu, .submenu {
+.menu {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.submenu {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 /* 서브메뉴는 기본적으로 숨김 */
@@ -401,19 +475,21 @@ a:hover svg {
 /* 메뉴 항목 스타일 */
 li button, li a div {
     width: 120px;
-    height: 60px;
-    background: #1e3a8a;
+    height: 35px;
+    background-color: #4c51bf;
+    border-radius: 0.5rem;
     color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid transparent; /* 기본 테두리 없앰 */
-    cursor: pointer; /* 커서 효과 추가 */
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 /* 메뉴 항목 hover 시 테두리 효과 */
 .menu-item:hover, .submenu-item:hover {
-    border: 1px solid white;
+    background-color: #434190;
 }
 
 /* 서브메뉴가 표시되도록 */
@@ -425,25 +501,19 @@ li button, li a div {
     outline: none;
 }
 
-@media (max-aspect-ratio: 1/1) {
+/*
+@media (min-aspect-ratio: 1/1) {
     .menu-bg {
-        height: 60px;
-        width: 100%;
+        height: 100%;
+        width: 130px;
     }
 
     .menu {
-        flex-direction: row;
-    }
-
-    .menu-container {
-        padding-left: calc(100% - (120px * 5));
-    }
-
-    .submenu {
         flex-direction: column;
     }
 
-    #body1 {
-        top: 60px;
+    .menu-container {
+        padding-left: 0;
     }
 }
+*/
