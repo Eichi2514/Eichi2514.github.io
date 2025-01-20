@@ -299,25 +299,29 @@ a:hover svg {
     white-space: nowrap;
     animation: codeFlow 10s linear infinite;
     visibility: hidden;
+    color: #a9b7c6;
 }
 
 /* 문법 강조 스타일 */
 .keyword {
-    color: #cc7832; /* IntelliJ Keywords */
+    color: #cc7832;
     font-weight: bold;
 }
 
 .string {
-    color: #6a8759; /* IntelliJ Strings */
+    color: #6a8759;
 }
 
-.variable {
-    color: #a9b7c6; /* IntelliJ Variables */
+.int {
+    color: #00bcd4;
 }
 
-.comment {
-    color: #808080; /* IntelliJ Comments */
-    font-style: italic;
+.classname {
+    color: #56a8f5;
+}
+
+.field {
+    color: #7F68EE;
 }
 
 /* 코드 흐름 애니메이션 */
@@ -339,28 +343,28 @@ a:hover svg {
 }
 
 .code-line:nth-child(2) {
-    animation-delay: 4s;
-    left: 15%;
+    animation-delay: 2s;
+    left: 50%;
 }
 
 .code-line:nth-child(3) {
-    animation-delay: 8s;
+    animation-delay: 4s;
     left: 20%;
 }
 
 .code-line:nth-child(4) {
-    animation-delay: 2s;
-    left: 55%;
+    animation-delay: 6s;
+    left: 65%;
 }
 
 .code-line:nth-child(5) {
-    animation-delay: 6s;
-    left: 45%;
+    animation-delay: 8s;
+    left: 35%;
 }
 
 .code-line:nth-child(6) {
     animation-delay: 10s;
-    left: 70%;
+    left: 80%;
 }
 
 .main-body {
