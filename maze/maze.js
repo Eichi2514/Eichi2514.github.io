@@ -2,6 +2,17 @@ $(document).ready(function () {
 // 처음 화면
     $(".start_btn").click(function () {
         // 시작 버튼을 클릭하면
+        const fullscreenTarget = document.documentElement; // HTML 문서 전체를 대상으로
+        if (fullscreenTarget.requestFullscreen) {
+            fullscreenTarget.requestFullscreen();
+        } else if (fullscreenTarget.webkitRequestFullscreen) { // Safari 대응
+            fullscreenTarget.webkitRequestFullscreen();
+        } else if (fullscreenTarget.msRequestFullscreen) { // IE 대응
+            fullscreenTarget.msRequestFullscreen();
+        } else {
+            alert('이 브라우저는 전체 화면 모드를 지원하지 않습니다.');
+        }
+
         $(".game_start").addClass("hidden"); // 게임 화면을 없에고
         $(".choice").removeClass("hidden"); // 캐릭터 선택 화면을 살린다
     });

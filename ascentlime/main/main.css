@@ -22,13 +22,22 @@ body {
     position: relative;
 }
 
+.mapBody {
+    width: 100vh;
+    left: 200px;
+    position: relative;
+}
+
 /* 1440px 이상일 때 적용 */
 @media (min-width: 1440px) {
     .body {
-        width: 100vh;
-        position: relative;
         left: 50%;
         transform: translateX(-50vh);
+    }
+
+    .mapBody {
+        left: 50%;
+        transform: translateX(-60vh);
     }
 }
 

@@ -76,6 +76,19 @@ updateTop3Table();
 const nicknames = ['chi', 'Eichi', '에이치', '이치', '치', '빨간이치', 'G에이치'];
 
 $(document).ready(function () {
+    $('.start-text').on('click', function () {
+        const fullscreenTarget = document.documentElement; // HTML 문서 전체를 대상으로
+        if (fullscreenTarget.requestFullscreen) {
+            fullscreenTarget.requestFullscreen();
+        } else if (fullscreenTarget.webkitRequestFullscreen) { // Safari 대응
+            fullscreenTarget.webkitRequestFullscreen();
+        } else if (fullscreenTarget.msRequestFullscreen) { // IE 대응
+            fullscreenTarget.msRequestFullscreen();
+        } else {
+            alert('이 브라우저는 전체 화면 모드를 지원하지 않습니다.');
+        }
+    });
+
     $('.login_out_bt').on('click', function () {
         localStorage.removeItem('nickname');
         $(".login").addClass("hidden");
