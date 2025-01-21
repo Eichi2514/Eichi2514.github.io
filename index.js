@@ -150,7 +150,7 @@ $(document).ready(function () {
     animate()
 });
 
-const $portfolio = $('.portfolio');
+const $portfolio = $('html');
 const $sections = $('.portfolio-box');
 let portfolioIndex = 0;
 let isAnimating = false; // 애니메이션 상태 추적 변수
