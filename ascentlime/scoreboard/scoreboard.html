@@ -55,7 +55,7 @@
         ref,
         get,
         query,
-        orderByKey,
+        orderByChild,
         startAt,
         limitToFirst
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
@@ -80,91 +80,116 @@
     const nickname = localStorage.getItem('nickname');
     const urlParams = new URLSearchParams(window.location.search);
     let page = parseInt(urlParams.get('page')) || 1; // 기본값은 1 페이지
-    const startIndex = (page - 1) * 10;
+
+    let lastPage = 1;  // 전역 lastPage 변수
 
     // 페이지네이션 및 데이터 표시를 위한 쿼리
-    const logsQuery = query(logsRef, orderByKey(), startAt(String(startIndex)), limitToFirst(10));
-
-    // Firebase에서 데이터를 한 번만 가져오기
-    get(logsQuery).then((snapshot) => {
-        if (snapshot.exists()) {
-            const logs = snapshot.val(); // Firebase에서 가져온 데이터
-            const scoreboardBody = document.getElementById('scoreboardBody');
-
-            // logs 데이터 순회하며 테이블에 추가
-            Object.keys(logs).forEach(key => {
-                const log = logs[key];
-
-                let className = '';
-                if (nickname !== log.name) {
-                    className = 'text-gray-500'; // 닉네임과 다르면 회색으로 표시
-                }
-
-                let floorName = log.floor;
-                let roomName = log.room + '번방';
-                if (log.room === 0) {
-                    floorName++;
-                    roomName = '보스방'; // 0번방은 보스방으로 설정
-                }
-
-                // 새로운 테이블 행 생성
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="${className}" style="text-align: center; padding: 0;">${log.name}</td>
-                    <td class="${className}" style="text-align: center; padding: 0 1vh;">:</td>
-                    <td class="${className}" style="text-align: center; padding: 0 0.5vh;">${floorName}층</td>
-                    <td class="${className}" style="text-align: center; padding: 0;">${roomName}</td>
-                    <td class="scoreboard_clearTime ${className}" style="text-align: center; padding: 0;">[${log.clearTime}s]</td>
-                `;
-
-                // 테이블에 행 추가
-                scoreboardBody.appendChild(row);
-            });
-        } else {
-            console.log("No data available");
-        }
-    }).catch((error) => {
-        console.error("Error getting data: ", error);
-    });
+    function getLogsQuery(startIndex) {
+        return query(logsRef, orderByChild("id"), startAt(startIndex), limitToFirst(10));
+    }
 
     // Firebase에서 전체 로그 개수 계산 후 페이지네이션 업데이트
-    let totalLogsCount = 0; // 총 로그 갯수
     get(logsRef).then((snapshot) => {
         const data = snapshot.val(); // 데이터를 객체로 가져옴
         if (data) {
-            totalLogsCount = Object.keys(data).length; // 자식 노드 개수 계산
+            const totalLogsCount = Object.keys(data).length; // 자식 노드 개수 계산
 
             // 마지막 페이지 계산
-            const lastPage = Math.ceil(totalLogsCount / 10.0);
+            lastPage = Math.ceil(totalLogsCount / 10.0);
+
+            // page 값 조정 (1보다 작은 경우 1로, lastPage보다 큰 경우 lastPage로 설정)
+            if (page < 1) page = 1;
+            else if (page > lastPage) page = lastPage;
 
             // 페이지네이션 업데이트
-            updatePagination(lastPage);
+            updatePagination();
+
+            // 페이지에 맞는 로그 데이터를 가져오기
+            loadData();
         }
+    }).catch((error) => {
+        console.error("전체 로그 개수 가져오기 오류: ", error); // 한글로 출력
     });
 
+    // Firebase에서 데이터를 한 번만 가져오기
+    function loadData() {
+        get(getLogsQuery((page - 1) * 10 + 1)).then((snapshot) => {
+            if (snapshot.exists()) {
+                const logs = snapshot.val(); // Firebase에서 가져온 데이터
+                const scoreboardBody = document.getElementById('scoreboardBody');
+
+                // 기존 데이터를 비우기
+                scoreboardBody.innerHTML = '';
+
+                // logs 데이터 순회하며 테이블에 추가
+                Object.keys(logs).forEach(key => {
+                    const log = logs[key];
+
+                    let className = '';
+                    if (nickname !== log.name) {
+                        className = 'text-gray-500'; // 닉네임과 다르면 회색으로 표시
+                    }
+
+                    let floorName = log.floor;
+                    let roomName = log.room + '번방';
+                    if (log.room === 0) {
+                        floorName++;
+                        roomName = '보스방'; // 0번방은 보스방으로 설정
+                    }
+
+                    // 새로운 테이블 행 생성
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="${className}" style="text-align: center; padding: 0;">${log.name}</td>
+                        <td class="${className}" style="text-align: center; padding: 0 1vh;">:</td>
+                        <td class="${className}" style="text-align: center; padding: 0 0.5vh;">${floorName}층</td>
+                        <td class="${className}" style="text-align: center; padding: 0;">${roomName}</td>
+                        <td class="scoreboard_clearTime ${className}" style="text-align: center; padding: 0;">[${log.clearTime}s]</td>
+                    `;
+
+                    // 테이블에 행 추가
+                    scoreboardBody.appendChild(row);
+                });
+            } else {
+                console.log("데이터가 없습니다.");
+            }
+        }).catch((error) => {
+            console.error("데이터 가져오기 오류: ", error);
+        });
+    }
+
     // 페이지네이션 동적 링크 계산
-    function updatePagination(lastPage) {
+    function updatePagination() {
         const pagination = document.querySelector('.pagination');
         pagination.innerHTML = `
-            <a class="pagination_left absolute" href="../scoreboard/scoreboard?page=${page > 1 ? page - 1 : 1}" ${page === 1 ? 'style="visibility: hidden;"' : ''}>
-                <i class="fa-solid fa-caret-left" style="font-size: 10vh;"></i>
-            </a>
-            <a class="pagination_right absolute" href="../scoreboard/scoreboard?page=${page < lastPage ? page + 1 : lastPage}" ${page === lastPage ? 'style="visibility: hidden;"' : ''}>
-                <i class="fa-solid fa-caret-right" style="font-size: 10vh;"></i>
-            </a>
-
-            <a class="scoreboard_exit_bt absolute" href="../main/main">나가기</a>
-
-            <div class="pagination flex justify-center absolute">
-                <a href="../scoreboard/scoreboard?page=1" ${page === 1 ? 'style="visibility: hidden;"' : ''}>처음</a>
-                <button ${page === 1 ? 'style="visibility: hidden;"' : ''}>)&nbsp;</button>
-                <a href="../scoreboard/scoreboard?page=${page > 1 ? page - 1 : 1}" ${page === 1 ? 'style="visibility: hidden;"' : ''}>${page > 1 ? page - 1 : 1}</a>
-                <a class="text-red-500" href="../scoreboard/scoreboard?page=${page}">${page}</a>
-                <a href="../scoreboard/scoreboard?page=${page < lastPage ? page + 1 : lastPage}" ${page === lastPage ? 'style="visibility: hidden;"' : ''}>${page < lastPage ? page + 1 : lastPage}</a>
-                <button ${page === lastPage ? 'style="visibility: hidden;"' : ''}>&nbsp;(</button>
-                <a href="../scoreboard/scoreboard?page=${lastPage}" ${page === lastPage ? 'style="visibility: hidden;"' : ''}>마지막</a>
-            </div>
-        `;
+        <a class="pagination_left absolute" href="../scoreboard/scoreboard?page=${page > 1 ? page - 1 : 1}" style="${page === 1 ? 'display: none;' : ''}">
+            <i class="fa-solid fa-caret-left" style="font-size: 10vh;"></i>
+        </a>
+        <a class="pagination_right absolute" href="../scoreboard/scoreboard?page=${page < lastPage ? page + 1 : lastPage}" style="${page === lastPage ? 'display: none;' : ''}">
+            <i class="fa-solid fa-caret-right" style="font-size: 10vh;"></i>
+        </a>
+        <a class="scoreboard_exit_bt absolute" href="../main/main">나가기</a>
+        <div class="pagination flex justify-center absolute">
+            <!-- '처음' 버튼 -->
+            <a href="../scoreboard/scoreboard?page=1" style="${page === 1 ? 'display: none;' : ''}">처음</a>
+            <button style="${page === 1 ? 'display: none;' : ''}">&nbsp;</button>
+            <!-- 이전 페이지 버튼들 -->
+            <a href="../scoreboard/scoreboard?page=${Math.max(page - 4, 1)}" style="${page <= 4 ? 'display: none;' : ''}">${Math.max(page - 4, 1)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.max(page - 3, 1)}" style="${page <= 3 ? 'display: none;' : ''}">${Math.max(page - 3, 1)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.max(page - 2, 1)}" style="${page <= 2 ? 'display: none;' : ''}">${Math.max(page - 2, 1)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.max(page - 1, 1)}" style="${page === 1 ? 'display: none;' : ''}">${Math.max(page - 1, 1)}</a>
+            <!-- 현재 페이지 -->
+            <a class="text-red-500" href="../scoreboard/scoreboard?page=${page}">${page}</a>
+            <!-- 다음 페이지 버튼들 -->
+            <a href="../scoreboard/scoreboard?page=${Math.min(page + 1, lastPage)}" style="${page >= lastPage ? 'display: none;' : ''}">${Math.min(page + 1, lastPage)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.min(page + 2, lastPage)}" style="${page + 1 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 2, lastPage)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.min(page + 3, lastPage)}" style="${page + 2 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 3, lastPage)}</a>
+            <a href="../scoreboard/scoreboard?page=${Math.min(page + 4, lastPage)}" style="${page + 3 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 4, lastPage)}</a>
+            <!-- '마지막' 버튼 -->
+            <button style="${page === lastPage ? 'display: none;' : ''}">&nbsp;(</button>
+            <a href="../scoreboard/scoreboard?page=${lastPage}" style="${page === lastPage ? 'display: none;' : ''}">마지막</a>
+        </div>
+    `;
     }
 </script>
 </body>

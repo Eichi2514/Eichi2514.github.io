@@ -1148,6 +1148,11 @@
                     return a.clearTime - b.clearTime;                  // 클리어 시간 오름차순
                 });
 
+                // 등수를 추가하여 로그에 포함시키기
+                logs.forEach((log, index) => {
+                    log.id = index + 1; // 등수는 1부터 시작
+                });
+
                 // 기존 데이터를 삭제하지 않고 새 데이터를 추가
                 const updates = {};
                 logs.forEach((log, index) => {
