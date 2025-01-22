@@ -251,7 +251,7 @@ function Item_change() {
     localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
     let changeImg = weapon[$randomWeapon];
     front_weaponId = $randomWeapon;
-    console.log('교체' + front_weaponId);
+    // console.log('교체' + front_weaponId);
     $weapon_img.attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
     $item.fadeOut(1000).addClass('hidden');
@@ -266,7 +266,7 @@ function Item_mix() {
     localStorage.setItem(nickname + 'weaponFind' + changeNum, true);
     let changeImg = weapon[changeNum];
     front_weaponId = changeNum;
-    console.log('합성' + front_weaponId);
+    // console.log('합성' + front_weaponId);
     $weapon_img.attr('src', changeImg);
     $('.CharacAttack').attr('src', changeImg);
     $item.fadeOut(1000).addClass('hidden');
@@ -771,20 +771,6 @@ $(document).ready(function () {
 
     function saveLog() {
         if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
-
-        // 기존 로그 읽기
-        let logs = JSON.parse(localStorage.getItem('log')) || [];
-
-        // 새 로그 생성
-        const newLog = {
-            name: nickname,
-            floor: parseInt(charac.floor, 10),
-            room: parseInt(charac.room, 10),
-            clearTime: parseInt(seconds, 10)
-        };
-
-        logs.push(newLog);
-        localStorage.setItem('log', JSON.stringify(logs));
 
         saveFirebaseLogs(charac, seconds);
 
@@ -1548,7 +1534,7 @@ const $audioPlayer = $('#audioPlayer');
 const storageKey = 'audioPlaybackData';
 
 function calculateBgTrackNumber(floor, room) {
-    console.log(floor + ',' + room);
+    // console.log(floor + ',' + room);
     const roomOffset = (floor % 10 === 0 && room === 0) ? 0 : 1;
     return Math.floor((floor / 10) % bgTrackCount) + roomOffset;
 }
@@ -1561,8 +1547,8 @@ let previousTrackNumber = calculateBgTrackNumber(previousFloor - (previousRoom =
 let currentTrackNumber = calculateBgTrackNumber(charac.floor, charac.room);
 
 function bgChange() {
-    console.log('previousTrackNumber : ' + previousTrackNumber);
-    console.log('currentTrackNumber : ' + currentTrackNumber);
+    // console.log('previousTrackNumber : ' + previousTrackNumber);
+    // console.log('currentTrackNumber : ' + currentTrackNumber);
     if (previousTrackNumber !== currentTrackNumber) {
         const bgAudioData = {
             currentTime: 0, // 타임을 0초로 리셋

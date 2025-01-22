@@ -40,11 +40,13 @@
             </tbody>
         </table>
 
-        <a class="TOP3_list_bt absolute z-30" href="../restricted/restricted">리스트</a>
+        <a class="TOP3_list_bt absolute z-30" href="../scoreboard/scoreboard">리스트</a>
     </div>
     <!-- 로그인 상태일 경우 -->
     <div class="logout">
-        <input class="id absolute text-center" type="text" placeholder="닉네임을 입력해주세요" name="loginId"/>
+        <label>
+            <input class="id absolute text-center" type="text" placeholder="닉네임을 입력해주세요" name="loginId"/>
+        </label>
         <button class="pw absolute">
             등 록
         </button>
@@ -80,6 +82,9 @@
     import {
         getDatabase,
         ref,
+        query,
+        limitToFirst,
+        get,
         set,
         push
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
@@ -152,6 +157,57 @@
         }
     };
 
+    window.updateTop3Table = async function () {
+        // Firebase 데이터베이스 참조
+        const database = getDatabase();
+        const logsRef = ref(database, 'logs');
+
+        try {
+            // 상위 3개 데이터 가져오기
+            const logsQuery = query(logsRef, limitToFirst(3)); // 상위 3개 항목 가져오기
+            const snapshot = await get(logsQuery);
+
+            if (!snapshot.exists()) {
+                console.log('No data available');
+                return;
+            }
+
+            const logs = [];
+            snapshot.forEach((childSnapshot) => {
+                logs.push(childSnapshot.val());
+            });
+
+            // 테이블 요소 선택
+            const tableBody = document.querySelector(".TOP3_table tbody");
+
+            // 기존 데이터 제거
+            while (tableBody.rows.length > 1) {
+                tableBody.deleteRow(1);
+            }
+
+            // 상위 3개 데이터 추가
+            logs.forEach((log) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+            <tr>
+                <td style="text-align: center; padding: 0;">
+                    ${log.room === 0 ? (log.floor + 1) + '층' : log.floor + '층'}
+                </td>
+                <td style="text-align: center; padding: 0;">
+                    ${log.room === 0 ? '보스방' : log.room + '번방'}
+                </td>
+                <td style="text-align: center; padding: 0;">
+                    ${log.clearTime}초
+                </td>
+            </tr>
+            `;
+            });
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+        }
+    };
+
+    updateTop3Table();
 </script>
 <script src="main.js" defer></script>
 </body>
