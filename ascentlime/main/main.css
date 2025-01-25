@@ -1282,6 +1282,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: white;
     border: 0.1vh solid;
     flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
 }
 
 .mob__dictionary_title2 {
@@ -1345,7 +1347,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     align-items: center;
 }
 
-.weapon__dictionary_body_text {
+.dictionary_body_text {
     display: none;
     top: 3vh;
     left: 3vh;
@@ -1356,9 +1358,10 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     z-index: 20;
     text-align: center;
     border: 0.1vh solid;
+    pointer-events: none;
 }
 
-.weapon__dictionary_card2:hover > .weapon__dictionary_body_text {
+.weapon__dictionary_card2:hover > .dictionary_body_text, .mob__dictionary_card2:hover > .dictionary_body_text {
     display: block;
 }
 

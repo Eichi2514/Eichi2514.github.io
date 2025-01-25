@@ -1428,6 +1428,16 @@ if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
 
 for (let i = 1; i <= mobFind; i++) {
     $('.mobImage' + i).attr('src', mobs[i])
+
+    // 현재 순서에 해당하는 mob__dictionary_card2 선택
+    const currentCard = $('.mob__dictionary_card2').eq(i - 1);
+
+    // 카드 요소에 새로운 div 추가
+    currentCard.append(`
+        <div class="dictionary_body_text absolute">
+            데미지 ${i} <br> 체력 ${i * 10} <br> 사거리 ${i < 4 ? 0 : i - 1 > 12 ? 12 : i - 1}
+        </div>
+    `);
 }
 
 /*for (i = 1; i <= 70; i++) {
