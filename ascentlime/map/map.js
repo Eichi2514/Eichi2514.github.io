@@ -144,9 +144,9 @@ var front_power = charac.power;
 var front_speed = charac.speed;
 var front_weaponId = charac.weaponId;
 
-if (charac.floor === 1 && charac.room === 0) $('.floor_room').text('튜토리얼');
-else if (charac.room !== 0) $('.floor_room').text(charac.floor + '층 ' + charac.room + '번방');
-else $('.floor_room').text((charac.floor - 1) + '층 보스방');
+if (charac.floor === 1 && charac.room === 0) $('.location').text('튜토리얼');
+else if (charac.room !== 0) $('.location').text(charac.floor + '층 ' + charac.room + '번방');
+else $('.location').text((charac.floor - 1) + '층 보스방');
 
 const $hp_count = $('.hp_count');
 $hp_count.text(front_hp);
