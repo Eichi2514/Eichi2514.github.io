@@ -1448,9 +1448,21 @@ for (let i = 1; i <= mobFind; i++) {
 $.each(Object.keys(localStorage), function (_, key) {
     if (key.startsWith(`${nickname}weaponFind`)) {
         const index = key.replace(`${nickname}weaponFind`, ''); // 숫자 추출
-        if (weapon[index]) {
-            $(`.weaponImage${index}`).attr('src', weapon[index]);
+        const indexNumber = parseInt(index, 10);
+
+        if (weapon[indexNumber]) {
+            $(`.weaponImage${indexNumber}`).attr('src', weapon[indexNumber]);
         }
+
+        // 현재 순서에 해당하는 weapon__dictionary_card2 선택
+        const currentCard = $('.weapon__dictionary_card2').eq(indexNumber - 1);
+
+        currentCard.append(`
+        <div class="dictionary_body_text absolute">            
+            데미지 ${Math.ceil(indexNumber / 10) * 10} <br>
+            사거리 ${indexNumber % 10 === 0 ? 12 : (indexNumber % 10) + 2}
+        </div>
+        `);
     }
 });
 
