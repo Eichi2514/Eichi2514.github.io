@@ -167,16 +167,26 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .id {
     left: 27.5vh;
-    top: 40vh;
+    top: 38.3vh;
     width: 45vh;
-    -webkit-text-stroke: 0.05vh white;
+}
+
+.nicknameError {
+    left: 30vh;
+    top: 45.4vh;
+    font-size: 1.5vh;
+    color: #3C0000;
+    text-shadow: 0.3vh 0.3vh 0.8vh rgba(0, 0, 0, 0.8);
+    background: rgb(255, 71, 48);
+    text-align: center;
+    padding: 0 1vh;
 }
 
 .pw {
     text-align: center;
     width: 18vh;
     left: 40vh;
-    top: 49vh;
+    top: 50vh;
     border: 0.3vh solid;
     padding: 0.7vh;
     border-radius: 1vh;
