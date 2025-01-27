@@ -10,7 +10,6 @@ html > body, button, input, select {
     overflow-y: hidden;
 }
 
-/* 기본 스타일 (1440px 미만) */
 .body {
     width: 100vh;
     position: relative;
@@ -89,20 +88,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 /* 메인 키보드 */
-
 /* 화면 조작키 영역 */
 .keybord_box {
     position: absolute;
     width: 162.5vh;
     border-radius: 1vh;
     padding: 1vh 5vh;
+    pointer-events: none;
+}
+
+.keybord_box > * {
+    pointer-events: auto;
 }
 
 /* 세로(height)가 가로(width)의 배수 이상일 때 */
 @media (max-aspect-ratio: 25/9) {
     .keybord_box {
         top: 101vh;
-        border: 1px solid red;
+        border: 0.3vh solid rgb(174, 0, 27);
     }
 }
 
@@ -127,7 +130,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .keybord {
     width: 50vh;
     height: 50vh;
-    border: 1px solid;
+    border: 0.3vh solid;
     background-color: #fff;
     right: 0;
     position: relative;
@@ -136,26 +139,30 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 /* 위쪽 버튼 위치 */
 .key-Wattack, .key-up {
     width: 50vh;
-    height: 13vh;
+    height: 15vh;
 }
 
 /* 오른쪽 버튼 위치 */
 .key-Dattack, .key-right {
-    width: 13vh;
+    display: flex;
+    justify-content: right;
+    width: 15vh;
     height: 50vh;
-    left: 37vh;
+    left: 35vh;
 }
 
 /* 아래쪽 버튼 위치 */
 .key-Sattack, .key-down {
+    display: flex;
+    align-items: end;
     width: 50vh;
-    height: 13vh;
-    top: 37vh;
+    height: 15vh;
+    top: 35vh;
 }
 
 /* 왼쪽 버튼 위치 */
 .key-Aattack, .key-left {
-    width: 13vh;
+    width: 15vh;
     height: 50vh;
 }
 
