@@ -120,60 +120,55 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 /* 화면 조작키 버튼 이미지 */
 .key-img {
-    font-size: 8vh;
+    border: 1vh solid rgb(174, 0, 27);
+    border-radius: 13vh;
+    font-size: 7vh;
     width: 13vh;
     height: 13vh;
     text-align: center;
+    color: rgb(156, 163, 175);
 }
 
 /* 화면 조작키 배경 */
 .keybord {
     width: 50vh;
     height: 50vh;
-    border: 0.3vh solid;
-    background-color: #fff;
     right: 0;
     position: relative;
 }
 
 /* 위쪽 버튼 위치 */
 .key-Wattack, .key-up {
-    width: 50vh;
-    height: 15vh;
+    left: 18.5vh;
+    width: 13vh;
+    height: 13vh;
 }
 
 /* 오른쪽 버튼 위치 */
 .key-Dattack, .key-right {
     display: flex;
     justify-content: right;
-    width: 15vh;
-    height: 50vh;
-    left: 35vh;
+    top: 18.5vh;
+    left: 37vh;
+    width: 13vh;
+    height: 13vh;
 }
 
 /* 아래쪽 버튼 위치 */
 .key-Sattack, .key-down {
     display: flex;
     align-items: end;
-    width: 50vh;
-    height: 15vh;
-    top: 35vh;
+    left: 18.5vh;
+    top: 37vh;
+    width: 13vh;
+    height: 13vh;
 }
 
 /* 왼쪽 버튼 위치 */
 .key-Aattack, .key-left {
-    width: 15vh;
-    height: 50vh;
-}
-
-/* 화면 조작키 좌우 위치 */
-.l_75 {
-    left: 18.5vh;
-}
-
-/* 화면 조작키 상하 위치 */
-.t_75 {
     top: 18.5vh;
+    width: 13vh;
+    height: 13vh;
 }
 
 /* 배경음악 */
