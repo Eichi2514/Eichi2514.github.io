@@ -273,7 +273,32 @@ body {
 
 /* 화면 조작키 영역 */
 .keybord_box {
+    margin: auto;
+    position: absolute;
+    left: calc(50% - 150px);
+    top: 550px;
+}
 
+/* 가로(width)가 세로(height)보다 클 때 */
+@media (min-aspect-ratio: 1/1) {
+    .keybord_box {
+        width: 300px;
+        left: calc(50% + 275px);
+        top: 50px;
+    }
+}
+
+/* 세로(height)가 가로(width)보다 클 때 */
+@media (max-aspect-ratio: 1/1) {
+    .keybord_box {
+        width: 500px;
+        left: calc(50% - 150px);
+        top: 550px;
+    }
+
+    .keybord {
+        position: absolute;
+    }
 }
 
 /* 화면 조작키 버튼 이미지 */
