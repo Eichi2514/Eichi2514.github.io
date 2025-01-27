@@ -7,10 +7,9 @@
 }
 
 /* 배경 */
-body {
+html, body {
     margin: 0;
     padding: 0;
-    line-height: 1.5;
     color: white; /* 텍스트 내부 흰색 */
     text-shadow: 1px 1px 0 #1e3a8a, /* 오른쪽 아래 */ -1px -1px 0 #1e3a8a, /* 왼쪽 위 */ 1px -1px 0 #1e3a8a, /* 오른쪽 위 */ -1px 1px 0 #1e3a8a; /* 왼쪽 아래 */
 }
@@ -87,6 +86,8 @@ body {
 .portfolio {
     width: 1440px;
     position: relative;
+    padding: 0;
+    margin: 0;
 }
 
 /* 1440px 이상일 때 적용 */
@@ -106,10 +107,12 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    border-bottom: 1px solid white;
     overflow: hidden;
     justify-content: center;
     align-items: center;
+    scroll-snap-align: start;
+    margin: 0;
+    padding: 0;
 }
 
 .portfolio-title {
@@ -435,7 +438,8 @@ a:hover svg {
 }
 
 .main-body {
-    margin: auto;
+    padding: 0;
+    margin: 0;
 }
 
 /* 사이드바 */

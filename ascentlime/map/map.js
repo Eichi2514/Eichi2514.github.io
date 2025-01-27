@@ -131,7 +131,7 @@ const mobs = [
 ];
 
 if (!localStorage.getItem('nickname')) {
-    alert('잘못된 접근 방식입니다.')
+    alert('잘못된 접근 방식입니다.');
     history.back();
 }
 
@@ -573,6 +573,87 @@ $(document).ready(function () {
         } else if (e.keyCode === 83) {
             attack('S', 1);
         }
+    });
+
+
+    const $touch_left = $('.key-left');
+    const $touch_up = $('.key-up');
+    const $touch_right = $('.key-right');
+    const $touch_down = $('.key-down');
+    const $characImg = $('.front_charac_img');
+
+    const handleTouchStart = (direction, scale) => {
+        if (moveActionChack === direction) return;
+        lastKeyDirection = direction;
+
+        if (scale !== undefined) {
+            $characImg.css('transform', `scaleX(${scale})`);
+        }
+        $characImg.css('animation', 'move_action' + scale + ' 1s linear infinite');
+        startMoving(direction);
+    };
+
+    const handleTouchEnd = (direction) => {
+        if (moveActionChack === direction) {
+            lastKeyDirection = null;
+            $characImg.css('animation', 'none');
+            stopMoving();
+        }
+    };
+
+    $touch_left.on("touchstart", () => {
+        handleTouchStart('left', -1)
+    });
+
+    $touch_up.on("touchstart", () => {
+        handleTouchStart('up')
+    });
+
+    $touch_right.on("touchstart", () => {
+        handleTouchStart('right', 1)
+    });
+
+    $touch_down.on("touchstart", () => {
+        handleTouchStart('down')
+    });
+
+    $touch_left.on("touchend", () => {
+        handleTouchEnd('left')
+    });
+
+    $touch_up.on("touchend", () => {
+        handleTouchEnd('up')
+    });
+
+    $touch_right.on("touchend", () => {
+        handleTouchEnd('right')
+    });
+
+    $touch_down.on("touchend", () => {
+        handleTouchEnd('down')
+    });
+
+    const $touch_Aattack = $('.key-Aattack');
+    const $touch_Wattack = $('.key-Wattack');
+    const $touch_Dattack = $('.key-Dattack');
+    const $touch_Sattack = $('.key-Sattack');
+
+    $touch_Aattack.on("touchstart", () => {
+        $characImg.css("transform", "scaleX(-1)");
+        attack('A', 1);
+    });
+
+    $touch_Wattack.on("touchstart", () => {
+        attack('W', 1)
+    });
+
+    $touch_Dattack.on("touchstart", () => {
+        $characImg.css("transform", "scaleX(1)");
+        attack('D', 1);
+    });
+
+    $touch_Sattack.on("touchstart", () => {
+        attack('S', 1)
     });
 
     function moveCharacter(moveAction, something) {
@@ -1626,5 +1707,6 @@ $(document).ready(function () {
             }));
             $(this).removeClass('pause').addClass('play');
         }
+        ``
     });
 });

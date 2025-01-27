@@ -1,7 +1,7 @@
 let isTyping = false;
 
 function startTypingAnimation() {
-    console.log(isTyping);
+    // console.log(isTyping);
 
     if(isTyping) return;
 
@@ -159,6 +159,8 @@ let isAnimating = false; // 애니메이션 상태 추적 변수
 function scrollToSection(index) {
     if (isAnimating) return; // 애니메이션 중에는 함수 실행을 막음
 
+    portfolioIndex = index;
+
     if (index === 0) setTimeout(function () {
         startTypingAnimation()
     }, 500);
@@ -174,7 +176,7 @@ function scrollToSection(index) {
 
 // 휠 이벤트 처리
 $portfolio.on('wheel', function (e) {
-    e.preventDefault(); // 기본 스크롤 방지
+    // e.preventDefault(); // 기본 스크롤 방지
 
     // 애니메이션이 진행 중이면 아무 동작도 하지 않음
     if (isAnimating) return;

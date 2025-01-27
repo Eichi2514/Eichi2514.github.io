@@ -10,12 +10,6 @@ html > body, button, input, select {
     overflow: hidden;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-size: 0;
-}
-
 /* 기본 스타일 (1440px 미만) */
 .body {
     width: 100vh;
@@ -24,7 +18,7 @@ body {
 
 .mapBody {
     width: 100vh;
-    left: 200px;
+    left: 21vh;
     position: relative;
 }
 
@@ -92,6 +86,73 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .bo {
     border: 1vh solid red;
+}
+
+/* 메인 키보드 */
+
+/* 화면 조작키 영역 */
+.keybord_box {
+    position: absolute;
+    left: -20.5vh;
+    top: 101vh;
+    width: 162.5vh;
+    border: 1px solid red;
+    border-radius: 1vh;
+    padding: 1vh 5vh;
+}
+
+/* 화면 조작키 버튼 이미지 */
+.key-img {
+    font-size: 8vh;
+    width: 13vh;
+    height: 13vh;
+    text-align: center;
+}
+
+/* 화면 조작키 배경 */
+.keybord {
+    width: 50vh;
+    height: 50vh;
+    border: 1px solid;
+    background-color: #fff;
+    right: 0;
+    position: relative;
+}
+
+/* 위쪽 버튼 위치 */
+.key-Wattack, .key-up {
+    width: 50vh;
+    height: 13vh;
+}
+
+/* 오른쪽 버튼 위치 */
+.key-Dattack, .key-right {
+    width: 13vh;
+    height: 50vh;
+    left: 37vh;
+}
+
+/* 아래쪽 버튼 위치 */
+.key-Sattack, .key-down {
+    width: 50vh;
+    height: 13vh;
+    top: 37vh;
+}
+
+/* 왼쪽 버튼 위치 */
+.key-Aattack, .key-left {
+    width: 13vh;
+    height: 50vh;
+}
+
+/* 화면 조작키 좌우 위치 */
+.l_75 {
+    left: 18.5vh;
+}
+
+/* 화면 조작키 상하 위치 */
+.t_75 {
+    top: 18.5vh;
 }
 
 /* 배경음악 */
