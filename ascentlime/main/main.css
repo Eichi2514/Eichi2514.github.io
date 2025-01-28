@@ -10,6 +10,11 @@ html > body, button, input, select {
     overflow-y: hidden;
 }
 
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
 .body {
     width: 100vh;
     position: relative;
@@ -901,8 +906,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 /* 풋(채팅) */
 .chat {
-    top: 11vh;
     left: 101vh;
+    bottom: 1vh;
     width: 41vh;
     height: 82.5vh;
     color: white;
@@ -938,7 +943,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .chat_var {
     width: 32vh;
     left: 101vh;
-    bottom: 1vh;
+    top: 11vh;
     color: white;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
@@ -948,7 +953,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .chat_bt {
     width: 8vh;
     left: 134vh;
-    bottom: 1vh;
+    top: 11vh;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
     /* background: rgb(255, 71, 48); */
