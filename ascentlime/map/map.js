@@ -913,26 +913,26 @@ $(document).ready(function () {
 
         // something 주위 공간 확인
         if (moveAction === 'up') {
-            for (let y = Ycode; y < Ycode + width; y++) {
-                if (map2[Xcode - 1][y] !== 0) {
+            for (let y = Ycode; y < Ycode + width && y < 40; y++) {
+                if (Xcode - 1 >= 0 && map2[Xcode - 1][y] !== 0) {
                     return map2[Xcode - 1][y];
                 }
             }
         } else if (moveAction === 'down') {
-            for (let y = Ycode; y < Ycode + width; y++) {
-                if (map2[Xcode + height][y] !== 0) {
+            for (let y = Ycode; y < Ycode + width && y < 40; y++) {
+                if (Xcode + height < 40 && map2[Xcode + height][y] !== 0) {
                     return map2[Xcode + height][y];
                 }
             }
         } else if (moveAction === 'left') {
-            for (let x = Xcode; x < Xcode + height; x++) {
-                if (map2[x][Ycode - 1] !== 0) {
+            for (let x = Xcode; x < Xcode + height && x < 40; x++) {
+                if (Ycode - 1 >= 0 && map2[x][Ycode - 1] !== 0) {
                     return map2[x][Ycode - 1];
                 }
             }
         } else if (moveAction === 'right') {
-            for (let x = Xcode; x < Xcode + height; x++) {
-                if (map2[x][Ycode + width] !== 0) {
+            for (let x = Xcode; x < Xcode + height && x < 40; x++) {
+                if (Ycode + width < 40 && map2[x][Ycode + width] !== 0) {
                     return map2[x][Ycode + width];
                 }
             }
@@ -964,7 +964,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (let i = Ycode - 1; i > y; i--) {
+            for (let i = Ycode - 1; i > y && i >= 0; i--) {
                 if (map3[x][i] !== 0) {
                     return map3[x][i];
                 }
@@ -975,7 +975,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (let i = Xcode - 1; i > x; i--) {
+            for (let i = Xcode - 1; i > x && i >= 0; i--) {
                 if (map3[i][y] !== 0) {
                     return map3[i][y];
                 }
@@ -986,7 +986,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (let i = Ycode + width; i < y; i++) {
+            for (let i = Ycode + width; i < y && i < 40; i++) {
                 if (map3[x][i] !== 0) {
                     return map3[x][i];
                 }
@@ -997,7 +997,7 @@ $(document).ready(function () {
             // console.log('x : ' + x);
             // console.log('y : ' + y);
 
-            for (let i = Xcode + height; i < x; i++) {
+            for (let i = Xcode + height; i < x && i < 40; i++) {
                 if (map3[i][y] !== 0) {
                     return map3[i][y];
                 }
