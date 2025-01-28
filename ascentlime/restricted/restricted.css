@@ -1,28 +1,31 @@
 @charset "UTF-8";
 
-html > body, button, input, select {
+:root {
+    --vh: 1vh;
+    --vw: 1vw;
+}
+
+html > body, button {
     font-family: Galmuri11, serif;
     font-weight: 800;
-    font-size: 3vh;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    width: 100vw;
-    height: 100vh;
+    width: calc(var(--vw) * 100);
+    height: calc(var(--vh) * 100);
+    /* background: RGB(0, 0, 48); */
 }
 
 .restricted_text {
-    min-width: 120vh;
-    height: 100vh;
-    -webkit-text-stroke: 0.05vh white;
+    height: calc(var(--vh) * 100);
+    -webkit-text-stroke: calc(var(--vh) * 0.05) white;
     z-index: 2;
     position: relative;
 }
 
 .restricted_bg {
-    min-width: 120vh;
-    width: 100vw;
-    height: 100vh;
+    width: calc(var(--vw) * 100);
+    height: calc(var(--vh) * 100);
     position: absolute;
     top: 0;
     left: 0;
@@ -30,22 +33,16 @@ html > body, button, input, select {
 }
 
 .restricted_sun {
-    width: 70vh;
-    height: 70vh;
+    width: calc(var(--vh) * 70);
+    height: calc(var(--vh) * 70);
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 70vh;
+    transform: translate(calc(var(--vh) * -35), calc(var(--vh) * -35));
+    border-radius: calc(var(--vh) * 70);
     z-index: 1;
-    box-shadow: 0 0 15vh 5vh rgba(255, 0, 0, 0.7), inset 0 0 15vh 5vh rgba(255, 0, 0, 0.7);
-}
-
-@media (max-aspect-ratio: 8/11) {
-    .restricted_sun {
-        left: 0;
-        transform: translateY(-50%);
-    }
+    box-shadow: 0 0 calc(var(--vh) * 15) calc(var(--vh) * 5) rgba(255, 0, 0, 0.7),
+    inset 0 0 calc(var(--vh) * 15) calc(var(--vh) * 5) rgba(255, 0, 0, 0.7);
 }
 
 .restricted_sun > img {
@@ -67,21 +64,62 @@ html > body, button, input, select {
 }
 
 .restricted_title {
-    font-size: 5vh;
-    margin-bottom: 8vh;
+    font-size: calc(var(--vh) * 4);
+    margin-bottom: calc(var(--vh) * 7);
 }
 
 .restricted_body {
-    margin-bottom: 4vh;
+    font-size: calc(var(--vh) * 2.5);
+    margin-bottom: calc(var(--vh) * 4);
+}
+
+.restricted_poot {
+    font-size: calc(var(--vh) * 2.5);
 }
 
 .restricted_slime {
     position: absolute;
     top: 0;
     left: 0;
-    width: 10vh;
-    height: 10vh;
-    border-radius: 3vh;
+    width: calc(var(--vh) * 10);
+    height: calc(var(--vh) * 10);
+    border-radius: calc(var(--vh) * 3);
     z-index: 3;
     transition: left 5s, top 5s;
+}
+
+/* 세로 모드 (모바일 등에서 세로가 더 긴 경우) */
+@media (orientation: portrait) {
+    .restricted_text {
+        -webkit-text-stroke: calc(var(--vw) * 0.05) white;
+    }
+
+    .restricted_sun {
+        width: calc(var(--vw) * 70);
+        height: calc(var(--vw) * 70);
+        transform: translate(calc(var(--vw) * -35), calc(var(--vw) * -35));
+        border-radius: calc(var(--vw) * 70);
+        box-shadow: 0 0 calc(var(--vw) * 15) calc(var(--vw) * 5) rgba(255, 0, 0, 0.7),
+        inset 0 0 calc(var(--vw) * 15) calc(var(--vw) * 5) rgba(255, 0, 0, 0.7);
+    }
+
+    .restricted_title {
+        font-size: calc(var(--vw) * 4);
+        margin-bottom: calc(var(--vw) * 7);
+    }
+
+    .restricted_body {
+        font-size: calc(var(--vw) * 2.5);
+        margin-bottom: calc(var(--vw) * 4);
+    }
+
+    .restricted_poot {
+        font-size: calc(var(--vw) * 2.5);
+    }
+
+    .restricted_slime {
+        width: calc(var(--vw) * 10);
+        height: calc(var(--vw) * 10);
+        border-radius: calc(var(--vw) * 3);
+    }
 }
