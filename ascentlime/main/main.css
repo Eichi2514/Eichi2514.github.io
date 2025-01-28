@@ -102,10 +102,20 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 /* 세로(height)가 가로(width)의 배수 이상일 때 */
-@media (max-aspect-ratio: 25/9) {
+@media (max-aspect-ratio: 25/9) and (min-aspect-ratio: 1625/1000) {
     .keybord_box {
         top: 101vh;
         border: 0.3vh solid rgb(174, 0, 27);
+        left: 50%;
+        transform: translateX(-81vh);
+    }
+}
+
+@media (max-aspect-ratio: 25/9) and (max-aspect-ratio: 1625/1000) {
+    .keybord_box {
+        top: 101vh;
+        border: 0.3vh solid rgb(174, 0, 27);
+        left: 0;
     }
 }
 
