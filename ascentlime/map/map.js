@@ -398,7 +398,7 @@ $(document).ready(function () {
         $mob_index = getRandom(1, 53);
     }
 
-    $('.attackSize').attr('src', weapon[front_weaponId]);
+    // $('.attackSize').attr('src', weapon[front_weaponId]);
     $item.attr('src', weapon[$randomWeapon]);
 
     if (charac.room === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
