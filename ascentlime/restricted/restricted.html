@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>AscentLime(test)</title>
 
-    <link rel="stylesheet" href="../main/main.css"/>
+    <link rel="stylesheet" href="../restricted/restricted.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -21,62 +21,22 @@
 <!-- p2 404페이지 -->
 <div class="restricted_text">
     <button class="flex flex-col items-center justify-center h-full w-full" onclick="window.history.back()">
-        <span class="restricted_title">이 페이지는 테스트 서버에서는 지원이 되지 않아요!</span>
+        <span class="restricted_title">이 기능은 테스트 서버에서는 지원이 되지 않아요!</span>
         <span class="restricted_body">불편을 드려 죄송합니다, 정식 서버 오픈을 기대하며 조금만 기다려 주세요.</span>
         <span class="restricted_poot">곧 만나요!</span>
     </button>
 </div>
+
 <img class="restricted_bg" src="https://github.com/user-attachments/assets/2fa689b9-d7bd-432b-ba9d-87151c098c5b"
      alt="배경"/>
+
 <div class="restricted_sun">
     <img src="https://github.com/user-attachments/assets/63506c87-91b9-4279-b849-0c2bb727d2d6" alt="태양"/>
 </div>
+
 <img class="restricted_slime absolute"
      src="https://github.com/user-attachments/assets/309ac7b2-ae9c-4850-b0f5-c84b001a5c24" alt="슬라임"/>
 
-<script>
-    // 랜덤 수 불러오는 함수 생성
-    function getRandom(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    $(document).ready(function () {
-        const slime = $('.restricted_slime');
-        let Xcode1 = 10; // 초기 X 위치
-        let Ycode1 = 0;  // 초기 Y 위치
-
-        function moveSlime() {
-            let Xcode2 = getRandom(10, 100); // X 위치를 랜덤으로 설정
-            let Ycode2 = getRandom(0, 87); // Y 위치를 랜덤으로 설정
-
-            // Xcode2가 Ycode2보다 크면 Ycode2를 0으로, 아니면 Xcode2를 0으로 설정
-            if (Xcode2 > Ycode2) {
-                if (Ycode1 !== 0) Ycode2 = (Math.random() < 0.5) ? 0 : 90;
-                else Xcode2 = (Math.random() < 0.5) ? 10 : 100;
-            } else {
-                if (Xcode1 !== 10) Xcode2 = (Math.random() < 0.5) ? 10 : 100;
-                else Ycode2 = (Math.random() < 0.5) ? 0 : 90;
-            }
-
-            Xcode1 = Xcode2; // 새로운 Xcode1 값 갱신
-            Ycode1 = Ycode2; // 새로운 Ycode1 값 갱신
-
-            console.log('Xcode1 : ' + Xcode1 + ', Ycode1 : ' + Ycode1);
-
-            // 슬라임의 위치와 애니메이션을 갱신
-            slime.css({
-                'left': 'calc(' + Xcode1 + 'vw - 10vh)',
-                'top': Ycode1 + 'vh',
-                'animation': 'spin 10s infinite linear' // spin 애니메이션 적용
-            });
-        }
-
-        // 페이지 로드 시 첫 번째 실행
-        moveSlime();
-
-        // 5초마다 위치를 갱신
-        setInterval(moveSlime, 5000);
-    });
-</script>
+<script src="../restricted/restricted.js" defer></script>
 </body>
 </html>

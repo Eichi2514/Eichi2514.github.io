@@ -1,0 +1,87 @@
+@charset "UTF-8";
+
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    font-size: 3vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+.restricted_text {
+    min-width: 120vh;
+    height: 100vh;
+    -webkit-text-stroke: 0.05vh white;
+    z-index: 2;
+    position: relative;
+}
+
+.restricted_bg {
+    min-width: 120vh;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.restricted_sun {
+    width: 70vh;
+    height: 70vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 70vh;
+    z-index: 1;
+    box-shadow: 0 0 15vh 5vh rgba(255, 0, 0, 0.7), inset 0 0 15vh 5vh rgba(255, 0, 0, 0.7);
+}
+
+@media (max-aspect-ratio: 8/11) {
+    .restricted_sun {
+        left: 0;
+        transform: translateY(-50%);
+    }
+}
+
+.restricted_sun > img {
+    width: 100%;
+    height: 100%;
+    animation: spin 10s infinite linear;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.restricted_title {
+    font-size: 5vh;
+    margin-bottom: 8vh;
+}
+
+.restricted_body {
+    margin-bottom: 4vh;
+}
+
+.restricted_slime {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10vh;
+    height: 10vh;
+    border-radius: 3vh;
+    z-index: 3;
+    transition: left 5s, top 5s;
+}
