@@ -238,8 +238,8 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const $item = $(".item");
-const $item_text = $(".item_text");
+const $item = charac.weaponId < 70 ? $(".item1") : $(".item2");
+const $item_text = charac.weaponId < 70 ? $(".item_text1") : $(".item_text2");
 const $random_item = $(".random_item");
 const $random_item_text = $(".random_item_text");
 
@@ -399,7 +399,7 @@ $(document).ready(function () {
     }
 
     // $('.attackSize').attr('src', weapon[front_weaponId]);
-    $item.attr('src', weapon[$randomWeapon]);
+    if(charac.weaponId < 70) $item.attr('src', weapon[$randomWeapon]);
 
     if (charac.room === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
     else $('.mob_img').attr('src', mobs[$mob_index]);
