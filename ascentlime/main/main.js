@@ -71,6 +71,7 @@ $(document).ready(function () {
                 power: 0,
                 speed: 50,
                 weaponId: 1,
+                weaponUpgrade: 0,
                 clearTime: 0
             }));
             localStorage.setItem(nickname + 'weaponFind1', true);

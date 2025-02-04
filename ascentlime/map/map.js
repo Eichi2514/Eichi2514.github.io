@@ -1,60 +1,22 @@
-window.onerror = function() {
+window.onerror = function () {
     window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
     return true;
 };
 
 const weapon = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
-    'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
-    'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
-    'https://github.com/user-attachments/assets/bab07e9b-6bcc-4cc6-9782-d2e5491ed42e',
-    'https://github.com/user-attachments/assets/351cb011-e0d8-4b97-ade0-e591aecd63f2',
-    'https://github.com/user-attachments/assets/df28a7ef-027e-4b9c-9dfe-5333945f79b4',
-    'https://github.com/user-attachments/assets/402dde9c-aeba-4543-a5a2-77d95ec25bba',
-    'https://github.com/user-attachments/assets/c9258612-c30a-4e6b-8f43-d63518485e72',
-    'https://github.com/user-attachments/assets/33899c93-1223-4e71-9113-7d7702c20b03',
-    'https://github.com/user-attachments/assets/ead726f4-fa9f-4fd8-935a-0c665b173069',
-    'https://github.com/user-attachments/assets/a6dcabfb-34c7-41bc-ad0e-94228de15519',
-    'https://github.com/user-attachments/assets/2e6e4dc2-3b84-4521-b9c1-7eb469d8d861',
-    'https://github.com/user-attachments/assets/44dc4242-4cc1-4bd9-bf1d-501625f79981',
-    'https://github.com/user-attachments/assets/e0cd5573-f9ae-4a94-98b8-933b0317f6cd',
-    'https://github.com/user-attachments/assets/221e2115-c9fe-4777-90de-b690b272268b',
-    'https://github.com/user-attachments/assets/90731980-1fc7-49cb-8a99-f103082727ac',
-    'https://github.com/user-attachments/assets/74c267ea-fa2f-494b-923e-fd8728e7346c',
-    'https://github.com/user-attachments/assets/e3ac88c9-4c23-4f76-8a66-4780e32afcf7',
-    'https://github.com/user-attachments/assets/47452f52-d6f9-4561-b984-59bf1abc6b0a',
-    'https://github.com/user-attachments/assets/6435b887-2b87-4367-a088-28e13d0a9b59',
-    'https://github.com/user-attachments/assets/fceed0f8-5b68-4263-b9f2-63d9dcb9eaa8',
-    'https://github.com/user-attachments/assets/a08e3986-994d-4449-adb1-10e575714188',
-    'https://github.com/user-attachments/assets/e8f0f8ed-0d14-4bed-8f14-d58a6ce6c537',
-    'https://github.com/user-attachments/assets/5f99f1a8-cce0-43f4-9bd0-b01aff7ed337',
-    'https://github.com/user-attachments/assets/b007b848-66f2-404f-9452-e4ca17e4ebf2',
-    'https://github.com/user-attachments/assets/c6d3d271-dc7c-4cc1-908b-1960ece2ed80',
-    'https://github.com/user-attachments/assets/157e3ef6-ca2b-47f8-96ba-4a4451534fec',
-    'https://github.com/user-attachments/assets/40a08051-7223-4472-ab42-42bdbfeca35c',
-    'https://github.com/user-attachments/assets/62dedd0e-9806-4fca-a7fb-d06fea28d1c4',
-    'https://github.com/user-attachments/assets/d3e44839-8d46-4c0f-9e26-169bab080fdd',
-    'https://github.com/user-attachments/assets/1afae587-dff3-42dd-a663-6730f5766187',
-    'https://github.com/user-attachments/assets/a114d57e-9995-4036-93be-e73087b93dee',
-    'https://github.com/user-attachments/assets/fefa8e4d-6ce4-4258-9988-c6bee58defa6',
-    'https://github.com/user-attachments/assets/44fc98a6-87f8-4444-b6af-6fb31c513ed9',
-    'https://github.com/user-attachments/assets/2de1f608-83ba-42ad-b0b1-8ac51dea567a',
-    'https://github.com/user-attachments/assets/a8369e91-a67f-44f0-9c4a-ef8fbb8cfe2a',
-    'https://github.com/user-attachments/assets/388af076-05e8-452f-a501-a56f64c992c9',
-    'https://github.com/user-attachments/assets/96270c25-7a7b-4086-ac06-5634555b70ef',
-    'https://github.com/user-attachments/assets/89cf8667-6f45-440e-aa48-de352197809f',
-    'https://github.com/user-attachments/assets/87a96719-bbac-410c-8a33-d7f67d39a2a2',
-    'https://github.com/user-attachments/assets/4c81b6d8-1ab6-41e3-99e8-e289eb7510de',
-    'https://github.com/user-attachments/assets/34b8096b-643c-4323-adb9-384198f35a05',
-    'https://github.com/user-attachments/assets/e745c414-919e-45a0-8ee8-b6708c677c97',
-    'https://github.com/user-attachments/assets/98c2a891-0148-4b10-8ce8-1509fecdb511',
-    'https://github.com/user-attachments/assets/417ceca3-7c5a-4b46-b7ba-597320a7280b',
-    'https://github.com/user-attachments/assets/076ae1bc-5a66-4db3-be82-6f22e0b52155',
-    'https://github.com/user-attachments/assets/c5b27034-7754-4a7c-b212-67bb919e60c1',
-    'https://github.com/user-attachments/assets/6e8c1158-10dd-4769-8d3f-27d0df7e1ac6',
-    'https://github.com/user-attachments/assets/7cd68d64-55c6-4da3-98d6-ec641e4d139b',
-    'https://github.com/user-attachments/assets/7b8523d2-e443-44fc-9f79-dbebcf385b29',
-    'https://github.com/user-attachments/assets/2ea0d667-6c8b-42c2-9eac-435e19422256',
+
+    'https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6',
+    'https://github.com/user-attachments/assets/ca527de8-3ca6-44bb-9845-625e9f30ab89',
+    'https://github.com/user-attachments/assets/91200c6c-bd4d-44eb-98df-96a7af967552',
+    'https://github.com/user-attachments/assets/7403b724-19d1-49bf-9781-f97ac6936d68',
+    'https://github.com/user-attachments/assets/eafa86a5-ff3c-4a3d-86e9-8f485c4905e1',
+    'https://github.com/user-attachments/assets/fd1692a4-c906-4f24-b47d-1e2ac54fed56',
+    'https://github.com/user-attachments/assets/f4621a93-e6db-4003-9e49-02fe7543491f',
+    'https://github.com/user-attachments/assets/027a11ed-96fa-4587-9b7f-c3efde0e40b1',
+    'https://github.com/user-attachments/assets/f531f906-2147-45b5-8af9-e0877201552c',
+    'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41',
+
     'https://github.com/user-attachments/assets/330ad6aa-ead1-485b-900e-dea99d69abbc',
     'https://github.com/user-attachments/assets/4ba220d2-1c7f-4f84-bb1e-bc5eb8b4f531',
     'https://github.com/user-attachments/assets/791c3025-5ee3-4528-8cc2-8bbe8daf4bc0',
@@ -65,16 +27,61 @@ const weapon = [
     'https://github.com/user-attachments/assets/2ac29faa-dba5-46b1-9a15-665ce62596ba',
     'https://github.com/user-attachments/assets/3e3ebf0f-e700-4a6f-91f5-ffbf9f16d69f',
     'https://github.com/user-attachments/assets/383a1c05-7a15-4974-8842-a4f0d3f3b747',
-    'https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6',
-    'https://github.com/user-attachments/assets/ca527de8-3ca6-44bb-9845-625e9f30ab89',
-    'https://github.com/user-attachments/assets/91200c6c-bd4d-44eb-98df-96a7af967552',
-    'https://github.com/user-attachments/assets/7403b724-19d1-49bf-9781-f97ac6936d68',
-    'https://github.com/user-attachments/assets/eafa86a5-ff3c-4a3d-86e9-8f485c4905e1',
-    'https://github.com/user-attachments/assets/fd1692a4-c906-4f24-b47d-1e2ac54fed56',
-    'https://github.com/user-attachments/assets/f4621a93-e6db-4003-9e49-02fe7543491f',
-    'https://github.com/user-attachments/assets/027a11ed-96fa-4587-9b7f-c3efde0e40b1',
-    'https://github.com/user-attachments/assets/f531f906-2147-45b5-8af9-e0877201552c',
-    'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41'
+
+    'https://github.com/user-attachments/assets/34b8096b-643c-4323-adb9-384198f35a05',
+    'https://github.com/user-attachments/assets/e745c414-919e-45a0-8ee8-b6708c677c97',
+    'https://github.com/user-attachments/assets/98c2a891-0148-4b10-8ce8-1509fecdb511',
+    'https://github.com/user-attachments/assets/417ceca3-7c5a-4b46-b7ba-597320a7280b',
+    'https://github.com/user-attachments/assets/076ae1bc-5a66-4db3-be82-6f22e0b52155',
+    'https://github.com/user-attachments/assets/c5b27034-7754-4a7c-b212-67bb919e60c1',
+    'https://github.com/user-attachments/assets/6e8c1158-10dd-4769-8d3f-27d0df7e1ac6',
+    'https://github.com/user-attachments/assets/7cd68d64-55c6-4da3-98d6-ec641e4d139b',
+    'https://github.com/user-attachments/assets/7b8523d2-e443-44fc-9f79-dbebcf385b29',
+    'https://github.com/user-attachments/assets/2ea0d667-6c8b-42c2-9eac-435e19422256',
+
+    'https://github.com/user-attachments/assets/a114d57e-9995-4036-93be-e73087b93dee',
+    'https://github.com/user-attachments/assets/fefa8e4d-6ce4-4258-9988-c6bee58defa6',
+    'https://github.com/user-attachments/assets/44fc98a6-87f8-4444-b6af-6fb31c513ed9',
+    'https://github.com/user-attachments/assets/2de1f608-83ba-42ad-b0b1-8ac51dea567a',
+    'https://github.com/user-attachments/assets/a8369e91-a67f-44f0-9c4a-ef8fbb8cfe2a',
+    'https://github.com/user-attachments/assets/388af076-05e8-452f-a501-a56f64c992c9',
+    'https://github.com/user-attachments/assets/96270c25-7a7b-4086-ac06-5634555b70ef',
+    'https://github.com/user-attachments/assets/89cf8667-6f45-440e-aa48-de352197809f',
+    'https://github.com/user-attachments/assets/87a96719-bbac-410c-8a33-d7f67d39a2a2',
+    'https://github.com/user-attachments/assets/4c81b6d8-1ab6-41e3-99e8-e289eb7510de',
+
+    'https://github.com/user-attachments/assets/a08e3986-994d-4449-adb1-10e575714188',
+    'https://github.com/user-attachments/assets/e8f0f8ed-0d14-4bed-8f14-d58a6ce6c537',
+    'https://github.com/user-attachments/assets/5f99f1a8-cce0-43f4-9bd0-b01aff7ed337',
+    'https://github.com/user-attachments/assets/b007b848-66f2-404f-9452-e4ca17e4ebf2',
+    'https://github.com/user-attachments/assets/c6d3d271-dc7c-4cc1-908b-1960ece2ed80',
+    'https://github.com/user-attachments/assets/157e3ef6-ca2b-47f8-96ba-4a4451534fec',
+    'https://github.com/user-attachments/assets/40a08051-7223-4472-ab42-42bdbfeca35c',
+    'https://github.com/user-attachments/assets/62dedd0e-9806-4fca-a7fb-d06fea28d1c4',
+    'https://github.com/user-attachments/assets/d3e44839-8d46-4c0f-9e26-169bab080fdd',
+    'https://github.com/user-attachments/assets/1afae587-dff3-42dd-a663-6730f5766187',
+
+    'https://github.com/user-attachments/assets/2e6e4dc2-3b84-4521-b9c1-7eb469d8d861',
+    'https://github.com/user-attachments/assets/44dc4242-4cc1-4bd9-bf1d-501625f79981',
+    'https://github.com/user-attachments/assets/e0cd5573-f9ae-4a94-98b8-933b0317f6cd',
+    'https://github.com/user-attachments/assets/221e2115-c9fe-4777-90de-b690b272268b',
+    'https://github.com/user-attachments/assets/90731980-1fc7-49cb-8a99-f103082727ac',
+    'https://github.com/user-attachments/assets/74c267ea-fa2f-494b-923e-fd8728e7346c',
+    'https://github.com/user-attachments/assets/e3ac88c9-4c23-4f76-8a66-4780e32afcf7',
+    'https://github.com/user-attachments/assets/47452f52-d6f9-4561-b984-59bf1abc6b0a',
+    'https://github.com/user-attachments/assets/6435b887-2b87-4367-a088-28e13d0a9b59',
+    'https://github.com/user-attachments/assets/fceed0f8-5b68-4263-b9f2-63d9dcb9eaa8',
+
+    'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
+    'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
+    'https://github.com/user-attachments/assets/bab07e9b-6bcc-4cc6-9782-d2e5491ed42e',
+    'https://github.com/user-attachments/assets/351cb011-e0d8-4b97-ade0-e591aecd63f2',
+    'https://github.com/user-attachments/assets/df28a7ef-027e-4b9c-9dfe-5333945f79b4',
+    'https://github.com/user-attachments/assets/402dde9c-aeba-4543-a5a2-77d95ec25bba',
+    'https://github.com/user-attachments/assets/c9258612-c30a-4e6b-8f43-d63518485e72',
+    'https://github.com/user-attachments/assets/33899c93-1223-4e71-9113-7d7702c20b03',
+    'https://github.com/user-attachments/assets/ead726f4-fa9f-4fd8-935a-0c665b173069',
+    'https://github.com/user-attachments/assets/a6dcabfb-34c7-41bc-ad0e-94228de15519'
 ];
 
 const mobs = [
@@ -148,6 +155,13 @@ var front_hp = charac.hp;
 var front_power = charac.power;
 var front_speed = charac.speed;
 var front_weaponId = charac.weaponId;
+var front_weaponUpgrade = 0;
+
+if (charac.weaponUpgrade != null) {
+    front_weaponUpgrade = charac.weaponUpgrade
+}
+
+var upgradeNum = front_weaponUpgrade < 100 ? front_weaponUpgrade : 90;
 
 if (charac.floor === 1 && charac.room === 0) $('.location').text('튜토리얼');
 else if (charac.room !== 0) $('.location').text(charac.floor + '층 ' + charac.room + '번방');
@@ -163,7 +177,6 @@ const $speed_count = $('.speed_count');
 $speed_count.text(50 - front_speed);
 
 const $weapon_img = $('.weapon_img');
-$weapon_img.attr('src', weapon[front_weaponId]);
 
 // 페이지가 시작될 때 시간 기록
 const startTime = new Date().getTime();
@@ -251,14 +264,36 @@ var randomItem = getRandom(1, 3);
 
 if (randomItem === 3) $('.random_item_effect').removeClass('hidden');
 
+function weapon_img(img){
+    $weapon_img.attr('src', img != null ? img : weapon[front_weaponId]);
+    // 색상 값을 변수로 선언
+    var shadowColor = 'rgba(255, 255, 255, 0.7)';
+
+    if (upgradeNum <= 10) shadowColor = 'rgba(255, 255, 255, 0.7)';
+    else if (upgradeNum <= 20) shadowColor = 'rgba(150, 150, 150, 0.7)';
+    else if (upgradeNum <= 30) shadowColor = 'rgba(163, 73, 164, 0.7)';
+    else if (upgradeNum <= 40) shadowColor = 'rgba(63, 72, 204, 0.7)';
+    else if (upgradeNum <= 50) shadowColor = 'rgba(0, 162, 232, 0.7)';
+    else if (upgradeNum <= 60) shadowColor = 'rgba(34, 177, 76, 0.7)';
+    else if (upgradeNum <= 70) shadowColor = 'rgba(224, 224, 64, 0.7)';
+    else if (upgradeNum <= 80) shadowColor = 'rgba(255, 127, 39, 0.7)';
+    else if (upgradeNum <= 90) shadowColor = 'rgba(224, 0, 64, 0.7)';
+
+    if(upgradeNum > 0){
+        $weapon_img.css({
+            'box-shadow': `0 0 1.5vh 0.5vh ${shadowColor}, inset 0 0 1.5vh 0.5vh ${shadowColor}`,
+            'border-radius': '10vh 0 10vh 0'
+        });
+    }
+}
+
 //아이템 안내창 교체 버튼 눌렀을 떄
 function Item_change() {
     localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
     let changeImg = weapon[$randomWeapon];
     front_weaponId = $randomWeapon;
     // console.log('교체' + front_weaponId);
-    $weapon_img.attr('src', changeImg);
-    $('.CharacAttack').attr('src', changeImg);
+    weapon_img(changeImg);
     $item.fadeOut(1000).addClass('hidden');
     $item_text.fadeOut(1000).addClass('hidden');
 }
@@ -272,11 +307,30 @@ function Item_mix() {
     let changeImg = weapon[changeNum];
     front_weaponId = changeNum;
     // console.log('합성' + front_weaponId);
-    $weapon_img.attr('src', changeImg);
-    $('.CharacAttack').attr('src', changeImg);
+    weapon_img(changeImg);
     $item.fadeOut(1000).addClass('hidden');
     $item_text.fadeOut(1000).addClass('hidden');
 }
+
+// 아이템 안내창 강화 버튼 눌렀을 때
+function Item_upgrade() {
+    let rate = getRandom(1, 100);
+    if (rate < 100 - upgradeNum) {
+        front_weaponUpgrade += 10;
+        upgradeNum += 10;
+        alert("강화 성공! 무기가 한 단계 강화되었습니다. (" + rate + ")");
+    } else if (rate < 100 - upgradeNum + 10) {
+        front_weaponUpgrade -= 10;
+        upgradeNum -= 10;
+        alert("강화 실패! 무기가 한 단계 하락했습니다. (" + rate + ")");
+    } else {
+        alert("아무일도 일어나지 않았습니다. (" + rate + ")");
+    }
+    weapon_img();
+    $item.fadeOut(1000).addClass('hidden');
+    $item_text.fadeOut(1000).addClass('hidden');
+}
+
 
 //아이템 안내창 취소 버튼 눌렀을 떄
 function Item_exit() {
@@ -399,12 +453,16 @@ $(document).ready(function () {
     }
 
     // $('.attackSize').attr('src', weapon[front_weaponId]);
-    if(charac.weaponId < 70) $item.attr('src', weapon[$randomWeapon]);
+    if (charac.weaponId < 70) $item.attr('src', weapon[$randomWeapon]);
+
+    weapon_img();
+
+    $(".rate").text(100 - upgradeNum);
 
     if (charac.room === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
     else $('.mob_img').attr('src', mobs[$mob_index]);
 
-    var damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power;
+    var damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power + front_weaponUpgrade;
     if ((front_weaponId % 10) !== 0) {
         damage += 10;
     }
@@ -846,6 +904,7 @@ $(document).ready(function () {
                 power: 0,
                 speed: 50,
                 weaponId: 1,
+                weaponUpgrade: 0,
                 clearTime: 0
             }));
             saveLog();
@@ -1293,6 +1352,7 @@ $(document).ready(function () {
                 power: front_power,
                 speed: front_speed,
                 weaponId: front_weaponId,
+                weaponUpgrade: front_weaponUpgrade,
                 clearTime: seconds
             };
 

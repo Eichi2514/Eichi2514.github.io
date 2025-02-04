@@ -1284,9 +1284,10 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     left: 3vh;
 }
 
-.item_rate{
+.item_subtitle{
     top: 10.5vh;
-    left: 17vh;
+    width: 100%;
+    text-align: center;
     font-size: 2vh;
 }
 
