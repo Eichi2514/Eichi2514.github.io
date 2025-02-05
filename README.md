@@ -1,9 +1,11 @@
 <h1>
-    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" style="width: 5%;" alt="내 아이콘"> 
-    안녕하세요! 협업을 통한 성장을 추구하는 개발자 <img src="https://github.com/user-attachments/assets/847f9273-4c30-4ca0-ba2a-64476b79af6c" style="width: 9%;" alt="닉네임">  입니다.
+    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" width="5%" alt="내 아이콘"> 안녕하세요! <br>
+    협업을 통한 성장을 추구하는 개발자 <img src="https://github.com/user-attachments/assets/847f9273-4c30-4ca0-ba2a-64476b79af6c" width="9%" alt="닉네임"> 입니다.
 </h1>
 
-🚀 이 사이트에서는 제가 만든 프로젝트와 사용 기술을 소개하고, 방문자분들이 쉽게 저에게 연락할 수 있도록 구성했어요!
+
+🚀 이 사이트에서는 제가 만든 프로젝트와 사용 기술을 소개하고, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 방문자분들이 쉽게 저에게 연락할 수 있도록 구성했어요!
 
 ## 🔗 배포 주소
  - <a href="https://eichi2514.github.io/">
