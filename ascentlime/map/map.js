@@ -722,6 +722,8 @@ $(document).ready(function () {
     function moveCharacter(moveAction, something) {
         // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
 
+        if(!windowChack) return;
+
         let data = moveChack(moveAction, something);
 
 
@@ -829,6 +831,9 @@ $(document).ready(function () {
     }
 
     function attack(direction, something) {
+
+        if(!windowChack) return;
+
         // 먼저 attack_motion 을 즉시 실행
         attack_motion(something, direction);
 
@@ -1499,15 +1504,15 @@ $(document).ready(function () {
         // console.log('windowChack : ' + windowChack);
         // console.log('something : ' + something);
 
-        if (random === 1 && windowChack) {
+        if (random === 1) {
             moveCharacter('left', something)
-        } else if (random === 2 && windowChack) {
+        } else if (random === 2) {
             moveCharacter('up', something)
-        } else if (random === 3 && windowChack) {
+        } else if (random === 3) {
             moveCharacter('right', something)
-        } else if (random === 4 && windowChack) {
+        } else if (random === 4) {
             moveCharacter('down', something)
-        } else if (random === 5 && windowChack) {
+        } else if (random === 5) {
             mobAttack(something);
         }
     }

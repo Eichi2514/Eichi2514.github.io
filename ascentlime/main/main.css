@@ -258,31 +258,25 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .id {
-    left: 27.5vh;
-    top: 38.3vh;
-    width: 45vh;
+    left: 30vh;
+    top: 46vh;
+    width: 40vh;
 }
 
-.nicknameError {
-    left: 30vh;
-    top: 45.4vh;
+.errorMessageVew {
+    left: 41vh;
+    top: 49vh;
     font-size: 1.5vh;
     color: #3C0000;
     text-shadow: 0.3vh 0.3vh 0.8vh rgba(0, 0, 0, 0.8);
     background: rgb(255, 71, 48);
-    text-align: center;
     padding: 0 1vh;
 }
 
 .pw {
-    text-align: center;
-    width: 18vh;
-    left: 40vh;
-    top: 50vh;
-    border: 0.3vh solid;
-    padding: 0.7vh;
-    border-radius: 1vh;
-    background: rgb(255, 71, 48);
+    left: 30vh;
+    top: 52vh;
+    width: 40vh;
 }
 
 .localStorageClear {
@@ -381,6 +375,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     left: 10vh;
     width: 80vh;
     height: 80vh;
+    border-radius: 3vh;
 }
 
 .doJoin_title {
@@ -392,56 +387,47 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .label {
-    padding-bottom: 1vh;
+    width: 34vh;
 }
 
 .doJoin_id {
-    top: 25vh;
+    top: 30vh;
     left: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
 }
 
 .doJoin_pw {
-    top: 35vh;
+    top: 40vh;
     left: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
 }
 
 .doJoin_pw2 {
-    top: 45vh;
+    top: 53vh;
     left: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
 }
 
 .doJoin_name {
-    top: 55vh;
-    left: 5vh;
+    top: 30vh;
+    right: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
 }
 
 .doJoin_nickname {
-    top: 65vh;
-    left: 5vh;
-    -webkit-text-stroke: 0.05vh white;
-    font-size: 2.8vh;
-}
-
-.doJoin_gender {
-    width: 10vh;
-    height: 5vh;
-    top: 25vh;
-    left: 50vh;
+    top: 40vh;
+    right: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
 }
 
 .doJoin_bt {
-    top: 55vh;
-    left: 50vh;
+    top: 70vh;
+    left: 13vh;
     width: 20vh;
     border: 0.3vh solid;
     padding: 0.7vh;
@@ -450,8 +436,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .doJoin_exit {
-    top: 65vh;
-    left: 50vh;
+    top: 70vh;
+    right: 15vh;
     width: 20vh;
     border: 0.3vh solid;
     padding: 0.7vh;
