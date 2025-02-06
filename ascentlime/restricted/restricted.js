@@ -38,8 +38,10 @@ $(document).ready(function () {
         Xcode1 = Xcode2;
         Ycode1 = Ycode2;
 
+        let Sin = Xcode1 === 0 ? '0' : `calc(${Xcode1}vw - calc(var(--vh) * 10))`;
+
         slime.css({
-            'left': `calc(${Xcode1}vw - calc(var(--vh) * 10))`,
+            'left': Sin,
             'top': `${Ycode1}vh`,
             'animation': 'spin 10s infinite linear'
         });
