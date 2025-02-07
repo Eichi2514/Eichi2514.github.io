@@ -30,7 +30,7 @@ $('form').submit(async function (event) {
             if (memberData.loginPw === hashedPassword) {
                 loginSuccess = true;
                 alert(memberData.nickname + '님 환영합니다');
-                login(memberData.key, memberData.nickname);
+                await login(memberData.key);
             }
 
             if (!loginSuccess) {
@@ -43,7 +43,7 @@ $('form').submit(async function (event) {
 
     } catch (error) {
         console.error("로그인 확인 중 오류 발생:", error);
-        alert('로그인 확인 중 오류가 발생했습니다.');
+        alert('로그인 확인 중 오류가 발생했습니다.' + error);
     }
 });
 
@@ -55,7 +55,6 @@ async function hashPassword(password, salt) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
 }
-
 
 const $login = $(".login");
 const $logout = $(".logout");

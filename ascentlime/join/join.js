@@ -3,6 +3,14 @@ window.onerror = function () {
     return true;
 };
 
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 const restrictedNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
 const specialCharPattern1 = /[^a-zA-Z가-힣]/;
 const specialCharPattern2 = /[^a-zA-Z0-9가-힣]/;

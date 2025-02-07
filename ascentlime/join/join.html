@@ -147,7 +147,7 @@
                 newId = Math.max(...ids, 0) + 1;
             }
 
-            const salt = crypto.randomUUID();
+            const salt = generateUUID();
             const hashedPw = await hashPassword(member.loginPw, salt);
 
             const newMembersRef = push(membersRef);
