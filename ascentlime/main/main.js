@@ -43,12 +43,17 @@ $('form').submit(async function (event) {
 
     } catch (error) {
         console.error("로그인 확인 중 오류 발생:", error);
-        alert('로그인 확인 중 오류가 발생했습니다.' + error);
+        alert('로그인 확인 중 오류가 발생했습니다.');
     }
 });
 
 // 비밀번호 해시화 함수
 async function hashPassword(password, salt) {
+    if (!window.crypto?.subtle) {
+        alert("해당 브라우저에서는 지원되지 않습니다. 다른 브라우저를 사용하세요.");
+        return null;
+    }
+
     const encoder = new TextEncoder();
     const data = encoder.encode(password + salt);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
@@ -109,5 +114,34 @@ async function login_chack() {
 }
 
 $(document).ready(function () {
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    // 카카오톡 인앱 브라우저인지 감지
+    if (userAgent.includes("kakaotalk")) {
+        const alertDiv = $('<div>')
+            .html(`
+            <div style="position:fixed; top:0; left:0; width:100%; background:#ffeb3b; padding:10px; text-align:center; font-weight:bold;">
+                ⚠️ 원활한 이용을 위해 
+                <a href="#" id="openChrome">
+                    <img src="https://github.com/user-attachments/assets/c52f19f8-2b86-45a2-87e3-34de5a538ec3" alt="Chrome" style="width:3vh; height:3vh; vertical-align:middle; margin-right:1vh;">                    
+                </a> 
+                또는 
+                <a href="#" id="openNaver">
+                    <img src="https://github.com/user-attachments/assets/21ddeb0c-1c7b-4a10-929f-24c64e877bd2" alt="Naver" style="width:3vh; height:3vh; vertical-align:middle; margin-right:1vh;">                    
+                </a>
+                에서 열어주세요!
+            </div>
+        `);
+        $('body').append(alertDiv);
+
+        $('#openChrome').on('click', function() {
+            window.location.href = "intent://www.h2514.site/ascentlime/main/main#Intent;scheme=https;package=com.android.chrome;end;";
+        });
+
+        $('#openNaver').on('click', function() {
+            window.location.href = "intent://www.h2514.site/ascentlime/main/main#Intent;scheme=https;package=com.nhn.android.search;end;";
+        });
+    }
+
     login_chack().then();
 });

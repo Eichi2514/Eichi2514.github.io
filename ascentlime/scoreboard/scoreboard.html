@@ -138,6 +138,7 @@
             if (snapshot.exists()) {
                 const logs = snapshot.val(); // Firebase에서 가져온 데이터
                 const scoreboardBody = document.getElementById('scoreboardBody');
+                const name = await userName(nickname);
 
                 // 기존 데이터를 비우기
                 scoreboardBody.innerHTML = '';
@@ -147,7 +148,7 @@
                     const log = logs[key];
 
                     let className = '';
-                    if (nickname !== log.name) {
+                    if (name !== log.name) {
                         className = 'text-gray-500'; // 닉네임과 다르면 회색으로 표시
                     }
 
@@ -160,9 +161,8 @@
 
                     // 새로운 테이블 행 생성
                     const row = document.createElement('tr');
-                    const name = (await userName(log.name)) === null ? log.name : await userName(log.name);
                     row.innerHTML = `
-                        <td class="${className}" style="text-align: center; padding: 0;">${name}</td>
+                        <td class="${className}" style="text-align: center; padding: 0;">${log.name}</td>
                         <td class="${className}" style="text-align: center; padding: 0 1vh;">:</td>
                         <td class="${className}" style="text-align: center; padding: 0 0.5vh;">${floorName}층</td>
                         <td class="${className}" style="text-align: center; padding: 0;">${roomName}</td>

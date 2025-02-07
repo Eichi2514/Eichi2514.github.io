@@ -1202,10 +1202,11 @@
     window.saveFirebaseLogs = async function (charac, seconds) {
         const now = new Date();
         const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
+        const logName = await userName(localStorage.getItem('nickname'));
 
         // 새 기록 생성
         const newLog = {
-            name: nickname,
+            name: logName,
             power: parseInt(charac.power, 10),
             weaponUpgrade: parseInt(charac.weaponUpgrade, 10),
             floor: parseInt(charac.floor, 10),
