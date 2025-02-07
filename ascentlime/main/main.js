@@ -118,20 +118,24 @@ $(document).ready(function () {
 
     // 카카오톡 인앱 브라우저인지 감지
     if (userAgent.includes("kakaotalk")) {
+        $('.body').addClass('hidden');
         const alertDiv = $('<div>')
             .html(`
-            <div style="position:fixed; top:0; left:0; width:100%; background:#ffeb3b; padding:10px; text-align:center; font-weight:bold;">
-                ⚠️ 원활한 이용을 위해 
-                <a href="#" id="openChrome">
-                    <img src="https://github.com/user-attachments/assets/c52f19f8-2b86-45a2-87e3-34de5a538ec3" alt="Chrome" style="width:3vh; height:3vh; vertical-align:middle; margin-right:1vh;">                    
+            <div style="position:fixed; top:50%; left:0; width:100%; background:#ffeb3b; padding:1vh; gap: 2vh; text-align:center; font-weight:bold; display:flex; justify-content:center; align-items:center; flex-direction:column; transform: translateY(-50%);">
+                <span>⚠️ 원활한 이용을 위해</span> 
+                <a href="#" id="openChrome" style="display:inline-flex; text-decoration:none; border:2px solid #f1c40f; border-radius:2vh; padding:1vh; align-items:center;">
+                    <img src="https://github.com/user-attachments/assets/c52f19f8-2b86-45a2-87e3-34de5a538ec3" alt="Chrome" style="width:10vh; height:10vh; vertical-align:middle; margin-right:1vh;">
+                    Chrome에서 열기
                 </a> 
-                또는 
-                <a href="#" id="openNaver">
-                    <img src="https://github.com/user-attachments/assets/21ddeb0c-1c7b-4a10-929f-24c64e877bd2" alt="Naver" style="width:3vh; height:3vh; vertical-align:middle; margin-right:1vh;">                    
+                <span>또는</span>
+                <a href="#" id="openNaver" style="display:inline-flex; text-decoration:none; border:2px solid #f1c40f; border-radius:2vh; padding:1vh; align-items:center;">
+                    <img src="https://github.com/user-attachments/assets/21ddeb0c-1c7b-4a10-929f-24c64e877bd2" alt="Naver" style="width:10vh; height:10vh; vertical-align:middle; margin-right:1vh;">
+                    Naver에서 열기
                 </a>
-                에서 열어주세요!
+                <span>를 터치해주세요!</span>
             </div>
-        `);
+            `);
+
         $('body').append(alertDiv);
 
         $('#openChrome').on('click', function() {
