@@ -56,6 +56,7 @@
         get,
         query,
         orderByChild,
+        equalTo,
         startAt,
         limitToFirst
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
@@ -76,6 +77,7 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const logsRef = ref(database, 'logs');
+    const membersRef = ref(database, 'members');
 
     const nickname = localStorage.getItem('nickname');
     const urlParams = new URLSearchParams(window.location.search);
@@ -111,9 +113,28 @@
         console.error("전체 로그 개수 가져오기 오류: ", error); // 한글로 출력
     });
 
+    window.userName = async function (key) {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].nickname;
+        } catch (error) {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        }
+    };
+
     // Firebase에서 데이터를 한 번만 가져오기
     function loadData() {
-        get(getLogsQuery((page - 1) * 10 + 1)).then((snapshot) => {
+        get(getLogsQuery((page - 1) * 10 + 1)).then(async (snapshot) => {
             if (snapshot.exists()) {
                 const logs = snapshot.val(); // Firebase에서 가져온 데이터
                 const scoreboardBody = document.getElementById('scoreboardBody');
@@ -122,7 +143,7 @@
                 scoreboardBody.innerHTML = '';
 
                 // logs 데이터 순회하며 테이블에 추가
-                Object.keys(logs).forEach(key => {
+                for (const key of Object.keys(logs)) {
                     const log = logs[key];
 
                     let className = '';
@@ -139,8 +160,9 @@
 
                     // 새로운 테이블 행 생성
                     const row = document.createElement('tr');
+                    const name = (await userName(log.name)) === null ? log.name : await userName(log.name);
                     row.innerHTML = `
-                        <td class="${className}" style="text-align: center; padding: 0;">${log.name}</td>
+                        <td class="${className}" style="text-align: center; padding: 0;">${name}</td>
                         <td class="${className}" style="text-align: center; padding: 0 1vh;">:</td>
                         <td class="${className}" style="text-align: center; padding: 0 0.5vh;">${floorName}층</td>
                         <td class="${className}" style="text-align: center; padding: 0;">${roomName}</td>
@@ -149,7 +171,7 @@
 
                     // 테이블에 행 추가
                     scoreboardBody.appendChild(row);
-                });
+                }
             } else {
                 console.log("데이터가 없습니다.");
             }

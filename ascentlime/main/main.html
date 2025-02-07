@@ -42,22 +42,24 @@
 
         <a class="TOP3_list_bt absolute z-30" href="../scoreboard/scoreboard">리스트</a>
     </div>
-    <!-- 로그인 상태일 경우 -->
-    <div class="logout">
-        <label>
-            <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
-        </label>
-        <label>
-            <input class="pw absolute text-center" type="text" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
-        </label>
-
-        <a class="join_bt text-center absolute" href="../join/join">회원가입</a>
-        <div>
-            <button class="login_bt login_out_bt absolute text-center">로그인</button>
-        </div>
-    </div>
     <!-- 로그아웃 상태일 경우 -->
-    <div class="login">
+    <div class="logout">
+        <form method="POST">
+            <label>
+                <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
+            </label>
+            <label>
+                <input class="pw absolute text-center" type="text" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
+            </label>
+
+            <a class="join_bt text-center absolute" href="../join/join">회원가입</a>
+            <div>
+                <button class="login_bt login_out_bt absolute text-center" type="submit">로그인</button>
+            </div>
+        </form>
+    </div>
+    <!-- 로그인 상태일 경우 -->
+    <div class="login hidden">
         <div class="member_name1 absolute text-center">Tester님</div>
         <div class="member_name2 absolute text-center">환영합니다</div>
         <div class="start absolute cursor-pointer">
@@ -84,11 +86,13 @@
 </div>
 <script type="module">
     // Firebase SDK 불러오기
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
         ref,
         query,
+        orderByChild,
+        equalTo,
         limitToFirst,
         get
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
@@ -108,10 +112,10 @@
     // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
+    const logsRef = ref(database, 'logs');
+    const membersRef = ref(database, 'members');
 
     window.updateTop3Table = async function () {
-        const logsRef = ref(database, 'logs');
-
         try {
             const logsQuery = query(logsRef, limitToFirst(3));
             const snapshot = await get(logsQuery);
@@ -147,8 +151,162 @@
         }
     };
 
+    window.loginIdCheck = async function (loginId) {
+        const queryRef = query(membersRef, orderByChild("loginId"), equalTo(loginId));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey];
+        } catch (error) {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        }
+    };
+
+    window.loginKeyCheck = async function (key) {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].nickname;
+        } catch (error) {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        }
+    };
+
     updateTop3Table();
 </script>
-<script src="main.js" defer></script>
+<!-- <script src="main.js" defer></script> -->
+<script>
+    /*
+    window.onerror = function () {
+        window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
+        return true;
+    };
+     */
+
+    // 로그인 기능 구현
+    $('form').submit(async function (event) {
+        event.preventDefault(); // 폼의 기본 제출 동작을 막음
+
+        const loginId = $('input[name="loginId"]').val().trim();
+        const loginPw = $('input[name="loginPw"]').val().trim();
+
+        if (!loginId) {
+            alert('아이디를 입력해주세요.');
+            return;
+        }
+        if (!loginPw) {
+            alert('비밀번호를 입력해주세요.');
+            return;
+        }
+
+        try {
+            const memberData = await loginIdCheck(loginId);
+            if (memberData) {
+                let loginSuccess = false;
+                const salt = memberData.salt;
+
+                const hashedPassword = await hashPassword(loginPw, salt);
+
+                if (memberData.loginPw === hashedPassword) {
+                    loginSuccess = true;
+                    alert(memberData.nickname + '님 환영합니다');
+                    login(memberData.key, memberData.nickname);
+                }
+
+                if (!loginSuccess) {
+                    alert('비밀번호가 올바르지 않습니다.');
+                }
+
+            } else {
+                alert(loginId + '는(은) 존재하지 않습니다.');
+            }
+
+        } catch (error) {
+            console.error("로그인 확인 중 오류 발생:", error);
+            alert('로그인 확인 중 오류가 발생했습니다.');
+        }
+    });
+
+    // 비밀번호 해시화 함수
+    async function hashPassword(password, salt) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + salt);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+
+    const $login = $(".login");
+    const $logout = $(".logout");
+
+    $('.logout_bt').on('click', function () {
+        localStorage.removeItem('nickname');
+        $login.addClass("hidden");
+        $logout.removeClass("hidden");
+    });
+
+    async function login(nickname) {
+        localStorage.setItem('nickname', nickname);
+        const data = await loginKeyCheck(nickname);
+
+        // 로컬스토리지 있는지 확인 후 저장
+        if (!localStorage.getItem(nickname)) {
+            localStorage.setItem(nickname, JSON.stringify({
+                name: nickname,
+                floor: 1,
+                room: 0,
+                hp: 100,
+                power: 0,
+                speed: 50,
+                weaponId: 1,
+                weaponUpgrade: 0,
+                clearTime: 0
+            }));
+            localStorage.setItem(nickname + 'weaponFind1', true);
+            alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
+        }
+
+        // 닉네임 입력창 교체
+        $logout.addClass("hidden");
+        $login.removeClass("hidden");
+        $(".member_name1").text(data + "님")
+    }
+
+    async function login_chack() {
+        if (localStorage.getItem('nickname')) {
+            $logout.addClass("hidden");
+            $login.removeClass("hidden");
+
+            const data = await loginKeyCheck(localStorage.getItem('nickname'));
+            console.log(data);
+            $(".member_name1").text(data + "님");
+        } else {
+            $login.addClass("hidden");
+            $logout.removeClass("hidden");
+        }
+    }
+
+    $(document).ready(function () {
+        login_chack();
+    });
+</script>
 </body>
 </html>
