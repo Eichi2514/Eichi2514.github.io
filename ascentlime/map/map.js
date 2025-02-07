@@ -1,7 +1,7 @@
-window.onerror = function () {
+/*window.onerror = function () {
     window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
     return true;
-};
+};*/
 
 const weapon = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
@@ -913,7 +913,7 @@ $(document).ready(function () {
                 clearTime: 0
             }));
             saveLog();
-            location.href = '../over/over';
+            // location.href = '../over/over';
         }
     }
 
