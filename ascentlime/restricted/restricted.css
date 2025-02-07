@@ -64,7 +64,7 @@ html > body, button {
 }
 
 .restricted_title {
-    font-size: calc(var(--vh) * 4);
+    font-size: calc(var(--vh) * 7);
     margin-bottom: calc(var(--vh) * 7);
 }
 
