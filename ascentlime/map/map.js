@@ -913,7 +913,7 @@ $(document).ready(function () {
                 clearTime: 0
             }));
             saveLog();
-            location.href = '../over/over';
+            location.href = '../over';
         }
     }
 

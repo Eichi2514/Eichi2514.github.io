@@ -139,11 +139,11 @@ $(document).ready(function () {
         $('body').append(alertDiv);
 
         $('#openChrome').on('click', function() {
-            window.location.href = "intent://www.h2514.site/ascentlime/main/main#Intent;scheme=https;package=com.android.chrome;end;";
+            window.location.href = "intent://www.h2514.site/ascentlime#Intent;scheme=https;package=com.android.chrome;end;";
         });
 
         $('#openNaver').on('click', function() {
-            window.location.href = "intent://www.h2514.site/ascentlime/main/main#Intent;scheme=https;package=com.nhn.android.search;end;";
+            window.location.href = "intent://www.h2514.site/ascentlime#Intent;scheme=https;package=com.nhn.android.search;end;";
         });
     }
 
