@@ -36,42 +36,45 @@
                 <label>
                     <input class="inputID label" type="text" placeholder="아이디 입력" name="loginId"/>
                 </label>
+                <div class="errorMessageVew errorID"></div>
             </div>
             <div class="doJoin_pw absolute">
                 <div class="label">비밀번호</div>
                 <label>
                     <input class="inputPW label" type="password" placeholder="비밀번호 입력" name="loginPw"/>
                 </label>
+                <div class="errorMessageVew errorPW"></div>
             </div>
             <div class="doJoin_pw2 absolute">
                 <div class="label">비밀번호 확인</div>
                 <label>
                     <input class="inputPW2 label" type="password" placeholder="비밀번호 입력" name="loginPw2"/>
                 </label>
+                <div class="errorMessageVew errorPW2"></div>
             </div>
             <div class="doJoin_name absolute">
                 <div class="label">이 름</div>
                 <label>
                     <input class="inputName label" type="text" placeholder="이름 입력" name="name"/>
                 </label>
+                <div class="errorMessageVew errorName"></div>
             </div>
             <div class="doJoin_nickname absolute">
                 <div class="label">닉 네 임</div>
                 <label>
                     <input class="inputNickname label" type="text" placeholder="닉네임 입력" name="nickname"/>
                 </label>
+                <div class="errorMessageVew errorNickname"></div>
             </div>
-            <!-- 오류 메시지 표시할 공간 -->
-            <div class="errorMessageVew absolute">
-                <div class="errorID"></div>
-                <div class="errorPW"></div>
-                <div class="errorPW2"></div>
-                <div class="errorName"></div>
-                <div class="errorNickname"></div>
+            <div class="doJoin_email absolute">
+                <div class="label">이 메 일</div>
+                <label>
+                    <input class="inputEmail label" type="email" placeholder="이메일 입력" name="email"/>
+                </label>
+                <div class="errorMessageVew errorEmail">* 회원찾기용 이메일을 입력해 주세요.</div>
             </div>
-
             <button class="doJoin_bt absolute text-center" type="submit">회원가입</button>
-            <button class="doJoin_exit absolute text-center" onclick="history.back();">취소</button>
+            <button class="doJoin_exit absolute text-center" type="button" onclick="history.back();">취소</button>
         </form>
     </div>
 </div>
@@ -157,6 +160,7 @@
                 nickname: member.nickname,
                 loginId: member.loginId,
                 loginPw: hashedPw,
+                email: member.email,
                 salt: salt,
                 key: member.key,
                 time: formattedTime,
@@ -176,6 +180,7 @@
             const members = snapshot.val();
             const existingIds = Object.values(members).map(info => info.loginId);
             const existingNicknames = Object.values(members).map(info => info.nickname);
+            const existingEmails = Object.values(members).map(info => info.email);
 
             if (existingIds.includes(member.loginId)) {
                 alert("이미 사용 중인 아이디입니다.");
@@ -183,6 +188,10 @@
             }
             if (existingNicknames.includes(member.nickname)) {
                 alert("이미 사용 중인 닉네임입니다.");
+                return;
+            }
+            if (existingEmails.includes(member.email)) {
+                alert("이미 사용 중인 이메일입니다.");
                 return;
             }
             if (specialCharPattern1.test(member.name)){
@@ -216,22 +225,12 @@
         return key;
     }
 
-    window.checkDuplicateId = async function (loginId) {
+    window.checkDuplicate = async function (field, value) {
         const snapshot = await get(membersRef);
         if (snapshot.exists()) {
             const members = snapshot.val();
-            const existingIds = Object.values(members).map(info => info.loginId);
-            return existingIds.includes(loginId);
-        }
-        return false;
-    }
-
-    window.checkDuplicateNickname = async function (nickname) {
-        const snapshot = await get(membersRef);
-        if (snapshot.exists()) {
-            const members = snapshot.val();
-            const existingNicknames = Object.values(members).map(info => info.nickname);
-            return existingNicknames.includes(nickname);
+            const existingValues = Object.values(members).map(info => info[field]);
+            return existingValues.includes(value);
         }
         return false;
     }

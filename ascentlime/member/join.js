@@ -4,7 +4,7 @@ window.onerror = function () {
 };
 
 function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -24,6 +24,7 @@ function showError($element, message) {
 }
 
 function validateInput(inputValue, fieldName) {
+    if (!inputValue && fieldName === '이메일') return `* 회원찾기용 ${fieldName}을 입력해 주세요.`;
     if (!inputValue) return `* ${fieldName}을(를) 입력해주세요.`;
     if (fieldName === '이름' && specialCharPattern1.test(inputValue))
         return `* ${fieldName}에 한글, 영문만 사용해 주세요. <br> (특수기호, 공백, 숫자 사용 불가)`;
@@ -33,6 +34,10 @@ function validateInput(inputValue, fieldName) {
         return `* ${fieldName}은 3~7자여야 합니다.`;
     if (fieldName === '아이디' && inputValue.length < 3)
         return `* ${fieldName}는 3자 이상이어야 합니다.`;
+    if (fieldName === '이메일' && !inputValue.includes('@'))
+        return '* 이메일 주소에 \'@\'를 포함해 주세요.';
+    if (fieldName === '이메일' && inputValue.split('@')[1]?.trim() === '')
+        return '* \'@\' 뒷 부분을 입력해 주세요.';
     if (fieldName === '닉네임' && checkRestrictedNickname(inputValue))
         return '* 사용 불가능한 닉네임입니다.';
     return '';
@@ -43,7 +48,8 @@ async function handleInputValidation(inputClass, validationFunction, errorMessag
         const inputValue = $(this).val().trim();
         const $error = $(errorMessageClass);
         const errorMessage = validateInput(inputValue, fieldName);
-        const isDuplicate = validationFunction ? await validationFunction(inputValue) : false;
+        const field = fieldName === '아이디' ? 'loginId' : fieldName === '닉네임' ? 'nickname' : fieldName === '이메일' ? 'email' : '';
+        const isDuplicate = validationFunction ? await validationFunction(field, inputValue) : false;
 
         if (errorMessage) {
             showError($error, errorMessage);
@@ -63,7 +69,8 @@ $(document).ready(function () {
             loginId: $('input[name="loginId"]').val().trim(),
             loginPw: $('input[name="loginPw"]').val().trim(),
             nickname: $('input[name="nickname"]').val().trim(),
-            name: $('input[name="name"]').val().trim()
+            name: $('input[name="name"]').val().trim(),
+            email: $('input[name="email"]').val().trim()
         };
 
         const loginPw2 = $('input[name="loginPw2"]').val().trim();
@@ -90,8 +97,9 @@ $(document).ready(function () {
         doJoin(member);
     });
 
-    handleInputValidation('.inputID', checkDuplicateId, '.errorID', '아이디');
-    handleInputValidation('.inputNickname', checkDuplicateNickname, '.errorNickname', '닉네임');
+    handleInputValidation('.inputID', checkDuplicate, '.errorID', '아이디');
+    handleInputValidation('.inputNickname', checkDuplicate, '.errorNickname', '닉네임');
+    handleInputValidation('.inputEmail', checkDuplicate, '.errorEmail', '이메일');
     handleInputValidation('.inputName', null, '.errorName', '이름');
 
     $('.inputPW, .inputPW2').on('input', function () {
