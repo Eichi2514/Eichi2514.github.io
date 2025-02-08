@@ -257,6 +257,7 @@ a:hover svg {
 .gform textarea {
     width: 1000px;
     padding: 16px;
+    color: black;
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #ddd;
