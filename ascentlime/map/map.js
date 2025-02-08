@@ -264,7 +264,7 @@ var randomItem = getRandom(1, 3);
 
 if (randomItem === 3) $('.random_item_effect').removeClass('hidden');
 
-function weapon_img(img){
+function weapon_img(img) {
     $weapon_img.attr('src', img != null ? img : weapon[front_weaponId]);
     // 색상 값을 변수로 선언
     var shadowColor = 'rgba(255, 255, 255, 0.7)';
@@ -279,7 +279,7 @@ function weapon_img(img){
     else if (upgradeNum <= 80) shadowColor = 'rgba(255, 127, 39, 0.7)';
     else if (upgradeNum <= 90) shadowColor = 'rgba(224, 0, 64, 0.7)';
 
-    if(upgradeNum > 0){
+    if (upgradeNum > 0) {
         $weapon_img.css({
             'box-shadow': `0 0 1.5vh 0.5vh ${shadowColor}, inset 0 0 1.5vh 0.5vh ${shadowColor}`,
             'border-radius': '10vh 0 10vh 0'
@@ -590,17 +590,23 @@ $(document).ready(function () {
         }
 
         if (e.keyCode === 13) {
+            // 랜덤 아이템 안내창이 보여지는중인지 확인
+            const isRandomItemHidden = $('.random_item_text').hasClass('hidden');
+            const isItemHidden1 = $('.item_text1').hasClass('hidden');
+            const isItemHidden2 = $('.item_text2').hasClass('hidden');
+
+            console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + charac.floor + ', ' + charac.room + ', ' + charac.weaponId);
+
             // 입력 필드가 포커스되어 있을 때만 전송 처리
             if ($('.chat_var').is(':focus')) {
                 e.preventDefault(); // 엔터로 인한 기본 동작(폼 제출 방지)을 막음
                 $(e.target).closest('form').submit();  // 현재 입력 필드와 연결된 폼만 제출
-            }
-            // 랜덤 아이템 안내창이 보여지는중인지 확인
-            var isRandomItemHidden = $('.random_item_text').hasClass('hidden');
-
-            // 보여질때만 실행
-            if (!isRandomItemHidden && randomItem === 3 && charac.floor !== 1 && charac.room !== 0) {
+            } else if (!isRandomItemHidden && randomItem === 3) {
                 Item_get();
+            } else if (!isItemHidden1 && charac.floor !== 1 && charac.room === 0 && charac.weaponId < 70) {
+                Item_mix();
+            } else if (!isItemHidden2 && charac.floor !== 1 && charac.room === 0 && charac.weaponId >= 70) {
+                Item_upgrade();
             }
         }
     });
@@ -722,7 +728,7 @@ $(document).ready(function () {
     function moveCharacter(moveAction, something) {
         // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
 
-        if(!windowChack) return;
+        if (!windowChack) return;
 
         let data = moveChack(moveAction, something);
 
@@ -832,7 +838,7 @@ $(document).ready(function () {
 
     function attack(direction, something) {
 
-        if(!windowChack) return;
+        if (!windowChack) return;
 
         // 먼저 attack_motion 을 즉시 실행
         attack_motion(something, direction);
