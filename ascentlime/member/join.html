@@ -83,7 +83,7 @@
         ref,
         get,
         set,
-        push
+        child
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // Firebase 설정
@@ -150,7 +150,7 @@
             const salt = generateUUID();
             const hashedPw = await hashPassword(member.loginPw, salt);
 
-            const newMembersRef = push(membersRef);
+            const newMembersRef = child(membersRef, member.name);
             set(newMembersRef, {
                 id: newId,
                 name: member.name,
