@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AscentLime(test)</title>
+
+    <!-- <link rel="stylesheet" href="../community/community.css"/> -->
+    <style>
+        /* 공용 */
+        html > body, button, input, select {
+            font-family: Galmuri11, serif;
+            font-weight: 800;
+            margin: 0;
+            padding: 0;
+            font-size: 30px;
+            color: white;
+        }
+
+        input:focus {
+            -webkit-user-modify: read-write-plaintext-only;
+            user-modify: read-write-plaintext-only;
+        }
+
+        body {
+            background: rgb(0, 0, 30);
+        }
+
+        .head {
+            position: absolute;
+            width: 100%;
+            min-width: 900px;
+            padding: 10px;
+            z-index: 50;
+        }
+
+        .head-line {
+            width: 100%;
+            max-width: 1440px;
+            position: relative;
+        }
+
+        .body {
+            position: absolute;
+            top: 120px;
+            width: 1440px;
+        }
+
+        @media (min-width: 1440px) {
+            .head-line, .body {
+                left: 50%;
+                transform: translateX(-720px);
+            }
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        input {
+            padding-left: 10px !important;
+            /* background-color: transparent; */
+        }
+
+        input::placeholder {
+            color: black !important;
+        }
+
+        input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+            color: black;
+        }
+
+        input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+            color: black;
+        }
+
+        input::-ms-input-placeholder { /* 엣지 */
+            color: black;
+        }
+
+        input::-moz-placeholder { /* 파이어폭스 19+ */
+            color: black;
+        }
+
+        input:-moz-placeholder { /* 파이어폭스 4-18 */
+            color: black;
+        }
+
+        .bo {
+            border: 1px solid rgb(174, 0, 27);
+        }
+
+        .logo {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+        }
+
+        .button {
+            display: inline-block;
+            text-align: center;
+            width: 180px;
+            border: 0.3vh solid;
+            padding: 7px;
+            border-radius: 10px;
+            background: rgb(255, 71, 48);
+            color: black;
+        }
+
+        /* 메뉴바 */
+        .menu-bg {
+            position: absolute;
+            top: 22px;
+            right: 15px;
+            z-index: 50;
+        }
+
+        /* 전체 */
+        .menu-container {
+            display: flex;
+        }
+
+        ul li:first-child {
+            margin-top: 5px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+        }
+
+        .submenu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* 메뉴 항목 스타일 */
+        li button, li a, li a div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* 메뉴 항목 hover 시 테두리 효과 */
+        .menu-item:hover, .submenu-item:hover {
+            transform: scale(1.1);
+        }
+
+        /* 서브메뉴가 표시되도록 */
+        .submenu-container:hover .submenu {
+            display: flex;
+        }
+
+        .menu-item:focus, .submenu-item:focus {
+            outline: none;
+        }
+
+        .profile-container {
+            display: flex;
+            width: 100%;
+            text-align: center;
+            border-bottom: 3px solid rgb(174, 0, 27);
+        }
+
+        .profile-details {
+            flex-grow: 1;
+        }
+
+        .profile {
+            display: flex;
+            width: 350px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nickname {
+            padding: 10px;
+        }
+
+        .profile-photo img, .post-thumbnail img {
+            height: 120px;
+            width: 120px;
+            padding: 5px;
+            margin: 10px;
+            border: 1px solid rgb(174, 0, 27);
+            border-radius: 10px;
+        }
+
+        .board-description {
+            display: flex;
+            flex-grow: 1;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px 10px 50px;
+            border-left: 3px solid rgb(174, 0, 27);
+        }
+
+        .written-posts-link {
+            font-size: 20px;
+        }
+
+        .post-header {
+            justify-content: space-between;
+            padding-top: 10px;
+        }
+
+        .post-details {
+            padding: 0 50px;
+            flex-grow: 1;
+        }
+
+        .comment {
+            position: relative;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .comment img {
+            height: 50px;
+        }
+
+        .comment-count {
+            position: absolute;
+            top: 8px;
+            font-size: 15px;
+            z-index: 1;
+        }
+
+        .post-meta {
+            font-size: 20px;
+            justify-content: end;
+        }
+
+        .view-count, .like-count {
+            width: 90px;
+        }
+
+        .post-time {
+            width: 180px;
+        }
+    </style>
+
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+</head>
+<body>
+<div class="head">
+    <div class="head-line">
+        <a class="logo" href="/ascentlime">
+            <img class="logo" src="https://github.com/user-attachments/assets/19a18684-da40-4693-a6db-81039eebb6e2"
+                 alt="로고 이미지"/>
+        </a>
+
+        <!-- 메뉴바 -->
+        <div class="menu-bg">
+            <div class="menu-container">
+                <ul class="menu">
+                    <li class="submenu-container ">
+                        <a href="ascentlime/community/main">
+                            <div class="button menu-item">커뮤니티</div>
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="ascentlime/community/main?boardId=1">
+                                    <div class="button submenu-item">공지사항</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="ascentlime/community/main?boardId=2">
+                                    <div class="button submenu-item">자유게시판</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="ascentlime/community/main?boardId=3">
+                                    <div class="button submenu-item">Q & A</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="body">
+    <div class="profile-container">
+        <div class="profile">
+            <div class="profile-photo">
+                <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="프로필 사진">
+            </div>
+            <div class="profile-details">
+                <div class="nickname">
+                    닉네임
+                </div>
+                <a class="written-posts-link link" href="ascentlime/community/main?boardId=0">
+                    내가 작성한 글 보기
+                </a>
+            </div>
+        </div>
+        <div class="board-description">
+            <div class="board-title">
+                전체 게시판
+            </div>
+            <a class="write-post link" href="../community/write">
+                글쓰기
+            </a>
+        </div>
+    </div>
+    <div class="content">
+        <div class="post-item flex">
+            <div class="post-thumbnail">
+                <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="대표 이미지">
+            </div>
+            <div class="post-details">
+                <div class="post-header flex">
+                    <div class="post-title">제목</div>
+                    <div class="post-title-side flex gap-10">
+                        <div class="comment flex">
+                            <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
+                                 alt="댓글 이미지">
+                            <div class="comment-count">1</div>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 30 30"
+                             style="display: inline-block;">
+                            <circle cx="15" cy="15" r="12" fill="#ff6f61"/>
+                            <text x="15" y="16" font-size="10" fill="white" font-family="Arial, sans-serif"
+                                  text-anchor="middle" dominant-baseline="middle"> N
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="post-body">
+                    <div class="post-content">내용</div>
+                </div>
+                <div class="post-meta flex gap-10">
+                    <div class="author">작성자일곱글자</div>
+                    <div class="view-count flex">
+                        <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                             alt="조회수" width="30" height="30">
+                        <span class="pl-5">1</span>
+                    </div>
+                    <div class="like-count flex">
+                        <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                             alt="좋아요" width="30" height="30">
+                        <span class="pl-5">1</span>
+                    </div>
+                    <div class="post-time flex">
+                        <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
+                             alt="시간" width="30" height="30">
+                        <span class="pl-5">0000-00-00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-item flex">
+        <div class="post-thumbnail">
+            <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="대표 이미지">
+        </div>
+        <div class="post-details">
+            <div class="post-header flex">
+                <div class="post-title">제목</div>
+                <div class="post-title-side flex gap-10">
+                    <div class="comment flex">
+                        <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
+                             alt="댓글 이미지">
+                        <div class="comment-count">77</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 30 30"
+                         style="display: inline-block;">
+                        <circle cx="15" cy="15" r="12" fill="#ff6f61"/>
+                        <text x="15" y="16" font-size="10" fill="white" font-family="Arial, sans-serif"
+                              text-anchor="middle" dominant-baseline="middle"> N
+                        </text>
+                    </svg>
+                </div>
+            </div>
+            <div class="post-body">
+                <div class="post-content">내용</div>
+            </div>
+            <div class="post-meta flex gap-10">
+                <div class="author">작성자일곱글자</div>
+                <div class="view-count flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="조회수"
+                         width="30" height="30">
+                    <span class="pl-5">77</span>
+                </div>
+                <div class="like-count flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="좋아요"
+                         width="30" height="30">
+                    <span class="pl-5">77</span>
+                </div>
+                <div class="post-time flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="시간"
+                         width="30" height="30">
+                    <span class="pl-5">0000-00-00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-item flex">
+        <div class="post-thumbnail">
+            <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="대표 이미지">
+        </div>
+        <div class="post-details">
+            <div class="post-header flex">
+                <div class="post-title">제목이 몇글자까지 되더라 테스트</div>
+                <div class="post-title-side flex gap-10">
+                    <div class="comment flex">
+                        <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
+                             alt="댓글 이미지">
+                        <div class="comment-count">999</div>
+                    </div>
+                </div>
+            </div>
+            <div class="post-body">
+                <div class="post-content">내용</div>
+            </div>
+            <div class="post-meta flex gap-10">
+                <div class="author">작성자일곱글자</div>
+                <div class="view-count flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="조회수"
+                         width="30" height="30">
+                    <span class="pl-5">999</span>
+                </div>
+                <div class="like-count flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="좋아요"
+                         width="30" height="30">
+                    <span class="pl-5">999</span>
+                </div>
+                <div class="post-time flex">
+                    <img src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e" alt="시간"
+                         width="30" height="30">
+                    <span class="pl-5">0000-00-00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Firebase SDK 불러오기
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        get,
+        set,
+        child
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // Firebase 설정
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const articlesRef = ref(database, 'article');
+
+
+</script>
+<!-- <script src="../community/community.js" defer></script> -->
+</body>
+</html>

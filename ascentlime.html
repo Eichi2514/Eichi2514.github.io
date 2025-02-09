@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>AscentLime(test)</title>
 
-    <link rel="stylesheet" href="ascentlime/main.css"/>
+    <link rel="stylesheet" href="ascentlime/ascentlime.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -48,12 +48,12 @@
                 <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
             </label>
             <label>
-                <input class="pw absolute text-center" type="text" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
+                <input class="pw absolute text-center" type="password" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
             </label>
 
-            <a class="join_bt text-center absolute" href="../ascentlime/member/join">회원가입</a>
+            <a class="join_bt button absolute" href="../ascentlime/member/join">회원가입</a>
             <div>
-                <button class="login_bt login_out_bt absolute text-center" type="submit">로그인</button>
+                <button class="login_bt button login_out_bt absolute" type="submit">로그인</button>
             </div>
         </form>
     </div>
@@ -74,11 +74,42 @@
                  src="https://github.com/user-attachments/assets/7afa0678-efe6-4107-ab0f-a154bd841994"
                  alt="게임 시작 버튼"/>
         </div>
-        <a class="join_bt text-center absolute" href="../ascentlime/restricted/restricted">내 정 보</a>
+        <a class="join_bt button absolute" href="../ascentlime/restricted/restricted">내 정 보</a>
         <div>
-            <button class="logout_bt login_out_bt absolute text-center">로그아웃</button>
+            <button class="logout_bt button login_out_bt absolute">로그아웃</button>
         </div>
     </div>
+
+    <!-- 메뉴바
+    <div class="menu-bg">
+        <div class="menu-container">
+            <ul class="menu">
+                <li class="submenu-container ">
+                    <a href="ascentlime/community/main">
+                        <div class="button menu-item">커뮤니티</div>
+                    </a>
+                    <ul class="submenu">
+                        <li>
+                            <a href="ascentlime/community/main?boardId=0">
+                                <div class="button submenu-item">공지사항</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ascentlime/community/main?boardId=1">
+                                <div class="button submenu-item">자유게시판</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ascentlime/community/main?boardId=2">
+                                <div class="button submenu-item">Q & A</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div> -->
+
     <button class="localStorageClear absolute" onclick="localStorage.clear(); alert('초기화 되었습니다.'); location.reload();">
         초기화
     </button>
@@ -190,6 +221,6 @@
 
     updateTop3Table();
 </script>
-<script src="ascentlime/main.js" defer></script>
+<script src="ascentlime/ascentlime.js" defer></script>
 </body>
 </html>

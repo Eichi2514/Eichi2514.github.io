@@ -467,14 +467,9 @@ a:hover svg {
 }
 
 .submenu {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 10px;
-}
-
-/* 서브메뉴는 기본적으로 숨김 */
-.submenu {
-    display: none;
 }
 
 /* 메뉴 항목 스타일 */
