@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AscentLime(test)</title>
+    <link rel="stylesheet" href="../community/community.css"/>
+
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Toast UI Editor 최신 버전 -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+    <script>
+        // Toast UI Editor 초기화
+        function initializeEditor() {
+            editor = new toastui.Editor({
+                el: document.querySelector('#editor'),
+                height: '600px',
+                initialEditType: 'wysiwyg', // WYSIWYG 모드로 설정
+                previewStyle: 'vertical',
+                initialValue: '',
+                hooks: {
+                    // 이미지 업로드 훅 추가
+                    addImageBlobHook: async (blob, callback) => {
+                        const formData = new FormData();
+                        formData.append('file', blob); // 파일 추가
+
+                        try {
+                            const response = await fetch('', {
+                                method: 'POST',
+                                body: formData,
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                callback(data.url); // 업로드된 이미지 URL 설정
+                            } else {
+                                alert('이미지 업로드에 실패했습니다.');
+                            }
+                        } catch (error) {
+                            console.error('이미지 업로드 오류:', error);
+                            alert('이미지 업로드 중 오류가 발생했습니다.');
+                        }
+                    },
+                },
+            });
+        }
+
+        // 게시글 작성 제출 함수
+        function ArticleWrite__submit(form) {
+            form.title.value = form.title.value.trim(); // 제목 공백 제거
+
+            if (form.title.value.length === 0) {
+                alert('제목을 입력하세요');
+                return false; // 제목이 없으면 제출하지 않음
+            }
+
+            const content = editor.getHTML().trim(); // 편집기 내용을 HTML로 가져옴
+
+            if (content.length === 0) {
+                alert('내용을 입력하세요'); // 내용이 없으면 경고
+                return false; // 내용이 없으면 제출하지 않음
+            }
+
+            form.body.value = content; // 폼에 내용 저장
+            form.submit(); // 폼 제출
+        }
+
+        // 문서가 준비되면 에디터 초기화
+        $(document).ready(function () {
+            initializeEditor();
+        });
+    </script>
+</head>
+<body>
+<div class="head">
+    <div class="head-line">
+        <a class="logo" href="/ascentlime">
+            <img class="logo" src="https://github.com/user-attachments/assets/19a18684-da40-4693-a6db-81039eebb6e2"
+                 alt="로고 이미지"/>
+        </a>
+
+        <div class="title">게시글 작성</div>
+
+        <!-- 메뉴바 -->
+        <div class="menu-bg">
+            <div class="menu-container">
+                <ul class="menu">
+                    <li class="submenu-container">
+                        <a href="ascentlime/community/main">
+                            <div class="button menu-item">커뮤니티</div>
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="../community/main?boardId=1">
+                                    <div class="button submenu-item">공지사항</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../community/main?boardId=2">
+                                    <div class="button submenu-item">자유게시판</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../community/main?boardId=3">
+                                    <div class="button submenu-item">Q & A</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="body">
+    <div class="article-container">
+        <form onsubmit="return ArticleWrite__submit(this);" enctype="multipart/form-data">
+            <input type="hidden" name="body"/>
+            <div class="article-header">
+                <div class="flex gap-2 border p-2">
+                    <div>게시판</div>
+                    <div>
+                        <label>
+                            <select class="pl-2 pr-2" name="boardId">
+                                <option value="" selected disabled>게시판을 선택해주세요</option>
+                                <option class="hidden" value="1">공지사항</option>
+                                <option value="2">자유게시판</option>
+                                <option value="3">Q & A</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-grow border p-2">
+                    <div>제목</div>
+                    <label class="flex-grow">
+                        <input class="w-full" name="title" autocomplete="off" type="text" placeholder="제목을 입력하세요"/>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Toast UI Editor 영역 -->
+            <div id="editor" class="border m-2"></div>
+
+            <div class="flex">
+                <button class="article_backButton mt-5" type="button" onclick="history.back()">뒤로가기</button>
+
+                <button class="article_button mt-5 ml-auto">작성</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    // Firebase SDK 불러오기
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // Firebase 설정
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const articlesRef = ref(database, 'article');
+</script>
+<script src="../community/community.js" defer></script>
+</body>
+</html>
