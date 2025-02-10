@@ -458,7 +458,7 @@ a:hover svg {
     display: flex;
     justify-content: space-between;
     align-items : center;
-    width: 90px;
+    width: 116px;
     height: 35px;
     top: 10px;
     left: 10px;
@@ -473,13 +473,17 @@ a:hover svg {
     justify-content: center;
     align-items : center;
     text-decoration: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 30px;
+}
 
+.language-toggle div {
+    flex-grow: 1;
+    text-align: center;
 }
 
 .en, .ko {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
     background: #1e3a8a;
     transition: background-color 0.3s;
 }
