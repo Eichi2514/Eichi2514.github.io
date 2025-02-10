@@ -464,7 +464,7 @@ a:hover svg {
     left: 10px;
     border-radius: 25px;
     background: #4c51bf;
-    cursor: pointer;
+    cursor: default;
     padding: 0 5px;
 }
 
