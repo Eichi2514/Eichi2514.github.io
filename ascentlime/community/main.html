@@ -212,6 +212,10 @@
             flex-grow: 1;
         }
 
+        .post-item {
+            border-bottom: 3px solid rgb(174, 0, 27);
+        }
+
         .comment {
             position: relative;
             flex-direction: column;
@@ -273,17 +277,17 @@
                         </a>
                         <ul class="submenu">
                             <li>
-                                <a href="ascentlime/community/main?boardId=1">
+                                <a href="../community/main?boardId=1">
                                     <div class="button submenu-item">공지사항</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="ascentlime/community/main?boardId=2">
+                                <a href="../community/main?boardId=2">
                                     <div class="button submenu-item">자유게시판</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="ascentlime/community/main?boardId=3">
+                                <a href="../community/main?boardId=3">
                                     <div class="button submenu-item">Q & A</div>
                                 </a>
                             </li>
@@ -304,7 +308,7 @@
                 <div class="nickname">
                     닉네임
                 </div>
-                <a class="written-posts-link link" href="ascentlime/community/main?boardId=0">
+                <a class="written-posts-link link" href="../community/main?boardId=0">
                     내가 작성한 글 보기
                 </a>
             </div>
@@ -325,7 +329,7 @@
             </div>
             <div class="post-details">
                 <div class="post-header flex">
-                    <div class="post-title">제목</div>
+                    <a class="post-title link" href="../community/detail?id=1">제목</a>
                     <div class="post-title-side flex gap-10">
                         <div class="comment flex">
                             <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
@@ -371,7 +375,7 @@
         </div>
         <div class="post-details">
             <div class="post-header flex">
-                <div class="post-title">제목</div>
+                <a class="post-title link" href="../community/detail?id=2">제목</a>
                 <div class="post-title-side flex gap-10">
                     <div class="comment flex">
                         <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
@@ -416,7 +420,7 @@
         </div>
         <div class="post-details">
             <div class="post-header flex">
-                <div class="post-title">제목이 몇글자까지 되더라 테스트</div>
+                <a class="post-title link" href="../community/detail?id=3">제목이 몇글자까지 되더라 테스트</a>
                 <div class="post-title-side flex gap-10">
                     <div class="comment flex">
                         <img src="https://github.com/user-attachments/assets/fd6c10ea-fbd7-49d1-8543-7778ed7cfc09"
@@ -455,10 +459,7 @@
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
-        ref,
-        get,
-        set,
-        child
+        ref
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // Firebase 설정

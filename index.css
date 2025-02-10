@@ -443,8 +443,7 @@ a:hover svg {
     margin: 0;
 }
 
-/* 사이드바 */
-/* 배경 */
+/* 헤드 */
 .menu-bg {
     position: fixed;
     z-index: 50;
@@ -453,7 +452,43 @@ a:hover svg {
     right: 0;
 }
 
-/* 전체 */
+/* 언어 변경 */
+.language-toggle {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items : center;
+    width: 90px;
+    height: 35px;
+    top: 10px;
+    left: 10px;
+    border-radius: 25px;
+    background: #4c51bf;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.language-toggle a, .language-toggle div {
+    display: flex;
+    justify-content: center;
+    align-items : center;
+    text-decoration: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+
+}
+
+.en, .ko {
+    background: #1e3a8a;
+    transition: background-color 0.3s;
+}
+
+.language-toggle a:hover {
+    opacity: 0.8;
+}
+
+/* 메뉴바 */
 .menu-container {
     padding-top: 10px;
     padding-left: calc(100% - (130px * 5));

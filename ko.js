@@ -3,17 +3,16 @@ let isTyping = false;
 function startTypingAnimation() {
     // console.log(isTyping);
 
-    if (isTyping) return;
+    if(isTyping) return;
 
     isTyping = true;
 
     // 모든 텍스트를 순서대로 처리하는 배열
     const texts = [
-        {selector: '#text1', text: 'Hello!', delay: 200},
-        {selector: '#text2', text: 'I am', delay: 100},
-        {selector: '#text3', text: 'Gunhyuk Yoo,', delay: 200},
-        {selector: '#text4', text: 'a growth-driven dev', delay: 200},
-        {selector: '#text5', text: 'focused on collaboration.', delay: 0}
+        {selector: '#text1', text: '안녕하세요!', delay: 200},
+        {selector: '#text2', text: '협업을 통한 성장을 추구하는 개발자', delay: 1100},
+        {selector: '#text3', text: '유건혁', delay: 100},
+        {selector: '#text4', text: '입니다.', delay: 0}
     ];
 
     // 모든 텍스트 초기화
@@ -50,7 +49,7 @@ function startTypingAnimation() {
 
     setTimeout(function () {
         isTyping = false;
-    }, 10000);
+    }, 7000);
 }
 
 // 애니메이션 시작
@@ -70,17 +69,17 @@ $(document).ready(function () {
         })
             .then((response) => {
                 if (response.ok) {
-                    alert("The email has been successfully sent!");
+                    alert("이메일이 성공적으로 전송되었습니다!");
                 } else {
                     response.text().then((errorMessage) => {
                         console.log("전송 중 오류 발생 : " + errorMessage);
-                        alert("Failed to send the email");
+                        alert("이메일 전송에 실패했습니다");
                     });
                 }
             })
             .catch((error) => {
                 console.log("전송 중 오류 발생 : " + error);
-                alert("Failed to send the email. Please try again.");
+                alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
             })
             .finally(() => {
                 document.getElementById("submitBtn").disabled = false; // 버튼 활성화
