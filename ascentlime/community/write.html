@@ -15,8 +15,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <!-- Toast UI Editor 최신 버전 -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.js"></script>
 
     <style>
         @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
@@ -24,57 +25,50 @@
     <script>
         // Toast UI Editor 초기화
         function initializeEditor() {
-            editor = new toastui.Editor({
+            new toastui.Editor({
                 el: document.querySelector('#editor'),
-                height: '600px',
-                initialEditType: 'wysiwyg', // WYSIWYG 모드로 설정
                 previewStyle: 'vertical',
+                height: '500px',
                 initialValue: '',
+                language: 'ko',  // 한국어로 설정
+                initialEditType: 'wysiwyg', // WYSIWYG 모드로 설정
                 hooks: {
-                    // 이미지 업로드 훅 추가
+                    // 이미지 업로드 훅
                     addImageBlobHook: async (blob, callback) => {
-                        const formData = new FormData();
-                        formData.append('file', blob); // 파일 추가
-
                         try {
-                            const response = await fetch('', {
-                                method: 'POST',
-                                body: formData,
+                            // 파일 바이너리 데이터와 파일 이름 가져오기
+                            const arrayBuffer = await blob.arrayBuffer();
+                            const uint8Array = new Uint8Array(arrayBuffer);
+                            const fileName = blob.name; // 파일 이름 가져오기
+
+                            const UPLOAD_URL = "https://script.google.com/macros/s/AKfycbxly12fpgnta1hW4TUAuvxEhxjlapbH140kP_d90GYfRmOgVCA8v73sGWMIa-rASdqULw/exec";
+
+                            // 이미지 업로드 요청
+                            const response = await fetch(UPLOAD_URL, {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    file: uint8Array,
+                                    fileName: fileName, // 파일 이름 함께 전송
+                                }),
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                mode: 'cors'
                             });
 
                             if (response.ok) {
                                 const data = await response.json();
                                 callback(data.url); // 업로드된 이미지 URL 설정
                             } else {
-                                alert('이미지 업로드에 실패했습니다.');
+                                alert("이미지 업로드에 실패했습니다.");
                             }
                         } catch (error) {
-                            console.error('이미지 업로드 오류:', error);
-                            alert('이미지 업로드 중 오류가 발생했습니다.');
+                            console.error("이미지 업로드 오류:", error);
+                            alert("이미지 업로드 중 오류가 발생했습니다 : " + error);
                         }
-                    },
+                    }
                 },
             });
-        }
-
-        // 게시글 작성 제출 함수
-        function ArticleWrite__submit(form) {
-            form.title.value = form.title.value.trim(); // 제목 공백 제거
-
-            if (form.title.value.length === 0) {
-                alert('제목을 입력하세요');
-                return false; // 제목이 없으면 제출하지 않음
-            }
-
-            const content = editor.getHTML().trim(); // 편집기 내용을 HTML로 가져옴
-
-            if (content.length === 0) {
-                alert('내용을 입력하세요'); // 내용이 없으면 경고
-                return false; // 내용이 없으면 제출하지 않음
-            }
-
-            form.body.value = content; // 폼에 내용 저장
-            form.submit(); // 폼 제출
         }
 
         // 문서가 준비되면 에디터 초기화
@@ -98,7 +92,7 @@
             <div class="menu-container">
                 <ul class="menu">
                     <li class="submenu-container">
-                        <a href="ascentlime/community/main">
+                        <a href="../community/main">
                             <div class="button menu-item">커뮤니티</div>
                         </a>
                         <ul class="submenu">
@@ -167,7 +161,9 @@
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
-        ref
+        ref,
+        push,
+        set
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // Firebase 설정
@@ -185,8 +181,45 @@
     // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
-    const articlesRef = ref(database, 'article');
+    const articlesRef = ref(database, 'articles');
+
+    // 게시글 작성 제출 함수
+    window.ArticleWrite__submit = async function (form) {
+        form.title.value = form.title.value.trim(); // 제목 공백 제거
+
+        if (form.title.value.length === 0) {
+            alert("제목을 입력하세요");
+            return false; // 제목이 없으면 제출하지 않음
+        }
+
+        const content = editor.getHTML().trim(); // 편집기 내용을 HTML로 가져옴
+
+        if (content.length === 0) {
+            alert("내용을 입력하세요"); // 내용이 없으면 경고
+            return false; // 내용이 없으면 제출하지 않음
+        }
+
+        form.body.value = content; // 폼에 내용 저장
+
+        try {
+            // Firebase Realtime Database에 저장
+            const newArticlesRef = push(articlesRef); // 고유한 ID 자동 생성
+            await set(newArticlesRef, {
+                boardId: form.boardId.value, // 선택한 게시판 ID
+                title: form.title.value, // 제목
+                body: content, // 본문 내용 (HTML)
+                createdAt: new Date().toISOString() // 생성 시간
+            });
+
+            alert("게시글이 성공적으로 등록되었습니다!");
+            window.location.href = "../community/main"; // 게시글 목록 페이지로 이동
+        } catch (error) {
+            console.error("게시글 저장 오류:", error);
+            alert("게시글 저장 중 오류가 발생했습니다.");
+        }
+
+        return false; // 폼 제출 방지
+    }
 </script>
-<script src="../community/community.js" defer></script>
 </body>
 </html>
