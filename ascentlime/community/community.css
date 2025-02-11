@@ -11,7 +11,7 @@ html > body, button {
     color: white;
 }
 
-input, select, option {
+input, select, option, textarea {
     color: black !important;
 }
 
@@ -276,8 +276,12 @@ li button, li a, li a div {
     color: black;
 }
 
-.toastui-editor-contents {
+.article-body {
     font-family: Galmuri11, serif !important;
     font-weight: 800 !important;
     font-size: 30px !important;
+    width: 1420px;
+    height: 650px;
+    margin: 10px;
+    padding: 10px;
 }
