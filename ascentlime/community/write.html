@@ -74,7 +74,7 @@
                         <label>
                             <select class="pl-2 pr-2" name="boardId">
                                 <option value="" selected disabled>게시판을 선택해주세요</option>
-                                <option class="hidden" value="1">공지사항</option>
+                                <option class="Notice hidden" value="1">공지사항</option>
                                 <option value="2">자유게시판</option>
                                 <option value="3">Q & A</option>
                             </select>
@@ -103,14 +103,11 @@
 </div>
 
 <script type="module">
-    const key = localStorage.getItem('nickname');
-
     // Firebase SDK 불러오기
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
         ref,
-        push,
         set,
         get,
         child,
@@ -137,12 +134,39 @@
     const articlesRef = ref(database, 'articles');
     const membersRef = ref(database, 'members');
 
+    async function loginKeyCheck(key) {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].nickname;
+        } catch (error) {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        }
+    }
+
+    // 로그인된 사용자 확인
+    const key = localStorage.getItem('nickname');
+    let author = null;
+    if (key) {
+        author = await loginKeyCheck(key);
+    }
+
+    const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+    if (adminNicknames.includes(author)) $('.Notice').removeClass('hidden');
+
     // 게시글 작성 제출 함수
     window.ArticleWrite__submit = async function (form) {
         event.preventDefault(); // 기본 폼 제출 방지
         const now = new Date();
         const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
-        const author = await loginKeyCheck(key);
 
         const boardId = form.boardId.value;
         const title = form.title.value;
@@ -172,7 +196,7 @@
             const newArticlesRef = child(articlesRef, 'article' + zero + newArticleNumber);
             await set(newArticlesRef, {
                 id: newArticleNumber,
-                boardId: boardId,
+                boardId: parseInt(boardId, 10),
                 title: title,
                 body: body,
                 author: author,
@@ -188,25 +212,6 @@
         }
 
         return false;
-    };
-
-    window.loginKeyCheck = async function (key) {
-        const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
-        try {
-            const snapshot = await get(queryRef);
-            if (!snapshot.exists()) {
-                console.log('해당 아이디를 찾을 수 없습니다.');
-                return null;
-            }
-
-            const memberData = snapshot.val();
-
-            const memberKey = Object.keys(memberData)[0];
-            return memberData[memberKey].nickname;
-        } catch (error) {
-            console.error("로그인 아이디 확인 중 오류 발생:", error);
-            return null;
-        }
     };
 </script>
 </body>

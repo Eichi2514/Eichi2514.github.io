@@ -138,14 +138,25 @@ $(document).ready(function () {
 
         $('body').append(alertDiv);
 
-        $('#openChrome').on('click', function() {
+        $('#openChrome').on('click', function () {
             window.location.href = "intent://www.h2514.site/ascentlime#Intent;scheme=https;package=com.android.chrome;end;";
         });
 
-        $('#openNaver').on('click', function() {
+        $('#openNaver').on('click', function () {
             window.location.href = "intent://www.h2514.site/ascentlime#Intent;scheme=https;package=com.nhn.android.search;end;";
         });
     }
 
     login_chack().then();
 });
+
+const motivationTexts = [
+    '2025년 2월 4일 무기 강화 시스템이 추가되었습니다. 많은 관심 부탁드립니다',
+    '2025년 2월 11일 커뮤니티 기능이 추가되었습니다. 많은 관심 부탁드립니다'
+];
+
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+$('.motivation_container').text(motivationTexts[getRandom(0, motivationTexts.length - 1)]);

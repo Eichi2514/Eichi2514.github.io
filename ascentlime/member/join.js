@@ -11,12 +11,12 @@ function generateUUID() {
     });
 }
 
-const restrictedNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
 const specialCharPattern1 = /[^a-zA-Z가-힣]/;
 const specialCharPattern2 = /[^a-zA-Z0-9가-힣]/;
 
 function checkRestrictedNickname(nickname) {
-    return restrictedNicknames.includes(nickname);
+    return adminNicknames.includes(nickname);
 }
 
 function showError($element, message) {
