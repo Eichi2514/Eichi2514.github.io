@@ -112,7 +112,8 @@
         child,
         query,
         orderByChild,
-        equalTo
+        equalTo,
+        limitToLast
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -204,6 +205,7 @@
         event.preventDefault();
         const now = new Date();
         const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
+        let formattedTextTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
 
         const boardId = form.boardId.value;
         const title = form.title.value;
@@ -223,14 +225,24 @@
         let word;
 
         if (!articleNum) {
-            const snapshot = await get(articlesRef);
-            let articleCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
-            let newArticleNumber = articleCount + 1; // 새 번호 생성
-
             word = '작성';
-            const newArticleRef = child(articlesRef, 'article' + newArticleNumber);
+            // articlesRef에서 마지막 데이터를 가져오기 위해 쿼리 설정
+            const lastArticleQuery = query(articlesRef, orderByChild('id'), limitToLast(1));
+
+            // 마지막 데이터를 가져온 후 새로운 id 계산
+            const lastArticleSnapshot = await get(lastArticleQuery);
+
+            let newId = 1; // 기본값, 만약 데이터가 없으면 1로 시작
+
+            if (lastArticleSnapshot.exists()) {
+                const lastArticle = Object.values(lastArticleSnapshot.val())[0];
+                newId = lastArticle.id + 1; // 마지막 데이터의 id에 1을 더함
+            }
+
+            // 새 데이터 생성
+            const newArticleRef = child(articlesRef, formattedTextTime.toString());
             await set(newArticleRef, {
-                id: newArticleNumber,
+                id: newId,
                 boardId: parseInt(boardId, 10),
                 title: title,
                 body: body,
@@ -242,7 +254,10 @@
             word = '수정';
             const article = await articleIdCheck(articleNum);
             if (!article) return;
-            await set(child(articlesRef, "article" + article.id), {...article, title, body});
+
+            const formattedTextTime = article.createdAt.replace(/[^\d]/g, "");
+
+            await set(child(articlesRef, formattedTextTime), {...article, title, body});
         }
 
         alert(`게시글이 성공적으로 ${word}되었습니다!`);
