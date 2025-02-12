@@ -127,8 +127,6 @@
         query,
         orderByChild,
         orderByKey,
-        limitToFirst,
-        limitToLast,
         equalTo
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
@@ -222,37 +220,18 @@
 
     // 페이지네이션 및 데이터 표시를 위한 쿼리
     async function getLogsQuery(page, boardId, totalLogsCount) {
-        const pageSize = 10;
         let queryRef;
 
         if (boardId === '') {
             // 모든 게시글 가져오기 (저장된 순서대로)
-            if (page === 1) {
-                queryRef = query(articlesRef, orderByKey(), limitToLast(pageSize));
-            } else {
-                let fetchLimit = pageSize * page < totalLogsCount ? pageSize * page : totalLogsCount;
-                queryRef = await query(
-                    articlesRef,
-                    orderByChild("id"),
-                    limitToFirst(fetchLimit)
-                )
-            }
+            queryRef = query(articlesRef, orderByKey());
         } else if (boardId === 10) {
             // 내가 쓴 글만 가져오기
-            if (page === 1) {
-                queryRef = query(articlesRef, orderByChild("author"), equalTo(author), limitToLast(pageSize));
-            } else {
-                queryRef = query(articlesRef, orderByChild("author"), equalTo(author));
-            }
+            queryRef = query(articlesRef, orderByChild("author"), equalTo(author));
         } else if (boardId > 0) {
             // 특정 boardId의 글만 가져오기
-            if (page === 1) {
-                queryRef = query(articlesRef, orderByChild("boardId"), equalTo(boardId), limitToLast(pageSize));
-            } else {
-                queryRef = query(articlesRef, orderByChild("boardId"), equalTo(boardId));
-            }
+            queryRef = query(articlesRef, orderByChild("boardId"), equalTo(boardId));
         }
-
         return queryRef;
     }
 
@@ -298,6 +277,7 @@
 
             if (!snapshot.exists()) {
                 contentDiv.innerHTML = "<p class='text-center text-gray-500'>게시글이 없습니다.</p>";
+                page = 1;
                 lastPage = 1;
                 await updatePagination(); // 페이지네이션 업데이트 함수 호출
                 return;
@@ -341,7 +321,7 @@
 
                     return dateB - dateA;  // 내림차순 (최신 날짜가 먼저)
                 })
-                .slice((page - 1) * 10);
+                .slice((page - 1) * 10, page * 10);
 
 
             sortedArticles.forEach(article => {
@@ -436,8 +416,6 @@
         </div>
     `;
     }
-
-    updatePagination();
 </script>
 <script src="../ascentlime.js" defer></script>
 </body>
