@@ -46,7 +46,7 @@
     </div>
     <!-- 로그아웃 상태일 경우 -->
     <div class="logout">
-        <form method="POST">
+        <form class="login-form" method="POST">
             <label>
                 <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
             </label>
@@ -183,6 +183,9 @@
             console.error("Error fetching data: ", error);
         }
     };
+
+    const $login = $(".login");
+    const $logout = $(".logout");
 
     window.loginIdCheck = async function (loginId) {
         const queryRef = query(membersRef, orderByChild("loginId"), equalTo(loginId));

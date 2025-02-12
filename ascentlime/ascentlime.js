@@ -4,7 +4,7 @@ window.onerror = function () {
 };
 
 // 로그인 기능 구현
-$('form').submit(async function (event) {
+$('.login-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
 
     const loginId = $('input[name="loginId"]').val().trim();
@@ -63,6 +63,7 @@ async function hashPassword(password, salt) {
 
 const $login = $(".login");
 const $logout = $(".logout");
+const $loginBg = $(".login-bg");
 
 $('.logout_bt').on('click', function () {
     localStorage.removeItem('nickname');
@@ -95,9 +96,10 @@ async function login(nickname) {
     $logout.addClass("hidden");
     $login.removeClass("hidden");
     $(".member_name1").text(data + "님")
+    $loginBg.toggle('hidden');
 }
 
-async function login_chack() {
+async function login_check() {
     if (localStorage.getItem('nickname')) {
         const data = await loginKeyCheck(localStorage.getItem('nickname'));
         if (data !== null) {
@@ -147,7 +149,7 @@ $(document).ready(function () {
         });
     }
 
-    login_chack().then();
+    login_check().then();
 });
 
 const motivationTexts = [

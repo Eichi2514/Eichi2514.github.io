@@ -33,7 +33,7 @@ body {
     width: 100%;
     min-width: 900px;
     padding: 10px;
-    z-index: 50;
+    z-index: 2;
 }
 
 .head-line {
@@ -122,7 +122,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 /* 메뉴바 */
 .menu-bg {
-    z-index: 50;
+    z-index: 2;
 }
 
 /* 전체 */
@@ -174,7 +174,7 @@ li button, li a, li a div {
     display: flex;
     width: 100%;
     text-align: center;
-    gap : 10px;
+    gap: 10px;
 }
 
 .profile-details {
@@ -189,6 +189,10 @@ li button, li a, li a div {
     width: 350px;
     justify-content: center;
     align-items: center;
+}
+
+.logout {
+    height: 146px;
 }
 
 .profile-photo img, .post-thumbnail img {
@@ -229,7 +233,7 @@ li button, li a, li a div {
 
 .post-item {
     display: flex;
-    gap : 10px;
+    gap: 10px;
 }
 
 .comment {
@@ -271,6 +275,60 @@ li button, li a, li a div {
 .post-time {
     display: flex;
     width: 180px;
+}
+
+/* 로그인 팝업 */
+.login-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    background: rgb(0, 0, 30, 0.7);
+    z-index: 3;
+}
+
+.login-box {
+    display: flex;
+    flex-direction: column;
+    background: rgb(0, 0, 30);
+    gap: 10px;
+    padding: 20px;
+}
+
+.login-title {
+    border-bottom: 3px solid rgb(174, 0, 27);
+    padding: 0 0 20px 10px;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.login-form-container {
+    display: flex;
+    gap: 10px;
+    padding: 30px 0;
+}
+
+.login-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.id, .pw {
+    border-radius: 10px;
+}
+
+.join_bt {
+    text-align: center;
 }
 
 /* 게시글 작성 */

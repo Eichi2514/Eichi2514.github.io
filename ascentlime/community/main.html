@@ -62,7 +62,7 @@
 </div>
 <div class="body">
     <div class="profile-container">
-        <div class="profile border">
+        <div class="profile login border hidden">
             <div class="profile-photo">
                 <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="프로필 사진">
             </div>
@@ -74,6 +74,9 @@
                     내가 작성한 글 보기
                 </a>
             </div>
+        </div>
+        <div class="profile logout border link">
+            로그인
         </div>
         <div class="board-description border">
             <div class="board-title">
@@ -90,6 +93,28 @@
 
     <div class="pagination">
     </div>
+</div>
+
+<div class="login-bg hidden">
+    <div class="close-button link">✖</div>
+    <form class="login-form" method="POST">
+        <div class="login-box border">
+            <div class="login-title">로그인</div>
+            <div class="login-form-container">
+                <div class="login-inputs">
+                    <label>
+                        <input class="id text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
+                    </label>
+                    <label>
+                        <input class="pw text-center" type="password" placeholder="비밀번호를 입력해주세요"
+                               name="loginPw"/>
+                    </label>
+                </div>
+                <button class="login_bt p-2 border" type="submit">로그인</button>
+            </div>
+            <a class="join_bt link" href="../member/join">회원가입 / 아이디 * 비밀번호 찾기</a>
+        </div>
+    </form>
 </div>
 
 <script type="module">
@@ -136,7 +161,26 @@
 
     let lastPage = 1;  // 전역 lastPage 변수
 
-    async function loginKeyCheck(key) {
+    window.loginIdCheck = async function (loginId) {
+        const queryRef = query(membersRef, orderByChild("loginId"), equalTo(loginId));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey];
+        } catch (error) {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        }
+    };
+
+    window.loginKeyCheck = async function (key) {
         const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
         try {
             const snapshot = await get(queryRef);
@@ -159,7 +203,18 @@
     let author = null;
     if (key) {
         author = await loginKeyCheck(key);
+        $('.nickname').text(author);
     }
+
+    const $logout = $(".logout");
+
+    $logout.click(async function() {
+        $loginBg.removeClass('hidden');
+    });
+
+    $('.close-button').click(async function() {
+        $loginBg.addClass('hidden');
+    });
 
     // 페이지네이션 및 데이터 표시를 위한 쿼리
     function getLogsQuery(startIndex, boardId) {
@@ -319,6 +374,6 @@
 
     updatePagination();
 </script>
-<script src="../community/community.js" defer></script>
+<script src="../ascentlime.js" defer></script>
 </body>
 </html>
