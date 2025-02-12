@@ -103,8 +103,7 @@
 </div>
 
 <script type="module">
-    // Firebase SDK 불러오기
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
         ref,
@@ -113,10 +112,10 @@
         child,
         query,
         orderByChild,
-        equalTo
+        equalTo,
+        push
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-    // Firebase 설정
     const firebaseConfig = {
         apiKey: ".env/apiKey",
         authDomain: ".env/authDomain",
@@ -128,11 +127,13 @@
         measurementId: ".env/measurementId"
     };
 
-    // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const articlesRef = ref(database, 'articles');
     const membersRef = ref(database, 'members');
+
+    let urls = window.location.search;
+    let articleNum = urls ? parseInt(urls.substring(1)) : 0;
 
     async function loginKeyCheck(key) {
         const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
@@ -144,27 +145,64 @@
             }
 
             const memberData = snapshot.val();
-            const memberKey = Object.keys(memberData)[0];
-            return memberData[memberKey].nickname;
+            return Object.values(memberData)[0].nickname;
         } catch (error) {
             console.error("로그인 아이디 확인 중 오류 발생:", error);
             return null;
         }
     }
 
-    // 로그인된 사용자 확인
+    const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+
     const key = localStorage.getItem('nickname');
     let author = null;
+
     if (key) {
         author = await loginKeyCheck(key);
+    } else {
+        alert('로그인이 필요합니다');
+        location.href = '/ascentlime';
     }
 
-    const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+    async function articleIdCheck(num) {
+        const queryRef = query(articlesRef, orderByChild("id"), equalTo(num));
+        try {
+            const snapshot = await get(queryRef);
+            if (!snapshot.exists()) {
+                alert('해당 게시글을 찾을 수 없습니다.');
+                return null;
+            }
+
+            const articleData = snapshot.val();
+            const articleId = Object.keys(articleData)[0];
+
+            if (articleData[articleId].author !== author && !adminNicknames.includes(author)) {
+                alert('수정 권한이 없습니다.');
+                history.back();
+            }
+            return articleData[articleId];
+        } catch (error) {
+            console.error("게시글 조회 중 오류 발생:", error);
+            return null;
+        }
+    }
+
     if (adminNicknames.includes(author)) $('.Notice').removeClass('hidden');
 
-    // 게시글 작성 제출 함수
+    if (articleNum) {
+        const article = await articleIdCheck(articleNum);
+
+        $('.title').text('게시글 수정');
+
+        if (article) {
+            $("select[name='boardId']").val(article.boardId);
+            $("input[name='title']").val(article.title);
+            $("textarea[name='body']").val(article.body);
+        }
+    }
+
     window.ArticleWrite__submit = async function (form) {
-        event.preventDefault(); // 기본 폼 제출 방지
+        event.preventDefault();
         const now = new Date();
         const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
 
@@ -183,19 +221,13 @@
             return false;
         }
 
-        try {
-            // 현재 저장된 게시글 개수를 조회하여 번호를 생성
-            const snapshot = await get(articlesRef);
-            let articleCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
-            let newArticleNumber = articleCount + 1; // 새 번호 생성
-            let zero = '000';
-            if (newArticleNumber < 10) zero = '00';
-            else if (newArticleNumber < 100) zero = '0';
+        let word;
 
-            // 새 게시글 저장
-            const newArticlesRef = child(articlesRef, 'article' + zero + newArticleNumber);
-            await set(newArticlesRef, {
-                id: newArticleNumber,
+        if (!articleNum) {
+            word = '작성';
+            const newArticleRef = push(articlesRef);
+            await set(newArticleRef, {
+                id: newArticleRef.key,
                 boardId: parseInt(boardId, 10),
                 title: title,
                 body: body,
@@ -203,14 +235,15 @@
                 viewCount: 0,
                 createdAt: formattedTime
             });
-
-            alert("게시글이 성공적으로 등록되었습니다!");
-            window.location.href = "../community/main";
-        } catch (error) {
-            console.error("게시글 저장 오류:", error);
-            alert("게시글 저장 중 오류가 발생했습니다.");
+        } else {
+            word = '수정';
+            const article = await articleIdCheck(articleNum);
+            if (!article) return;
+            await set(child(articlesRef, "article" + article.id), {...article, title, body});
         }
 
+        alert(`게시글이 성공적으로 ${word}되었습니다!`);
+        window.location.href = "../community/main";
         return false;
     };
 </script>
