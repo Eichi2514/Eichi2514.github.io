@@ -13,12 +13,6 @@
 
     <!-- 폰트어썸 불러오기 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-    <!-- Toast UI Editor 최신 버전 -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.js"></script>
-
     <style>
         @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
     </style>
@@ -31,7 +25,9 @@
                  alt="로고 이미지"/>
         </a>
 
-        <div class="title">게시글 작성</div>
+        <div class="title">
+            제목
+        </div>
 
         <!-- 메뉴바 -->
         <div class="menu-bg">
@@ -65,57 +61,48 @@
     </div>
 </div>
 <div class="body">
-    <form onsubmit="return ArticleWrite__submit(this);" enctype="multipart/form-data">
-        <div class="article-container">
-            <div class="article-header">
-                <div class="flex gap-2 border p-2">
-                    <div>게시판</div>
-                    <div>
-                        <label>
-                            <select class="pl-2 pr-2" name="boardId">
-                                <option value="" selected disabled>게시판을 선택해주세요</option>
-                                <option class="Notice hidden" value="1">공지사항</option>
-                                <option value="2">자유게시판</option>
-                                <option value="3">Q & A</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
-                <div class="flex gap-2 flex-grow border p-2">
-                    <div>제목</div>
-                    <label class="flex-grow">
-                        <input class="w-full" name="title" autocomplete="off" type="text" placeholder="제목을 입력하세요"/>
-                    </label>
-                </div>
+    <div class="article-header border">
+        <div class="flex gap-2">
+            <div class="profile-photo">
+                <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="프로필 사진">
             </div>
-
-            <label>
-                <textarea class="article-body border" name="body"></textarea>
-            </label>
-
-            <div class="flex">
-                <button class="article_backButton" type="button" onclick="history.back()">뒤로가기</button>
-
-                <button class="article_button ml-auto">작성</button>
+            <div class="profile-details">
+                <div class="nickname">
+                    닉네임
+                </div>
+                <div class="meta">
+                    0000-00-00 / 조회수 000
+                </div>
             </div>
         </div>
-    </form>
+        <div class="article-actions m-2">
+            <div class="edit link">
+                수정
+            </div>
+            <div class="delete link">
+                삭제
+            </div>
+        </div>
+    </div>
+    <div class="article-body border">
+
+    </div>
 </div>
 
 <script type="module">
+    // Firebase SDK 불러오기
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
         getDatabase,
         ref,
-        set,
         get,
-        child,
         query,
         orderByChild,
-        equalTo,
-        push
+        remove,
+        equalTo
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
+    // Firebase 설정
     const firebaseConfig = {
         apiKey: ".env/apiKey",
         authDomain: ".env/authDomain",
@@ -127,6 +114,7 @@
         measurementId: ".env/measurementId"
     };
 
+    // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const articlesRef = ref(database, 'articles');
@@ -145,7 +133,8 @@
             }
 
             const memberData = snapshot.val();
-            return Object.values(memberData)[0].nickname;
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].nickname;
         } catch (error) {
             console.error("로그인 아이디 확인 중 오류 발생:", error);
             return null;
@@ -154,15 +143,15 @@
 
     const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
 
+    // 로그인된 사용자 확인
     const key = localStorage.getItem('nickname');
     let author = null;
-
     if (key) {
         author = await loginKeyCheck(key);
-    } else {
-        alert('로그인이 필요합니다');
-        location.href = '/ascentlime';
     }
+
+    const $edit = $('.edit');
+    const $delete = $('.delete');
 
     async function articleIdCheck(num) {
         const queryRef = query(articlesRef, orderByChild("id"), equalTo(num));
@@ -170,6 +159,7 @@
             const snapshot = await get(queryRef);
             if (!snapshot.exists()) {
                 alert('해당 게시글을 찾을 수 없습니다.');
+                history.back();
                 return null;
             }
 
@@ -177,9 +167,10 @@
             const articleId = Object.keys(articleData)[0];
 
             if (articleData[articleId].author !== author && !adminNicknames.includes(author)) {
-                alert('수정 권한이 없습니다.');
-                history.back();
+                $edit.addClass('hidden');
+                $delete.addClass('hidden');
             }
+
             return articleData[articleId];
         } catch (error) {
             console.error("게시글 조회 중 오류 발생:", error);
@@ -187,65 +178,47 @@
         }
     }
 
-    if (adminNicknames.includes(author)) $('.Notice').removeClass('hidden');
+    const article = await articleIdCheck(articleNum);
+    const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
-    if (articleNum) {
-        const article = await articleIdCheck(articleNum);
+    $('.nickname').text(article.author);
+    $('.meta').text(`${dateOnly} / 조회수 00`);
+    $('.article-body').html(article.body.replace(/\n/g, '<br>'));
 
-        $('.title').text('게시글 수정');
+    $edit.click(function() {
+        location.href = `../community/write?${articleNum}`;
+    });
 
-        if (article) {
-            $("select[name='boardId']").val(article.boardId);
-            $("input[name='title']").val(article.title);
-            $("textarea[name='body']").val(article.body);
+    $delete.click(async function() {
+        const deleteCheck = confirm('정말로 삭제하시겠습니까? \n글 삭제시 복구가 불가능합니다.');
+
+        if (deleteCheck) {
+            const articleRef = ref(database, `articles/article${articleNum}`);  // 해당 게시글 데이터의 참조
+
+            try {
+                const snapshot = await get(articleRef);  // 데이터 가져오기
+                if (!snapshot.exists()) {
+                    alert('해당 게시글을 찾을 수 없습니다.');
+                    return;
+                }
+
+                const article = snapshot.val();  // 게시글 데이터
+                if (article.author !== author) {
+                    alert('삭제 권한이 없습니다');
+                    return;
+                }
+
+                await remove(articleRef);  // Firebase에서 해당 게시글 삭제
+                alert('게시글이 삭제되었습니다.');
+                location.href = '../community/main';  // 게시글 삭제 후 목록 페이지로 이동
+
+            } catch (error) {
+                console.error('게시글 삭제 중 오류 발생:', error);
+                alert('게시글 삭제에 실패했습니다.');
+            }
         }
-    }
-
-    window.ArticleWrite__submit = async function (form) {
-        event.preventDefault();
-        const now = new Date();
-        const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
-
-        const boardId = form.boardId.value;
-        const title = form.title.value;
-        const body = form.body.value;
-
-        if (boardId.length === 0) {
-            alert("게시판을 선택해주세요");
-            return false;
-        } else if (title.length === 0) {
-            alert("제목을 입력하세요");
-            return false;
-        } else if (body.length === 0) {
-            alert("내용을 입력하세요");
-            return false;
-        }
-
-        let word;
-
-        if (!articleNum) {
-            word = '작성';
-            const newArticleRef = push(articlesRef);
-            await set(newArticleRef, {
-                id: newArticleRef.key,
-                boardId: parseInt(boardId, 10),
-                title: title,
-                body: body,
-                author: author,
-                viewCount: 0,
-                createdAt: formattedTime
-            });
-        } else {
-            word = '수정';
-            const article = await articleIdCheck(articleNum);
-            if (!article) return;
-            await set(child(articlesRef, "article" + article.id), {...article, title, body});
-        }
-
-        alert(`게시글이 성공적으로 ${word}되었습니다!`);
-        window.location.href = "../community/main";
-        return false;
-    };
+    });
 </script>
+<script src="../community/community.js" defer></script>
 </body>
 </html>
