@@ -38,10 +38,15 @@
             <div class="menu-container">
                 <ul class="menu">
                     <li class="submenu-container">
-                        <a href="../community/main">
+                        <div>
                             <div class="button menu-item">커뮤니티</div>
-                        </a>
+                        </div>
                         <ul class="submenu">
+                            <li>
+                                <a href="../community/main">
+                                    <div class="button submenu-item">전 체</div>
+                                </a>
+                            </li>
                             <li>
                                 <a href="../community/main?boardId=1">
                                     <div class="button submenu-item">공지사항</div>
@@ -216,6 +221,9 @@
             return false;
         } else if (title.length === 0) {
             alert("제목을 입력하세요");
+            return false;
+        } else if (title.length > 30) {
+            alert("제목은 최대 30자까지 입력 가능합니다.");
             return false;
         } else if (body.length === 0) {
             alert("내용을 입력하세요");

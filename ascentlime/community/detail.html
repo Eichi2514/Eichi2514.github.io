@@ -34,10 +34,15 @@
             <div class="menu-container">
                 <ul class="menu">
                     <li class="submenu-container">
-                        <a href="../community/main">
+                        <div>
                             <div class="button menu-item">커뮤니티</div>
-                        </a>
+                        </div>
                         <ul class="submenu">
+                            <li>
+                                <a href="../community/main">
+                                    <div class="button submenu-item">전 체</div>
+                                </a>
+                            </li>
                             <li>
                                 <a href="../community/main?boardId=1">
                                     <div class="button submenu-item">공지사항</div>
@@ -181,6 +186,7 @@
     const article = await articleIdCheck(articleNum);
     const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
+    $('.title').text(article.title);
     $('.nickname').text(article.author);
     $('.meta').text(`${dateOnly} / 조회수 00`);
     $('.article-body').html(article.body.replace(/\n/g, '<br>'));
@@ -190,27 +196,44 @@
     });
 
     $delete.click(async function() {
-        const deleteCheck = confirm('정말로 삭제하시겠습니까? \n글 삭제시 복구가 불가능합니다.');
+        const deleteCheck = confirm('정말로 삭제하시겠습니까? \n글 삭제 시 복구가 불가능합니다.');
 
         if (deleteCheck) {
-            const articleRef = ref(database, `articles/article${articleNum}`);  // 해당 게시글 데이터의 참조
-
             try {
-                const snapshot = await get(articleRef);  // 데이터 가져오기
+                // 전체 articles 에서 특정 ID를 가진 게시글 찾기
+                const articleQuery = query(articlesRef, orderByChild('id'), equalTo(articleNum));
+
+                const snapshot = await get(articleQuery);  // 특정 ID의 게시글 가져오기
+
                 if (!snapshot.exists()) {
                     alert('해당 게시글을 찾을 수 없습니다.');
                     return;
                 }
 
-                const article = snapshot.val();  // 게시글 데이터
-                if (article.author !== author) {
-                    alert('삭제 권한이 없습니다');
+                let articleKey = null;
+                let article = null;
+
+                // snapshot 에서 첫 번째 게시글의 키와 데이터 가져오기
+                snapshot.forEach(childSnapshot => {
+                    articleKey = childSnapshot.key;  // 게시글의 고유 키 (랜덤 키)
+                    article = childSnapshot.val();
+                });
+
+                if (!articleKey || !article) {
+                    alert('게시글을 찾을 수 없습니다.');
                     return;
                 }
 
-                await remove(articleRef);  // Firebase에서 해당 게시글 삭제
+                if (article.author !== author && !adminNicknames.includes(author)) {
+                    alert('삭제 권한이 없습니다.');
+                    return;
+                }
+
+                // Firebase 에서 해당 게시글 삭제
+                await remove(ref(database, `articles/${articleKey}`));
+
                 alert('게시글이 삭제되었습니다.');
-                location.href = '../community/main';  // 게시글 삭제 후 목록 페이지로 이동
+                location.href = '../community/main';  // 삭제 후 목록 페이지로 이동
 
             } catch (error) {
                 console.error('게시글 삭제 중 오류 발생:', error);

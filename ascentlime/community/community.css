@@ -39,8 +39,7 @@ body {
 .head-line {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    max-width: 1440px;
+    width: 1440px;
     position: relative;
 }
 
@@ -113,7 +112,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     display: inline-block;
     text-align: center;
     width: 180px;
-    border: 0.3vh solid;
+    border: 3px solid;
     padding: 7px;
     background: rgb(255, 71, 48);
     border-radius: 10px;
@@ -162,6 +161,10 @@ li button, li a, li a div {
 
 /* 서브메뉴가 표시되도록 */
 .submenu-container:hover .submenu {
+    display: flex;
+}
+
+.submenu-container:focus-within .submenu {
     display: flex;
 }
 
@@ -369,13 +372,13 @@ li button, li a, li a div {
 
 .pagination_left {
     position: absolute;
-    top: 150px;
+    top: 20px;
     left: -60px;
 }
 
 .pagination_right {
     position: absolute;
-    top: 150px;
+    top: 20px;
     right: -60px;
 }
 
