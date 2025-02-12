@@ -221,7 +221,7 @@
         let queryRef;
         if (boardId === '') {
             // 모든 게시글 가져오기
-            queryRef = query(articlesRef, orderByChild("id"), startAt(startIndex), limitToFirst(10));
+            queryRef = query(articlesRef, orderByChild("id"), startAt((startIndex - 1) * 10 + 1), limitToFirst(10));
         } else if (boardId === 10) {
             // 내가 쓴 글만 가져오기 (예: author 필드가 현재 사용자랑 일치하는 글)
             queryRef = query(articlesRef, orderByChild("author"), equalTo(author));
@@ -343,31 +343,31 @@
     function updatePagination() {
         const pagination = document.querySelector('.pagination');
         pagination.innerHTML = `
-        <a class="pagination_left" href="../community/detail?${boardId}&page=${page > 1 ? page - 1 : 1}" style="${page === 1 ? 'display: none;' : ''}">
+        <a class="pagination_left" href="../community/main?${boardId}&page=${page > 1 ? page - 1 : 1}" style="${page === 1 ? 'display: none;' : ''}">
             <i class="fa-solid fa-caret-left" style="font-size: 10vh;"></i>
         </a>
-        <a class="pagination_right" href="../community/detail?${boardId}&page=${page < lastPage ? page + 1 : lastPage}" style="${page === lastPage ? 'display: none;' : ''}">
+        <a class="pagination_right" href="../community/main?${boardId}&page=${page < lastPage ? page + 1 : lastPage}" style="${page === lastPage ? 'display: none;' : ''}">
             <i class="fa-solid fa-caret-right" style="font-size: 10vh;"></i>
         </a>
         <div class="pagination flex justify-center">
             <!-- '처음' 버튼 -->
-            <a href="../scoreboard?page=1" style="${page === 1 ? 'display: none;' : ''}">처음</a>
+            <a href="../community/main?page=1" style="${page === 1 ? 'display: none;' : ''}">처음</a>
             <button style="${page === 1 ? 'display: none;' : ''}">)&nbsp;</button>
             <!-- 이전 페이지 버튼들 -->
-            <a class="page" href="../community/detail?${boardId}&page=${Math.max(page - 4, 1)}" style="${page <= 4 ? 'display: none;' : ''}">${Math.max(page - 4, 1)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.max(page - 3, 1)}" style="${page <= 3 ? 'display: none;' : ''}">${Math.max(page - 3, 1)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.max(page - 2, 1)}" style="${page <= 2 ? 'display: none;' : ''}">${Math.max(page - 2, 1)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.max(page - 1, 1)}" style="${page === 1 ? 'display: none;' : ''}">${Math.max(page - 1, 1)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.max(page - 4, 1)}" style="${page <= 4 ? 'display: none;' : ''}">${Math.max(page - 4, 1)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.max(page - 3, 1)}" style="${page <= 3 ? 'display: none;' : ''}">${Math.max(page - 3, 1)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.max(page - 2, 1)}" style="${page <= 2 ? 'display: none;' : ''}">${Math.max(page - 2, 1)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.max(page - 1, 1)}" style="${page === 1 ? 'display: none;' : ''}">${Math.max(page - 1, 1)}</a>
             <!-- 현재 페이지 -->
             <a class="page text-red-500 border" href="../scoreboard?${boardId}&page=${page}">${page}</a>
             <!-- 다음 페이지 버튼들 -->
-            <a class="page" href="../community/detail?${boardId}&page=${Math.min(page + 1, lastPage)}" style="${page >= lastPage ? 'display: none;' : ''}">${Math.min(page + 1, lastPage)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.min(page + 2, lastPage)}" style="${page + 1 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 2, lastPage)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.min(page + 3, lastPage)}" style="${page + 2 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 3, lastPage)}</a>
-            <a class="page" href="../community/detail?${boardId}&page=${Math.min(page + 4, lastPage)}" style="${page + 3 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 4, lastPage)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.min(page + 1, lastPage)}" style="${page >= lastPage ? 'display: none;' : ''}">${Math.min(page + 1, lastPage)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.min(page + 2, lastPage)}" style="${page + 1 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 2, lastPage)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.min(page + 3, lastPage)}" style="${page + 2 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 3, lastPage)}</a>
+            <a class="page" href="../community/main?${boardId}&page=${Math.min(page + 4, lastPage)}" style="${page + 3 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 4, lastPage)}</a>
             <!-- '마지막' 버튼 -->
             <button style="${page === lastPage ? 'display: none;' : ''}">&nbsp;(</button>
-            <a href="../community/detail?${boardId}&page=${lastPage}" style="${page === lastPage ? 'display: none;' : ''}">마지막</a>
+            <a href="../community/main?${boardId}&page=${lastPage}" style="${page === lastPage ? 'display: none;' : ''}">마지막</a>
         </div>
     `;
     }

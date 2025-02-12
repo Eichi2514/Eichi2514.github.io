@@ -112,8 +112,7 @@
         child,
         query,
         orderByChild,
-        equalTo,
-        push
+        equalTo
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -224,10 +223,14 @@
         let word;
 
         if (!articleNum) {
+            const snapshot = await get(articlesRef);
+            let articleCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+            let newArticleNumber = articleCount + 1; // 새 번호 생성
+
             word = '작성';
-            const newArticleRef = push(articlesRef);
+            const newArticleRef = child(articlesRef, 'article' + newArticleNumber);
             await set(newArticleRef, {
-                id: newArticleRef.key,
+                id: newArticleNumber,
                 boardId: parseInt(boardId, 10),
                 title: title,
                 body: body,
