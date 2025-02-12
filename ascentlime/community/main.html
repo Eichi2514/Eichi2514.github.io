@@ -281,7 +281,7 @@
             const snapshot = await get(queryRef);
 
             if (!snapshot.exists()) {
-                contentDiv.innerHTML = "<p class='text-center text-gray-500'>게시글이 없습니다.</p>";
+                contentDiv.innerHTML = "<p class='text-gray-500 text-center border p-10'>게시글이 없습니다.</p>";
                 page = 1;
                 lastPage = 1;
                 await updatePagination(); // 페이지네이션 업데이트 함수 호출
@@ -376,6 +376,7 @@
                         <span class="pl-5">${article.likeCount || 0}</span>
                     </div>
                     <div class="post-time">
+                        <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
                         <span class="pl-5">${dateOnly}</span>
                     </div>
                 </div>
