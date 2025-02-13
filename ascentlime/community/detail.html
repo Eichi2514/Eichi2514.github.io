@@ -104,7 +104,8 @@
         query,
         orderByChild,
         remove,
-        equalTo
+        equalTo,
+        update
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // Firebase 설정
@@ -125,8 +126,8 @@
     const articlesRef = ref(database, 'articles');
     const membersRef = ref(database, 'members');
 
-    let urls = window.location.search;
-    let articleNum = urls ? parseInt(urls.substring(1)) : 0;
+    const urls = window.location.search;
+    const articleNum = urls ? parseInt(urls.substring(1)) : 0;
 
     async function loginKeyCheck(key) {
         const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
@@ -188,14 +189,14 @@
 
     $('.title').text(article.title);
     $('.nickname').text(article.author);
-    $('.meta').text(`${dateOnly} / 조회수 00`);
+    $('.meta').text(`${dateOnly} / 조회수 ${article.viewCount}`);
     $('.article-body').html(article.body.replace(/\n/g, '<br>'));
 
-    $edit.click(function() {
+    $edit.click(function () {
         location.href = `../community/write?${articleNum}`;
     });
 
-    $delete.click(async function() {
+    $delete.click(async function () {
         const deleteCheck = confirm('정말로 삭제하시겠습니까? \n글 삭제 시 복구가 불가능합니다.');
 
         if (deleteCheck) {
@@ -241,7 +242,50 @@
             }
         }
     });
+
+    window.doIncreaseHitCountRd = async function (articleNum) {
+        try {
+            // 전체 articles 에서 특정 ID를 가진 게시글 찾기
+            const articleQuery = query(articlesRef, orderByChild('id'), equalTo(articleNum));
+
+            const snapshot = await get(articleQuery);  // 특정 ID의 게시글 가져오기
+
+            if (!snapshot.exists()) {
+                alert('해당 게시글을 찾을 수 없습니다.');
+                return;
+            }
+
+            let articleKey = null;
+            let article = null;
+
+            // snapshot 에서 첫 번째 게시글의 키와 데이터 가져오기
+            snapshot.forEach(childSnapshot => {
+                articleKey = childSnapshot.key;  // 게시글의 고유 키 (랜덤 키)
+                article = childSnapshot.val();
+            });
+
+            if (!articleKey || !article) {
+                alert('게시글을 찾을 수 없습니다.');
+                return;
+            }
+
+            // 현재 viewCount 가져오기 (기본값 0)
+            const currentViewCount = article.viewCount || 0;
+            const newViewCount = currentViewCount + 1;
+
+            // Firebase 에서 해당 게시글 viewCount 증가
+            await update(ref(database, `articles/${articleKey}`), {viewCount: newViewCount});
+
+            console.log(`게시글 ${articleNum} 조회수 증가: ${currentViewCount} -> ${newViewCount}`);
+
+            return {dateOnly, newViewCount};
+
+        } catch (error) {
+            console.error('게시글 조회수 증가 중 오류 발생:', error);
+            alert('게시글 조회수 증가에 실패했습니다.');
+        }
+    };
 </script>
-<script src="../community/community.js" defer></script>
+<script src="../community/detail.js" defer></script>
 </body>
 </html>

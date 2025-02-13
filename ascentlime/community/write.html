@@ -118,6 +118,7 @@
         query,
         orderByChild,
         equalTo,
+        update,
         limitToLast
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
@@ -175,7 +176,7 @@
             const snapshot = await get(queryRef);
             if (!snapshot.exists()) {
                 alert('해당 게시글을 찾을 수 없습니다.');
-                return null;
+                history.back();
             }
 
             const articleData = snapshot.val();
@@ -265,7 +266,8 @@
 
             const formattedTextTime = article.createdAt.replace(/[^\d]/g, "");
 
-            await set(child(articlesRef, formattedTextTime), {...article, title, body});
+            // await set(child(articlesRef, formattedTextTime), {...article, title, body});
+            await update(ref(database, `articles/${formattedTextTime}`), { title, body });
         }
 
         alert(`게시글이 성공적으로 ${word}되었습니다!`);
