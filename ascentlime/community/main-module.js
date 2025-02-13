@@ -203,14 +203,20 @@ window.loadPosts = async function (boardId) {
             })
             .slice((page - 1) * 10, page * 10);
 
+        const now = new Date();
+        const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-        sortedArticles.forEach(article => {
+        for (const article of sortedArticles) {
+            const likeCountRef = ref(database, `articleLike/${article.id}`);
+
+            // 좋아요 개수 업데이트
+            const likeSnapshot = await get(likeCountRef);
+            const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
+
             const postElement = document.createElement("a");
             postElement.classList.add("post-item", "border");
             postElement.href = `../community/detail?${article.id}`;
 
-            const now = new Date();
-            const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
             const NewIcon = dateOnly >= formattedTime ? `
@@ -248,7 +254,7 @@ window.loadPosts = async function (boardId) {
                     </div>
                     <div class="like-count">
                         <img src="https://github.com/user-attachments/assets/94d75263-e1b4-4d0e-8bc7-a8315a3322b2" alt="좋아요" width="30" height="30">
-                        <span class="pl-5">${article.likeCount || 0}</span>
+                        <span class="pl-5">${likeCount || 0}</span>
                     </div>
                     <div class="post-time">
                         <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
@@ -258,7 +264,7 @@ window.loadPosts = async function (boardId) {
             </div>
         `;
             contentDiv.appendChild(postElement);
-        });
+        }
     } catch (error) {
         console.error("게시글 로드 오류:", error);
         contentDiv.innerHTML = "<p class='text-center text-red-500'>게시글을 불러오는 중 오류가 발생했습니다.</p>";

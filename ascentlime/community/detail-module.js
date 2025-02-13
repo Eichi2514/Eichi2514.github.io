@@ -8,7 +8,8 @@ import {
     orderByChild,
     remove,
     equalTo,
-    update
+    update,
+    set
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -32,21 +33,24 @@ const membersRef = ref(database, 'members');
 const urls = window.location.search;
 const articleNum = urls ? parseInt(urls.substring(1)) : 0;
 
-async function loginKeyCheck(key) {
+async function getUserInfo(key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
     try {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
             console.log('해당 아이디를 찾을 수 없습니다.');
-            return null;
+            return { nickname: null, id: null };
         }
 
         const memberData = snapshot.val();
         const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].nickname;
+        return {
+            nickname: memberData[memberKey].nickname,
+            id: memberData[memberKey].id
+        };
     } catch (error) {
         console.error("로그인 아이디 확인 중 오류 발생:", error);
-        return null;
+        return { nickname: null, id: null };
     }
 }
 
@@ -55,9 +59,15 @@ const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '�
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
 let author = null;
+let memberId = null;
 if (key) {
-    author = await loginKeyCheck(key);
+    const userInfo = await getUserInfo(key);
+    author = userInfo.nickname;
+    memberId = userInfo.id;
 }
+
+const likeRef = ref(database, `articleLike/${articleNum}/${memberId}`);
+const likeCountRef = ref(database, `articleLike/${articleNum}`);
 
 const $edit = $('.edit');
 const $delete = $('.delete');
@@ -143,6 +153,65 @@ $delete.click(async function () {
             console.error('게시글 삭제 중 오류 발생:', error);
             alert('게시글 삭제에 실패했습니다.');
         }
+    }
+});
+
+const $like = $('.like');
+const $likeCount = $('.like-count');
+
+const snapshot = await get(likeRef);
+if (snapshot.exists()) {
+    // 배경색 추가
+    $like.css("background", "rgb(174, 0, 27)");
+    
+}
+
+// 좋아요 개수 업데이트
+const likeSnapshot = await get(likeCountRef);
+const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
+$likeCount.text(likeCount);
+
+// 버튼 클릭 이벤트
+$like.click(async function () {
+
+    if (memberId === null) {
+        alert("로그인 회원만 이용할 수 있습니다.");
+        return
+    }
+
+    try {
+        const snapshot = await get(likeRef);
+
+        if (snapshot.exists()) {
+            // 좋아요 취소 (삭제)
+            await remove(likeRef);
+
+            // 배경색 제거
+            $like.css("background", "none");
+
+            // 좋아요 개수 업데이트
+            const likeSnapshot = await get(likeCountRef);
+            const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
+            $likeCount.text(likeCount);
+
+            return false;
+        } else {
+            // 좋아요 추가
+            await set(likeRef, true);
+
+            // 배경색 추가
+            $like.css("background", "rgb(174, 0, 27)");
+
+            // 좋아요 개수 업데이트
+            const likeSnapshot = await get(likeCountRef);
+            const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
+            $likeCount.text(likeCount);
+
+            return true;
+        }
+    } catch (error) {
+        console.error("좋아요 토글 중 오류 발생:", error);
+        return null;
     }
 });
 
