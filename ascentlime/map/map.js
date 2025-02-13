@@ -919,7 +919,6 @@ $(document).ready(function () {
                 clearTime: 0
             }));
             await saveLog();
-            location.href = '../over';
         }
     }
 
@@ -930,9 +929,15 @@ $(document).ready(function () {
 
         saveCooldown = true;
 
+        alert(`전 : ${saveCooldown}`);
+
         await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
 
         saveCooldown = false;
+
+        alert(`후 : ${saveCooldown}`);
+
+        location.href = '../over';
     }
 
     // 캐릭 체력바 변화 함수
@@ -1749,7 +1754,6 @@ $(window).on('beforeunload', function () {
 
 $(document).ready(function () {
     const $toggleButton = $('#toggleAutoplayButton');
-    saveCooldown = false;
 
     $audioPlayer[0].pause();
     $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
