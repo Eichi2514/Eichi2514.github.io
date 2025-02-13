@@ -901,7 +901,7 @@ $(document).ready(function () {
     }
 
     // hp 감소
-    function hpDown(mobDamage) {
+    async function hpDown(mobDamage) {
         front_hp -= mobDamage;
         $('.hp_count').text(front_hp);
         characHpDown();
@@ -918,21 +918,21 @@ $(document).ready(function () {
                 weaponUpgrade: 0,
                 clearTime: 0
             }));
-            saveLog();
+            await saveLog();
             location.href = '../over';
         }
     }
 
     let saveCooldown = false; // 저장 쿨타임 변수
 
-    function saveLog() {
+    async function saveLog() {
         if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
 
-        saveFirebaseLogs(charac, seconds).then(() => {});
-
-        // 쿨타임 설정 (1초)
         saveCooldown = true;
-        setTimeout(() => saveCooldown = false, 3000);
+
+        await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
+
+        saveCooldown = false;
     }
 
     // 캐릭 체력바 변화 함수
