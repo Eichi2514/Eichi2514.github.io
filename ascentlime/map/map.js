@@ -1749,6 +1749,7 @@ $(window).on('beforeunload', function () {
 
 $(document).ready(function () {
     const $toggleButton = $('#toggleAutoplayButton');
+    saveCooldown = false;
 
     $audioPlayer[0].pause();
     $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
