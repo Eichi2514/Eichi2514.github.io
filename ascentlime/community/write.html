@@ -232,16 +232,14 @@
         }
 
         let word;
+        let newId = 1; // 기본값, 만약 데이터가 없으면 1로 시작
 
-        if (!articleNum) {
-            word = '작성';
+        if (!articleNum) {            word = '작성';
             // articlesRef에서 마지막 데이터를 가져오기 위해 쿼리 설정
             const lastArticleQuery = query(articlesRef, orderByChild('id'), limitToLast(1));
 
             // 마지막 데이터를 가져온 후 새로운 id 계산
             const lastArticleSnapshot = await get(lastArticleQuery);
-
-            let newId = 1; // 기본값, 만약 데이터가 없으면 1로 시작
 
             if (lastArticleSnapshot.exists()) {
                 const lastArticle = Object.values(lastArticleSnapshot.val())[0];
@@ -264,6 +262,8 @@
             const article = await articleIdCheck(articleNum);
             if (!article) return;
 
+            newId = article.id;
+
             const formattedTextTime = article.createdAt.replace(/[^\d]/g, "");
 
             // await set(child(articlesRef, formattedTextTime), {...article, title, body});
@@ -271,7 +271,7 @@
         }
 
         alert(`게시글이 성공적으로 ${word}되었습니다!`);
-        window.location.href = "../community/main";
+        window.location.href = `../community/detail?${newId}`;
         return false;
     };
 </script>

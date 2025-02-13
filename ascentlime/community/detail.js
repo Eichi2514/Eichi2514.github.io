@@ -6,10 +6,6 @@ window.onerror = function () {
 const urls = window.location.search;
 const articleNum = urls ? parseInt(urls.substring(1)) : 0;
 
-$(document).ready(function () {
-    setTimeout(ArticleDetail__doIncreaseHitCount, 2000);
-});
-
 <!-- 조회수 증가 함수 -->
 function ArticleDetail__doIncreaseHitCount() {
     const localStorageKey = 'article__' + articleNum + '__alreadyOnView';
@@ -24,3 +20,5 @@ function ArticleDetail__doIncreaseHitCount() {
 
     localStorage.setItem(localStorageKey, true);
 }
+
+ArticleDetail__doIncreaseHitCount();

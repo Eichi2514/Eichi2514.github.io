@@ -1,7 +1,9 @@
-/*window.onerror = function () {
+window.onerror = function () {
     window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
     return true;
-};*/
+};
+
+window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
 
 const weapon = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
@@ -928,7 +930,7 @@ $(document).ready(function () {
     function saveLog() {
         if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
 
-        saveFirebaseLogs(charac, seconds);
+        saveFirebaseLogs(charac, seconds).then(() => {});
 
         // 쿨타임 설정 (1초)
         saveCooldown = true;

@@ -264,7 +264,7 @@ li button, li a, li a div {
     gap: 40px;
 }
 
-.view-count, .like-count {
+.post-meta > .view-count, .post-meta > .like-count {
     display: flex;
     width: 90px;
 }
@@ -356,8 +356,11 @@ li button, li a, li a div {
     font-weight: 800 !important;
     font-size: 30px !important;
     width: 1440px;
-    height: 600px;
     padding: 10px;
+}
+
+textarea.article-body {
+    height: 600px;
 }
 
 .pagination {
@@ -394,4 +397,29 @@ li button, li a, li a div {
     flex-grow: 1;
     justify-content: end;
     gap: 50px;
+}
+
+.meta-info {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 100px;
+}
+
+.comments {
+    display: inline-flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 10px;
+}
+
+.like {
+    display: inline-flex;
+    gap: 10px;
+    width: 90px;
+    justify-content: center;
+    border: 3px solid rgb(174, 0, 27);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    margin: 10px;
 }
