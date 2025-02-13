@@ -153,7 +153,7 @@
             const salt = generateUUID();
             const hashedPw = await hashPassword(member.loginPw, salt);
 
-            const newMembersRef = child(membersRef, member.name + "(" + member.key);
+            const newMembersRef = child(membersRef, newId + ")" + member.name);
             set(newMembersRef, {
                 id: newId,
                 name: member.name,
