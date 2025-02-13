@@ -155,7 +155,7 @@
                     let floorName = log.floor;
                     let roomName = log.room + '번방';
                     if (log.room === 0) {
-                        floorName++;
+                        floorName--;
                         roomName = '보스방'; // 0번방은 보스방으로 설정
                     }
 

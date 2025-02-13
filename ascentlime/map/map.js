@@ -900,6 +900,24 @@ $(document).ready(function () {
         // }, 400);
     }
 
+    let saveCooldown = false; // 저장 쿨타임 변수
+
+    // saveLog 함수는 전역에서 정의되어야 합니다.
+    async function saveLog() {
+        if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
+
+        saveCooldown = true;  // 저장 시작
+
+        try {
+            await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
+        } catch (error) {
+            console.error("로그 저장 중 오류 발생:", error);
+        } finally {
+            saveCooldown = false; // 작업이 끝나면 쿨타임 해제
+            location.href = '../over';
+        }
+    }
+
     // hp 감소
     async function hpDown(mobDamage) {
         front_hp -= mobDamage;
@@ -920,24 +938,6 @@ $(document).ready(function () {
             }));
             await saveLog();
         }
-    }
-
-    let saveCooldown = false; // 저장 쿨타임 변수
-
-    async function saveLog() {
-        if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
-
-        saveCooldown = true;
-
-        alert(`전 : ${saveCooldown}`);
-
-        await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
-
-        saveCooldown = false;
-
-        alert(`후 : ${saveCooldown}`);
-
-        location.href = '../over';
     }
 
     // 캐릭 체력바 변화 함수
