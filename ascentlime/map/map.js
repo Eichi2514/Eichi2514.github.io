@@ -1319,9 +1319,9 @@ $(document).ready(function () {
     var isConfirm = true; // 알림창 중복 방지 플래그
 
     // 스테이지 이동
-    function stageUp() {
+    function stageUp(callback) {
         let doorChack = $(".door").hasClass("hidden");
-        if (LR > 79 && 38 < UD && UD < 52 && !doorChack) {
+        if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorChack) {
             stopMoving();
             const isItemHidden = $item.hasClass('hidden');
             if (!isItemHidden && isConfirm && charac.floor <= 5) {
@@ -1330,25 +1330,28 @@ $(document).ready(function () {
                 if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
                     console.log('3단계 진입' + isConfirm);
                     isConfirm = false; // 취소한 경우, 이동하지 않음
+                    return;
                 } else {
                     console.log('4단계 진입' + isConfirm);
-                    stageSave();
+                    stageSave(callback);
                 }
             } else if (!isConfirm && charac.floor <= 5) {
                 console.log('5단계 진입' + isConfirm);
-                stageSave();
+                stageSave(callback);
             } else if (charac.floor > 5) {
                 console.log('6단계 진입' + isConfirm);
-                stageSave();
+                stageSave(callback);
             } else if (isItemHidden) {
                 console.log('7단계 진입' + isConfirm);
-                stageSave();
+                stageSave(callback);
             }
+            stageSave(callback);
+        } else {
+            if (callback) callback(); // 조건이 안 맞아도 실행
         }
     }
 
-
-    function stageSave() {
+    function stageSave(callback) {
         let floor = charac.floor;
         let room = charac.room;
 
@@ -1360,7 +1363,7 @@ $(document).ready(function () {
         }
 
         setTimeout(function () {
-            const charac = {
+            const characData = {
                 name: nickname,
                 floor: floor,
                 room: room,
@@ -1372,20 +1375,34 @@ $(document).ready(function () {
                 clearTime: seconds
             };
 
-            if (charac.room !== 1) {
-                charac.hp = front_hp;
-                localStorage.setItem(nickname, JSON.stringify(charac));
+            if (characData.room !== 1) {
+                localStorage.setItem(nickname, JSON.stringify(characData));
             } else if (front_hp + 10 > 100) {
-                charac.hp = 100;
-                localStorage.setItem(nickname, JSON.stringify(charac));
-            } else if (charac.room === 1) {
-                charac.hp = front_hp + 10;
-                localStorage.setItem(nickname, JSON.stringify(charac));
+                characData.hp = 100;
+                localStorage.setItem(nickname, JSON.stringify(characData));
+            } else if (characData.room === 1) {
+                characData.hp = front_hp + 10;
+                localStorage.setItem(nickname, JSON.stringify(characData));
             }
 
-            location.reload();
+            // 로컬 저장 후 이동 (콜백 함수 실행)
+            if (callback) callback();
+            else location.reload();
         }, 100);
     }
+
+    // 버튼 클릭 시 스테이지 업 후 페이지 이동
+    $(".mob__list_bt").on("click", function () {
+        stageUp(function () {
+            location.href = '../dictionary/mob';
+        });
+    });
+
+    $(".weapon__list_bt").on("click", function () {
+        stageUp(function () {
+            location.href = '../dictionary/weapon';
+        });
+    });
 
     // 데미지 화면에 보여주기
     function damage__motion(data, damage) {
