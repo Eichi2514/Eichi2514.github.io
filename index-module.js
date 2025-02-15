@@ -31,7 +31,7 @@ const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart
 function increaseHitCount(date) {
     const dbRef = ref(database, 'hitCounts/' + date);
     return get(dbRef).then((snapshot) => {
-        let currentHitCount = 0;
+        let currentHitCount = 1;
 
         // 데이터가 존재하면 현재 조회수 읽기
         if (snapshot.exists()) {
@@ -71,7 +71,7 @@ function getHitCount(date) {
 function increaseHitCountForToday() {
     const localStorageKey = formattedTime;
 
-    // 오늘을 제외하고 키가 같은 수로  시작하면 삭제
+    // 오늘을 제외하고 키가 같은 해로 시작하면 삭제
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith(year) && key !== localStorageKey) {
@@ -83,6 +83,8 @@ function increaseHitCountForToday() {
     if (localStorage.getItem(localStorageKey)) {
         getHitCount(localStorageKey).then((newViewCount) => {
             $('.view-count').text(`${newViewCount}`);
+        }).catch((error) => {
+            console.error('조회수 조회 실패:', error);
         });
         return;
     }
@@ -90,6 +92,8 @@ function increaseHitCountForToday() {
     // 조회수 증가 후 업데이트
     increaseHitCount(localStorageKey).then((newViewCount) => {
         $('.view-count').text(`${newViewCount}`);
+    }).catch((error) => {
+        console.error('조회수 업데이트 실패:', error);
     });
 
     // 조회수가 증가한 후 localStorage에 날짜 저장
