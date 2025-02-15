@@ -454,10 +454,10 @@ a:hover svg {
 
 /* 언어 변경 */
 .language-toggle {
-    position: fixed;
+    position: absolute;
     display: flex;
     justify-content: space-between;
-    align-items : center;
+    align-items: center;
     width: 116px;
     height: 35px;
     top: 10px;
@@ -471,7 +471,7 @@ a:hover svg {
 .language-toggle a, .language-toggle div {
     display: flex;
     justify-content: center;
-    align-items : center;
+    align-items: center;
     text-decoration: none;
 }
 
@@ -490,6 +490,19 @@ a:hover svg {
 
 .language-toggle a:hover {
     opacity: 0.8;
+}
+
+.site-views {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 116px;
+    height: 35px;
+    top: 55px;
+    left: 10px;
+    border-radius: 25px;
+    background: #4c51bf;
 }
 
 /* 메뉴바 */
