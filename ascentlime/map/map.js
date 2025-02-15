@@ -1772,11 +1772,12 @@ $(window).on('beforeunload', function () {
 $(document).ready(function () {
     const $toggleButton = $('#toggleAutoplayButton');
 
+    // 오디오 파일 로드 및 준비
     $audioPlayer[0].pause();
     $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
     $audioPlayer[0].load();
-    $audioPlayer[0].play();
 
+    // 로컬 저장된 데이터가 있으면 그 상태로 복원
     const savedData = JSON.parse(localStorage.getItem(storageKey));
     if (savedData) {
         $audioPlayer[0].currentTime = savedData.currentTime;
@@ -1789,14 +1790,18 @@ $(document).ready(function () {
         }
     }
 
+    // 첫 번째 클릭 시 오디오 재생
     $toggleButton.on('click', function () {
         if ($audioPlayer[0].paused) {
-            $audioPlayer[0].play();
-            localStorage.setItem(storageKey, JSON.stringify({
-                currentTime: $audioPlayer[0].currentTime,
-                isPlaying: true
-            }));
-            $(this).removeClass('play').addClass('pause');
+            $audioPlayer[0].play().then(() => {
+                localStorage.setItem(storageKey, JSON.stringify({
+                    currentTime: $audioPlayer[0].currentTime,
+                    isPlaying: true
+                }));
+                $(this).removeClass('play').addClass('pause');
+            }).catch((error) => {
+                console.error("오디오 재생 실패:", error);
+            });
         } else {
             $audioPlayer[0].pause();
             localStorage.setItem(storageKey, JSON.stringify({
@@ -1805,6 +1810,5 @@ $(document).ready(function () {
             }));
             $(this).removeClass('pause').addClass('play');
         }
-        ``
     });
 });
