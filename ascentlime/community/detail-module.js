@@ -393,6 +393,7 @@ async function loadReplies() {
         }
 
         let repliesHtml = "";
+        const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
 
         snapshot.forEach(childSnapshot => {
             const reply = childSnapshot.val();
@@ -429,6 +430,7 @@ async function loadReplies() {
             `;
         });
         // console.log(`${repliesHtml}`)
+        $('.comments-count').text(`${replyCount}개`);
         $replyList.html(repliesHtml);
     } catch (error) {
         console.error("댓글 불러오기 오류:", error);

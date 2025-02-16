@@ -27,6 +27,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const articlesRef = ref(database, 'articles');
 const membersRef = ref(database, 'members');
+const repliesRef = ref(database, 'replies')
 
 const boardName = ['오류', '공지', '자유', 'Q&A'];
 const boardFullName = ['내가 작성한 글', '공지사항', '자유 게시판', 'Q&A'];
@@ -213,6 +214,10 @@ window.loadPosts = async function (boardId) {
             const likeSnapshot = await get(likeCountRef);
             const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
 
+            // 댓글 개수 업데이트
+            const snapshot = await get(query(repliesRef, orderByChild("articleNum"), equalTo(article.id)));
+            const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+
             const postElement = document.createElement("a");
             postElement.classList.add("post-item", "border");
             postElement.href = `../community/detail?${article.id}`;
@@ -238,7 +243,7 @@ window.loadPosts = async function (boardId) {
                     <div class="post-title-side flex gap-10">
                         <div class="comment">
                             <img src="https://github.com/user-attachments/assets/0d4c9144-13e5-4daa-8799-bd5c6de1ded8" alt="댓글 이미지">
-                            <div class="comment-count">${article.commentCount || 0}</div>
+                            <div class="comment-count">${replyCount || 0}</div>
                         </div>
                         ${NewIcon}
                     </div>
