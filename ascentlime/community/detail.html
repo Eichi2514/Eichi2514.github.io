@@ -35,12 +35,15 @@
                 <ul class="menu">
                     <li class="submenu-container">
                         <div>
-                            <div class="button menu-item">커뮤니티</div>
+                            <div class="button menu-item">메 뉴</div>
                         </div>
                         <ul class="submenu">
                             <li>
+                                <div class="button submenu-item logout_bt">로그아웃</div>
+                            </li>
+                            <li>
                                 <a href="../community/main">
-                                    <div class="button submenu-item">전 체</div>
+                                    <div class="button submenu-item">전체게시판</div>
                                 </a>
                             </li>
                             <li>
@@ -72,7 +75,7 @@
                 <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="프로필 사진">
             </div>
             <div class="profile-details">
-                <div class="nickname">
+                <div class="author">
                     닉네임
                 </div>
                 <div class="meta">
@@ -106,7 +109,55 @@
             </div>
         </div>
     </div>
+    <div class="reply border">
+        <div class="reply-logout logout">
+            <span class="login-bt pr-2">로그인</span> 후 댓글 확인이 가능 합니다.
+        </div>
+        <form class="reply-form" method="POST">
+            <div class="profile login hidden gap-2">
+                <div class="profile-photo">
+                    <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+                         alt="프로필 사진">
+                </div>
+                <div class="profile-details">
+                    <div class="nickname">
+                        닉네임
+                    </div>
+                    <label>
+                        <input class="reply-input" type="text" placeholder="댓글을 입력해주세요" name="replyBody"/>
+                    </label>
+                </div>
+                <button class="reply-bt">등록</button>
+            </div>
+        </form>
+    </div>
+    <div class="reply-list login">
+    </div>
 </div>
+
+<div class="login-bg hidden">
+    <div class="close-button link">✖</div>
+    <form class="login-form" method="POST">
+        <div class="login-box border">
+            <div class="login-title">로그인</div>
+            <div class="login-form-container">
+                <div class="login-inputs">
+                    <label>
+                        <input class="id text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
+                    </label>
+                    <label>
+                        <input class="pw text-center" type="password" placeholder="비밀번호를 입력해주세요"
+                               name="loginPw"/>
+                    </label>
+                </div>
+                <button class="login_bt p-2 border" type="submit">로그인</button>
+            </div>
+            <a class="join_bt link" href="../member/join">회원가입 / 아이디 * 비밀번호 찾기</a>
+        </div>
+    </form>
+</div>
+
 <script src="../community/detail-module.js" defer type="module"></script>
+<script src="../ascentlime.js" defer></script>
 </body>
 </html>

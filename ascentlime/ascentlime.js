@@ -66,10 +66,12 @@ async function hashPassword(password, salt) {
 const $login = $(".login");
 const $logout = $(".logout");
 const $loginBg = $(".login-bg");
+const $logout_bt = $(".logout_bt");
 
 $('.logout_bt').on('click', function () {
     localStorage.removeItem('nickname');
     $login.addClass("hidden");
+    $logout_bt.addClass("hidden");
     $logout.removeClass("hidden");
 });
 
@@ -97,6 +99,7 @@ async function login(nickname) {
     // 닉네임 입력창 교체
     $logout.addClass("hidden");
     $login.removeClass("hidden");
+    $logout_bt.removeClass("hidden");
     $(".member_name1").text(data + "님")
     $loginBg.toggle('hidden');
 }
@@ -113,6 +116,7 @@ async function login_check() {
         }
     } else {
         $login.addClass("hidden");
+        $logout_bt.addClass("hidden");
         $logout.removeClass("hidden");
     }
 }

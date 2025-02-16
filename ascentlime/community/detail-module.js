@@ -1,15 +1,17 @@
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
-    getDatabase,
-    ref,
-    get,
-    query,
-    orderByChild,
-    remove,
     equalTo,
+    get,
+    getDatabase,
+    orderByChild,
+    child,
+    query,
+    ref,
+    remove,
+    set,
     update,
-    set
+    limitToLast
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -29,9 +31,49 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const articlesRef = ref(database, 'articles');
 const membersRef = ref(database, 'members');
+const repliesRef = ref(database, "replies");
 
 const urls = window.location.search;
 const articleNum = urls ? parseInt(urls.substring(1)) : 0;
+
+window.loginIdCheck = async function (loginId) {
+    const queryRef = query(membersRef, orderByChild("loginId"), equalTo(loginId));
+    try {
+        const snapshot = await get(queryRef);
+
+        if (!snapshot.exists()) {
+            console.log('해당 아이디를 찾을 수 없습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey];
+    } catch (error) {
+        console.error("로그인 아이디 확인 중 오류 발생:", error);
+        return null;
+    }
+};
+
+window.loginKeyCheck = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+
+        if (!snapshot.exists()) {
+            console.log('해당 아이디를 찾을 수 없습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].nickname;
+    } catch (error) {
+        console.error("로그인 아이디 확인 중 오류 발생:", error);
+        return null;
+    }
+}
 
 async function getUserInfo(key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
@@ -39,7 +81,7 @@ async function getUserInfo(key) {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
             console.log('해당 아이디를 찾을 수 없습니다.');
-            return { nickname: null, id: null };
+            return {nickname: null, id: null};
         }
 
         const memberData = snapshot.val();
@@ -50,7 +92,7 @@ async function getUserInfo(key) {
         };
     } catch (error) {
         console.error("로그인 아이디 확인 중 오류 발생:", error);
-        return { nickname: null, id: null };
+        return {nickname: null, id: null};
     }
 }
 
@@ -64,6 +106,12 @@ if (key) {
     const userInfo = await getUserInfo(key);
     author = userInfo.nickname;
     memberId = userInfo.id;
+}
+
+let nickname = null;
+if (key) {
+    nickname = await loginKeyCheck(key);
+    $('.nickname').text(nickname);
 }
 
 const likeRef = ref(database, `articleLike/${articleNum}/${memberId}`);
@@ -101,7 +149,7 @@ const article = await articleIdCheck(articleNum);
 const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
 $('.title').text(article.title);
-$('.nickname').text(article.author);
+$('.author').text(article.author);
 $('.meta').text(`${dateOnly} / 조회수 ${article.viewCount}`);
 $('.article-body').html(article.body.replace(/\n/g, '<br>'));
 
@@ -163,7 +211,7 @@ const snapshot = await get(likeRef);
 if (snapshot.exists()) {
     // 배경색 추가
     $like.css("background", "rgb(174, 0, 27)");
-    
+
 }
 
 // 좋아요 개수 업데이트
@@ -274,3 +322,120 @@ function ArticleDetail__doIncreaseHitCount() {
 }
 
 ArticleDetail__doIncreaseHitCount();
+
+const $logout = $(".logout");
+const $loginBg = $(".login-bg");
+
+$logout.click(async function () {
+    $loginBg.removeClass('hidden');
+});
+
+$('.close-button').click(async function () {
+    $loginBg.addClass('hidden');
+});
+
+function getNow(code) {
+    const now = new Date();
+    if (code === 1) return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+    return `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
+}
+
+$('.reply-form').submit(async function (event) {
+    event.preventDefault(); // 폼의 기본 제출 동작을 막음
+
+    const $replyBodyInput = $('input[name="replyBody"]');
+    const replyBody = $replyBodyInput.val().trim();
+
+    if (replyBody.length < 3) {
+        alert('댓글은 3글자 이상이어야 합니다.');
+        return;
+    }
+
+    let newId = 1; // 기본값, 만약 데이터가 없으면 1로 시작
+
+    try {
+        const lastReplyQuery = query(repliesRef, orderByChild('id'), limitToLast(1));
+        const lastReplySnapshot = await get(lastReplyQuery);
+
+        if (lastReplySnapshot.exists()) {
+            const lastReply = Object.values(lastReplySnapshot.val())[0];
+            newId = lastReply.id + 1; // 마지막 데이터의 id에 1을 더함
+        }
+
+        const newReplyRef = child(repliesRef, getNow(1).toString());
+
+        await set(newReplyRef, {
+            id: newId,
+            articleNum: articleNum,
+            author: nickname,
+            body: replyBody,
+            time: getNow()
+        });
+
+        alert("댓글이 성공적으로 등록되었습니다.");
+        $replyBodyInput.val(""); // 입력 필드 초기화
+        await loadReplies();
+    } catch (error) {
+        console.error("댓글 작성 중 오류 발생:", error);
+        alert('댓글 작성 중 오류가 발생했습니다.');
+    }
+});
+
+const $replyList = $('.reply-list');
+
+// 댓글 불러오기
+async function loadReplies() {
+    try {
+        const snapshot = await get(query(repliesRef, orderByChild("articleNum"), equalTo(articleNum)));
+        if (!snapshot.exists()) {
+            $replyList.html("<p class='text-center p-10'>댓글이 없습니다.</p>");
+            return;
+        }
+
+        let repliesHtml = "";
+
+        snapshot.forEach(childSnapshot => {
+            const reply = childSnapshot.val();
+            // console.log(`id : ${reply.id}`)
+            // console.log(`author : ${reply.author}`)
+            // console.log(`body : ${reply.body}`)
+            repliesHtml += `
+                <div class="profile login border gap-2">
+                    <div class="profile-photo">
+                        <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"  
+                            alt="프로필 사진">
+                    </div>
+                    <div class="profile-details">
+                        <div class="flex items-center">
+                            <div>
+                                ${reply.author}
+                            </div>
+                            <div class="reply-actions m-2">
+                                <!--
+                                <button class="link" onclick="replyEdit(${reply.id})">                                                                
+                                    수정
+                                </button>                                
+                                <button class="link" onclick="replyDelete(${reply.id})">
+                                    삭제
+                                </button>
+                                -->
+                            </div>
+                        </div>
+                        <div class="reply-body">
+                            ${reply.body}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        // console.log(`${repliesHtml}`)
+        $replyList.html(repliesHtml);
+    } catch (error) {
+        console.error("댓글 불러오기 오류:", error);
+        $replyList.html("<p class='text-center p-10'>댓글을 불러오는 중 오류가 발생했습니다.</p>");
+    }
+}
+
+$(document).ready(() => {
+    loadReplies();
+});
