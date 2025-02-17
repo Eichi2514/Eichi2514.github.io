@@ -100,17 +100,12 @@ const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '�
 
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
-let author = null;
+let nickname = null;
 let memberId = null;
 if (key) {
     const userInfo = await getUserInfo(key);
-    author = userInfo.nickname;
+    nickname = userInfo.nickname;
     memberId = userInfo.id;
-}
-
-let nickname = null;
-if (key) {
-    nickname = await loginKeyCheck(key);
     $('.nickname').text(nickname);
 }
 
@@ -133,7 +128,7 @@ async function articleIdCheck(num) {
         const articleData = snapshot.val();
         const articleId = Object.keys(articleData)[0];
 
-        if (articleData[articleId].author !== author && !adminNicknames.includes(author)) {
+        if (articleData[articleId].author !== nickname && !adminNicknames.includes(nickname)) {
             $edit.addClass('hidden');
             $delete.addClass('hidden');
         }
@@ -186,7 +181,7 @@ $delete.click(async function () {
                 return;
             }
 
-            if (article.author !== author && !adminNicknames.includes(author)) {
+            if (article.author !== nickname && !adminNicknames.includes(nickname)) {
                 alert('삭제 권한이 없습니다.');
                 return;
             }
@@ -396,7 +391,19 @@ async function loadReplies() {
         const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
 
         snapshot.forEach(childSnapshot => {
+
             const reply = childSnapshot.val();
+
+            let replyEdit = `
+                <button class="link" onclick="replyEdit(${reply.id})">                                                                
+                    수정
+                </button>
+                `
+
+            if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
+                replyEdit = '';
+            }
+
             // console.log(`id : ${reply.id}`)
             // console.log(`author : ${reply.author}`)
             // console.log(`body : ${reply.body}`)
@@ -411,20 +418,28 @@ async function loadReplies() {
                             <div>
                                 ${reply.author}
                             </div>
-                            <div class="reply-actions m-2">
-                                <!--
-                                <button class="link" onclick="replyEdit(${reply.id})">                                                                
-                                    수정
-                                </button>                                
+                            <div class="reply-actions reply${reply.id} m-2">                                
+                                ${replyEdit}   
+                                <!--              
                                 <button class="link" onclick="replyDelete(${reply.id})">
                                     삭제
                                 </button>
                                 -->
                             </div>
+                            <div class="reply-actions reply${reply.id} hidden m-2">                                
+                                <button class="link" onclick="replyEdit(${reply.id})">
+                                    취소
+                                </button>
+                            </div>
                         </div>
-                        <div class="reply-body">
+                        <div class="reply-body reply${reply.id}">
                             ${reply.body}
                         </div>
+                        <form class="reply-body reply${reply.id} hidden" method="POST">
+                            <input type="hidden" value="${reply.id}" name="replyId">
+                            <input class="reply-input" type="text" value="${reply.body}" name="replyBody${reply.id}">
+                            <button type="submit" class="pl-4 pr-2 whitespace-nowrap">확인</button>
+                        </form>                        
                     </div>
                 </div>
             `;
@@ -440,4 +455,56 @@ async function loadReplies() {
 
 $(document).ready(() => {
     loadReplies();
+});
+
+window.replyEdit = async function (num) {
+    $(`.reply-actions.reply${num}`).toggleClass('hidden');
+    $(`.reply-body.reply${num}`).toggleClass('hidden');
+}
+
+
+$(document).on('submit', '.reply-body', async function (event) {
+    event.preventDefault();
+
+    const $form = $(this);
+    const replyId = $form.find('input[name="replyId"]').val();  // 숫자형 id
+    const replyBodyNum = $form.find(`input[name="replyBody${replyId}"]`).val().trim();
+
+    if (replyBodyNum.length < 3) {
+        alert('댓글은 3글자 이상이어야 합니다.');
+        return;
+    }
+
+    try {
+        // replies 노드에서 id에 해당하는 댓글 찾기
+        const queryRef = query(ref(database, 'replies'), orderByChild('id'), equalTo(Number(replyId))); // id 기준으로 검색
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const replyKey = Object.keys(snapshot.val())[0]; // 첫 번째 댓글의 고유 키 가져오기
+            const replyRef = ref(database, `replies/${replyKey}`);
+            const replyData = snapshot.val()[replyKey];  // 댓글 데이터 가져오기
+            const author = replyData.author;  // 댓글 작성자 닉네임
+
+            if (author !== nickname && !adminNicknames.includes(nickname)) {
+                alert('수정 권한이 없습니다.');
+                return;
+            }
+
+            await update(replyRef, {body: replyBodyNum});
+
+            alert('댓글이 수정되었습니다.');
+
+            const $taget = $(`.reply-body.reply${replyId}`);
+
+            $(`.reply-actions.reply${replyId}`).toggleClass('hidden');
+            $taget.toggleClass('hidden');
+            $taget.text(`${replyBodyNum}`);
+        } else {
+            alert('댓글을 찾을 수 없습니다.');
+        }
+    } catch (error) {
+        console.error('댓글 수정 중 오류 발생:', error);
+        alert('댓글 수정에 실패했습니다.');
+    }
 });
