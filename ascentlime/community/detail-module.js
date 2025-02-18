@@ -394,21 +394,24 @@ async function loadReplies() {
 
             const reply = childSnapshot.val();
 
-            let replyEdit = `
+            let replyActions = `
                 <button class="link" onclick="replyEdit(${reply.id})">                                                                
                     수정
+                </button>
+                <button class="link" onclick="replyDelete(${reply.id})">
+                    삭제
                 </button>
                 `
 
             if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
-                replyEdit = '';
+                replyActions = '';
             }
 
             // console.log(`id : ${reply.id}`)
             // console.log(`author : ${reply.author}`)
             // console.log(`body : ${reply.body}`)
             repliesHtml += `
-                <div class="profile login border gap-2">
+                <div class="profile login border gap-2 reply${reply.id}">
                     <div class="profile-photo">
                         <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"  
                             alt="프로필 사진">
@@ -419,12 +422,7 @@ async function loadReplies() {
                                 ${reply.author}
                             </div>
                             <div class="reply-actions reply${reply.id} m-2">                                
-                                ${replyEdit}   
-                                <!--              
-                                <button class="link" onclick="replyDelete(${reply.id})">
-                                    삭제
-                                </button>
-                                -->
+                                ${replyActions}                                
                             </div>
                             <div class="reply-actions reply${reply.id} hidden m-2">                                
                                 <button class="link" onclick="replyEdit(${reply.id})">
@@ -495,11 +493,11 @@ $(document).on('submit', '.reply-body', async function (event) {
 
             alert('댓글이 수정되었습니다.');
 
-            const $taget = $(`.reply-body.reply${replyId}`);
+            const $target = $(`.reply-body.reply${replyId}`);
 
             $(`.reply-actions.reply${replyId}`).toggleClass('hidden');
-            $taget.toggleClass('hidden');
-            $taget.text(`${replyBodyNum}`);
+            $target.toggleClass('hidden');
+            $target.text(`${replyBodyNum}`);
         } else {
             alert('댓글을 찾을 수 없습니다.');
         }
@@ -508,3 +506,37 @@ $(document).on('submit', '.reply-body', async function (event) {
         alert('댓글 수정에 실패했습니다.');
     }
 });
+
+window.replyDelete = async function (replyId) {
+    if (!confirm('정말로 삭제하시겠습니까? \n댓글 삭제 시 복구가 불가능합니다.')) return;
+
+    try {
+        // replies 노드에서 id에 해당하는 댓글 찾기
+        const queryRef = query(ref(database, 'replies'), orderByChild('id'), equalTo(Number(replyId))); // id 기준으로 검색
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const replyKey = Object.keys(snapshot.val())[0]; // 첫 번째 댓글의 고유 키 가져오기
+            const replyRef = ref(database, `replies/${replyKey}`);
+            const replyData = snapshot.val()[replyKey];  // 댓글 데이터 가져오기
+            const author = replyData.author;  // 댓글 작성자 닉네임
+
+            if (author !== nickname && !adminNicknames.includes(nickname)) {
+                alert('삭제 권한이 없습니다.');
+                return;
+            }
+
+            await remove(replyRef);
+
+            alert('댓글이 삭제되었습니다.');
+
+            const $target = $(`.reply-body.reply${replyId}`);
+            $target.text('삭제된 댓글입니다.');
+        } else {
+            alert('댓글을 찾을 수 없습니다.');
+        }
+    } catch (error) {
+        console.error('댓글 삭제 중 오류 발생:', error);
+        alert('댓글 삭제에 실패했습니다.');
+    }
+}
