@@ -15,6 +15,22 @@ const profileImages = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e'
 ];
 
+const profileImageNames = [
+    '???',
+    '블루 슬라임',
+    '에메랄드 슬라임',
+    '레드 슬라임',
+    '베놈 슬라임',
+    '다크 슬라임',
+    '체리 슬라임',
+    '스틸 슬라임',
+    '골드 슬라임',
+    '블루 슬라임킹',
+    '레드 슬라임킹',
+    '초보 등반자 (남)',
+    '초보 등반자 (여)'
+];
+
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -24,7 +40,8 @@ import {
     query,
     orderByChild,
     orderByKey,
-    equalTo
+    equalTo,
+    update
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -120,13 +137,89 @@ window.profileImageIdGet = async function (author) {
     }
 }
 
+function achievedStatusText(profileImageId) {
+    if (profileImageId > 3) {
+        if (profileImageId === 11) {
+            let playCount = localStorage.getItem('playCount') || 0;
+            if (playCount < 100) return `게임 플레이 : ${playCount} / 100회`;
+        } else if (profileImageId === 12) {
+
+            return '초보 등반자 (여) 구매 0 / 1';
+        } else return '출시 예정';
+    }
+    return '획득 완료';
+}
+
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
 let info = null;
 if (key) {
     info = await loginKeyCheck(key);
-    $('.profile-photo').attr('src', profileImages[info.profileImageId !== undefined ? info.profileImageId : 1]);
+    let profileImageId = info.profileImageId !== undefined ? info.profileImageId : 1;
+    $('.profile-photo').attr('src', profileImages[profileImageId]);
+    $('.current-profile-img').attr('src', profileImages[profileImageId]);
+    $('.profile-image-name').text(profileImageNames[profileImageId])
+    $('.profile-image' + profileImageId).addClass('border');
+    $('.achieved-status').text(achievedStatusText(profileImageId));
     $('.nickname').text(info.nickname);
+}
+
+const $profileBg = $(".profile-bg");
+
+$(".profile-photo").click(async function () {
+    $profileBg.removeClass('hidden');
+});
+
+$('.profile-close-button').click(async function () {
+    $profileBg.addClass('hidden');
+});
+
+for (let i = 1; i <= 12; i++) {
+    $('.profile-image' + i).on('click', function () {
+        $('.profile-image-container img').removeClass('border');
+        $(this).addClass('border');
+
+        $('.current-profile-img').attr('src', profileImages[i]);
+
+        const statusText = achievedStatusText(i);
+        $('.achieved-status').text(statusText);
+        $('.profile-image-name').text(profileImageNames[i]);
+
+        const $profileChangeButton = $('.profile-change-button');
+
+        if (statusText !== '획득 완료') {
+            $profileChangeButton.addClass('hidden');
+        } else {
+            $profileChangeButton.removeClass('hidden');
+
+            // 선택된 프로필 ID 저장
+            const selectedProfileId = i;
+
+            // 기존 클릭 이벤트 제거 후 새로운 이벤트 등록
+            $profileChangeButton.off('click').on('click', async function () {
+                const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+
+                const snapshot = await get(queryRef);
+
+                let snapshotKey = null;
+                snapshot.forEach(childSnapshot => {
+                    snapshotKey = childSnapshot.key;
+                });
+
+                try {
+                    await update(ref(database, `members/${snapshotKey}`), {
+                        profileImageId: selectedProfileId
+                    });
+
+                    $('.profile-photo').attr('src', profileImages[i]);
+                    $profileBg.addClass('hidden');
+                    // console.log("프로필 이미지 변경 완료:", selectedProfileId);
+                } catch (error) {
+                    console.error("로그인 아이디 확인 중 오류 발생:", error);
+                }
+            });
+        }
+    });
 }
 
 const $logout = $(".logout");

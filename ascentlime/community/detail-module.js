@@ -188,6 +188,7 @@ const article = await articleIdCheck(articleNum);
 const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
 $('.title').text(article.title);
+$('.author-photo').attr('src', profileImages[await profileImageIdGet(article.author) ?? 1]);
 $('.author').text(article.author);
 $('.meta').text(`${dateOnly} / 조회수 ${article.viewCount}`);
 $('.article-body').html(article.body.replace(/\n/g, '<br>'));
@@ -455,6 +456,8 @@ async function loadReplies() {
 
             if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
                 replyActions = '';
+                authorTitle = '';
+            } else if (reply.author !== nickname) {
                 authorTitle = '';
             }
 

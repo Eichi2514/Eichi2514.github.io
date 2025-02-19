@@ -392,7 +392,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .doJoin_id {
-    top: 30vh;
+    top: 27.5vh;
     left: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;
@@ -413,7 +413,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .doJoin_name {
-    top: 30vh;
+    top: 28vh;
     right: 5vh;
     -webkit-text-stroke: 0.05vh white;
     font-size: 2.8vh;

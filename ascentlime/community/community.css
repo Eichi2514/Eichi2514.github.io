@@ -204,7 +204,7 @@ li button, li a, li a div {
     cursor: pointer;
 }
 
-.profile-photo img, .post-thumbnail img {
+.profile-photo img, .post-thumbnail img, .profile-image-container img, .current-profile img {
     height: 120px;
     width: 120px;
     margin: 10px;
@@ -287,7 +287,7 @@ li button, li a, li a div {
 }
 
 /* 로그인 팝업 */
-.login-bg {
+.login-bg, .profile-bg {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -301,7 +301,7 @@ li button, li a, li a div {
     z-index: 3;
 }
 
-.login-box {
+.login-box, .profile-box {
     display: flex;
     flex-direction: column;
     background: rgb(0, 0, 30);
@@ -309,7 +309,7 @@ li button, li a, li a div {
     padding: 20px;
 }
 
-.login-title {
+.login-title, .profile-title, .current-profile {
     border-bottom: 3px solid rgb(174, 0, 27);
     padding: 0 0 20px 10px;
 }
@@ -338,6 +338,38 @@ li button, li a, li a div {
 
 .join_bt {
     text-align: center;
+}
+
+/* 프로필 사진 변경 팝업 */
+.profile-image-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 600px;
+}
+
+.profile-close-button {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+}
+
+.profile-box {
+    height: 780px;
+}
+
+.achieved-status {
+    border: 1px solid rgb(174, 0, 27);
+    border-radius: 10px;
+    height: 70px;
+    width: 430px;
+    font-size: 20px;
+    word-break: keep-all;
+}
+
+.profile-change-button {
+    width: 100px;
+    margin: auto;
 }
 
 /* 게시글 작성 */

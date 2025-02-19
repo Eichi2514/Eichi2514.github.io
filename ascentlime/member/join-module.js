@@ -79,7 +79,7 @@ async function saveToDatabase(member, formattedTime, info) {
             nickname: member.nickname,
             loginId: member.loginId,
             loginPw: hashedPw,
-            profileImageId: 1,
+            profileImageId: Math.floor(Math.random() * 3) + 1,
             email: member.email,
             salt: salt,
             key: member.key,
@@ -114,14 +114,35 @@ window.doJoin = async function (member) {
             alert("이미 사용 중인 이메일입니다.");
             return;
         }
-        if (specialCharPattern1.test(member.name)){
+        if (specialCharPattern1.test(member.name)) {
             alert("* 이름에 한글, 영문만 사용해 주세요.\n (특수기호, 공백, 숫자 사용 불가)");
             return;
         }
-        if (specialCharPattern2.test(member.nickname)){
+        if (specialCharPattern2.test(member.nickname)) {
             alert("* 닉네임에 한글, 영문, 숫자만 사용해 주세요.\n (특수기호, 공백 사용 불가)");
             return;
         }
+        if (member.nickname.length < 3 || member.nickname.length > 7) {
+            alert("* 닉네임은 3~7자여야 합니다.");
+            return;
+        }
+        if (member.loginId.length < 3) {
+            alert("* 아이디는 3자 이상이어야 합니다.");
+            return;
+        }
+        if (!emailRegex.test(member.email)) {
+            alert("* 올바른 이메일 형식을 입력해 주세요.");
+            return;
+        }
+        if (checkRestrictedNickname(member.nickname)) {
+            alert("* 사용 불가능한 닉네임입니다.");
+            return;
+        }
+        if (specialCharPattern0.test(member.loginId)) {
+            alert("* 아이디에 영문, 숫자만 사용해 주세요.\n (특수기호, 공백, 한글 사용 불가)");
+            return;
+        }
+
     }
 
     await saveMembers(member);

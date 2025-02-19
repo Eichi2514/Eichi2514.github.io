@@ -12,8 +12,10 @@ function generateUUID() {
 }
 
 const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+const specialCharPattern0 = /[^a-zA-Z0-9]/;
 const specialCharPattern1 = /[^a-zA-Z가-힣]/;
 const specialCharPattern2 = /[^a-zA-Z0-9가-힣]/;
+const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 function checkRestrictedNickname(nickname) {
     return adminNicknames.includes(nickname);
@@ -26,6 +28,8 @@ function showError($element, message) {
 function validateInput(inputValue, fieldName) {
     if (!inputValue && fieldName === '이메일') return `* 회원찾기용 ${fieldName}을 입력해 주세요.`;
     if (!inputValue) return `* ${fieldName}을(를) 입력해주세요.`;
+    if (fieldName === '아이디' && specialCharPattern0.test(inputValue))
+        return `* ${fieldName}에 영문,숫자만 사용해 주세요. <br> (특수기호, 공백, 한글 사용 불가)`;
     if (fieldName === '이름' && specialCharPattern1.test(inputValue))
         return `* ${fieldName}에 한글, 영문만 사용해 주세요. <br> (특수기호, 공백, 숫자 사용 불가)`;
     if (fieldName === '닉네임' && specialCharPattern2.test(inputValue))
@@ -34,10 +38,8 @@ function validateInput(inputValue, fieldName) {
         return `* ${fieldName}은 3~7자여야 합니다.`;
     if (fieldName === '아이디' && inputValue.length < 3)
         return `* ${fieldName}는 3자 이상이어야 합니다.`;
-    if (fieldName === '이메일' && !inputValue.includes('@'))
-        return '* 이메일 주소에 \'@\'를 포함해 주세요.';
-    if (fieldName === '이메일' && inputValue.split('@')[1]?.trim() === '')
-        return '* \'@\' 뒷 부분을 입력해 주세요.';
+    if (fieldName === '이메일' && !emailRegex.test(inputValue))
+        return '* 올바른 이메일 형식을 입력해 주세요.';
     if (fieldName === '닉네임' && checkRestrictedNickname(inputValue))
         return '* 사용 불가능한 닉네임입니다.';
     return '';
