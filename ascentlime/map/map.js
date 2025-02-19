@@ -902,7 +902,6 @@ $(document).ready(function () {
 
     let saveCooldown = false; // 저장 쿨타임 변수
 
-    // saveLog 함수는 전역에서 정의되어야 합니다.
     async function saveLog() {
         if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
 
@@ -910,6 +909,7 @@ $(document).ready(function () {
 
         try {
             await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
+            localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
         } catch (error) {
             console.error("로그 저장 중 오류 발생:", error);
         } finally {
@@ -936,7 +936,6 @@ $(document).ready(function () {
                 weaponUpgrade: 0,
                 clearTime: 0
             }));
-            localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
             await saveLog();
         }
     }
