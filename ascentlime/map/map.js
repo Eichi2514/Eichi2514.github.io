@@ -1594,10 +1594,10 @@ $(document).ready(function () {
     show();
 });
 
-var mobFind = localStorage.getItem(nickname + 'MobFind');
+var mobFind = localStorage.getItem(nickname + 'MobFind') || 1;
 
 if (charac.room === 1) {
-    if (mobFind || mobFind < charac.floor) {
+    if (mobFind < charac.floor) {
         localStorage.setItem(nickname + 'MobFind', charac.floor);
         mobFind = charac.floor;
     }
