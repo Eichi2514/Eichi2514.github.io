@@ -1,3 +1,20 @@
+const profileImages = [
+    'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
+    'https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0',
+    'https://github.com/user-attachments/assets/76d8bc9f-d814-4f60-b99f-e6688a60acd5',
+    'https://github.com/user-attachments/assets/b7a6c561-9176-4f1e-98c5-0d6723bcca2b',
+    'https://github.com/user-attachments/assets/49a90ef1-1246-4a74-933e-b78e180e2f30',
+    'https://github.com/user-attachments/assets/34ce9a88-ab95-45a8-956b-a6c8ee129674',
+    'https://github.com/user-attachments/assets/1314824d-d8a6-44f2-9672-ba5a0e7f3d6c',
+    'https://github.com/user-attachments/assets/c5004b20-a313-41cd-b012-33c91f271664',
+    'https://github.com/user-attachments/assets/d7afdd47-5dfe-4824-b456-841439908a6b',
+    'https://github.com/user-attachments/assets/b9dac1d9-afc9-4ce8-a6df-1c945dbc68db',
+    'https://github.com/user-attachments/assets/1f52c6f6-40e8-48b6-907e-4e64b8907a27',
+    'https://github.com/user-attachments/assets/309ac7b2-ae9c-4850-b0f5-c84b001a5c24',
+    'https://github.com/user-attachments/assets/25b5197e-0ab4-4fb5-9d11-644a7e46d954',
+    'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e'
+];
+
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -68,7 +85,10 @@ window.loginKeyCheck = async function (key) {
 
         const memberData = snapshot.val();
         const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].nickname;
+        return {
+            nickname: memberData[memberKey].nickname,
+            profileImageId: memberData[memberKey].profileImageId
+        };
     } catch (error) {
         console.error("로그인 아이디 확인 중 오류 발생:", error);
         return null;
@@ -88,11 +108,32 @@ async function getUserInfo(key) {
         const memberKey = Object.keys(memberData)[0];
         return {
             nickname: memberData[memberKey].nickname,
+            profileImageId: memberData[memberKey].profileImageId,
             id: memberData[memberKey].id
         };
     } catch (error) {
         console.error("로그인 아이디 확인 중 오류 발생:", error);
         return {nickname: null, id: null};
+    }
+}
+
+window.profileImageIdGet = async function (author) {
+    const queryRef = query(membersRef, orderByChild("nickname"), equalTo(author));
+    try {
+        const snapshot = await get(queryRef);
+
+        if (!snapshot.exists()) {
+            console.log('해당 아이디를 찾을 수 없습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].profileImageId;
+
+    } catch (error) {
+        console.error("아이디 확인 중 오류 발생:", error);
+        return null;
     }
 }
 
@@ -102,10 +143,13 @@ const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '�
 const key = localStorage.getItem('nickname');
 let nickname = null;
 let memberId = null;
+let profileImageId = null;
 if (key) {
     const userInfo = await getUserInfo(key);
     nickname = userInfo.nickname;
     memberId = userInfo.id;
+    profileImageId = userInfo.profileImageId;
+    $('.profile-photo').attr('src', profileImages[profileImageId !== undefined ? profileImageId : 1]);
     $('.nickname').text(nickname);
 }
 
@@ -390,9 +434,9 @@ async function loadReplies() {
         let repliesHtml = "";
         const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
 
-        snapshot.forEach(childSnapshot => {
-
-            const reply = childSnapshot.val();
+        // map과 Promise.all을 사용하여 모든 프로미스를 처리합니다.
+        const replyPromises = Object.values(snapshot.val()).map(async (reply) => {
+            const profileImageId = await profileImageIdGet(reply.author) || 1;
 
             let replyActions = `
                 <button class="link" onclick="replyEdit(${reply.id})">                                                                
@@ -401,30 +445,37 @@ async function loadReplies() {
                 <button class="link" onclick="replyDelete(${reply.id})">
                     삭제
                 </button>
-                `
+            `;
+
+            let authorTitle = `
+                <div class="pl-2 pr-2 border">
+                    작성자 
+                </div>
+            `;
 
             if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
                 replyActions = '';
+                authorTitle = '';
             }
 
-            // console.log(`id : ${reply.id}`)
-            // console.log(`author : ${reply.author}`)
-            // console.log(`body : ${reply.body}`)
             repliesHtml += `
                 <div class="profile login border gap-2 reply${reply.id}">
                     <div class="profile-photo">
-                        <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"  
+                        <img src="${profileImages[profileImageId]}"  
                             alt="프로필 사진">
                     </div>
                     <div class="profile-details">
                         <div class="flex items-center">
-                            <div>
-                                ${reply.author}
+                            <div class="flex">                                
+                                <div class="pr-2">
+                                    ${reply.author}
+                                </div>
+                                    ${authorTitle}
                             </div>
-                            <div class="reply-actions reply${reply.id} m-2">                                
-                                ${replyActions}                                
+                            <div class="reply-actions reply${reply.id} m-2">                                 
+                                ${replyActions}                                 
                             </div>
-                            <div class="reply-actions reply${reply.id} hidden m-2">                                
+                            <div class="reply-actions reply${reply.id} hidden m-2">                                 
                                 <button class="link" onclick="replyEdit(${reply.id})">
                                     취소
                                 </button>
@@ -442,7 +493,10 @@ async function loadReplies() {
                 </div>
             `;
         });
-        // console.log(`${repliesHtml}`)
+
+        // 모든 프로미스가 해결될 때까지 기다립니다.
+        await Promise.all(replyPromises);
+
         $('.comments-count').text(`${replyCount}개`);
         $replyList.html(repliesHtml);
     } catch (error) {

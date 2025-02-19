@@ -1,3 +1,20 @@
+const profileImages = [
+    'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
+    'https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0',
+    'https://github.com/user-attachments/assets/76d8bc9f-d814-4f60-b99f-e6688a60acd5',
+    'https://github.com/user-attachments/assets/b7a6c561-9176-4f1e-98c5-0d6723bcca2b',
+    'https://github.com/user-attachments/assets/49a90ef1-1246-4a74-933e-b78e180e2f30',
+    'https://github.com/user-attachments/assets/34ce9a88-ab95-45a8-956b-a6c8ee129674',
+    'https://github.com/user-attachments/assets/1314824d-d8a6-44f2-9672-ba5a0e7f3d6c',
+    'https://github.com/user-attachments/assets/c5004b20-a313-41cd-b012-33c91f271664',
+    'https://github.com/user-attachments/assets/d7afdd47-5dfe-4824-b456-841439908a6b',
+    'https://github.com/user-attachments/assets/b9dac1d9-afc9-4ce8-a6df-1c945dbc68db',
+    'https://github.com/user-attachments/assets/1f52c6f6-40e8-48b6-907e-4e64b8907a27',
+    'https://github.com/user-attachments/assets/309ac7b2-ae9c-4850-b0f5-c84b001a5c24',
+    'https://github.com/user-attachments/assets/25b5197e-0ab4-4fb5-9d11-644a7e46d954',
+    'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e'
+];
+
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -73,19 +90,43 @@ window.loginKeyCheck = async function (key) {
 
         const memberData = snapshot.val();
         const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].nickname;
+        return {
+            nickname: memberData[memberKey].nickname,
+            profileImageId: memberData[memberKey].profileImageId
+        };
     } catch (error) {
         console.error("로그인 아이디 확인 중 오류 발생:", error);
         return null;
     }
 }
 
+window.profileImageIdGet = async function (author) {
+    const queryRef = query(membersRef, orderByChild("nickname"), equalTo(author));
+    try {
+        const snapshot = await get(queryRef);
+
+        if (!snapshot.exists()) {
+            console.log('해당 아이디를 찾을 수 없습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].profileImageId;
+
+    } catch (error) {
+        console.error("아이디 확인 중 오류 발생:", error);
+        return null;
+    }
+}
+
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
-let author = null;
+let info = null;
 if (key) {
-    author = await loginKeyCheck(key);
-    $('.nickname').text(author);
+    info = await loginKeyCheck(key);
+    $('.profile-photo').attr('src', profileImages[info.profileImageId !== undefined ? info.profileImageId : 1]);
+    $('.nickname').text(info.nickname);
 }
 
 const $logout = $(".logout");
@@ -208,13 +249,14 @@ window.loadPosts = async function (boardId) {
         const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
         for (const article of sortedArticles) {
-            const likeCountRef = ref(database, `articleLike/${article.id}`);
+            const profileImageId = (await profileImageIdGet(article.author)) || 1;
 
-            // 좋아요 개수 업데이트
+            // 좋아요 개수 확인
+            const likeCountRef = ref(database, `articleLike/${article.id}`);
             const likeSnapshot = await get(likeCountRef);
             const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
 
-            // 댓글 개수 업데이트
+            // 댓글 개수 확인
             const snapshot = await get(query(repliesRef, orderByChild("articleNum"), equalTo(article.id)));
             const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
 
@@ -232,7 +274,7 @@ window.loadPosts = async function (boardId) {
 
             postElement.innerHTML = `
             <div class="post-thumbnail">
-                <img src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="대표 이미지">
+                <img src="${profileImages[profileImageId]}" alt="대표 이미지">
             </div>
             <div class="post-details">
                 <div class="post-header">

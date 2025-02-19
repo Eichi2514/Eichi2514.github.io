@@ -79,6 +79,7 @@ async function saveToDatabase(member, formattedTime, info) {
             nickname: member.nickname,
             loginId: member.loginId,
             loginPw: hashedPw,
+            profileImageId: 1,
             email: member.email,
             salt: salt,
             key: member.key,
