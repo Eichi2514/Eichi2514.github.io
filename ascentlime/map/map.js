@@ -936,6 +936,7 @@ $(document).ready(function () {
                 weaponUpgrade: 0,
                 clearTime: 0
             }));
+            localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
             await saveLog();
         }
     }

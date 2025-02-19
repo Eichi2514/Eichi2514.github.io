@@ -137,19 +137,6 @@ window.profileImageIdGet = async function (author) {
     }
 }
 
-function achievedStatusText(profileImageId) {
-    if (profileImageId > 3) {
-        if (profileImageId === 11) {
-            let playCount = localStorage.getItem('playCount') || 0;
-            if (playCount < 100) return `게임 플레이 : ${playCount} / 100회`;
-        } else if (profileImageId === 12) {
-
-            return '초보 등반자 (여) 구매 0 / 1';
-        } else return '출시 예정';
-    }
-    return '획득 완료';
-}
-
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
 let info = null;
@@ -162,6 +149,23 @@ if (key) {
     $('.profile-image' + profileImageId).addClass('border');
     $('.achieved-status').text(achievedStatusText(profileImageId));
     $('.nickname').text(info.nickname);
+}
+
+function achievedStatusText(profileImageId) {
+    if (profileImageId > 3) {
+        if (profileImageId <= 8) {
+            let playLog = localStorage.getItem(key + 'MobFind') || 0;
+            let asd = (profileImageId - 3) * 10;
+            if (playLog < asd) return `${asd}층 클리어 : ${playLog} / ${asd}층`;
+        } else if (profileImageId === 11) {
+            let playCount = localStorage.getItem(key + 'playCount') || 0;
+            if (playCount < 100) return `게임 플레이 : ${playCount} / 100회`;
+        } else if (profileImageId === 12) {
+
+            return '초보 등반자 (여) 구매 0 / 1';
+        } else return '출시 예정';
+    }
+    return '획득 완료';
 }
 
 const $profileBg = $(".profile-bg");

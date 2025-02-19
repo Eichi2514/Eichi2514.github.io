@@ -95,6 +95,7 @@ async function login(nickname) {
             clearTime: 0
         }));
         localStorage.setItem(nickname + 'weaponFind1', true);
+        localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
         alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
     }
 
