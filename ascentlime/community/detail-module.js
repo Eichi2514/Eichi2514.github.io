@@ -458,7 +458,7 @@ async function loadReplies() {
                 authorTitle = '';
             }
 
-            if (!adminNicknames.includes(nickname)) {
+            if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
                 replyActions = '';
             }
 
