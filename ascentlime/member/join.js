@@ -11,7 +11,7 @@ function generateUUID() {
     });
 }
 
-const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자', '운영자'];
 const specialCharPattern0 = /[^a-zA-Z0-9]/;
 const specialCharPattern1 = /[^a-zA-Z가-힣]/;
 const specialCharPattern2 = /[^a-zA-Z0-9가-힣]/;

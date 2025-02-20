@@ -140,15 +140,17 @@ window.profileImageIdGet = async function (author) {
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
 let info = null;
+let nickname = null;
 if (key) {
     info = await loginKeyCheck(key);
+    nickname = info.nickname;
     let profileImageId = info.profileImageId !== undefined ? info.profileImageId : 1;
     $('.profile-photo').attr('src', profileImages[profileImageId]);
     $('.current-profile-img').attr('src', profileImages[profileImageId]);
     $('.profile-image-name').text(profileImageNames[profileImageId])
     $('.profile-image' + profileImageId).addClass('border');
     $('.achieved-status').text(achievedStatusText(profileImageId));
-    $('.nickname').text(info.nickname);
+    $('.nickname').text(nickname);
 }
 
 function getWeaponCount() {
@@ -283,7 +285,7 @@ async function getLogsQuery(page, boardId) {
         queryRef = query(articlesRef, orderByKey());
     } else if (boardId === 10) {
         // 내가 쓴 글만 가져오기
-        queryRef = query(articlesRef, orderByChild("author"), equalTo(author));
+        queryRef = query(articlesRef, orderByChild("author"), equalTo(nickname));
     } else if (boardId > 0) {
         // 특정 boardId의 글만 가져오기
         queryRef = query(articlesRef, orderByChild("boardId"), equalTo(boardId));

@@ -48,7 +48,7 @@ async function loginKeyCheck(key) {
     }
 }
 
-const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자', '운영자'];
 
 const key = localStorage.getItem('nickname');
 let author = null;
@@ -57,7 +57,7 @@ if (key) {
     author = await loginKeyCheck(key);
 } else {
     alert('로그인이 필요합니다');
-    location.href = '/ascentlime';
+    history.back();
 }
 
 async function articleIdCheck(num) {

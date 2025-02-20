@@ -137,7 +137,7 @@ window.profileImageIdGet = async function (author) {
     }
 }
 
-const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자'];
+const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자', '운영자'];
 
 // 로그인된 사용자 확인
 const key = localStorage.getItem('nickname');
@@ -186,7 +186,7 @@ async function articleIdCheck(num) {
 
 const article = await articleIdCheck(articleNum);
 const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
-
+const author = article.author;
 $('.title').text(article.title);
 $('.author-photo').attr('src', profileImages[await profileImageIdGet(article.author) ?? 1]);
 $('.author').text(article.author);
@@ -454,11 +454,12 @@ async function loadReplies() {
                 </div>
             `;
 
-            if (reply.author !== nickname && !adminNicknames.includes(nickname)) {
+            if (reply.author !== author) {
+                authorTitle = '';
+            }
+
+            if (!adminNicknames.includes(nickname)) {
                 replyActions = '';
-                authorTitle = '';
-            } else if (reply.author !== nickname) {
-                authorTitle = '';
             }
 
             repliesHtml += `
@@ -539,9 +540,9 @@ $(document).on('submit', '.reply-body', async function (event) {
             const replyKey = Object.keys(snapshot.val())[0]; // 첫 번째 댓글의 고유 키 가져오기
             const replyRef = ref(database, `replies/${replyKey}`);
             const replyData = snapshot.val()[replyKey];  // 댓글 데이터 가져오기
-            const author = replyData.author;  // 댓글 작성자 닉네임
+            const replyAuthor = replyData.author;  // 댓글 작성자 닉네임
 
-            if (author !== nickname && !adminNicknames.includes(nickname)) {
+            if (replyAuthor !== nickname && !adminNicknames.includes(nickname)) {
                 alert('수정 권한이 없습니다.');
                 return;
             }
@@ -576,9 +577,9 @@ window.replyDelete = async function (replyId) {
             const replyKey = Object.keys(snapshot.val())[0]; // 첫 번째 댓글의 고유 키 가져오기
             const replyRef = ref(database, `replies/${replyKey}`);
             const replyData = snapshot.val()[replyKey];  // 댓글 데이터 가져오기
-            const author = replyData.author;  // 댓글 작성자 닉네임
+            const replyAuthor = replyData.author;  // 댓글 작성자 닉네임
 
-            if (author !== nickname && !adminNicknames.includes(nickname)) {
+            if (replyAuthor !== nickname && !adminNicknames.includes(nickname)) {
                 alert('삭제 권한이 없습니다.');
                 return;
             }

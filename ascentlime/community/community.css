@@ -290,7 +290,7 @@ li button, li a, li a div {
 .login-bg, .profile-bg {
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -302,6 +302,7 @@ li button, li a, li a div {
 }
 
 .login-box, .profile-box {
+    position: relative;
     display: flex;
     flex-direction: column;
     background: rgb(0, 0, 30);
@@ -434,6 +435,7 @@ textarea.article-body {
 .meta-info {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding-top: 100px;
 }
 
