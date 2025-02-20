@@ -18,12 +18,12 @@ const profileImages = [
 const profileImageNames = [
     '???',
     '블루 슬라임',
-    '에메랄드 슬라임',
+    '그린 슬라임',
     '레드 슬라임',
     '베놈 슬라임',
     '다크 슬라임',
     '체리 슬라임',
-    '스틸 슬라임',
+    '아이언 슬라임',
     '골드 슬라임',
     '블루 슬라임킹',
     '레드 슬라임킹',
@@ -151,22 +151,59 @@ if (key) {
     $('.nickname').text(info.nickname);
 }
 
+function getWeaponCount() {
+    let weaponCount = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+        let storageKey = localStorage.key(i);
+        if (storageKey.startsWith(key + 'weaponFind')) {
+            weaponCount++;
+        }
+    }
+    return weaponCount;
+}
+
+function getClearStatusText(profileImageId) {
+    let playLog = localStorage.getItem(key + 'MobFind') || 0;
+    let targetFloor = (profileImageId - 3) * 10;
+
+    if (playLog < targetFloor) {
+        return `${targetFloor}층 클리어 : ${playLog} / ${targetFloor}층`;
+    }
+    return null;
+}
+
 function achievedStatusText(profileImageId) {
     if (profileImageId > 3) {
+        let statusText = null;
+
         if (profileImageId <= 8) {
-            let playLog = localStorage.getItem(key + 'MobFind') || 0;
-            let asd = (profileImageId - 3) * 10;
-            if (playLog < asd) return `${asd}층 클리어 : ${playLog} / ${asd}층`;
+            statusText = getClearStatusText(profileImageId);
+        } else if (profileImageId === 9) {
+            let weaponCount = getWeaponCount();
+            if (weaponCount < 30) {
+                statusText = `무기 컬렉션 : ${weaponCount} / 30종 획득`;
+            }
+        } else if (profileImageId === 10) {
+            let weaponCount = getWeaponCount();
+            if (weaponCount < 70) {
+                statusText = `무기 컬렉션 : ${weaponCount} / 70종 획득`;
+            }
         } else if (profileImageId === 11) {
             let playCount = localStorage.getItem(key + 'playCount') || 0;
-            if (playCount < 100) return `게임 플레이 : ${playCount} / 100회`;
+            if (playCount < 100) {
+                statusText = `게임 플레이 : ${playCount} / 100회`;
+            }
         } else if (profileImageId === 12) {
+            statusText = '초보 등반자 (여) 구매 0 / 1';
+        } else {
+            statusText = '출시 예정';
+        }
 
-            return '초보 등반자 (여) 구매 0 / 1';
-        } else return '출시 예정';
+        return statusText || '획득 완료';
     }
     return '획득 완료';
 }
+
 
 const $profileBg = $(".profile-bg");
 

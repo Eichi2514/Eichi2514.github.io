@@ -889,6 +889,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     /* background: rgb(255, 71, 48); */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
+    position: relative;
+    cursor: pointer;
 }
 
 .weapon_img {
@@ -896,6 +898,30 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 7vh;
     width: 10vh;
     height: 10vh;
+}
+
+.weapon_img_text {
+    position: absolute;
+    display: none;
+    bottom: 7vh;
+    left: 10vh;
+    padding: 1vh 5vh;
+    background: white;
+    font-size: 5vh;
+    z-index: 20;
+    text-align: center;
+    border: 0.1vh solid;
+    pointer-events: none;
+    color: black;
+}
+
+.weapon_img_text div {
+    border-bottom: 1px solid;
+}
+
+.weapon:hover > .weapon_img_text {
+    display: inline-block;
+    white-space: nowrap;
 }
 
 /* 풋(채팅) */
@@ -1455,7 +1481,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 3vh;
     left: 3vh;
     padding: 1vh;
-    width: 14vh;
     background: white;
     font-size: 2vh;
     z-index: 20;
@@ -1464,8 +1489,13 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     pointer-events: none;
 }
 
+.dictionary_body_text div {
+    border-bottom: 1px solid;
+}
+
 .weapon__dictionary_card2:hover > .dictionary_body_text, .mob__dictionary_card2:hover > .dictionary_body_text {
-    display: block;
+    display: inline-block;
+    white-space: nowrap;
 }
 
 /* 메뉴바 */
