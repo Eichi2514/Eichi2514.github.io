@@ -315,7 +315,7 @@ li button, li a, li a div {
     padding: 0 0 20px 10px;
 }
 
-.close-button, .profile-close-button {
+.close-button {
     position: absolute;
     top: 15px;
     right: 25px;

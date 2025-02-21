@@ -1,0 +1,219 @@
+@charset "UTF-8";
+
+/* 공용 */
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    font-size: 2.8vh;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
+.body {
+    width: 100vh;
+    position: relative;
+}
+
+.mapBody {
+    width: 100vh;
+    left: 21vh;
+    position: relative;
+}
+
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1625/1000) {
+    .body {
+        left: 50%;
+        transform: translateX(-50vh);
+    }
+
+    .mapBody {
+        left: 50%;
+        transform: translateX(-60vh);
+    }
+}
+
+img {
+    /* mix-blend-mode: multiply; */
+    /* opacity: 0.9; */
+
+}
+
+body {
+    background: rgb(0, 0, 30);
+}
+
+input {
+    padding-left: 1vh !important;
+    /* background-color: transparent; */
+}
+
+input::placeholder {
+    color: black !important;
+}
+
+input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+    color: black;
+}
+
+input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+    color: black;
+}
+
+input::-ms-input-placeholder { /* 엣지 */
+    color: black;
+}
+
+input::-moz-placeholder { /* 파이어폭스 19+ */
+    color: black;
+}
+
+input:-moz-placeholder { /* 파이어폭스 4-18 */
+    color: black;
+}
+
+.s-button {
+    text-align: center;
+    border: 0.3vh solid;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+}
+
+.button {
+    text-align: center;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.bg {
+    width: 100vh;
+    height: 100vh;
+}
+
+.bg_img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.bo {
+    border: 1vh solid red;
+}
+
+/* 회원가입 화면 */
+.doJoin_bg {
+    top: 15vh;
+    left: 10vh;
+    width: 80vh;
+    height: 80vh;
+    border-radius: 3vh;
+}
+
+.doJoin_title {
+    top: 10vh;
+    left: 5vh;
+    width: 70vh;
+    font-size: 6.4vh;
+    -webkit-text-stroke: 0.1vh white;
+}
+
+.label {
+    width: 34vh;
+}
+
+.doJoin_id {
+    top: 27.5vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_pw {
+    top: 40vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_pw2 {
+    top: 53vh;
+    left: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_name {
+    top: 27.5vh;
+    right: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_nickname {
+    top: 40vh;
+    right: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_email {
+    top: 53vh;
+    right: 5vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.doJoin_bt {
+    position: absolute;
+    top: 70vh;
+    left: 13vh;
+}
+
+.doJoin_exit {
+    position: absolute;
+    top: 70vh;
+    right: 15vh;
+}
+
+.auth-bt {
+    position: absolute;
+    top: 21vh;
+    right: 3vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.auth-bt:hover {
+    border-bottom: 0.3vh solid rgba(169, 164, 163, 0.8);
+}
+
+.errorMessageVew {
+    left: 41vh;
+    top: 49vh;
+    font-size: 1.5vh;
+    color: #3C0000;
+    text-shadow: 0.3vh 0.3vh 0.8vh rgba(0, 0, 0, 0.8);
+    background: rgb(255, 71, 48);
+    padding: 0 1vh;
+}
+
+/* 아이디 비밀번호 찾기 화면 */
+.find-id {
+    top: 29vh;
+    left: 10vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.find-pw {
+    top: 46vh;
+    left: 10vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+

@@ -213,10 +213,6 @@ $(".profile-photo").click(async function () {
     $profileBg.removeClass('hidden');
 });
 
-$('.profile-close-button').click(async function () {
-    $profileBg.addClass('hidden');
-});
-
 for (let i = 1; i <= 12; i++) {
     $('.profile-image' + i).on('click', function () {
         $('.profile-image-container img').removeClass('border');
@@ -274,6 +270,7 @@ $logout.click(async function () {
 
 $('.close-button').click(async function () {
     $loginBg.addClass('hidden');
+    $profileBg.addClass('hidden');
 });
 
 // 페이지네이션 및 데이터 표시를 위한 쿼리

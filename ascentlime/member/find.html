@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AscentLime(test)</title>
+
+    <link rel="stylesheet" href="../member/member.css"/>
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+</head>
+<body>
+<div class="body">
+    <!-- p2 홈페이지 배경 -->
+    <img class="bg_img"
+         src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
+         alt=""/>
+
+    <div class="doJoin_bg absolute">
+        <!-- p2 나무판 -->
+        <img class="doJoin_bg" src="https://github.com/user-attachments/assets/2017f1b7-9290-4387-a5ac-daee1743354c"
+             alt=""/>
+        <div class="doJoin_title absolute text-center">아이디 * 비밀번호 찾기</div>
+
+        <form class="find-ID-Form" method="POST">
+            <div class="find-id absolute">
+                <div class="label pb-2">아이디 찾기</div>
+                <div>
+                    <label>
+                        <input class="inputID label" type="text" placeholder="이메일을 입력해 주세요" name="loginId" lang="en"/>
+                    </label>
+                    <button class="s-button" type="submit">요청</button>
+                </div>
+                <div class="errorMessageVew errorFindID">* 회원가입 시 등록한 이메일을 입력해주세요.</div>
+            </div>
+        </form>
+
+        <form class="find-PW-Form" method="POST">
+            <div class="find-pw absolute">
+                <div class="label pb-2">비밀번호 찾기</div>
+                <div>
+                    <label>
+                        <input class="inputName label" type="text" placeholder="아이디를 입력해 주세요" name="name"/>
+                    </label>
+                    <button class="s-button" type="submit">요청</button>
+                </div>
+                <div class="errorMessageVew errorFindPW"></div>
+            </div>
+        </form>
+
+        <button class="doJoin_exit button" type="button" onclick="history.back();">취소</button>
+
+        <a class="auth-bt" href="../member/join">
+            <span>회원가입</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+<script>
+    window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
+</script>
+<script src="../member/find-module.js" defer type="module"></script>
+</body>
+</html>
