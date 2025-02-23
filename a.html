@@ -4,164 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>자주 사용하는 사이트</title>
+
+    <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     <style>
-        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+        html, body {
+            min-width: max-content;
+            font-family: 'Helvetica', sans-serif;
+            background-color: #f7fafc;
+            margin: 0;
+        }
+
+        h1, h2, a {
+            white-space: nowrap;
+        }
+
+        a {
+            display: inline-block;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        a:hover {
+            color: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .bg-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title, .section-link {
+            transition: all 0.3s ease;
+        }
+
+        .section-title {
+            color: dimgray;
+        }
+
+        .section-link {
+            background-color: #e5e7eb;
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+
+        .section-link:hover {
+            background-color: #1d4ed8;
+            color: #ffffff;
+        }
+
+        pre {
+            background-color: #f3f4f6;
+            color: #333;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        h1 {
+            color: #1d4ed8;
+        }
+
+        h2 {
+            color: #4a90e2;
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-white p-6">
-<div class="max-w-3xl mx-auto">
-    <h1 class="text-2xl font-bold text-center mb-6">📌 자주 사용하는 사이트</h1>
+<body class="p-8">
+<h1 class="text-5xl font-bold text-center mb-6">📌 자주 사용하는 사이트</h1>
+<div class="max-w-3xl flex flex-col gap-8 mx-auto">
+    <div class="flex gap-8">
+        <div class="flex flex-col">
+            <div class="bg-card">
+                <h2 class="text-2xl font-semibold section-title mb-4">🔎 개인 사이트</h2>
+                <ul class="flex flex-col gap-3">
+                    <li>
+                        <a href="https://www.h2514.site/a" class="section-link" target="_blank">본문</a>
+                    </li>
+                    <li>
+                        <a href="https://www.slog.gg/p/13558#f" class="section-link" target="_blank">수업 사이트</a>
+                    </li>
+                    <li>
+                        <a href="https://www.h2514.site/" class="section-link" target="_blank">내 사이트</a>
+                    </li>
+                    <li>
+                        <a href="https://test-948ba-default-rtdb.firebaseio.com" class="section-link" target="_blank">AscentLime(DB)</a>
+                    </li>
+                    <li>
+                        <a href="https://www.h2514.site/ascentlime" class="section-link" target="_blank">AscentLime(배포)</a>
+                    </li>
+                </ul>
+            </div>
 
-    <ul class="space-y-4">
-        <li>
-            <a href="https://www.h2514.site/a"
-               class="block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
-               target="_blank">본문</a>
-        </li>
-        <li>
-            <a href="https://www.slog.gg/p/13558#f"
-               class="block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
-               target="_blank">수업 사이트</a>
-        </li>
-        <li>
-            <a href="https://www.h2514.site/"
-               class="block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
-               target="_blank">내 사이트</a>
-        </li>
-        <li>
-            <a href="https://test-948ba-default-rtdb.firebaseio.com"
-               class="block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
-               target="_blank">AscentLime(DB)</a>
-        </li>
-        <li>
-            <a href="https://www.h2514.site/ascentlime"
-               class="block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
-               target="_blank">AscentLime(배포)</a>
-        </li>
-    </ul>
+            <div class="bg-card flex-grow">
+                <h2 class="text-2xl font-semibold section-title mb-4">💻 개발 관련</h2>
+                <ul class="grid grid-cols-2 gap-3">
+                    <li>
+                        <a href="https://github.com/Eichi2514" class="section-link" target="_blank">깃허브</a>
+                    </li>
+                    <li>
+                        <a href="https://codepen.io/your-work" class="section-link" target="_blank">코드펜</a>
+                    </li>
+                    <li>
+                        <a href="https://velog.io/@ichi2514/posts" class="section-link" target="_blank">벨로그</a>
+                    </li>
+                    <li>
+                        <a href="https://www.figma.com/files/team/1403962918373070502" class="section-link" target="_blank">피그마</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-    <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">💻 개발 관련</h2>
+        <div class="bg-card">
+            <h2 class="text-2xl font-semibold section-title mb-4">📚 문제 풀이</h2>
+            <ul class="flex flex-col gap-3">
+                <li>
+                    <a href="https://codeup.kr/" class="section-link" target="_blank">코드업</a>
+                </li>
+                <li>
+                    <a href="https://programmers.co.kr/" class="section-link" target="_blank">프로그래머스</a>
+                </li>
+                <li>
+                    <a href="https://www.acmicpc.net/" class="section-link" target="_blank">백준</a>
+                </li>
+            </ul>
+        </div>
 
-        <ul class="grid grid-cols-2 gap-4">
-            <li>
-                <a href="https://github.com/Eichi2514"
-                   class="block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                   target="_blank">깃허브</a>
-            </li>
-            <li>
-                <a href="https://codepen.io/your-work"
-                   class="block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                   target="_blank">코드펜</a>
-            </li>
-            <li>
-                <a href="https://velog.io/@ichi2514/posts"
-                   class="block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                   target="_blank">벨로그</a>
-            </li>
-            <li>
-                <a href="https://www.figma.com/files/team/1403962918373070502"
-                   class="block bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                   target="_blank">피그마</a>
-            </li>
-        </ul>
+        <div class="bg-card">
+            <h2 class="text-2xl font-semibold section-title mb-4">💡 사이트</h2>
+            <ul class="flex flex-col gap-3">
+                <li>
+                    <a href="https://www.google.co.kr/?hl=ko" class="section-link" target="_blank">구글</a>
+                </li>
+                <li>
+                    <a href="https://www.hancomdocs.com/ko/home" class="section-link" target="_blank">한컴독스</a>
+                </li>
+                <li>
+                    <a href="https://chatgpt.com/g/g-FvT4UOsoA-caesgpt" class="section-link" target="_blank">GPT(AI그림)</a>
+                </li>
+                <li>
+                    <a href="https://wrtn.ai/" class="section-link" target="_blank">Wrtn(AI그림)</a>
+                </li>
+                <li>
+                    <a href="https://www.remove.bg/ko" class="section-link" target="_blank">removebg(이미지 배경 제거)</a>
+                </li>
+                <li>
+                    <a href="https://www.photoroom.com/ko/tools/background-remover" class="section-link" target="_blank">Photoroom(이미지 배경 제거2)</a>
+                </li>
+                <li>
+                    <a href="https://ezgif.com/maker" class="section-link" target="_blank">ezgif(gif 만들기)</a>
+                </li>
+                <li>
+                    <a href="https://nerdcave.com/tailwind-cheat-sheet" class="section-link" target="_blank">tailwind-cheat-sheet(라이브러리)</a>
+                </li>
+                <li>
+                    <a href="https://daisyui.com/components/button/" class="section-link" target="_blank">daisyui(UI)</a>
+                </li>
+                <li>
+                    <a href="https://mui.com/material-ui/react-button/" class="section-link" target="_blank">MUI(UI)</a>
+                </li>
+                <li>
+                    <a href="https://fontawesome.com/" class="section-link" target="_blank">Font Awesome(아이콘)</a>
+                </li>
+                <li>
+                    <a href="https://noonnu.cc/#google_vignette" class="section-link" target="_blank">눈누(한글 폰트)</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">📚 문제 풀이</h2>
-
-        <ul class="space-y-4">
-            <li>
-                <a href="https://codeup.kr/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">코드업</a>
-            </li>
-            <li>
-                <a href="https://programmers.co.kr/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">프로그래머스</a>
-            </li>
-            <li>
-                <a href="https://www.acmicpc.net/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">백준</a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">💡 사이트</h2>
-
-        <ul class="space-y-4">
-            <li>
-                <a href="https://www.google.co.kr/?hl=ko"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">구글</a>
-            </li>
-            <li>
-                <a href="https://www.hancomdocs.com/ko/home"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">한컴독스</a>
-            </li>
-            <li>
-                <a href="https://chatgpt.com/g/g-FvT4UOsoA-caesgpt"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">GPT(AI그림)</a>
-            </li>
-            <li>
-                <a href="https://wrtn.ai/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">Wrtn(AI그림)</a>
-            </li>
-            <li>
-                <a href="https://www.remove.bg/ko"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">removebg(이미지 배경 제거)</a>
-            </li>
-            <li>
-                <a href="https://www.photoroom.com/ko/tools/background-remover"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">Photoroom(이미지 배경 제거2)</a>
-            </li>
-            <li>
-                <a href="https://ezgif.com/maker"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">ezgif(gif 만들기)</a>
-            </li>
-            <li>
-                <a href="https://nerdcave.com/tailwind-cheat-sheet"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">tailwind-cheat-sheet(라이브러리)</a>
-            </li>
-            <li>
-                <a href="https://daisyui.com/components/button/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">daisyui(UI)</a>
-            </li>
-            <li>
-                <a href="https://mui.com/material-ui/react-button/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">MUI(UI)</a>
-            </li>
-            <li>
-                <a href="https://fontawesome.com/"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">Font Awesome(아이콘)</a>
-            </li>
-            <li>
-                <a href="https://noonnu.cc/#google_vignette"
-                   class="block bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded"
-                   target="_blank">눈누(한글 폰트)</a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mt-8 p-4 bg-gray-800 rounded">
-        <h2 class="text-xl font-semibold mb-2">🔗 깃헙 커밋하는 법</h2>
-        <pre class="bg-gray-700 p-4 rounded text-sm overflow-auto">
+    <div class="bg-card">
+        <h2 class="text-2xl font-semibold section-title mb-4">🔗 깃허브 커밋하는 법</h2>
+        <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-auto">
 1) git config --global init.defaultBranch main
 2) git config --global user.name "Eichi2514"
 3) git config --global user.email "picon1317@gmail.com"
