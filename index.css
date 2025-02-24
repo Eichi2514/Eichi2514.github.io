@@ -204,7 +204,6 @@ a:hover svg {
 
 .projects {
     text-align: center;
-    transition: transform 1s ease-in-out;
 }
 
 .project {

@@ -3,7 +3,7 @@ let isTyping = false;
 function startTypingAnimation() {
     // console.log(isTyping);
 
-    if(isTyping) return;
+    if (isTyping) return;
 
     isTyping = true;
 
@@ -201,17 +201,28 @@ const $projects = $('.projects');
 const $project = $('.project');
 const $left_btn = $('.left_btn');
 const $right_btn = $('.right_btn');
-const totalProjects = $project.length - 7;
+const totalProjects = $project.length - 5;
 let currentIndex = 0;
 let intervalId;
+const defaultSliderSpeed = 4000;
+const sliderSpeed = [defaultSliderSpeed, defaultSliderSpeed, defaultSliderSpeed, defaultSliderSpeed, 50];
+let currentSpeedIndex = -1;  // 현재 속도 인덱스
 
 // 슬라이드 시작 함수
 function startSlider() {
+    // 기존 intervalId가 존재하면 삭제
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
     intervalId = setInterval(() => {
-        currentIndex = (currentIndex + 1) % totalProjects; // 현재 인덱스 갱신
-        const offset = currentIndex * -720; // 720px씩 이동
-        $projects.css('transform', `translateX(${offset}px)`);
-    }, 2000);
+        moveSlide('right');
+        // 슬라이드 이동 후, 다음 속도로 변경
+        currentSpeedIndex = (currentSpeedIndex + 1) % sliderSpeed.length;
+        // 새롭게 intervalId를 설정
+        startSlider();
+        console.log(currentSpeedIndex + ' : ' +sliderSpeed[currentSpeedIndex]);
+    }, sliderSpeed[currentSpeedIndex]);
 }
 
 // 슬라이드 중지 함수
@@ -219,18 +230,29 @@ function stopSlider() {
     clearInterval(intervalId);
 }
 
-// 슬라이드 이동 함수 (왼쪽, 오른쪽 버튼 클릭 시)
+// 슬라이드 이동 함수
 function moveSlide(direction) {
+    const prevIndex = currentIndex;
+
     if (direction === 'left') {
         currentIndex = (currentIndex - 1 + totalProjects) % totalProjects;
     } else if (direction === 'right') {
         currentIndex = (currentIndex + 1) % totalProjects;
     }
+
     const offset = currentIndex * -720; // 720px씩 이동
+
+    // 마지막에서 처음으로 돌아갈 때 transition 제거 & 속도 0 적용
+    if (prevIndex === totalProjects - 1 && currentIndex === 0) {
+        $projects.css('transition', 'none');
+    } else {
+        $projects.css('transition', 'transform 1s ease-in-out');
+    }
+
     $projects.css('transform', `translateX(${offset}px)`);
 }
 
-// 슬라이드를 시작
+// 초기 슬라이드 시작
 startSlider();
 
 // 마우스가 .projects 위에 올라가면 슬라이드 멈추기
@@ -246,11 +268,13 @@ $right_btn.on('mouseleave', startSlider);
 // 왼쪽 버튼 클릭 시 슬라이드 이동
 $left_btn.on('click', function () {
     moveSlide('left');
+    currentSpeedIndex--;
 });
 
 // 오른쪽 버튼 클릭 시 슬라이드 이동
 $right_btn.on('click', function () {
     moveSlide('right');
+    currentSpeedIndex++;
 });
 
 <!-- Vanta.js 설정 스크립트 -->
