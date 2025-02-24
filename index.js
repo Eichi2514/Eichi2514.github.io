@@ -202,7 +202,7 @@ const $projects = $('.projects');
 const $project = $('.project');
 const $left_btn = $('.left_btn');
 const $right_btn = $('.right_btn');
-const totalProjects = $project.length - 5;
+const totalProjects = $project.length - $project.filter('.gap').length - 1;
 let currentIndex = 0;
 let intervalId;
 const defaultSliderSpeed = 4000;
@@ -222,7 +222,6 @@ function startSlider() {
         currentSpeedIndex = (currentSpeedIndex + 1) % sliderSpeed.length;
         // 새롭게 intervalId를 설정
         startSlider();
-        console.log(sliderSpeed[currentSpeedIndex]);
     }, sliderSpeed[currentSpeedIndex]);
 }
 

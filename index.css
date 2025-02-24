@@ -62,7 +62,6 @@ html, body {
 
 .info_text {
     width: 1440px;
-    color: white;
     font-size: 2.5rem;
 }
 
@@ -120,7 +119,6 @@ html, body {
     text-align: center;
     font-size: 2.5rem;
     font-weight: 600;
-    color: white;
     margin-top: 30px;
     margin-bottom: 30px;
 }
@@ -143,7 +141,6 @@ html, body {
 
 .my_introduction {
     width: 50%;
-    color: #ffffff;
     margin-left: 50px;
 }
 
@@ -186,7 +183,6 @@ a:hover svg {
     top: 50%;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.5);
-    color: white;
     padding: 10px;
     cursor: pointer;
     z-index: 1;
@@ -216,8 +212,14 @@ a:hover svg {
     text-align: center;
     font-size: 2rem;
     font-weight: 600;
-    color: white;
     padding-bottom: 30px;
+}
+
+.project-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    perspective: 1000px;
 }
 
 .project-image {
@@ -226,6 +228,63 @@ a:hover svg {
     height: 500px;
     border-radius: 10px;
     border: 1px solid #4A6B9C;
+    transition: transform 2s;
+    backface-visibility: hidden;
+}
+
+.project-description {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%) rotateY(180deg);
+    width: 500px;
+    height: 500px;
+    border-radius: 10px;
+    border: 1px solid #4A6B9C;
+    transition: transform 2s;
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+    backface-visibility: hidden;
+    text-shadow: none;
+}
+
+.project-container:hover .project-image {
+    transform: rotateY(180deg);
+}
+
+.project-container:hover .project-description {
+    transform: translate(-50%, -50%) rotateY(0deg);
+}
+
+.project-description h2 {
+    font-size: 36px;
+    padding: 10px;
+    word-break: keep-all;
+    border-bottom: 1px solid #4A6B9C;
+}
+
+.project-description p {
+    font-size: 24px;
+    padding: 10px;
+    word-break: keep-all;
+}
+
+.project1 {
+    background: #1e3a8a;
+}
+
+.project2 {
+    background: rgb(0, 0, 30);
+}
+
+.project3 {
+    background: #f9f5eb;
+    color: #4D3E3E;
+}
+
+.project4 {
+    background: #1e3a8a;
 }
 
 .skills {
@@ -239,7 +298,6 @@ a:hover svg {
 
 .skill {
     text-align: center;
-    color: white;
 }
 
 .skill-title {
@@ -266,7 +324,6 @@ a:hover svg {
     width: 200px;
     padding: 12px;
     background-color: #4f46e5;
-    color: white;
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
@@ -529,7 +586,6 @@ li button, li a div {
     height: 35px;
     background-color: #4c51bf;
     border-radius: 0.5rem;
-    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
