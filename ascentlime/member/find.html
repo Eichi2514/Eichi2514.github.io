@@ -31,31 +31,51 @@
              alt=""/>
         <div class="doJoin_title absolute text-center">아이디 * 비밀번호 찾기</div>
 
-        <form class="find-ID-Form" method="POST">
-            <div class="find-id absolute">
-                <div class="label pb-2">아이디 찾기</div>
-                <div>
-                    <label>
-                        <input class="findID label" type="email" placeholder="이메일을 입력해 주세요." name="findID"/>
-                    </label>
-                    <button class="s-button" type="submit">요청</button>
-                </div>
-                <div class="errorMessageVew errorFindID">* 회원가입 시 등록한 이메일을 입력해주세요.</div>
+        <div class="find-id absolute">
+            <div class="label pb-2">아이디 찾기</div>
+            <div class="flex flex-col gap-2">
+                <form class="find-ID-Form" method="POST">
+                    <div>
+                        <label>
+                            <input class="findID label" type="email" placeholder="이메일을 입력해 주세요." name="findID"/>
+                        </label>
+                        <button class="s-button" type="submit">요청</button>
+                    </div>
+                </form>
+                <form class="find-chackID-Form hidden" method="POST">
+                    <div>
+                        <label>
+                            <input class="chackID label" type="text" placeholder="인증번호를 입력해 주세요." name="chackID"/>
+                        </label>
+                        <button class="s-button" type="submit">확인</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="errorMessageVew errorFindID">* 회원가입 시 등록한 이메일을 입력해주세요.</div>
+        </div>
 
-        <form class="find-PW-Form" method="POST">
-            <div class="find-pw absolute">
-                <div class="label pb-2">비밀번호 찾기</div>
-                <div>
-                    <label>
-                        <input class="findPW label" type="text" placeholder="아이디를 입력해 주세요." name="findPW"/>
-                    </label>
-                    <button class="s-button" type="submit">요청</button>
-                </div>
-                <div class="errorMessageVew errorFindPW"></div>
+        <div class="find-pw absolute">
+            <div class="label pb-2">비밀번호 찾기</div>
+            <div class="flex flex-col gap-2">
+                <form class="find-PW-Form" method="POST">
+                    <div>
+                        <label>
+                            <input class="findPW label" type="text" placeholder="아이디를 입력해 주세요." name="findPW"/>
+                        </label>
+                        <button class="s-button" type="submit">요청</button>
+                    </div>
+                </form>
+                <form class="find-chackPW-Form hidden" method="POST">
+                    <div>
+                        <label>
+                            <input class="chackPW label" type="text" placeholder="아이디를 입력해 주세요." name="chackPW"/>
+                        </label>
+                        <button class="s-button" type="submit">확인</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="errorMessageVew errorFindPW"></div>
+        </div>
 
         <button class="doJoin_exit button" type="button" onclick="history.back();">취소</button>
 

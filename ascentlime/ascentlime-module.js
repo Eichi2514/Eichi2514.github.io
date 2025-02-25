@@ -70,7 +70,7 @@ window.loginIdCheck = async function (loginId) {
     try {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
-            console.log('해당 아이디를 찾을 수 없습니다.');
+            console.log('아이디 또는 비밀번호가 잘못되었습니다.');
             return null;
         }
 
@@ -89,7 +89,7 @@ window.loginKeyCheck = async function (key) {
     try {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
-            console.log('해당 아이디를 찾을 수 없습니다.');
+            console.log('아이디 또는 비밀번호가 잘못되었습니다.');
             return null;
         }
 

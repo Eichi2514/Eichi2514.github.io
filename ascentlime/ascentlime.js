@@ -36,11 +36,11 @@ $('.login-form').submit(async function (event) {
             }
 
             if (!loginSuccess) {
-                alert('비밀번호가 올바르지 않습니다.');
+                alert('아이디 또는 비밀번호가 잘못되었습니다.');
             }
 
         } else {
-            alert(loginId + '는(은) 존재하지 않습니다.');
+            alert('아이디 또는 비밀번호가 잘못되었습니다');
         }
 
     } catch (error) {
