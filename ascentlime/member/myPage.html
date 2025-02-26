@@ -26,41 +26,51 @@
          alt=""/>
 
     <div class="myPage_bg absolute">
+        <!-- p2 나무 판 -->
+        <img class="myPage_bg"
+             src="https://github.com/user-attachments/assets/b3351b33-5547-48b5-9108-78ef3c69c204"
+             alt=""/>
+
+        <div class="myPage_title absolute text-center">내 정보</div>
+
         <form class="myPage_form" method="POST">
-            <!-- p2 나무 판 -->
-            <img class="myPage_bg"
-                 src="https://github.com/user-attachments/assets/b3351b33-5547-48b5-9108-78ef3c69c204"
-                 alt=""/>
-            <div class="myPage_title absolute text-center">내 정보</div>
-
-            <div class="myPage_1 absolute" style="text-align: center;">
-                <div class="myPage_label">가 입 일</div>
-                <div class="myPage_body">가입일</div>
+            <div class="myPage_container">
+                <div class="myPage_1 flex">
+                    <div class="myPage_label">가 입 일</div>
+                    <div class="myPage_body">가입일</div>
+                </div>
+                <div class="myPage_2 flex">
+                    <div class="myPage_label">이 름</div>
+                    <div class="myPage_body">이름</div>
+                </div>
+                <div class="myPage_3 flex">
+                    <div class="myPage_label">닉 네 임</div>
+                    <div class="myPage_body">닉네임</div>
+                </div>
+                <div class="myPage_4 flex">
+                    <div class="myPage_label">아 이 디</div>
+                    <div class="myPage_body">아 이 디</div>
+                </div>
+                <div class="myPage_5 flex">
+                    <div class="myPage_label">비밀번호</div>
+                    <div class="myPage_body">**********</div>
+                    <label class="myPage_body hidden">
+                        <input type="password" name="newLoginPw"/>
+                    </label>
+                </div>
+                <div class="myPage_6 hidden">
+                    <div class="myPage_label">비밀번호 확인</div>
+                    <label class="myPage_body">
+                        <input type="password" name="newLoginPw2"/>
+                    </label>
+                </div>
             </div>
-            <div class="myPage_2 absolute" style="text-align: center;">
-                <div class="myPage_label">이 름</div>
-                <div class="myPage_body">이름</div>
+            <div class="flex justify-between">
+                <div class="myPage_bt myPage_edit button absolute">수정</div>
+                <button class="myPage_bt button absolute hidden" type="submit">변경</button>
+                <button class="myPage_exit button absolute" type="button" onclick="history.back()">취소</button>
             </div>
-            <div class="myPage_3 absolute" style="text-align: center;">
-                <div class="myPage_label">닉 네 임</div>
-                <div class="myPage_body">닉네임</div>
-            </div>
-            <div class="myPage_4 absolute" style="text-align: center;">
-                <div class="myPage_label">아 이 디</div>
-                <div class="myPage_body">아 이 디</div>
-            </div>
-
-            <div class="myPage_5 absolute" style="text-align: center;">
-                <div class="myPage_label">비밀번호</div>
-                <div class="myPage_body">**********</div>
-                <label class="myPage_body hidden">
-                    <input type="password" name="newLoginPw"/>
-                </label>
-            </div>
-            <div class="myPage_bt myPage_edit button absolute">수정</div>
-            <button class="myPage_bt button absolute hidden" type="submit">변경</button>
         </form>
-        <button class="myPage_exit button absolute" type="button" onclick="history.back()">취소</button>
     </div>
 
     <div class="auth-bg hidden">

@@ -65,6 +65,7 @@ if (key) {
 const $myPage_bt = $('.myPage_bt');
 const $myPage_body = $('.myPage_body');
 const $auth_bg = $('.auth-bg');
+const $myPage_6 = $('.myPage_6');
 
 $('.myPage_edit').click(function () {
     $auth_bg.removeClass('hidden');
@@ -99,8 +100,9 @@ $('.auth-form').submit(async function (event) {
         $myPage_bt.first().addClass('hidden');
         $myPage_bt.last().removeClass('hidden');
         $myPage_body.eq(4).addClass('hidden');
-        $myPage_body.last().removeClass('hidden');
+        $myPage_body.eq(5).removeClass('hidden');
         $auth_bg.addClass('hidden');
+        $myPage_6.removeClass('hidden').addClass('flex');
     } else {
         alert(`비밀번호가 잘못되었습니다.`);
     }
@@ -110,10 +112,22 @@ $('.myPage_form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
 
     const $newLoginPwInput = $('input[name="newLoginPw"]');
+    const $newLoginPwInput2 = $('input[name="newLoginPw2"]');
     let newLoginPw = $newLoginPwInput.val().trim();
+    let newLoginPw2 = $newLoginPwInput2.val().trim();
 
     if (newLoginPw.length <= 0) {
         alert('비밀번호를 입력해주세요.');
+        return;
+    }
+
+    if (newLoginPw2.length <= 0) {
+        alert('재확인 비밀번호를 입력해주세요.');
+        return;
+    }
+
+    if (newLoginPw !== newLoginPw2) {
+        alert(`재확인 비밀번호가 틀렸습니다.`);
         return;
     }
 
@@ -131,13 +145,34 @@ $('.myPage_form').submit(async function (event) {
         const data = snapshot.val();
         const userKey = Object.keys(data)[0];
 
-        // 비밀번호 업데이트
-        const userRef = ref(database, `members/${userKey}`);
-        await update(userRef, {
-            loginPw: newLoginPw
+        const scriptURL = "https://script.google.com/macros/s/AKfycbx8lMPXgtQ-Uwrots_yQBuAlZQxjlFN1W8XT5WceTqsZ8yt8wuT6WRZmIrxeVjzPgZOuw/exec";
+
+        // 이메일로 비밀번호 변경 사실 전송
+        const response = await fetch(scriptURL, {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: new URLSearchParams({
+                subject: '비밀번호 변경 안내',
+                body: `안녕하세요,\n\n요청하신 비밀번호 변경이 완료되었습니다.\n만약 본인이 아닌 경우, 즉시 비밀번호를 변경하여 계정을 보호해 주세요.\n\n변경된 비밀번호로 로그인 후, 본인의 계정을 다시 확인하시기 바랍니다.`,
+                email: data[userKey].email
+            })
         });
 
-        alert(`비밀번호가 변경되었습니다.`);
+        const result = await response.text();
+
+        if (result === "이메일 전송 완료") {
+            // 비밀번호 업데이트
+            const userRef = ref(database, `members/${userKey}`);
+            await update(userRef, {
+                loginPw: newLoginPw
+            });
+
+            alert(`비밀번호가 변경되었습니다.`);
+
+        } else {
+            alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+            return;
+        }
         location.reload();
     } catch (error) {
         console.error('데이터 조회 중 오류:', error);
