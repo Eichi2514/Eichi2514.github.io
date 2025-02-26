@@ -84,6 +84,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.2vh 1vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
+    cursor: pointer;
 }
 
 .button {
@@ -93,6 +94,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.7vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
+    cursor: pointer;
 }
 
 .link:hover {
@@ -217,3 +219,70 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     -webkit-text-stroke: 0.05vh white;
 }
 
+/* 내 정보 화면 */
+.myPage_label {
+    height: 6vh;
+    width: 20vh;
+    display: inline-block;
+}
+
+.myPage_body {
+    height: 6vh;
+    width: 45vh;
+    display: inline-block;
+}
+
+.myPage_bg {
+    top: 15vh;
+    left: 10vh;
+    width: 80vh;
+    height: 80vh;
+}
+
+.myPage_title {
+    top: 8.5vh;
+    left: 5vh;
+    width: 70vh;
+    font-size: 8vh;
+    -webkit-text-stroke: 0.1vh white;
+}
+
+.myPage_1 {
+    top: 33vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.myPage_2 {
+    top: 39vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.myPage_3 {
+    top: 45vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.myPage_4 {
+    top: 51vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.myPage_5 {
+    top: 57vh;
+    left: 8vh;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.myPage_bt {
+    top: 68vh;
+    left: 12vh;
+}
+
+.myPage_exit {
+    top: 68vh;
+    left: 45vh;
+}
