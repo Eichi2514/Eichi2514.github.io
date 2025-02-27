@@ -52,11 +52,30 @@ window.saveMembers = async function (member) {
 }
 
 async function hashPassword(password, salt) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password + salt);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxD1axioR1FicH70pnzgTMS-kBmszf8T_ivRpPJoZqCXM8dhWbj8BxO8rQp4Gmf3psenQ/exec";
+
+    if (!password || !salt) {
+        alert('잘못된 접근 방식입니다.');
+        return null;
+    }
+
+    try {
+        const response = await fetch(scriptURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                password: password,
+                salt: salt
+            })
+        });
+
+        const hashedPassword = await response.text();
+        return hashedPassword.trim();
+
+    } catch (error) {
+        console.error("비밀번호 해싱 중 오류 발생:", error);
+        return null;
+    }
 }
 
 async function saveToDatabase(member, formattedTime, info) {
