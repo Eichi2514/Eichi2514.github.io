@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayMana</title>
+
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #ffffff, #f4f4f9);
+            width: 100%;
+            min-width: max-content;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .header label {
+            font-weight: bold;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .title {
+            font-size: 24px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .row span {
+            font-size: 16px;
+            text-align: center;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0;
+            padding: 0 5px;
+        }
+
+        .row span:last-child {
+            text-align: right;
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: 50px;
+            padding-right: 10px;
+        }
+
+        .total-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: auto;
+            display: block;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .item-list, .person-list {
+            margin-top: 20px;
+        }
+
+        .item, .person {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .item input, .person input {
+            width: 150px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .item span, .person span {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .remove-button {
+            background-color: transparent;
+            border: none;
+            color: #FF0000;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .remove-button:hover {
+            color: #D32F2F;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .flex-container .section {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>PayMana</h1>
+        <label for="title">
+            <input type="text" id="title" class="title" value="제목">
+        </label>
+    </div>
+
+    <div class="section">
+        <div>
+            <span>총 회비</span><span>총 사용금액</span><span>남은 금액</span>
+        </div>
+        <div>
+            <span class="totalFee total-amount">00,000원</span>
+            <span class="totalSpent total-amount">00,000원</span>
+            <span class="remainingAmount total-amount">00,000원</span>
+        </div>
+    </div>
+
+    <div class="flex-container">
+        <div class="section">
+            <button class="button" onclick="addItem()">항목 추가</button>
+
+            <div class="row">
+                <span>항목</span><span>금액</span><span>분할금액</span><span>삭제</span>
+            </div>
+
+            <div class="item-list">
+                <div class="item">
+                    <label>
+                        <input class="itemName" type="text" value="">
+                    </label>
+                    <label>
+                        <input class="amount" type="number" value="0">
+                    </label>
+                    <span class="splitAmount">00,000원</span>
+                    <button class="remove-button" onclick="removeItem()">🗑</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <button class="button" onclick="addPerson()">인원 추가</button>
+
+            <div class="row">
+                <span>이름</span><span>정산금액</span><span>선납금액</span><span>삭제</span>
+            </div>
+
+            <div class="person-list">
+                <div class="person">
+                    <label>
+                        <input class="name" type="text" value="">
+                    </label>
+                    <span class="settledAmount">00,000원</span>
+                    <label>
+                        <input class="advanceAmount" type="number" value="0">
+                    </label>
+                    <button class="remove-button" onclick="removePerson()">🗑</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>© 2025 PayMana. All Rights Reserved.</p>
+</div>
+
+<script>
+    function addItem() {
+        const newItem = `
+        <div class="item">
+            <label>
+                <input class="itemName" type="text" value="">
+            </label>
+            <label>
+                <input class="amount" type="number" value="0">
+            </label>
+            <span class="splitAmount">00,000원</span>
+            <button class="remove-button" onclick="removeItem()">🗑</button>
+        </div>
+        `;
+        $('.item-list').append(newItem);
+    }
+
+    function addPerson() {
+        const newItem = `
+        <div class="person">
+            <label>
+                <input class="name" type="text" value="">
+            </label>
+            <span class="settledAmount">00,000원</span>
+            <label>
+                <input class="advanceAmount" type="number" value="0">
+            </label>
+            <button class="remove-button" onclick="removePerson()">🗑</button>
+        </div>
+        `;
+        $('.person-list').append(newItem);
+    }
+
+    function removeItem() {
+        $(this).closest('.item').remove();
+    }
+
+    function removePerson() {
+        $(this).closest('.person').remove();
+    }
+</script>
+</body>
+</html>
