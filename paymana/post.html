@@ -31,6 +31,7 @@
             width: 80%;
             margin: 0 auto;
             padding: 20px;
+            min-width: max-content;
         }
 
         .header {
@@ -45,7 +46,6 @@
             font-size: 28px;
             color: #333;
             margin-bottom: 15px;
-            text-align: center;
         }
 
         .header label {
@@ -57,6 +57,7 @@
         .title {
             font-size: 24px;
             width: calc(100% - 20px);
+            text-align: center;
             padding: 10px;
             border-radius: 8px;
             border: 1px solid #ddd;
@@ -68,6 +69,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            min-width: max-content;
         }
 
         .row {
@@ -75,19 +77,29 @@
             justify-content: space-between;
             margin-bottom: 10px;
             align-items: center;
+            min-width: max-content;
         }
 
-        .row span {
+        .row span, .row label {
             font-size: 16px;
             text-align: center;
             flex-grow: 1;
-            flex-shrink: 1;
-            flex-basis: 0;
             padding: 0 5px;
+            display: inline-block;
+            width: 100%;
         }
 
-        .row span:last-child {
-            text-align: right;
+        .row input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .row :nth-child(4) {
+            text-align: center;
             flex-grow: 0;
             flex-shrink: 0;
             width: 50px;
@@ -100,6 +112,20 @@
             color: #4CAF50;
         }
 
+        .remove-button {
+            background-color: transparent;
+            border: none;
+            color: #FF0000;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            width: 50px;
+        }
+
+        .remove-button:hover {
+            color: #D32F2F;
+        }
+
         .button {
             background-color: #4CAF50;
             color: white;
@@ -110,49 +136,11 @@
             font-size: 16px;
             margin-left: auto;
             display: block;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .button:hover {
             background-color: #45a049;
-        }
-
-        .item-list, .person-list {
-            margin-top: 20px;
-        }
-
-        .item, .person {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .item input, .person input {
-            width: 150px;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .item span, .person span {
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .remove-button {
-            background-color: transparent;
-            border: none;
-            color: #FF0000;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .remove-button:hover {
-            color: #D32F2F;
         }
 
         .footer {
@@ -183,13 +171,13 @@
     </div>
 
     <div class="section">
-        <div>
-            <span>총 회비</span><span>총 사용금액</span><span>남은 금액</span>
+        <div class="row">
+            <span>총 예산</span><span>총 지출</span><span>잔액</span>
         </div>
-        <div>
-            <span class="totalFee total-amount">00,000원</span>
-            <span class="totalSpent total-amount">00,000원</span>
-            <span class="remainingAmount total-amount">00,000원</span>
+        <div class="row">
+            <span class="totalFee total-amount">0원</span>
+            <span class="totalSpent total-amount">0원</span>
+            <span class="remainingAmount total-amount">0원</span>
         </div>
     </div>
 
@@ -198,20 +186,11 @@
             <button class="button" onclick="addItem()">항목 추가</button>
 
             <div class="row">
-                <span>항목</span><span>금액</span><span>분할금액</span><span>삭제</span>
+                <span>항목</span><span>금액(원)</span><span>개인 부담금</span><span>삭제</span>
             </div>
 
             <div class="item-list">
-                <div class="item">
-                    <label>
-                        <input class="itemName" type="text" value="">
-                    </label>
-                    <label>
-                        <input class="amount" type="number" value="0">
-                    </label>
-                    <span class="splitAmount">00,000원</span>
-                    <button class="remove-button" onclick="removeItem()">🗑</button>
-                </div>
+
             </div>
         </div>
 
@@ -219,23 +198,15 @@
             <button class="button" onclick="addPerson()">인원 추가</button>
 
             <div class="row">
-                <span>이름</span><span>정산금액</span><span>선납금액</span><span>삭제</span>
+                <span>이름</span><span>정산금액</span><span>미리낸금액</span><span>삭제</span>
             </div>
 
             <div class="person-list">
-                <div class="person">
-                    <label>
-                        <input class="name" type="text" value="">
-                    </label>
-                    <span class="settledAmount">00,000원</span>
-                    <label>
-                        <input class="advanceAmount" type="number" value="0">
-                    </label>
-                    <button class="remove-button" onclick="removePerson()">🗑</button>
-                </div>
+
             </div>
         </div>
     </div>
+    <button class="button" onclick="location.reload()">정산</button>
 </div>
 
 <div class="footer">
@@ -243,45 +214,60 @@
 </div>
 
 <script>
+    let lastItemId = 0;
+    let lastPersonId = 0;
+
     function addItem() {
         const newItem = `
-        <div class="item">
+        <div class="item row">
             <label>
-                <input class="itemName" type="text" value="">
+                <input class="itemName" type="text">
             </label>
             <label>
-                <input class="amount" type="number" value="0">
+                <input class="amount" type="number">
             </label>
-            <span class="splitAmount">00,000원</span>
-            <button class="remove-button" onclick="removeItem()">🗑</button>
+            <span class="splitAmount">0원</span>
+            <button class="remove-button">🗑</button>
+            <input class="id" type="hidden" value="${lastItemId+1}">
         </div>
         `;
         $('.item-list').append(newItem);
+        lastItemId++;
     }
 
     function addPerson() {
         const newItem = `
-        <div class="person">
+        <div class="person row">
             <label>
-                <input class="name" type="text" value="">
+                <input class="name" type="text">
             </label>
-            <span class="settledAmount">00,000원</span>
+            <span class="settledAmount">0원</span>
             <label>
-                <input class="advanceAmount" type="number" value="0">
+                <input class="advanceAmount" type="number">
             </label>
-            <button class="remove-button" onclick="removePerson()">🗑</button>
+            <button class="remove-button">🗑</button>
+            <input class="id" type="hidden" value="${lastPersonId+1}">
         </div>
         `;
         $('.person-list').append(newItem);
+        lastPersonId++;
     }
 
-    function removeItem() {
-        $(this).closest('.item').remove();
-    }
+    $(document).on('click', '.remove-button', function() {
+        $(this).closest('div').remove();
+    });
 
-    function removePerson() {
-        $(this).closest('.person').remove();
+    function getLocalStorageSize() {
+        let total = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                total += (localStorage[key].length * 2); // UTF-16 문자당 2바이트
+            }
+        }
+        console.log(`현재 로컬스토리지 사용량: ${total / 1024} KB`);
     }
+    getLocalStorageSize();
+
 </script>
 </body>
 </html>
