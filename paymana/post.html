@@ -30,18 +30,18 @@
             <span>총 예산</span><span>총 지출</span><span>잔액</span>
         </div>
         <div class="row">
-            <span class="totalFee total-amount">0원</span>
-            <span class="totalSpent total-amount">0원</span>
-            <span class="remainingAmount total-amount">0원</span>
+            <span class="totalFee">0원</span>
+            <span class="totalSpent">0원</span>
+            <span class="remainingAmount">0원</span>
         </div>
     </div>
 
     <div class="flex-container">
         <div class="section">
-            <button class="button" onclick="addItem()">추가</button>
+            <button class="button mb-2" onclick="addItem()">추가</button>
 
             <div class="row">
-                <span>항목</span><span>금액(원)</span><span></span><span>기타</span>
+                <span>항목</span><span>금액(원)</span><span></span><span>삭제</span>
             </div>
 
             <div class="item-list">
@@ -49,10 +49,20 @@
         </div>
 
         <div class="section">
-            <button class="button" onclick="addPerson()">추가</button>
+            <div class="flex">
+                <span class="person-list-description mb-2">
+                    ?
+                    <span class="person-list-description-view">
+                        정산금액이<br>
+                        음수(-)이면 환급금액이며,<br>
+                        양수(+)이면 납부금액입니다.
+                    </span>
+                </span>
+                <button class="button mb-2" onclick="addPerson()">추가</button>
+            </div>
 
             <div class="row">
-                <span>이름</span><span>정산금액</span><span>미리낸금액</span><span>기타</span>
+                <span>이름</span><span>정산금액</span><span>선납금액</span><span>삭제</span>
             </div>
 
             <div class="person-list">
@@ -97,6 +107,33 @@
     const postString = localStorage.getItem(`PM-${title}`);
     const post = postString ? JSON.parse(postString) : {};
 
+    function formatNum(num) {
+        return num.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 1});
+    }
+
+    function totalSpentUpdate() {
+        let totalSpent = 0;
+        Object.keys(post).forEach(key => {
+            if (key.startsWith('i')) {
+                const amount = parseInt(post[key].amount) || 0;
+                totalSpent += amount;
+            }
+        });
+
+        const $totalSpent = $('.totalSpent');
+        $totalSpent.removeClass('total-amount-negative total-amount');
+
+        const formatString = formatNum(totalSpent);
+
+        if (totalSpent < 0) {
+            $totalSpent.text(`${formatString}원`).addClass('total-amount-negative');
+        } else {
+            $totalSpent.text(`${formatString}원`).addClass('total-amount');
+        }
+
+        return totalSpent;
+    }
+
     function totalFeeUpdate() {
         let totalFee = 0;
         Object.keys(post).forEach(key => {
@@ -106,7 +143,61 @@
             }
         });
 
-        $('.totalFee').text(`${totalFee}원`);
+        const $totalFee = $('.totalFee');
+        $totalFee.removeClass('total-amount-negative total-amount');
+
+        const formatString = formatNum(totalFee);
+
+        if (totalFee < 0) {
+            $totalFee.text(`${formatString}원`).addClass('total-amount-negative');
+        } else {
+            $totalFee.text(`${formatString}원`).addClass('total-amount');
+        }
+
+        return totalFee;
+    }
+
+    function remainingAmountUpdate() {
+        const totalFee = totalFeeUpdate();
+        const totalSpent = totalSpentUpdate();
+        const remainingAmount = totalFee - totalSpent;
+
+        const $remainingAmount = $('.remainingAmount');
+        $remainingAmount.removeClass('total-amount-negative total-amount');
+        const formatString = formatNum(remainingAmount);
+
+        if (remainingAmount < 0) {
+            $remainingAmount.text(`${formatString}원`).addClass('total-amount-negative');
+        } else {
+            $remainingAmount.text(`${formatString}원`).addClass('total-amount');
+        }
+
+        let count = 0;
+
+        Object.keys(post).forEach(key => {
+            if (key.startsWith('p')) {
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            Object.keys(post).forEach(key => {
+                const advanceAmount = parseInt(post[key].advanceAmount) || 0;
+                const calculatedAmount = (totalSpent / count) - advanceAmount;
+
+                const $settledAmount = $(`.settledAmount-${key}`);
+                $settledAmount.removeClass('total-amount-negative total-amount');
+                const formatString = formatNum(calculatedAmount);
+
+                if (key.startsWith('p')) {
+                    if (calculatedAmount < 0) {
+                        $settledAmount.text(`${formatString}원`).addClass('total-amount');
+                    } else {
+                        $settledAmount.text(`${formatString}원`).addClass('total-amount-negative');
+                    }
+                }
+            });
+        }
     }
 
     function startPost() {
@@ -142,7 +233,7 @@
                         <label>
                             <input class="name" type="text" name="p${num}" value="${name}">
                         </label>
-                        <span class="settledAmount">0원</span>
+                        <span class="settledAmount-p${num}">0원</span>
                         <label>
                             <input class="advanceAmount" type="number" name="p${num}" value="${advanceAmount}">
                         </label>
@@ -154,7 +245,8 @@
             }
         });
 
-        totalFeeUpdate();
+        remainingAmountUpdate();
+
     }
 
     startPost();
@@ -230,8 +322,8 @@
 
         localStorage.setItem(`PM-${title}`, JSON.stringify(post));
 
-        if (nameAttr.startsWith('p') && classAttr === 'advanceAmount') {
-            totalFeeUpdate();
+        if (nameAttr.startsWith('p') && classAttr === 'advanceAmount' || nameAttr.startsWith('i') && classAttr === 'amount') {
+            remainingAmountUpdate();
         }
     });
 
@@ -245,8 +337,8 @@
         delete post[`${id}`];
         localStorage.setItem(`PM-${title}`, JSON.stringify(post));
 
-        if (id.startsWith('p')) {
-            totalFeeUpdate();
+        if (id.startsWith('p') || id.startsWith('i')) {
+            remainingAmountUpdate();
         }
     });
 

@@ -91,10 +91,21 @@ html, body {
     padding-right: 10px;
 }
 
+.row :nth-child(2) {
+    text-align: center;
+    flex-grow: 1 !important;
+}
+
 .total-amount {
     font-size: 18px;
     font-weight: bold;
     color: #4CAF50;
+}
+
+.total-amount-negative {
+    font-size: 18px;
+    font-weight: bold;
+    color: #F44336;
 }
 
 .remove-bt {
@@ -172,6 +183,38 @@ html, body {
     gap: 15px;
     justify-content: center;
     margin-top: 20px;
+}
+
+.person-list-description {
+    font-weight: bold;
+    color: #fff;
+    font-size: 24px;
+    padding: 3px 17px;
+    background: #CCC;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.person-list-description-view {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.person-list-description:focus-within .person-list-description-view,
+.person-list-description:hover .person-list-description-view {
+    display: block;
+    opacity: 1;
 }
 
 .post-list a {
