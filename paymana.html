@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayMana</title>
 
+    <link rel="stylesheet" href="paymana/paymana.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -13,15 +14,83 @@
 
     <!-- 폰트어썸 불러오기 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-    <style>
-
-    </style>
 </head>
 <body>
+<div class="container">
+    <div class="header">
+        <h1>PayMana</h1>
+        <button class="button" onclick="createPost()">만들기</button>
+    </div>
+    <div class="post-list">
+    </div>
+</div>
+
+<div class="footer">
+    <p>© 2025 PayMana. All Rights Reserved.</p>
+</div>
+
+<div class="popup-bg hidden">
+    <form class="popup-form" method="POST">
+        <div class="popup-box">
+            <div class="popup-title">포스트 제목 입력</div>
+            <div class="close-button">✖</div>
+            <div class="popup-form-container">
+                <label>
+                    <input class="popup-input" type="text" placeholder="제목을 입력해주세요" name="title"/>
+                </label>
+                <button class="button" type="submit">생성</button>
+            </div>
+        </div>
+    </form>
+</div>
 
 <script>
+    const $popupBg = $('.popup-bg');
 
+    function createPost() {
+        $popupBg.removeClass('hidden').addClass('flex');
+    }
+
+    $('.close-button').click(function () {
+        $popupBg.removeClass('flex').addClass('hidden');
+    });
+
+    $(document).ready(function () {
+        Object.keys(localStorage).forEach(function (key) {
+            if (key.startsWith('PM-')) {
+                const title = key.replace('PM-', '');
+
+                const newPost = `
+                    <a href="../paymana/post?${encodeURIComponent(title)}">
+                        <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
+                        <div>${title}</div>
+                    </a>
+                `;
+
+                $('.post-list').append(newPost);
+            }
+        });
+    });
+
+    $('.popup-form').submit(async function (event) {
+        event.preventDefault(); // 폼의 기본 제출 동작을 막음
+
+        const $titleInput = $('input[name="title"]');
+        const title = $titleInput.val().trim();
+
+        if (!title) {
+            alert('제목을 입력해주세요.');
+            return;
+        }
+
+        if (localStorage.getItem(`PM-${title}`)) {
+            alert('이미 사용중인 제목입니다.');
+            return;
+        }
+
+        localStorage.setItem(`PM-${title}`, JSON.stringify({}));
+        window.location.href = `../paymana/post?${encodeURIComponent(title)}`;
+    });
 </script>
 </body>
 </html>

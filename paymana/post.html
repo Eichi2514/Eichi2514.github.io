@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayMana</title>
 
+    <link rel="stylesheet" href="paymana.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -13,160 +14,14 @@
 
     <!-- 폰트어썸 불러오기 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom right, #ffffff, #f4f4f9);
-            width: 100%;
-            min-width: max-content;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            min-width: max-content;
-        }
-
-        .header {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .header label {
-            font-weight: bold;
-            margin: 10px 0;
-            display: block;
-        }
-
-        .title {
-            font-size: 24px;
-            width: calc(100% - 20px);
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-
-        .section {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            min-width: max-content;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            align-items: center;
-            min-width: max-content;
-        }
-
-        .row span, .row label {
-            font-size: 16px;
-            text-align: center;
-            flex-grow: 1;
-            padding: 0 5px;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .row input {
-            width: 100%;
-            padding: 5px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .row :nth-child(4) {
-            text-align: center;
-            flex-grow: 0;
-            flex-shrink: 0;
-            width: 50px;
-            padding-right: 10px;
-        }
-
-        .total-amount {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .remove-button {
-            background-color: transparent;
-            border: none;
-            color: #FF0000;
-            cursor: pointer;
-            font-size: 18px;
-            text-align: center;
-            width: 50px;
-        }
-
-        .remove-button:hover {
-            color: #D32F2F;
-        }
-
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: auto;
-            display: block;
-            margin-bottom: 20px;
-        }
-
-        .button:hover {
-            background-color: #45a049;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #777;
-            margin-top: 30px;
-        }
-
-        .flex-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .flex-container .section {
-            width: 48%;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>PayMana</h1>
-        <label for="title">
+        <label>
             <input type="text" id="title" class="title" value="제목">
+            <button class="button">수정</button>
         </label>
     </div>
 
@@ -183,30 +38,47 @@
 
     <div class="flex-container">
         <div class="section">
-            <button class="button" onclick="addItem()">항목 추가</button>
-
             <div class="row">
-                <span>항목</span><span>금액(원)</span><span>개인 부담금</span><span>삭제</span>
+                <span>항목</span><span>금액(원)</span><span></span><span>기타</span>
             </div>
 
             <div class="item-list">
-
+                <div class="item row">
+                    <label>
+                        <input class="itemName" type="text">
+                    </label>
+                    <label>
+                        <input class="amount" type="number">
+                    </label>
+                    <span class="splitAmount"></span>
+                    <button class="button" onclick="addItem()">추가</button>
+                </div>
             </div>
         </div>
 
         <div class="section">
-            <button class="button" onclick="addPerson()">인원 추가</button>
-
             <div class="row">
-                <span>이름</span><span>정산금액</span><span>미리낸금액</span><span>삭제</span>
+                <span>이름</span><span>정산금액</span><span>미리낸금액</span><span>기타</span>
             </div>
 
             <div class="person-list">
-
+                <div class="person row">
+                    <label>
+                        <input class="name" type="text">
+                    </label>
+                    <span class="settledAmount">0원</span>
+                    <label>
+                        <input class="advanceAmount" type="number">
+                    </label>
+                    <button class="button" onclick="addPerson()">추가</button>
+                </div>
             </div>
         </div>
     </div>
-    <button class="button" onclick="location.reload()">정산</button>
+    <div class="flex gap-2">
+        <button class="button" onclick="location.reload()">정산</button>
+        <button class="remove-button" onclick="removePost()">삭제</button>
+    </div>
 </div>
 
 <div class="footer">
@@ -214,6 +86,33 @@
 </div>
 
 <script>
+    const params = new URLSearchParams(window.location.search);
+    const title = params.keys().next().value;
+
+
+    if (title === '') {
+        alert(`잘못된 접근방식입니다.`);
+        history.back();
+    }
+
+    function titleUpdate() {
+        $('.title').val(title);
+    }
+
+    titleUpdate();
+
+    function removePost() {
+        const deleteCheck = confirm('정말로 삭제하시겠습니까? \n삭제 시 복구가 불가능합니다.');
+
+        if (deleteCheck) {
+            localStorage.removeItem(`PM-${title}`);
+            window.location.href = `../paymana`;
+        }
+    }
+
+    const postString = localStorage.getItem(`PM-${title}`);
+    const post = postString ? JSON.parse(postString) : {};
+
     let lastItemId = 0;
     let lastPersonId = 0;
 
@@ -226,9 +125,9 @@
             <label>
                 <input class="amount" type="number">
             </label>
-            <span class="splitAmount">0원</span>
-            <button class="remove-button">🗑</button>
-            <input class="id" type="hidden" value="${lastItemId+1}">
+            <span class="splitAmount"></span>
+            <button class="remove-bt">🗑</button>
+            <input class="id" type="hidden" value="i${lastItemId + 1}">
         </div>
         `;
         $('.item-list').append(newItem);
@@ -245,15 +144,15 @@
             <label>
                 <input class="advanceAmount" type="number">
             </label>
-            <button class="remove-button">🗑</button>
-            <input class="id" type="hidden" value="${lastPersonId+1}">
+            <button class="remove-bt">🗑</button>
+            <input class="id" type="hidden" value="p${lastPersonId + 1}">
         </div>
         `;
         $('.person-list').append(newItem);
         lastPersonId++;
     }
 
-    $(document).on('click', '.remove-button', function() {
+    $(document).on('click', '.remove-bt', function () {
         $(this).closest('div').remove();
     });
 
@@ -266,6 +165,7 @@
         }
         console.log(`현재 로컬스토리지 사용량: ${total / 1024} KB`);
     }
+
     getLocalStorageSize();
 
 </script>
