@@ -180,16 +180,17 @@
             }
         });
 
+
         if (count > 0) {
             Object.keys(post).forEach(key => {
-                const advanceAmount = parseInt(post[key].advanceAmount) || 0;
-                const calculatedAmount = (totalSpent / count) - advanceAmount;
-
-                const $settledAmount = $(`.settledAmount-${key}`);
-                $settledAmount.removeClass('total-amount-negative total-amount');
-                const formatString = formatNum(calculatedAmount);
-
                 if (key.startsWith('p')) {
+                    const advanceAmount = parseInt(post[key].advanceAmount) || 0;
+                    const calculatedAmount = (totalSpent / count) - advanceAmount;
+
+                    const $settledAmount = $(`.settledAmount-${key}`);
+                    $settledAmount.removeClass('total-amount-negative total-amount');
+                    const formatString = formatNum(calculatedAmount);
+
                     if (calculatedAmount < 0) {
                         $settledAmount.text(`${formatString}원`).addClass('total-amount');
                     } else {
@@ -296,7 +297,7 @@
             <label>
                 <input class="name" type="text" name="p${lastPersonId + 1}">
             </label>
-            <span class="settledAmount">0원</span>
+            <span class="settledAmount-p${lastPersonId + 1}">0원</span>
             <label>
                 <input class="advanceAmount" type="number" name="p${lastPersonId + 1}">
             </label>
@@ -322,7 +323,7 @@
 
         localStorage.setItem(`PM-${title}`, JSON.stringify(post));
 
-        if (nameAttr.startsWith('p') && classAttr === 'advanceAmount' || nameAttr.startsWith('i') && classAttr === 'amount') {
+        if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount') {
             remainingAmountUpdate();
         }
     });
