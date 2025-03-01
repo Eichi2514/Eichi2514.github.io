@@ -333,7 +333,7 @@
 
     const viewport = $('meta[name="viewport"]');
 
-    $(document).on("blur", "input, textarea, select", function () {
+    $(document).on("focus", "input, textarea, select", function () {
         viewport.attr("content", "width=device-width, initial-scale=0.5, minimum-scale=0.01");
     });
 
