@@ -15,6 +15,9 @@
 
     <!-- 폰트어썸 불러오기 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- LZString 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -84,12 +87,12 @@
 
 <script>
     const urls = window.location.search;
-    const titleNum = urls ? parseInt(urls.substring(1)) : 0;
-    const postString = localStorage.getItem(`PM-${titleNum}`);
-    const post = postString ? JSON.parse(postString) : {};
+    const titleId = urls ? parseInt(urls.substring(1)) : 0;
+    const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${titleId}`));
+    const post = decompressedData ? JSON.parse(decompressedData) : {};
 
 
-    if (isNaN(titleNum)) {
+    if (isNaN(titleId)) {
         alert(`잘못된 접근방식입니다.`);
         history.back();
     }
@@ -104,7 +107,7 @@
         const deleteCheck = confirm('정말로 삭제하시겠습니까? \n삭제 시 복구가 불가능합니다.');
 
         if (deleteCheck) {
-            localStorage.removeItem(`PM-${titleNum}`);
+            localStorage.removeItem(`PM-${titleId}`);
             window.location.href = `../paymana`;
         }
     }
@@ -204,12 +207,13 @@
     }
 
     function postUpdate(newPost) {
-        if (isNaN(titleNum)) {
+        if (isNaN(titleId)) {
             alert(`잘못된 접근방식입니다.`);
             history.back();
             return;
         }
-        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(newPost));
+        const compressedData = LZString.compressToUTF16(JSON.stringify(post));
+        localStorage.setItem(`PM-${titleId}`, compressedData);
     }
 
     function startPost() {
@@ -288,6 +292,18 @@
         </div>
         `;
 
+        const nameAttr = `i${lastItemId + 1}`;
+        const itemName = `itemName`;
+        const amount = `amount`;
+
+        if (!post[nameAttr]) {
+            post[nameAttr] = {};
+        }
+        post[nameAttr][itemName] = '';
+        post[nameAttr][amount] = 0;
+
+        postUpdate(post);
+
         $('.item-list').append(newItem);
     }
 
@@ -316,6 +332,18 @@
         </div>
         `;
 
+        const nameAttr = `p${lastPersonId + 1}`;
+        const name = `name`;
+        const advanceAmount = `advanceAmount`;
+
+        if (!post[nameAttr]) {
+            post[nameAttr] = {};
+        }
+        post[nameAttr][name] = '';
+        post[nameAttr][advanceAmount] = 0;
+
+        postUpdate(post);
+
         $('.person-list').append(newItem);
     }
 
@@ -340,7 +368,7 @@
         }
     });
 
-    $('input').on('focus', function() {
+    $('input').on('focus', function () {
         $('body').css('zoom', '1');
     });
 
