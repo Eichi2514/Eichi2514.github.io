@@ -90,63 +90,59 @@ $(document).ready(function () {
     const followImageAction = document.querySelector('.mouse__action'); // 액션 이미지 선택
     let posX = 0, posY = 0;
 
-    const isMobile = () => window.innerWidth <= 768;
+    document.addEventListener('mousemove', (event) => {
+        posX = event.pageX;
+        posY = event.pageY;
+    });
 
-    if (!isMobile()) {
-        document.addEventListener('mousemove', (event) => {
-            posX = event.pageX;
-            posY = event.pageY;
-        });
+    function animate() {
+        const currentX = parseFloat(followImageAction.style.left) || 0;
+        const currentY = parseFloat(followImageAction.style.top) || 0;
 
-        function animate() {
-            const currentX = parseFloat(followImageAction.style.left) || 0;
-            const currentY = parseFloat(followImageAction.style.top) || 0;
+        const offsetX = 15; // X축 오프셋
+        const offsetY = 0;  // Y축 오프셋
 
-            const offsetX = 15; // X축 오프셋
-            const offsetY = 0;  // Y축 오프셋
+        // 이동 속도를 조절하는 계수 (0.1 값에서 작을수록 느려짐)
+        const speedFactor = 0.1; // 속도를 늦추기 위해 작게 설정
 
-            // 이동 속도를 조절하는 계수 (0.1 값에서 작을수록 느려짐)
-            const speedFactor = 0.1; // 속도를 늦추기 위해 작게 설정
+        // 기본 이미지와 액션 이미지의 거리 계산
+        const distance = Math.sqrt((posX - currentX) ** 2 + (posY - currentY) ** 2); // 현재 이미지와 마우스 위치 간 거리 계산
+        const threshold = 16; // 거리 임계값
 
-            // 기본 이미지와 액션 이미지의 거리 계산
-            const distance = Math.sqrt((posX - currentX) ** 2 + (posY - currentY) ** 2); // 현재 이미지와 마우스 위치 간 거리 계산
-            const threshold = 16; // 거리 임계값
+        // 기본 이미지의 위치 업데이트
+        followImageBasic.style.left = posX + offsetX + 'px'; // 기본 이미지 위치 업데이트
+        followImageBasic.style.top = posY + offsetY + 'px';  // 기본 이미지 위치 업데이트
 
-            // 기본 이미지의 위치 업데이트
-            followImageBasic.style.left = posX + offsetX + 'px'; // 기본 이미지 위치 업데이트
-            followImageBasic.style.top = posY + offsetY + 'px';  // 기본 이미지 위치 업데이트
+        if (distance > threshold) {
+            followImageBasic.style.display = 'none';
+            followImageAction.style.display = 'block';
+            followImageAction.style.left = currentX + (posX + offsetX - currentX) * speedFactor + 'px'; // X 축으로 오프셋 추가
+            followImageAction.style.top = currentY + (posY + offsetY - currentY) * speedFactor + 'px';  // Y 축으로 오프셋 추가
 
-            if (distance > threshold) {
-                followImageBasic.style.display = 'none';
-                followImageAction.style.display = 'block';
-                followImageAction.style.left = currentX + (posX + offsetX - currentX) * speedFactor + 'px'; // X 축으로 오프셋 추가
-                followImageAction.style.top = currentY + (posY + offsetY - currentY) * speedFactor + 'px';  // Y 축으로 오프셋 추가
+            // 마우스 방향을 계산하여 회전 각도 설정
+            const angle = Math.atan2(posY - currentY, posX - currentX) * (180 / Math.PI); // 라디안 값을 도로 변환
 
-                // 마우스 방향을 계산하여 회전 각도 설정
-                const angle = Math.atan2(posY - currentY, posX - currentX) * (180 / Math.PI); // 라디안 값을 도로 변환
-
-                // 마우스 위치에 따라 좌우 반전 처리
-                if (posX < currentX) {
-                    // 왼쪽을 바라볼 때 (기본값)
-                    followImageAction.style.transform = `rotate(${angle + 180}deg) scaleX(1)`;
-                } else {
-                    // 오른쪽을 바라볼 때 (이미지를 뒤집음)
-                    followImageAction.style.transform = `rotate(${angle}deg) scaleX(-1)`;
-                }
+            // 마우스 위치에 따라 좌우 반전 처리
+            if (posX < currentX) {
+                // 왼쪽을 바라볼 때 (기본값)
+                followImageAction.style.transform = `rotate(${angle + 180}deg) scaleX(1)`;
             } else {
-                followImageBasic.style.display = 'block';
-                followImageAction.style.display = 'none';
+                // 오른쪽을 바라볼 때 (이미지를 뒤집음)
+                followImageAction.style.transform = `rotate(${angle}deg) scaleX(-1)`;
             }
-
-            // 이미지 크기 설정
-            const imageHeight = window.innerHeight * 0.04;
-            followImageAction.style.width = imageHeight * 2 + 'px';
-            followImageAction.style.height = imageHeight * 2 + 'px';
-            followImageBasic.style.width = imageHeight * 2 + 'px';
-            followImageBasic.style.height = imageHeight * 2 + 'px';
-
-            requestAnimationFrame(animate);
+        } else {
+            followImageBasic.style.display = 'block';
+            followImageAction.style.display = 'none';
         }
+
+        // 이미지 크기 설정
+        const imageHeight = window.innerHeight * 0.04;
+        followImageAction.style.width = imageHeight * 2 + 'px';
+        followImageAction.style.height = imageHeight * 2 + 'px';
+        followImageBasic.style.width = imageHeight * 2 + 'px';
+        followImageBasic.style.height = imageHeight * 2 + 'px';
+
+        requestAnimationFrame(animate);
     }
     animate()
 });

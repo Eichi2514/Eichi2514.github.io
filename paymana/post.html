@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.01">
     <title>PayMana</title>
 
     <link rel="stylesheet" href="paymana.css"/>
@@ -18,10 +18,9 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>PayMana</h1>
+        <a href="/paymana">PayMana</a>
         <label>
             <input type="text" id="title" class="title" value="제목">
-            <button class="button">수정</button>
         </label>
     </div>
 
@@ -70,7 +69,7 @@
         </div>
     </div>
     <div class="flex gap-2">
-        <button class="button" onclick="location.reload()">정산</button>
+        <button class="button" onclick="window.location.href = `../paymana`">목록</button>
         <button class="remove-button" onclick="removePost()">삭제</button>
     </div>
 </div>
@@ -80,17 +79,19 @@
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const title = params.keys().next().value;
+    const urls = window.location.search;
+    const titleNum = urls ? parseInt(urls.substring(1)) : 0;
+    const postString = localStorage.getItem(`PM-${titleNum}`);
+    const post = postString ? JSON.parse(postString) : {};
 
 
-    if (title === '') {
+    if (titleNum === 0) {
         alert(`잘못된 접근방식입니다.`);
         history.back();
     }
 
     function titleUpdate() {
-        $('.title').val(title);
+        $('.title').val(post.title);
     }
 
     titleUpdate();
@@ -99,13 +100,10 @@
         const deleteCheck = confirm('정말로 삭제하시겠습니까? \n삭제 시 복구가 불가능합니다.');
 
         if (deleteCheck) {
-            localStorage.removeItem(`PM-${title}`);
+            localStorage.removeItem(`PM-${titleNum}`);
             window.location.href = `../paymana`;
         }
     }
-
-    const postString = localStorage.getItem(`PM-${title}`);
-    const post = postString ? JSON.parse(postString) : {};
 
     function formatNum(num) {
         return num.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 1});
@@ -313,17 +311,18 @@
         const nameAttr = $(this).attr('name');
         const classAttr = $(this).attr('class');
 
-        if (classAttr === 'title') return;
-
-        if (!post[nameAttr]) {
-            post[nameAttr] = {};
+        if (classAttr === 'title') {
+            post[classAttr] = val;
+        } else {
+            if (!post[nameAttr]) {
+                post[nameAttr] = {};
+            }
+            post[nameAttr][classAttr] = val;
         }
 
-        post[nameAttr][classAttr] = val;
+        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(post));
 
-        localStorage.setItem(`PM-${title}`, JSON.stringify(post));
-
-        if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount') {
+        if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount' && classAttr !== 'title') {
             remainingAmountUpdate();
         }
     });
@@ -336,7 +335,7 @@
         button.closest('div').remove();
 
         delete post[`${id}`];
-        localStorage.setItem(`PM-${title}`, JSON.stringify(post));
+        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(post));
 
         if (id.startsWith('p') || id.startsWith('i')) {
             remainingAmountUpdate();
@@ -355,7 +354,6 @@
     }
 
     getLocalStorageSize();
-
 </script>
 </body>
 </html>

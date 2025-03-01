@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.01">
     <title>PayMana</title>
 
     <link rel="stylesheet" href="paymana/paymana.css"/>
@@ -18,7 +18,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>PayMana</h1>
+        <a href="">PayMana</a>
         <button class="button" onclick="createPost()">만들기</button>
     </div>
     <div class="post-list">
@@ -58,19 +58,24 @@
     $(document).ready(function () {
         Object.keys(localStorage).forEach(function (key) {
             if (key.startsWith('PM-')) {
-                const title = key.replace('PM-', '');
+                const match = key.match(/\d+/);
+                const num = match ? parseInt(match[0], 10) : NaN;
+
+                const postData = JSON.parse(localStorage.getItem(key));
+                const title = postData?.title || "제목 없음"; // 안전하게 title 가져오기
 
                 const newPost = `
-                    <a href="../paymana/post?${encodeURIComponent(title)}">
-                        <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
-                        <div>${title}</div>
-                    </a>
-                `;
+                <a href="../paymana/post?${num}">
+                    <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
+                    <div>${title}</div>
+                </a>
+            `;
 
                 $('.post-list').append(newPost);
             }
         });
     });
+
 
     $('.popup-form').submit(async function (event) {
         event.preventDefault(); // 폼의 기본 제출 동작을 막음
@@ -83,13 +88,20 @@
             return;
         }
 
-        if (localStorage.getItem(`PM-${title}`)) {
-            alert('이미 사용중인 제목입니다.');
-            return;
-        }
+        let titleId = 1;
 
-        localStorage.setItem(`PM-${title}`, JSON.stringify({}));
-        window.location.href = `../paymana/post?${encodeURIComponent(title)}`;
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('PM-')) {
+                const match = key.match(/\d+/);
+                const num = match ? parseInt(match[0], 10) : NaN;
+                if (!isNaN(num) && num >= titleId) {
+                    titleId = num + 1;
+                }
+            }
+        });
+
+        localStorage.setItem(`PM-${titleId}`, JSON.stringify({"title": title}));
+        window.location.href = `../paymana/post?${titleId}`;
     });
 </script>
 </body>

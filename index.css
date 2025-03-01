@@ -114,6 +114,12 @@ html, body {
     padding: 0;
 }
 
+@media (max-aspect-ratio: 1/1) {
+    .portfolio-box {
+        height: 920px;
+    }
+}
+
 .portfolio-title {
     width: 100%;
     text-align: center;
