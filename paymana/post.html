@@ -89,7 +89,7 @@
     const post = postString ? JSON.parse(postString) : {};
 
 
-    if (titleNum === 0) {
+    if (isNaN(titleNum)) {
         alert(`잘못된 접근방식입니다.`);
         history.back();
     }
@@ -201,6 +201,15 @@
                 }
             });
         }
+    }
+
+    function postUpdate(newPost) {
+        if (isNaN(titleNum)) {
+            alert(`잘못된 접근방식입니다.`);
+            history.back();
+            return;
+        }
+        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(newPost));
     }
 
     function startPost() {
@@ -324,17 +333,15 @@
             post[nameAttr][classAttr] = val;
         }
 
-        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(post));
+        postUpdate(post);
 
         if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount' && classAttr !== 'title') {
             remainingAmountUpdate();
         }
     });
 
-    const viewport = $('meta[name="viewport"]');
-
-    $(document).on("focus", "input, textarea, select", function () {
-        viewport.attr("content", "width=device-width, initial-scale=0.5, minimum-scale=0.01");
+    $('input').on('focus', function() {
+        $('body').css('zoom', '1');
     });
 
     $(document).on('click', '.remove-bt', function () {
@@ -344,7 +351,8 @@
         button.closest('div').remove();
 
         delete post[`${id}`];
-        localStorage.setItem(`PM-${titleNum}`, JSON.stringify(post));
+
+        postUpdate(post);
 
         if (id.startsWith('p') || id.startsWith('i')) {
             remainingAmountUpdate();

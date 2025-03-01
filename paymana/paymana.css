@@ -10,6 +10,12 @@ html, body {
     min-height: max-content;
 }
 
+input {
+    -webkit-appearance: none; /* iOS 에서 기본 스타일 제거 */
+    -moz-appearance: none; /* Firefox 에서 기본 스타일 제거 */
+    appearance: none; /* 크로스 브라우저 대응 */
+}
+
 @media (max-aspect-ratio: 1/1) {
     .html, body {
         padding: 0 0 30px 0;
@@ -156,7 +162,7 @@ html, body {
     background-color: #45a049;
 }
 
-.footer p{
+.footer p {
     text-align: center;
     font-size: 14px;
     color: #777;
