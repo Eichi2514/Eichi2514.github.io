@@ -208,7 +208,8 @@ const totalProjects = $project.length - $project.filter('.gap').length - 1;
 let currentIndex = 0;
 let intervalId;
 const defaultSliderSpeed = 4000;
-const sliderSpeed = [defaultSliderSpeed, defaultSliderSpeed, defaultSliderSpeed, defaultSliderSpeed, 50];
+const sliderSpeed = Array(totalProjects - 1).fill(defaultSliderSpeed);
+sliderSpeed.push(50);
 let currentSpeedIndex = -1;  // 현재 속도 인덱스
 
 // 슬라이드 시작 함수

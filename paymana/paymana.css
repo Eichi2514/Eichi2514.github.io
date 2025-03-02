@@ -6,6 +6,7 @@ html, body {
     box-sizing: border-box;
     font-family: 'Arial', sans-serif;
     background: radial-gradient(ellipse, #ffffff, rgba(0, 128, 0, 0.1));
+    color: #333333;
     min-width: max-content;
     min-height: max-content;
 }
@@ -180,6 +181,23 @@ input {
     width: 48%;
 }
 
+.post-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    max-width: 1496px;
+}
+
+.post-list a {
+    overflow: hidden;
+}
+
+.post-list a div {
+    word-break: keep-all;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .flex-container {
         flex-direction: column;
@@ -188,14 +206,10 @@ input {
     .flex-container .section {
         width: 100%;
     }
-}
 
-.post-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
+    .post-list {
+        max-width: 600px;
+    }
 }
 
 .person-list-description {

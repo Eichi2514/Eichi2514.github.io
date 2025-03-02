@@ -293,6 +293,11 @@ a:hover svg {
     background: #1e3a8a;
 }
 
+.project5 {
+    background: radial-gradient(ellipse, #e0e0e0 50%, rgba(220, 255, 220));
+    color: #333333;
+}
+
 .skills {
     width: 400px;
     display: flex;
