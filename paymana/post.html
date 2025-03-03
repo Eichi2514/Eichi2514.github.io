@@ -20,7 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="container min-w-max">
     <div class="header">
         <a href="/paymana" class="flex gap-3">
             <img src="../favicon/PayMana.png" alt="로고" style="width: 37px;">
@@ -44,10 +44,10 @@
 
     <div class="flex-container">
         <div class="section">
-            <button class="button mb-2" onclick="addItem()">추가</button>
+            <button class="button mb-2" onclick="addItem()" aria-label="지출 항목 추가">추가</button>
 
             <div class="row">
-                <span>항목</span><span>금액(원)</span><span></span><span>삭제</span>
+                <span>지출 항목</span><span>금액(원)</span><span></span><span>삭제</span>
             </div>
 
             <div class="item-list">
@@ -64,7 +64,7 @@
                         양수(+)이면 납부금액입니다.
                     </span>
                 </span>
-                <button class="button mb-2" onclick="addPerson()">추가</button>
+                <button class="button mb-2" onclick="addPerson()" aria-label="인원 추가">추가</button>
             </div>
 
             <div class="row">
@@ -82,7 +82,7 @@
 </div>
 
 <div class="footer">
-    <p>© 2025 PayMana. All Rights Reserved.</p>
+    <p>&copy; 2025 PayMana. All Rights Reserved.</p>
 </div>
 
 <script src="post.js" defer></script>

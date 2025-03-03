@@ -26,11 +26,11 @@
             <img src="favicon/PayMana.png" alt="로고" style="width: 37px;">
             <div>PayMana : 모임 비용 계산기</div>
         </a>
-        <button class="button" onclick="createPost()">만들기</button>
+        <button class="button" onclick="createPost()" aria-label="모임 시작">시작</button>
     </div>
 
-    <div class="section">
-        <h1>일지 목록</h1>
+    <div class="section post-list-section">
+        <h1>모임 목록</h1>
         <div class="post-list">
 
         </div>
@@ -42,63 +42,74 @@
             <div class="flex">
                 <span class="square">1</span>
                 <div class="feature-description">
-                    <h2>친화적 인터페이스</h2>
+                    <h2>사용하기 쉬운 인터페이스</h2>
                     <p>직관적인 디자인으로 누구나 쉽게 사용 할 수 있습니다.</p>
                 </div>
             </div>
             <div class="flex">
                 <span class="square">2</span>
                 <div class="feature-description">
-                    <h2>지출 내역 관리</h2>
-                    <p>간편하게 지출 내역을 입력하고 관리 할 수 있습니다.</p>
+                    <h2>내역 관리</h2>
+                    <p>간편하게 지출 내역을 입력하고 관리할 수 있습니다.</p>
                 </div>
             </div>
             <div class="flex">
                 <span class="square">3</span>
                 <div class="feature-description">
                     <h2>자동 계산</h2>
-                    <p>정확하고 빠르게 정산금액(분담금)을 계산 해줍니다.</p>
+                    <p>정확하고 빠르게 정산금액(분담금)을 계산합니다.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="section">
-        <h1>사용 방법 (4단계)</h1>
+        <h1>사용 방법 (5단계)</h1>
         <div class="flex">
             <span class="shield">
                 <span>1</span>
             </span>
-            <div class="p-5">
-                <h2>일지 생성</h2>
-                <div>만들기 버튼을 눌러 모임 이름을 입력하세요.</div>
+            <div class="step">
+                <h2>모임 생성</h2>
+                <div>메인페이지 상단에 "시작" 버튼을 눌러 모임 이름을 입력하면 모임 페이지로 이동합니다.</div>
             </div>
         </div>
         <div class="flex">
             <span class="shield">
                 <span>2</span>
             </span>
-            <div class="p-5">
+            <div class="step">
                 <h2>기본 정보 입력</h2>
-                <div>인원 추가 버튼을 눌러 지출 항목, 금액을 입력하세요.</div>
+                <div>참여자 "추가" 버튼을 눌러 이름과 선납금액을 입력하세요.</div>
             </div>
         </div>
         <div class="flex">
             <span class="shield">
                 <span>3</span>
             </span>
-            <div class="p-5">
+            <div class="step">
                 <h2>지출 내역 입력</h2>
-                <div>항목 추가 버튼을 눌러 지출 항목, 금액을 입력하세요.</div>
+                <div>지출 "추가" 버튼을 눌러 지출 항목과 금액을 입력하세요.</div>
             </div>
         </div>
         <div class="flex">
             <span class="shield">
                 <span>4</span>
             </span>
-            <div class="p-5">
+            <div class="step">
                 <h2>결과 확인</h2>
                 <div>개인별 정산금액(분담금)을 확인하세요.</div>
+            </div>
+        </div>
+        <div class="flex">
+            <span class="shield">
+                <span>5</span>
+            </span>
+            <div class="step">
+                <h2>이전 모임 기록 확인</h2>
+                <div>
+                    사이트를 나갔다가 다시 방문하면 이전에 작성한 모임 기록이 목록에 저장됩니다. 모임 목록에서 클릭하여 다시 확인할 수 있습니다.
+                </div>
             </div>
         </div>
     </div>
@@ -109,10 +120,10 @@
             <div class="question">
                 <h2>
                     <span class="Triangle"></span>
-                    일지는 어떻게 만들 수 있나요?
+                    어떻게 사용하나요?
                 </h2>
                 <div class="answer hidden">
-                    화면 상단의 "만들기" 버튼을 누른 후, 일지의 제목을 입력하면 생성할 수 있습니다.
+                    화면 상단의 "시작" 버튼을 누른 후, 모임의 제목을 입력하면 됩니다.
                 </div>
             </div>
         </div>
@@ -124,7 +135,7 @@
                 </h2>
                 <div class="answer hidden">
                     기본적으로 1/N로 균등하게 분할합니다.<br>
-                    이후, 계산된 분할 금액에서 각자의 선납 금액을 차감한 후 최종 금액이 표시됩니다.
+                    이후, 계산된 분할 금액에서 각자의 선납 금액을 반영한 후 최종 금액이 표시됩니다.
                 </div>
             </div>
         </div>
@@ -135,17 +146,17 @@
                     정산금액이 음수(-)로 표시되는 이유는 무엇인가요?
                 </h2>
                 <div class="answer hidden">
-                    정산금액이 음수(-)이면 돌려받을 금액이며, 양수(+)이면 내야 할 금액을 의미합니다.
+                    정산금액이 음수(-)라면 돌려받을 금액이며, 양수(+)라면 내야 할 금액을 의미합니다.
                 </div>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <h2>지금 바로 시작하세요!</h2>
+        <h2>지금 바로 시작해보세요!</h2>
         <div>
-            <div>간편하게 모임 비용을 계산하고, 즐거운 추억을 만드세요!</div>
-            <p>© 2025 PayMana. All Rights Reserved.</p>
+            <div>간편하게 모임 비용을 정산하고 즐거운 추억을 만드세요!</div>
+            <p>&copy; 2025 PayMana. All Rights Reserved.</p>
         </div>
     </div>
 </div>
@@ -153,7 +164,7 @@
 <div class="popup-bg hidden">
     <form class="popup-form" method="POST">
         <div class="popup-box">
-            <div class="popup-title">포스트 제목 입력</div>
+            <div class="popup-title">모임 제목 입력</div>
             <div class="close-button">✖</div>
             <div class="popup-form-container">
                 <label>
