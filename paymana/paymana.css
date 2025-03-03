@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     height: 100vh;
     width: 100%;
     margin: 0;
@@ -27,23 +28,29 @@ input {
     width: 80%;
     margin: 0 auto;
     padding: 20px;
-    min-width: max-content;
 }
 
 .header {
-    background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    height: 165px;
     min-width: 600px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://github.com/user-attachments/assets/dec8f977-e7d5-4c5d-a73a-6a9830af41da");
+    background-size: cover;
 }
 
 .header a {
     font-size: 28px;
-    color: #333;
+    color: #ffffff;
     margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .header label {
@@ -68,7 +75,25 @@ input {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    min-width: max-content;
+}
+
+.section2 {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.section h1, .section2 h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.footer h2, .section h2, .section2 h1 {
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .row {
@@ -149,7 +174,7 @@ input {
 
 .button {
     background-color: #4CAF50;
-    color: white;
+    color: #ffffff;
     padding: 10px 8px;
     border: none;
     border-radius: 5px;
@@ -166,7 +191,7 @@ input {
 .footer p {
     text-align: center;
     font-size: 14px;
-    color: #777;
+    color: #777777;
     margin: 30px 0;
 }
 
@@ -184,65 +209,12 @@ input {
 .post-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-    max-width: 1496px;
-}
-
-.post-list a {
-    overflow: hidden;
+    gap: 10px;
+    margin: 20px auto 0 auto;
 }
 
 .post-list a div {
     word-break: keep-all;
-}
-
-@media (max-aspect-ratio: 1/1) {
-    .flex-container {
-        flex-direction: column;
-    }
-
-    .flex-container .section {
-        width: 100%;
-    }
-
-    .post-list {
-        max-width: 600px;
-    }
-}
-
-.person-list-description {
-    font-weight: bold;
-    color: #fff;
-    font-size: 24px;
-    padding: 3px 17px;
-    background: #CCC;
-    border-radius: 50px;
-    cursor: pointer;
-}
-
-.person-list-description-view {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    font-size: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    min-width: max-content;
-}
-
-.person-list-description:focus-within .person-list-description-view,
-.person-list-description:hover .person-list-description-view {
-    display: block;
-    opacity: 1;
 }
 
 .post-list a {
@@ -255,7 +227,7 @@ input {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 150px;
+    width: 142px;
     text-align: center;
 }
 
@@ -271,9 +243,126 @@ input {
 }
 
 .post-list div {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     color: #333;
+}
+
+.post-list div p {
+    font-weight: normal;
+}
+
+.feature {
+    display: flex;
+    gap: 0.25rem;
+}
+
+@media (max-width: 1025px) {
+    .feature {
+        flex-direction: column;
+    }
+}
+
+.feature-description {
+    padding: 10px;
+    min-width: 200px;
+    word-break: keep-all;
+}
+
+.question {
+    cursor: pointer;
+    padding: 10px;
+}
+
+.answer {
+    padding: 10px;
+    margin: 4px;
+    border-left: 1px solid #ccc;
+}
+
+.Triangle {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid black; /* ▶ 모양 */
+    margin-right: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease; /* 부드러운 회전 효과 */
+}
+
+.Triangle.rotate {
+    transform: rotate(90deg);
+}
+
+.square {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #4CAF50;
+    border-radius: 5px;
+    color: #ffffff;
+}
+
+.shield {
+    width: 60px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #4CAF50;
+    color: #ffffff;
+    position: relative;
+    top: 10px;
+    border-radius: 5px;
+}
+
+.shield span {
+    position: relative;
+    top: 8px;
+    font-size: 20px;
+}
+
+.shield::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 15px solid #ffffff;
+    border-radius: 5px;
+}
+
+.shield::before {
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 15px solid #4CAF50;
+    border-radius: 5px;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    .flex-container {
+        flex-direction: column;
+    }
+
+    .flex-container .section {
+        width: 100%;
+    }
+
+    .post-list {
+        max-width: 600px;
+    }
 }
 
 /* 팝업 */
@@ -322,4 +411,38 @@ input {
     padding: 10px 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
+}
+
+/* 포스트 페이지 */
+.person-list-description {
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 24px;
+    padding: 3px 17px;
+    background: #CCC;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.person-list-description-view {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    min-width: max-content;
+}
+
+.person-list-description:focus-within .person-list-description-view,
+.person-list-description:hover .person-list-description-view {
+    display: block;
+    opacity: 1;
 }

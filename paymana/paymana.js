@@ -1,4 +1,23 @@
 const $popupBg = $('.popup-bg');
+const $postList = $('.post-list');
+
+function adjustPostListWidth() {
+    var containerWidth = $postList.parent().width();
+    var newWidth = Math.floor(containerWidth / 152) * 152;
+    $postList.css('width', newWidth);
+}
+
+$(document).ready(adjustPostListWidth);
+
+$(window).on('resize', adjustPostListWidth);
+
+$(".question").click(function () {
+    let answer = $(this).find(".answer");
+    let triangle = $(this).find(".Triangle");
+
+    answer.toggleClass("hidden");
+    triangle.toggleClass("rotate");
+});
 
 function createPost() {
     $popupBg.removeClass('hidden').addClass('flex');
@@ -9,35 +28,44 @@ $('.close-button').click(function () {
 });
 
 $(document).ready(function () {
+    let hasPost = false; // 게시글이 추가되었는지 확인하는 변수
+
     Object.keys(localStorage)
-        .filter(function (key) {
-            return key.startsWith('PM-');
-        })
-        .map(function (key) {
+        .filter(key => key.startsWith('PM-'))
+        .map(key => {
             const match = key.match(/\d+/);
             const postId = match ? parseInt(match[0], 10) : NaN;
 
-            const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
+            const decompressedData = LZString.decompressFromUTF16(
+                localStorage.getItem(`PM-${postId}`)
+            );
             const postData = decompressedData ? JSON.parse(decompressedData) : {};
-            const title = `${postId}) ${postData?.title}` || `${postId}) 제목 없음`; // 안전하게 title 가져오기
+            const title = `${postId}) ${postData?.title || "제목 없음"}`;
 
-            return { postId, title }; // 객체로 반환하여 나중에 정렬할 수 있게 함
+            return { postId, title };
         })
-        .sort(function (a, b) {
-            return b.postId - a.postId; // postId 기준으로 내림차순 정렬
-        })
-        .forEach(function (post) {
+        .sort((a, b) => b.postId - a.postId)
+        .forEach(post => {
+            hasPost = true;
             const newPost = `
                 <a href="../paymana/post?${post.postId}">
                     <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
                     <div>${post.title}</div>
                 </a>
             `;
-            $('.post-list').append(newPost);
+            $postList.append(newPost);
         });
+
+    if (!hasPost) {
+        const noPostMessage = `
+        <div>
+            <h2>아직 생성된 일지가 없습니다.</h2>
+            <p>화면 상단의 "만들기" 버튼을 눌러 일지 제목을 입력한 후 생성하세요.</p>
+        </div>
+        `;
+        $('.post-list-section').append(noPostMessage);
+    }
 });
-
-
 
 $('.popup-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
@@ -73,10 +101,15 @@ function getLocalStorageSize() {
         let key = localStorage.key(i);  // key 가져오기
         total += (localStorage.getItem(key).length * 2); // UTF-16 문자당 2바이트
     }
-    console.log(`현재 로컬스토리지 사용량: ${total / 1024} / 5120KB`);
 
-    if (total / 1024 >= 4900) {
-        alert(`현재 사용량 : [ ${total / 1024} / 5000KB ]\n저장공간이 얼마 남지 않았습니다.\n사용하지 않는 파일은 삭제해주세요.`);
+    let sizeInKB = total / 1024;
+    let formattedSize = sizeInKB % 1 === 0 ? sizeInKB.toFixed(0) : sizeInKB.toFixed(1); // 정수일 경우 소수점 없이, 아니면 소수 첫째 자리까지
+
+    console.log(`현재 로컬스토리지 사용량: ${sizeInKB}KB / 5120KB`);
+    console.log(`현재 로컬스토리지 사용량: ${formattedSize}KB / 5120KB`);
+
+    if (sizeInKB >= 4900) {
+        alert(`현재 사용량 : [ ${formattedSize}KB / 5000KB ]\n저장공간이 얼마 남지 않았습니다.\n사용하지 않는 파일은 삭제해주세요.`);
     }
 }
 
