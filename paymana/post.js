@@ -1,10 +1,12 @@
 const urls = window.location.search;
 const postId = urls ? parseInt(urls.substring(1)) : 0;
 const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
-const post = decompressedData ? JSON.parse(decompressedData) : {};
+const post = decompressedData ? JSON.parse(decompressedData) : null;
 
 
-if (isNaN(postId)) {
+if (isNaN(postId) || post === null) {
+    console.log(`postId : ${postId}`);
+    console.log(`post : ${post}`);
     alert(`잘못된 접근방식입니다.`);
     history.back();
 }

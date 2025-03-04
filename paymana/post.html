@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.01, maximum-scale=0.5">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6, minimum-scale=0.01, maximum-scale=0.5">
     <link rel="icon" href="../favicon/PayMana.png" type="image/png">
     <title>PayMana</title>
 
@@ -31,7 +31,7 @@
         </label>
     </div>
 
-    <div class="section">
+    <div class="section2">
         <div class="row">
             <span>총 예산</span><span>총 지출</span><span>잔액</span>
         </div>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="flex-container">
-        <div class="section">
+        <div class="section2">
             <button class="button mb-2" onclick="addItem()" aria-label="지출 항목 추가">추가</button>
 
             <div class="row">
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <div class="section">
+        <div class="section2">
             <div class="flex">
                 <span class="person-list-description mb-2">
                     ?
@@ -76,6 +76,9 @@
         </div>
     </div>
     <div class="flex gap-2">
+        <form class="export-form" method="POST">
+            <button type="submit" class="export-button">내보내기</button>
+        </form>
         <button class="button" onclick="window.location.href = `../paymana`">목록</button>
         <button class="remove-button" onclick="removePost()">삭제</button>
     </div>
@@ -85,6 +88,26 @@
     <p>&copy; 2025 PayMana. All Rights Reserved.</p>
 </div>
 
+<div class="popup-bg hidden">
+    <div class="popup-box">
+        <div class="popup-title">생성된 코드</div>
+        <div class="close-button">✖</div>
+        <div class="popup-form-container flex-col">
+            <div class="code">
+                000000
+            </div>
+            <div>
+                위 코드를 필요한 환경에 접속한 후 입력해 주세요.
+                <br>
+                이 코드를 사용하면 다른 환경에서도 데이터를 불러올 수 있습니다.
+                <br>
+                코드는 다시 확인할 수 없으니 잘 기억하거나 안전한 곳에 저장해 두세요.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="post-module.js" defer type="module"></script>
 <script src="post.js" defer></script>
 </body>
 </html>

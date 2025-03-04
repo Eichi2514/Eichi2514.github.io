@@ -172,10 +172,44 @@
                 </label>
                 <button class="button" type="submit">생성</button>
             </div>
+            <button class="button" type="button" onclick="loadPost()">불러오기</button>
         </div>
     </form>
 </div>
 
+<div class="popup2-bg hidden">
+    <form class="popup2-form" method="POST">
+        <div class="popup2-box">
+            <div class="popup2-title">불러오기 코드 입력</div>
+            <div class="close-button">✖</div>
+            <div class="popup2-form-container">
+                <label>
+                    <input class="popup2-input" type="number" placeholder="코드를 입력해주세요" name="code"/>
+                </label>
+                <button class="button" type="submit">불러오기</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="notice-bg hidden">
+    <form class="notice-form" method="POST">
+        <div class="notice-box">
+            <div class="notice-title">알림</div>
+            <button type="submit" class="close-button">✖</button>
+            <div class="notice-content">
+                접속 환경이 변경될 경우, 저장된 정보가 자동으로 이동되지 않습니다.
+                데이터를 이동하려면 정보를 내보내기 해주세요.
+            </div>
+            <label for="confirm-checkbox" class="notice-checkbox">
+                <input type="checkbox" id="confirm-checkbox" class="confirm-checkbox">
+                <span>오늘 더이상 보지 않기</span>
+            </label>
+        </div>
+    </form>
+</div>
+
+<script src="paymana/post-module.js" defer type="module"></script>
 <script src="paymana/paymana.js" defer></script>
 </body>
 </html>

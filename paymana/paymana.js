@@ -1,4 +1,6 @@
 const $popupBg = $('.popup-bg');
+const $popup2Bg = $('.popup2-bg');
+const $noticeBg = $('.notice-bg');
 const $postList = $('.post-list');
 
 function adjustPostListWidth() {
@@ -23,8 +25,15 @@ function createPost() {
     $popupBg.removeClass('hidden').addClass('flex');
 }
 
+function loadPost() {
+    $popupBg.removeClass('flex').addClass('hidden');
+    $popup2Bg.removeClass('hidden').addClass('flex');
+}
+
 $('.close-button').click(function () {
     $popupBg.removeClass('flex').addClass('hidden');
+    $popup2Bg.removeClass('flex').addClass('hidden');
+    $noticeBg.removeClass('flex').addClass('hidden');
 });
 
 $(document).ready(function () {
@@ -42,7 +51,7 @@ $(document).ready(function () {
             const postData = decompressedData ? JSON.parse(decompressedData) : {};
             const title = `${postId}) ${postData?.title || "제목 없음"}`;
 
-            return { postId, title };
+            return {postId, title};
         })
         .sort((a, b) => b.postId - a.postId)
         .forEach(post => {
@@ -114,3 +123,31 @@ function getLocalStorageSize() {
 }
 
 getLocalStorageSize();
+
+const now = new Date();
+const year = `${now.getFullYear()}`;
+const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+
+const localStorageKey = `PM${formattedTime}`;
+
+$('.notice-form').submit(async function (event) {
+    event.preventDefault(); // 폼의 기본 제출 동작을 막음
+
+    const isChecked = $('#confirm-checkbox').prop('checked');
+
+    if (isChecked) {
+        localStorage.setItem(localStorageKey, `1`);
+
+        // 오늘을 제외하고 키가 같은 해로 시작하면 삭제
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith(`PM${year}`) && key !== localStorageKey) {
+                localStorage.removeItem(key);
+            }
+        }
+    }
+});
+
+if (!localStorage.getItem(localStorageKey)) {
+    $noticeBg.removeClass('hidden').addClass('flex');
+}
