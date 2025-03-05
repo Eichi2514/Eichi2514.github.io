@@ -387,8 +387,14 @@ input {
     }
 }
 
+.contact {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
 /* 팝업 */
-.popup-bg, .popup2-bg {
+.popup-bg {
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -413,12 +419,12 @@ input {
 
 .notice-form {
     width: 300px;
-    border: 1px solid;
+    box-shadow: 0 4px 12px rgba(0, 0, 0);
     border-radius: 20px;
     word-break: keep-all;
 }
 
-.popup-box, .popup2-box, .notice-box {
+.popup-box, .notice-box {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -428,7 +434,7 @@ input {
     border-radius: 20px;
 }
 
-.popup-title, .popup2-title, .notice-title {
+.popup-title, .notice-title {
     border-bottom: 3px solid #4CAF50;
     padding: 0 0 20px 10px;
 }
@@ -440,13 +446,13 @@ input {
     cursor: pointer;
 }
 
-.popup-form-container, .popup2-form-container, .notice-content {
+.popup-form-container, .notice-content {
     display: flex;
     gap: 10px;
     padding: 30px 0;
 }
 
-.popup-input, .popup2-input {
+.popup-input {
     padding: 10px 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -454,11 +460,13 @@ input {
 
 /* 체크박스 스타일 */
 .notice-checkbox {
-    display: flex;
-    justify-content: end;
+    position: relative;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
+    max-width: max-content;
+    margin-left: auto;
 }
 
 .notice-checkbox input {
@@ -477,12 +485,11 @@ input {
     content: "✔";
     font-size: 14px;
     position: absolute;
-    bottom: 21px;
-    left: 111px;
-    width: 18px;
-    height: 18px;
+    bottom: 1px;
+    left: -1px;
+    width: 20px;
+    height: 20px;
     text-align: center;
-    line-height: 18px;
 }
 
 .notice-checkbox input:checked + span {
@@ -490,7 +497,7 @@ input {
 }
 
 /* 포스트 페이지 */
-.person-list-description {
+.description {
     font-weight: bold;
     color: #ffffff;
     font-size: 24px;
@@ -500,7 +507,7 @@ input {
     cursor: pointer;
 }
 
-.person-list-description-view {
+.description-view {
     display: none;
     position: absolute;
     top: 50%;
@@ -517,8 +524,8 @@ input {
     min-width: max-content;
 }
 
-.person-list-description:focus-within .person-list-description-view,
-.person-list-description:hover .person-list-description-view {
+.description:focus-within .description-view,
+.description:hover .description-view {
     display: block;
     opacity: 1;
 }

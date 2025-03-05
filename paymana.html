@@ -161,8 +161,8 @@
     </div>
 </div>
 
-<div class="popup-bg hidden">
-    <form class="popup-form" method="POST">
+<div class="popup-bg popup1-bg hidden">
+    <form class="popup1-form" method="POST">
         <div class="popup-box">
             <div class="popup-title">모임 제목 입력</div>
             <div class="close-button">✖</div>
@@ -177,14 +177,14 @@
     </form>
 </div>
 
-<div class="popup2-bg hidden">
+<div class="popup-bg popup2-bg hidden">
     <form class="popup2-form" method="POST">
-        <div class="popup2-box">
-            <div class="popup2-title">불러오기 코드 입력</div>
+        <div class="popup-box">
+            <div class="popup-title">불러오기 코드 입력</div>
             <div class="close-button">✖</div>
-            <div class="popup2-form-container">
+            <div class="popup-form-container">
                 <label>
-                    <input class="popup2-input" type="number" placeholder="코드를 입력해주세요" name="code"/>
+                    <input class="popup-input" type="number" placeholder="코드를 입력해주세요" name="code"/>
                 </label>
                 <button class="button" type="submit">불러오기</button>
             </div>
@@ -205,6 +205,55 @@
                 <input type="checkbox" id="confirm-checkbox" class="confirm-checkbox">
                 <span>오늘 더이상 보지 않기</span>
             </label>
+        </div>
+    </form>
+</div>
+
+<span class="description contact">
+    ?
+</span>
+
+<div class="popup-bg popup3-bg hidden">
+    <form class="popup3-form" method="POST" data-email="picon1317@gmail.com"
+          action="https://script.google.com/macros/s/AKfycbwkMzj5bAYPN8mPNSoGWw0pUHVLDZ0IpwpUPgT4QQCyxQlcOx1oJuINH__3CoMw-5nYDg/exec">
+        <div class="popup-box">
+            <div class="popup-title text-lg">문의하기</div>
+            <div class="close-button">✖</div>
+            <div class="popup-form-container flex-col p-10">
+                <div>
+                    <label for="name" class="block text-lg font-medium">이름</label>
+                    <input style="width: 500px;"
+                           class="popup-input"
+                           id="name" type="text" placeholder="이름을 입력해 주세요" name="name" required/>
+                </div>
+                <div>
+                    <label for="contact" class="block text-lg font-medium">연락처</label>
+                    <input style="width: 500px;"
+                           class="popup-input"
+                           id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required />
+
+                </div>
+                <div>
+                    <label for="email" class="block text-lg font-medium">이메일</label>
+                    <input style="width: 500px;"
+                           class="popup-input"
+                           id="email" type="email" placeholder="이메일을 입력해 주세요 (예: id@email.com)" name="email"
+                           required/>
+                </div>
+                <div>
+                    <label for="body" class="block text-lg font-medium">내용</label>
+                    <textarea style="width: 500px;"
+                           class="popup-input"
+                            id="body" placeholder="내용을 입력해 주세요" name="body" required></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button class="button"
+                            id="submitBtn" type="submit">
+                        보내기
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>

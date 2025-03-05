@@ -1,6 +1,9 @@
 const $popupBg = $('.popup-bg');
+const $popup1Bg = $('.popup1-bg');
 const $popup2Bg = $('.popup2-bg');
+const $popup3Bg = $('.popup3-bg');
 const $noticeBg = $('.notice-bg');
+
 const $postList = $('.post-list');
 
 function adjustPostListWidth() {
@@ -22,18 +25,46 @@ $(".question").click(function () {
 });
 
 function createPost() {
-    $popupBg.removeClass('hidden').addClass('flex');
+    $popup1Bg.removeClass('hidden').addClass('flex');
 }
 
 function loadPost() {
-    $popupBg.removeClass('flex').addClass('hidden');
+    $popup1Bg.removeClass('flex').addClass('hidden');
     $popup2Bg.removeClass('hidden').addClass('flex');
 }
 
 $('.close-button').click(function () {
     $popupBg.removeClass('flex').addClass('hidden');
-    $popup2Bg.removeClass('flex').addClass('hidden');
-    $noticeBg.removeClass('flex').addClass('hidden');
+    $noticeBg.addClass('hidden');
+});
+
+$(".contact").click(function () {
+    $popup3Bg.removeClass('hidden').addClass('flex');
+});
+
+$(".popup3-form").submit(function (event) {
+    event.preventDefault();
+
+    $("#submitBtn").prop("disabled", true);
+
+    $.ajax({
+        url: this.action,
+        type: "POST",
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+        success: function () {
+            alert("문의가 성공적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다!");
+            $popupBg.removeClass('flex').addClass('hidden');
+        },
+        error: function (xhr) {
+            console.log("전송 중 오류 발생: " + xhr.responseText);
+            alert("문의 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        },
+        complete: function () {
+            $("#submitBtn").prop("disabled", false);
+        }
+    });
 });
 
 $(document).ready(function () {
@@ -76,7 +107,7 @@ $(document).ready(function () {
     }
 });
 
-$('.popup-form').submit(async function (event) {
+$('.popup1-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
 
     const $titleInput = $('input[name="title"]');
@@ -151,3 +182,4 @@ $('.notice-form').submit(async function (event) {
 if (!localStorage.getItem(localStorageKey)) {
     $noticeBg.removeClass('hidden').addClass('flex');
 }
+

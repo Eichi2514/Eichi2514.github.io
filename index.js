@@ -59,32 +59,28 @@ $(window).on('load', function () {
 });
 
 $(document).ready(function () {
-    document.querySelector(".gform").addEventListener("submit", function (event) {
-        event.preventDefault(); // 폼 기본 동작 중지
-        document.getElementById("submitBtn").disabled = true; // 버튼 비활성화
+    $(".gform").submit(function (event) {
+        event.preventDefault();
 
-        // 비동기로 폼 데이터 전송
-        fetch(event.target.action, {
-            method: "POST",
-            body: new FormData(event.target)
-        })
-            .then((response) => {
-                if (response.ok) {
-                    alert("The email has been successfully sent!");
-                } else {
-                    response.text().then((errorMessage) => {
-                        console.log("전송 중 오류 발생 : " + errorMessage);
-                        alert("Failed to send the email");
-                    });
-                }
-            })
-            .catch((error) => {
-                console.log("전송 중 오류 발생 : " + error);
-                alert("Failed to send the email. Please try again.");
-            })
-            .finally(() => {
-                document.getElementById("submitBtn").disabled = false; // 버튼 활성화
-            });
+        $("#submitBtn").prop("disabled", true);
+
+        $.ajax({
+            url: this.action,
+            type: "POST",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert("이메일이 성공적으로 전송되었습니다!");
+            },
+            error: function (xhr) {
+                console.log("전송 중 오류 발생 : " + xhr.responseText);
+                alert("이메일 전송 실패");
+            },
+            complete: function () {
+                $("#submitBtn").prop("disabled", false);
+            }
+        });
     });
 
     const followImageBasic = document.querySelector('.mouse__basic'); // 기본 이미지 선택
