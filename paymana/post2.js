@@ -1,18 +1,32 @@
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+
 const urls = window.location.search;
 const postId = urls ? parseInt(urls.substring(1)) : 0;
-const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
-const post = decompressedData ? JSON.parse(decompressedData) : null;
+const dateString = urls.substring(1).split('&')[1];
+const decompressedData = LZString.decompressFromUTF16();
+const originalPost = JSON.parse(localStorage.getItem(`PM-${postId}`));
 
+function checkAccess() {
+    if (isNaN(postId) || !originalPost || originalPost.category !== 2 || !dateString) {
+        console.log(`postId : ${postId}`);
+        alert(`잘못된 접근방식입니다.`);
+        history.back();
 
-if (isNaN(postId) || post === null) {
-    console.log(`postId : ${postId}`);
-    console.log(`post : ${post}`);
-    alert(`잘못된 접근방식입니다.`);
-    history.back();
+        return 0;
+    }
+    return 1;
 }
 
+checkAccess();
+
+const post = originalPost[dateString];
+
 function titleUpdate() {
-    $('.title').val(post.title);
+    $('.calendar').val(dateString);
+    $('.title').val(originalPost.title);
 }
 
 titleUpdate();
@@ -30,156 +44,22 @@ function formatNum(num) {
     return num.toLocaleString('ko-KR', {minimumFractionDigits: 0, maximumFractionDigits: 1});
 }
 
-function totalSpentUpdate() {
-    let totalSpent = 0;
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('i')) {
-            const amount = parseInt(post[key].amount) || 0;
-            totalSpent += amount;
-        }
-    });
+function originalPostUpdate(newOriginalPost) {
+    if (checkAccess === 0) return;
 
-    const $totalSpent = $('.totalSpent');
-    $totalSpent.removeClass('total-amount-negative total-amount');
-
-    const formatString = formatNum(totalSpent);
-
-    if (totalSpent < 0) {
-        $totalSpent.text(`${formatString}원`).addClass('total-amount-negative');
-    } else {
-        $totalSpent.text(`${formatString}원`).addClass('total-amount');
-    }
-
-    return totalSpent;
-}
-
-function totalFeeUpdate() {
-    let totalFee = 0;
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('p')) {
-            const advanceAmount = parseInt(post[key].advanceAmount) || 0;
-            totalFee += advanceAmount;
-        }
-    });
-
-    const $totalFee = $('.totalFee');
-    $totalFee.removeClass('total-amount-negative total-amount');
-
-    const formatString = formatNum(totalFee);
-
-    if (totalFee < 0) {
-        $totalFee.text(`${formatString}원`).addClass('total-amount-negative');
-    } else {
-        $totalFee.text(`${formatString}원`).addClass('total-amount');
-    }
-
-    return totalFee;
-}
-
-function remainingAmountUpdate() {
-    const totalFee = totalFeeUpdate();
-    const totalSpent = totalSpentUpdate();
-    const remainingAmount = totalFee - totalSpent;
-
-    const $remainingAmount = $('.remainingAmount');
-    $remainingAmount.removeClass('total-amount-negative total-amount');
-    const formatString = formatNum(remainingAmount);
-
-    if (remainingAmount < 0) {
-        $remainingAmount.text(`${formatString}원`).addClass('total-amount-negative');
-    } else {
-        $remainingAmount.text(`${formatString}원`).addClass('total-amount');
-    }
-
-    let count = 0;
-
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('p')) {
-            count++;
-        }
-    });
-
-
-    if (count > 0) {
-        Object.keys(post).forEach(key => {
-            if (key.startsWith('p')) {
-                const advanceAmount = parseInt(post[key].advanceAmount) || 0;
-                const calculatedAmount = (totalSpent / count) - advanceAmount;
-
-                const $settledAmount = $(`.settledAmount-${key}`);
-                $settledAmount.removeClass('total-amount-negative total-amount');
-                const formatString = formatNum(calculatedAmount);
-
-                if (calculatedAmount < 0) {
-                    $settledAmount.text(`${formatString}원`).addClass('total-amount');
-                } else {
-                    $settledAmount.text(`${formatString}원`).addClass('total-amount-negative');
-                }
-            }
-        });
-    }
+    // const compressedData = LZString.compressToUTF16(JSON.stringify(newOriginalPost));
+    const compressedData = JSON.stringify(newOriginalPost);
+    localStorage.setItem(`PM-${postId}`, compressedData);
 }
 
 function postUpdate(newPost) {
-    if (isNaN(postId)) {
-        alert(`잘못된 접근방식입니다.`);
-        history.back();
-        return;
-    }
-    const compressedData = LZString.compressToUTF16(JSON.stringify(newPost));
-    localStorage.setItem(`PM2-${postId}`, compressedData);
+    if (checkAccess === 0) return;
+
+    originalPost[dateString] = newPost;
+    // const compressedData = LZString.compressToUTF16(JSON.stringify(newPost));
+    const compressedData = JSON.stringify(originalPost);
+    localStorage.setItem(`PM-${postId}`, compressedData);
 }
-
-function startPost() {
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('i')) {
-            const num = parseInt(key.substring(1), 10);
-
-            const itemName = post[key].itemName || '';
-            const amount = parseInt(post[key].amount) || 0;
-
-            const newItem = `
-                    <div class="item row">
-                        <label>
-                            <input class="itemName" type="text" name="i${num}" value="${itemName}">
-                        </label>
-                        <label>
-                            <input class="amount" type="number" name="i${num}" value="${amount}">
-                        </label>
-                        <span class="splitAmount"></span>
-                        <button class="remove-bt" data-id="i${num}">🗑</button>
-                    </div>
-                    `;
-
-            $('.item-list').append(newItem);
-        } else if (key.startsWith('p')) {
-            const num = parseInt(key.substring(1), 10);
-
-            const name = post[key].name || '';
-            const advanceAmount = parseInt(post[key].advanceAmount) || 0;
-
-            const newItem = `
-                    <div class="person row">
-                        <label>
-                            <input class="name" type="text" name="p${num}" value="${name}">
-                        </label>
-                        <span class="settledAmount-p${num}">0원</span>
-                        <label>
-                            <input class="advanceAmount" type="number" name="p${num}" value="${advanceAmount}">
-                        </label>
-                        <button class="remove-bt" data-id="p${num}">🗑</button>
-                    </div>
-                    `;
-
-            $('.person-list').append(newItem);
-        }
-    });
-
-    remainingAmountUpdate();
-
-}
-
-startPost();
 
 function addItem() {
     let lastItemId = 0;
@@ -193,17 +73,18 @@ function addItem() {
         }
     });
 
+    // 새로운 아이템 추가 HTML 구조
     const newItem = `
-        <div class="item row">
-            <label>
-                <input class="itemName" type="text" name="i${lastItemId + 1}">
-            </label>
-            <label>
-                <input class="amount" type="number" name="i${lastItemId + 1}">
-            </label>
-            <span class="splitAmount"></span>
-            <button class="remove-bt" data-id="i${lastItemId + 1}">🗑</button>
-        </div>
+         <div class="item row">
+             <label>
+                 <input class="itemName" type="text" name="i${lastItemId + 1}">
+             </label>
+             <label>
+                 <input class="amount" type="number" name="i${lastItemId + 1}">
+             </label>
+             <span class="splitAmount"></span>
+             <button class="remove-bt" data-id="i${lastItemId + 1}">🗑</button>
+         </div>
         `;
 
     const nameAttr = `i${lastItemId + 1}`;
@@ -213,6 +94,7 @@ function addItem() {
     if (!post[nameAttr]) {
         post[nameAttr] = {};
     }
+
     post[nameAttr][itemName] = '';
     post[nameAttr][amount] = 0;
 
@@ -220,6 +102,7 @@ function addItem() {
 
     $('.item-list').append(newItem);
 }
+
 
 function addPerson() {
     let lastPersonId = 0;
@@ -238,23 +121,32 @@ function addPerson() {
             <label>
                 <input class="name" type="text" name="p${lastPersonId + 1}">
             </label>
-            <span class="settledAmount-p${lastPersonId + 1}">0원</span>
             <label>
-                <input class="advanceAmount" type="number" name="p${lastPersonId + 1}">
+                <input style="width: calc(100% - 60px);"
+                       class="depositDate" type="text"
+                       name="p${lastPersonId + 1}">
+                <button style="width: 50px; height: 36px" class="button payment-bt" data-id="p${lastPersonId + 1}">납부</button>
             </label>
+            <span class="flex gap-2">
+                <span class="status-p${lastPersonId + 1}" style="width: 50px;">불참</span>
+                <button style="width: 50px; height: 36px" class="button status-bt" data-id="p${lastPersonId + 1}">참여</button>
+            </span>
             <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
         </div>
         `;
 
     const nameAttr = `p${lastPersonId + 1}`;
     const name = `name`;
-    const advanceAmount = `advanceAmount`;
+    const depositDate = `depositDate`;
+    const status = `status`;
 
     if (!post[nameAttr]) {
         post[nameAttr] = {};
     }
+
     post[nameAttr][name] = '';
-    post[nameAttr][advanceAmount] = 0;
+    post[nameAttr][depositDate] = '';
+    post[nameAttr][status] = '불참';
 
     postUpdate(post);
 
@@ -267,18 +159,20 @@ $(document).on('input', 'input', function () {
     const classAttr = $(this).attr('class');
 
     if (classAttr === 'title') {
-        post[classAttr] = val;
+        originalPost[classAttr] = val;
+        originalPostUpdate(originalPost);
     } else {
         if (!post[nameAttr]) {
             post[nameAttr] = {};
         }
         post[nameAttr][classAttr] = val;
+        postUpdate(post);
     }
 
-    postUpdate(post);
+    $(`.status-${nameAttr}`).text(statusUpdate(nameAttr));
 
     if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount' && classAttr !== 'title') {
-        remainingAmountUpdate();
+        // remainingAmountUpdate();
     }
 });
 
@@ -292,11 +186,66 @@ $(document).on('click', '.remove-bt', function () {
 
     button.closest('div').remove();
 
-    delete post[`${id}`];
+    delete post[dateString][`${id}`];
 
     postUpdate(post);
 
     if (id.startsWith('p') || id.startsWith('i')) {
-        remainingAmountUpdate();
+        // remainingAmountUpdate();
     }
 });
+
+$(document).on('click', '.payment-bt', function () {
+    const button = $(this);
+    const id = button.data('id');
+
+    $(`.depositDate[name="${id}"]`).val(`${yyyy}-${mm}-${dd}`);
+
+    if (!post[id]) {
+        post[id] = {};
+    }
+    post[id][`depositDate`] = `${yyyy}-${mm}-${dd}`;
+    $(`.status-${id}`).text(statusUpdate(id));
+
+    postUpdate(post);
+
+    // remainingAmountUpdate();
+});
+
+$(document).on('click', '.status-bt', function () {
+    const button = $(this);
+    const id = button.data('id');
+
+    if (post[id][`status`] === '참여') {
+        post[id][`status`] = '불참';
+    } else {
+        post[id][`status`] = '참여';
+    }
+
+    $(`.status-${id}`).text(statusUpdate(id));
+
+    postUpdate(post);
+
+    // remainingAmountUpdate();
+});
+
+function statusUpdate(id) {
+    if (!post[id]) {
+        post[id] = {};
+    }
+
+    const status = post[id][`status`] || '불참';
+    const depositDate = post[id][`depositDate`] || "";
+
+    if (status === '불참' && depositDate === "") {
+        return '불참';
+    } else if (status === '불참' && depositDate !== "") {
+        return '환불';
+    } else if (status === '참여' && depositDate === "") {
+        return '미납';
+    } else if (status === '참여' && depositDate !== "") {
+        return '참여';
+    }
+
+    return '오류';
+}

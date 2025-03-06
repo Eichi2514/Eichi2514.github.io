@@ -1,3 +1,9 @@
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+
+const formattedDate = `${yyyy}-${mm}`;
+
 const $popupBg = $('.popup-bg');
 const $popup1Bg = $('.popup1-bg');
 const $popup2Bg = $('.popup2-bg');
@@ -87,13 +93,28 @@ $(document).ready(function () {
         .sort((a, b) => b.postId - a.postId)
         .forEach(post => {
             hasPost = true;
-            const newPost = `
+            const category = post.category || 1;
+            if (category === 1) {
+                const newPost = `
                 <a href="../paymana/post?${post.postId}">
                     <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
                     <div>${post.title}</div>
                 </a>
-            `;
-            $postList.append(newPost);
+                `;
+                $postList.append(newPost);
+            } else if (category === 2) {
+
+                alert('현재 서비스 점검 중입니다. 점검이 완료된 후 다시 이용해주세요.');
+                /*
+                const newPost = `
+                <a href="../paymana/post2?${post.postId}&${formattedDate}">
+                    <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
+                    <div>${post.title}</div>
+                </a>
+                `;
+                $postList.append(newPost);
+                 */
+            }
         });
 
     if (!hasPost) {
@@ -105,13 +126,17 @@ $(document).ready(function () {
         `;
         $('.post-list-section').append(noPostMessage);
     }
-});
+})
+;
 
 $('.popup1-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
 
     const $titleInput = $('input[name="title"]');
     const title = $titleInput.val().trim();
+
+    const $categorySelect = $('select[name="category"]');
+    const category = parseInt($categorySelect.val(), 10);
 
     if (!title) {
         alert('제목을 입력해주세요.');
@@ -130,9 +155,29 @@ $('.popup1-form').submit(async function (event) {
         }
     });
 
-    const compressedData = LZString.compressToUTF16(JSON.stringify({"title": title}));
-    localStorage.setItem(`PM-${postId}`, compressedData);
-    window.location.href = `../paymana/post?${postId}`;
+    if (category === 1) {
+        const compressedData = LZString.compressToUTF16(JSON.stringify({
+            "title": title,
+            "category": category
+        }));
+        localStorage.setItem(`PM-${postId}`, compressedData);
+        window.location.href = `../paymana/post?${postId}`;
+    } else if (category === 2) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+
+        const formattedDate = `${yyyy}-${mm}`;
+
+        const compressedData = JSON.stringify({
+            "title": title,
+            "category": category,
+            [formattedDate]: {}
+        });
+        localStorage.setItem(`PM-${postId}`, compressedData);
+        window.location.href = `../paymana/post2?${postId}&${formattedDate}`;
+    }
+
 });
 
 function getLocalStorageSize() {

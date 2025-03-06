@@ -166,11 +166,22 @@
         <div class="popup-box">
             <div class="popup-title">모임 제목 입력</div>
             <div class="close-button">✖</div>
-            <div class="popup-form-container">
-                <label>
-                    <input class="popup-input" type="text" placeholder="제목을 입력해주세요" name="title"/>
-                </label>
-                <button class="button" type="submit">생성</button>
+            <div class="popup-form-container flex-col">
+                <div>
+                    <span>양식 : </span>
+                    <label>
+                        <select class="popup-select" name="category">
+                            <option value="1">경비</option>
+                            <option value="2">회비</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="flex gap-2">
+                    <label>
+                        <input class="popup-input" type="text" placeholder="제목을 입력해주세요" name="title"/>
+                    </label>
+                    <button class="button" type="submit">생성</button>
+                </div>
             </div>
             <button class="button" type="button" onclick="loadPost()">불러오기</button>
         </div>
@@ -230,7 +241,7 @@
                     <label for="contact" class="block text-lg font-medium">연락처</label>
                     <input style="width: 500px;"
                            class="popup-input"
-                           id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required />
+                           id="contact" type="text" placeholder="전화번호를 입력해 주세요" name="contact" required/>
 
                 </div>
                 <div>
@@ -243,8 +254,8 @@
                 <div>
                     <label for="body" class="block text-lg font-medium">내용</label>
                     <textarea style="width: 500px;"
-                           class="popup-input"
-                            id="body" placeholder="내용을 입력해 주세요" name="body" required></textarea>
+                              class="popup-input"
+                              id="body" placeholder="내용을 입력해 주세요" name="body" required></textarea>
                 </div>
 
                 <div class="text-center">

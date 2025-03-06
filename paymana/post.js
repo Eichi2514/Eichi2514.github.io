@@ -3,8 +3,9 @@ const postId = urls ? parseInt(urls.substring(1)) : 0;
 const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
 const post = decompressedData ? JSON.parse(decompressedData) : null;
 
+const category = post.category || 1;
 
-if (isNaN(postId) || post === null) {
+if (isNaN(postId) || category !== 1) {
     console.log(`postId : ${postId}`);
     console.log(`post : ${post}`);
     alert(`잘못된 접근방식입니다.`);

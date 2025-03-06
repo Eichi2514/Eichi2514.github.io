@@ -63,7 +63,6 @@ input {
 .title-container {
     font-size: 24px;
     width: 100%;
-    text-align: center;
     padding: 10px;
     border-radius: 8px;
     background: #ffffff;
@@ -71,7 +70,11 @@ input {
     gap: 10px;
 }
 
-.title-container #calendar {
+.title {
+    text-align: center;
+}
+
+.title-container .calendar {
     cursor: pointer
 }
 
@@ -116,7 +119,7 @@ input {
     min-width: max-content;
 }
 
-.row span, .row label, .row input {
+.row span, .row label, .row input, .row button {
     font-size: 16px;
     text-align: center;
     flex-grow: 1;
