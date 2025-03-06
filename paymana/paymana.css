@@ -60,13 +60,24 @@ input {
     align-items: center;
 }
 
-.title {
+.title-container {
     font-size: 24px;
     width: 100%;
     text-align: center;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    background: #ffffff;
+    display: flex;
+    gap: 10px;
+}
+
+.title-container #calendar {
+    cursor: pointer
+}
+
+#title {
+    flex-grow: 1;
+    padding-left: 10px;
 }
 
 .section {
@@ -105,7 +116,7 @@ input {
     min-width: max-content;
 }
 
-.row span, .row label {
+.row span, .row label, .row input {
     font-size: 16px;
     text-align: center;
     flex-grow: 1;
@@ -115,12 +126,9 @@ input {
 }
 
 .row input {
-    width: 100%;
-    padding: 5px;
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 5px;
-    text-align: center;
 }
 
 .row :nth-child(4) {
@@ -182,7 +190,9 @@ input {
     cursor: pointer;
     font-size: 16px;
     margin-left: auto;
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-content: center;
 }
 
 .button:hover {
@@ -190,18 +200,11 @@ input {
 }
 
 .export-button {
-    background-color: #4CAF50;
-    color: #ffffff;
-    padding: 10px 8px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    display: block;
+    margin-left: 0;
 }
 
-.export-button:hover {
-    background-color: #45a049;
+.payment-button {
+    margin: auto;
 }
 
 .footer p {

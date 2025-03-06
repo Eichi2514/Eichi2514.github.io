@@ -39,9 +39,7 @@ function generateCodes(num) {
     return code;
 }
 
-$('.export-form').submit(async function (event) {
-    event.preventDefault(); // 폼의 기본 제출 동작을 막음
-
+$('.export-button').click(async function () {
     let isConfirm = confirm('내보내기를 진행하시겠습니까?')
 
     if (!isConfirm) return;

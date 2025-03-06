@@ -26,18 +26,34 @@
             <img src="../favicon/PayMana.png" alt="로고" style="width: 37px;">
             <div>PayMana</div>
         </a>
-        <label>
-            <input type="text" id="title" class="title-container title" value="제목">
+        <label class="title-container">
+            <input type="month" id="calendar">
+            <input type="text" class="title" id="title" value="제목">
         </label>
     </div>
 
     <div class="section2">
         <div class="row">
-            <span>총 예산</span><span>총 지출</span><span>잔액</span>
+            <span>월 회비</span><span>추가금(이자)</span><span>참여인원</span>
         </div>
         <div class="row">
-            <span class="totalFee">0원</span>
-            <span class="totalSpent">0원</span>
+            <label>
+                <input class="monthlyFee" type="number">
+            </label>
+            <label>
+                <input class="monthlyInterest" type="number">
+            </label>
+            <span class="">0명</span>
+        </div>
+    </div>
+
+    <div class="section2">
+        <div class="row">
+            <span></span><span></span><span>잔액</span>
+        </div>
+        <div class="row">
+            <span></span>
+            <span></span>
             <span class="remainingAmount">0원</span>
         </div>
     </div>
@@ -51,27 +67,41 @@
             </div>
 
             <div class="item-list">
+                <div class="item row">
+                    <label>
+                        <input class="itemName" type="text" name="i${lastItemId + 1}">
+                    </label>
+                    <label>
+                        <input class="amount" type="number" name="i${lastItemId + 1}">
+                    </label>
+                    <span class="splitAmount"></span>
+                    <button class="remove-bt" data-id="i${lastItemId + 1}">🗑</button>
+                </div>
             </div>
         </div>
 
-        <div class="section2">
-            <div class="flex">
-                <span class="description mb-2">
-                    ?
-                    <span class="description-view">
-                        정산금액이<br>
-                        음수(-)이면 환급금액이며,<br>
-                        양수(+)이면 납부금액입니다.
-                    </span>
-                </span>
-                <button class="button mb-2" onclick="addPerson()" aria-label="인원 추가">추가</button>
-            </div>
+        <div class="section2" style="min-width: max-content !important;">
+            <button class="button mb-2" onclick="addPerson()" aria-label="인원 추가">추가</button>
 
             <div class="row">
-                <span>이름</span><span>정산금액</span><span>선납금액</span><span>삭제</span>
+                <span>이름</span><span>입금일</span><span>참여여부</span><span>삭제</span>
             </div>
 
             <div class="person-list">
+                <div class="person row">
+                    <label>
+                        <input class="name" type="text" name="p${lastPersonId + 1}">
+                    </label>
+                    <label>
+                        <input style="width: calc(100% - 60px);" class="입금일" type="text" name="p${lastPersonId + 1}" value="00월 00일">
+                        <span style="width: 50px; height: 36px" class="button">납부</span>
+                    </label>
+                    <span class="flex gap-2">
+                        <span style="width: 50px;">불참</span>
+                        <span style="width: 50px; height: 36px" class="button">참여</span>
+                    </span>
+                    <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
+                </div>
             </div>
         </div>
     </div>
@@ -106,6 +136,6 @@
 </div>
 
 <script src="post-module.js" defer type="module"></script>
-<script src="post.js" defer></script>
+<!-- <script src="post2.js" defer></script> -->
 </body>
 </html>
