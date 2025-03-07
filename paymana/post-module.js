@@ -105,10 +105,25 @@ $('.popup2-form').submit(async function (event) {
         return;
     }
 
-    const compressedData = LZString.compressToUTF16(JSON.stringify(snapshot));
+    const post = JSON.stringify(snapshot);
+    const postData = snapshot.val();
+
+    const compressedData = LZString.compressToUTF16(post);
     localStorage.setItem(`PM-${postId}`, compressedData);
 
     await remove(postRef);
 
-    window.location.href = `../paymana/post?${postId}`;
+    const category = parseInt(postData?.category) || 1;
+
+    if (category === 1){
+        window.location.href = `../paymana/post?${postId}`;
+    }else if (category === 2) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+
+        const formattedDate = `${yyyy}-${mm}`;
+
+        window.location.href = `../paymana/post2?${postId}&${formattedDate}`;
+    }
 });

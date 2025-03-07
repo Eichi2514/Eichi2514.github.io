@@ -210,6 +210,26 @@ input {
     margin: auto;
 }
 
+.black-button {
+    color: #333;
+    border: 1px solid #333;
+    padding: 10px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: block;
+}
+
+.red-button {
+    color: #C62828;
+    border: 1px solid #C62828;;
+    padding: 10px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: block;
+}
+
 .footer p {
     text-align: center;
     font-size: 14px;

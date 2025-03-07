@@ -7,7 +7,7 @@ const urls = window.location.search;
 const postId = urls ? parseInt(urls.substring(1)) : 0;
 const dateString = urls.substring(1).split('&')[1];
 const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
-const originalPost = JSON.parse(decompressedData);
+const originalPost = decompressedData ? JSON.parse(decompressedData) : null;
 
 function checkAccess() {
     if (isNaN(postId) || !originalPost || originalPost.category !== 2 || !dateString) {
@@ -125,13 +125,13 @@ function addPerson() {
                 <input style="width: calc(100% - 60px);"
                        class="depositDate" type="text"
                        name="p${lastPersonId + 1}">
-                <button style="width: 50px; height: 36px" class="button payment-bt payment-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">납부</button>
-                <button style="width: 50px; height: 36px; display: none;" class="remove-button payment-cancel-bt payment-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
+                <button style="width: 50px; height: 36px" class="black-button payment-bt payment-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">납부</button>
+                <button style="width: 50px; height: 36px; display: none;" class="red-button payment-cancel-bt payment-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
             </label>
             <span class="flex gap-2">
                 <span class="status-p${lastPersonId + 1}" style="width: 50px;">불참</span>
-                <button style="width: 50px; height: 36px" class="button status-bt status-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">참여</button>
-                <button style="width: 50px; height: 36px; display: none;" class="remove-button status-cancel-bt status-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
+                <button style="width: 50px; height: 36px" class="black-button status-bt status-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">참여</button>
+                <button style="width: 50px; height: 36px; display: none;" class="red-button status-cancel-bt status-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
             </span>
             <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
         </div>
@@ -155,7 +155,7 @@ function addPerson() {
     $('.person-list').append(newItem);
 }
 
-$(document).on('input', 'input', function (event) {
+$(document).on('input', 'input', function () {
     const val = $(this).val();
     const nameAttr = $(this).attr('name');
     const classAttr = $(this).attr('class');
@@ -444,13 +444,13 @@ function startPost() {
                                 class="depositDate" type="text"
                                 name="${key}"
                                 value="${depositDate}">
-                            <button style="width: 50px; height: 36px; ${paymentBtClass}" class="button payment-bt payment-bt-${key}" data-id="${key}">납부</button>
-                            <button style="width: 50px; height: 36px; ${paymentCancelBtClass}" class="remove-button payment-cancel-bt payment-cancel-bt-${key}" data-id="${key}">취소</button>
+                            <button style="width: 50px; height: 36px; ${paymentBtClass}" class="black-button payment-bt payment-bt-${key}" data-id="${key}">납부</button>
+                            <button style="width: 50px; height: 36px; ${paymentCancelBtClass}" class="red-button payment-cancel-bt payment-cancel-bt-${key}" data-id="${key}">취소</button>
                         </label>
                         <span class="flex gap-2">
                             <span class="status-${key}" style="width: 50px;">${statusUpdate(key)}</span>
-                            <button style="width: 50px; height: 36px; ${statusBtClass}" class="button status-bt status-bt-${key}" data-id="${key}">참여</button>
-                            <button style="width: 50px; height: 36px; ${statusCancelBtClass}" class="remove-button status-cancel-bt status-cancel-bt-${key}" data-id="${key}">취소</button>
+                            <button style="width: 50px; height: 36px; ${statusBtClass}" class="black-button status-bt status-bt-${key}" data-id="${key}">참여</button>
+                            <button style="width: 50px; height: 36px; ${statusCancelBtClass}" class="red-button status-cancel-bt status-cancel-bt-${key}" data-id="${key}">취소</button>
                         </span>
                         <button class="remove-bt" data-id="${key}">🗑</button>
                     </div>
