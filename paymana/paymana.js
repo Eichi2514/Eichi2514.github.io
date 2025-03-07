@@ -87,13 +87,15 @@ $(document).ready(function () {
             );
             const postData = decompressedData ? JSON.parse(decompressedData) : {};
             const title = `${postId}) ${postData?.title || "제목 없음"}`;
+            const category = parseInt(postData?.category) || 1;
 
-            return {postId, title};
+            return {postId, title, category};
         })
         .sort((a, b) => b.postId - a.postId)
         .forEach(post => {
             hasPost = true;
-            const category = post.category || 1;
+            const category = post.category;
+
             if (category === 1) {
                 const newPost = `
                 <a href="../paymana/post?${post.postId}">
@@ -122,8 +124,7 @@ $(document).ready(function () {
         `;
         $('.post-list-section').append(noPostMessage);
     }
-})
-;
+});
 
 $('.popup1-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음

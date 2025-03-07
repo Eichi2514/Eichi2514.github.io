@@ -3,7 +3,7 @@ const postId = urls ? parseInt(urls.substring(1)) : 0;
 const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
 const post = decompressedData ? JSON.parse(decompressedData) : null;
 
-const category = post.category || 1;
+const category = (post && post.category) || 1;
 
 if (isNaN(postId) || category !== 1) {
     console.log(`postId : ${postId}`);
@@ -267,8 +267,8 @@ $(document).on('input', 'input', function () {
     const nameAttr = $(this).attr('name');
     const classAttr = $(this).attr('class');
 
-    if (classAttr === 'title') {
-        post[classAttr] = val;
+    if (classAttr.startsWith('title')) {
+        post['title'] = val;
     } else {
         if (!post[nameAttr]) {
             post[nameAttr] = {};
@@ -278,8 +278,11 @@ $(document).on('input', 'input', function () {
 
     postUpdate(post);
 
-    if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount' && classAttr !== 'title') {
+    if (!classAttr.startsWith('title')) {
+        console.log(`classAttr : ${classAttr}`);
+        if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount') {
         remainingAmountUpdate();
+        }
     }
 });
 
