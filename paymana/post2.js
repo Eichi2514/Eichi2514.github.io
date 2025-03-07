@@ -125,11 +125,13 @@ function addPerson() {
                 <input style="width: calc(100% - 60px);"
                        class="depositDate" type="text"
                        name="p${lastPersonId + 1}">
-                <button style="width: 50px; height: 36px" class="button payment-bt" data-id="p${lastPersonId + 1}">납부</button>
+                <button style="width: 50px; height: 36px" class="button payment-bt payment-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">납부</button>
+                <button style="width: 50px; height: 36px; display: none;" class="remove-button payment-cancel-bt payment-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
             </label>
             <span class="flex gap-2">
                 <span class="status-p${lastPersonId + 1}" style="width: 50px;">불참</span>
-                <button style="width: 50px; height: 36px" class="button status-bt" data-id="p${lastPersonId + 1}">참여</button>
+                <button style="width: 50px; height: 36px" class="button status-bt status-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">참여</button>
+                <button style="width: 50px; height: 36px; display: none;" class="remove-button status-cancel-bt status-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
             </span>
             <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
         </div>
@@ -161,6 +163,12 @@ $(document).on('input', 'input', function () {
     if (classAttr === 'title') {
         originalPost[classAttr] = val;
         originalPostUpdate(originalPost);
+    } else if (classAttr === 'monthlyFee' || classAttr === 'monthlyInterest') {
+        if (!post[classAttr]) {
+            post[classAttr] = {};
+        }
+        post[classAttr] = parseInt(val);
+        postUpdate(post);
     } else {
         if (!post[nameAttr]) {
             post[nameAttr] = {};
@@ -169,10 +177,9 @@ $(document).on('input', 'input', function () {
         postUpdate(post);
     }
 
-    $(`.status-${nameAttr}`).text(statusUpdate(nameAttr));
-
-    if (nameAttr.startsWith('p') || nameAttr.startsWith('i') && classAttr === 'amount' && classAttr !== 'title') {
-        // remainingAmountUpdate();
+    if (classAttr !== 'title') {
+        remainingAmountUpdate();
+        $(`.status-${nameAttr}`).text(statusUpdate(nameAttr));
     }
 });
 
@@ -186,12 +193,12 @@ $(document).on('click', '.remove-bt', function () {
 
     button.closest('div').remove();
 
-    delete post[dateString][`${id}`];
+    delete post[`${id}`];
 
     postUpdate(post);
 
     if (id.startsWith('p') || id.startsWith('i')) {
-        // remainingAmountUpdate();
+        remainingAmountUpdate();
     }
 });
 
@@ -207,26 +214,64 @@ $(document).on('click', '.payment-bt', function () {
     post[id][`depositDate`] = `${yyyy}-${mm}-${dd}`;
     $(`.status-${id}`).text(statusUpdate(id));
 
+    $(`.payment-bt-${id}`).hide();
+    $(`.payment-cancel-bt-${id}`).show();
+
     postUpdate(post);
 
-    // remainingAmountUpdate();
+    remainingAmountUpdate();
+});
+
+$(document).on('click', '.payment-cancel-bt', function () {
+    const button = $(this);
+    const id = button.data('id');
+
+    $(`.depositDate[name="${id}"]`).val(``);
+
+    if (!post[id]) {
+        post[id] = {};
+    }
+    post[id][`depositDate`] = ``;
+    $(`.status-${id}`).text(statusUpdate(id));
+
+    $(`.payment-bt-${id}`).show();
+    $(`.payment-cancel-bt-${id}`).hide();
+
+    postUpdate(post);
+
+    remainingAmountUpdate();
 });
 
 $(document).on('click', '.status-bt', function () {
     const button = $(this);
     const id = button.data('id');
 
-    if (post[id][`status`] === '참여') {
-        post[id][`status`] = '불참';
-    } else {
-        post[id][`status`] = '참여';
-    }
+    post[id][`status`] = '참여';
 
     $(`.status-${id}`).text(statusUpdate(id));
 
+    $(`.status-bt-${id}`).hide();
+    $(`.status-cancel-bt-${id}`).show();
+
     postUpdate(post);
 
-    // remainingAmountUpdate();
+    remainingAmountUpdate();
+});
+
+$(document).on('click', '.status-cancel-bt', function () {
+    const button = $(this);
+    const id = button.data('id');
+
+    post[id][`status`] = '불참';
+
+    $(`.status-${id}`).text(statusUpdate(id));
+
+    $(`.status-bt-${id}`).show();
+    $(`.status-cancel-bt-${id}`).hide();
+
+    postUpdate(post);
+
+    remainingAmountUpdate();
 });
 
 function statusUpdate(id) {
@@ -249,3 +294,136 @@ function statusUpdate(id) {
 
     return '오류';
 }
+
+function monthlySpentUpdate() {
+    let monthlySpent = 0;
+    Object.keys(post).forEach(key => {
+        if (key.startsWith('i')) {
+            const amount = parseInt(post[key].amount) || 0;
+            monthlySpent += amount;
+        }
+    });
+
+    const $monthlySpent = $('.monthlySpent');
+    $monthlySpent.removeClass('total-amount-negative total-amount');
+
+    const formatString = formatNum(monthlySpent);
+
+    if (monthlySpent < 0) {
+        $monthlySpent.text(`${formatString}원`).addClass('total-amount-negative');
+    } else {
+        $monthlySpent.text(`${formatString}원`).addClass('total-amount');
+    }
+
+    return monthlySpent;
+}
+
+function participantCountUpdate() {
+    let participantCount = 0;
+
+    Object.keys(post).forEach(key => {
+        if (key.startsWith('p') && post[key].depositDate !== '') {
+            participantCount++;
+        }
+    });
+
+    return participantCount;
+}
+
+function paidParticipants() {
+    let paidParticipantsCount = 0;
+    Object.keys(post).forEach(key => {
+        if (key.startsWith('p') && post[key].status === '참여') {
+            console.log(post[key].status);
+            paidParticipantsCount++;
+        }
+    });
+    console.log(paidParticipantsCount);
+    const $paidParticipantsCount = $('.paidParticipantsCount');
+
+    if (paidParticipantsCount === 0) {
+        $paidParticipantsCount.text(`${paidParticipantsCount}명`).removeClass('total-amount');
+    } else $paidParticipantsCount.text(`${paidParticipantsCount}명`).addClass('total-amount');
+
+    return paidParticipantsCount;
+}
+
+function remainingAmountUpdate() {
+    const remainingAmount = ((post['monthlyFee'] * participantCountUpdate()) - monthlySpentUpdate()) + post['monthlyInterest'];
+
+    const $remainingAmount = $('.remainingAmount');
+    $remainingAmount.removeClass('total-amount-negative total-amount');
+
+    const formatString = formatNum(remainingAmount);
+
+    if (remainingAmount < 0) {
+        $remainingAmount.text(`${formatString}원`).addClass('total-amount-negative');
+    } else {
+        $remainingAmount.text(`${formatString}원`).addClass('total-amount');
+    }
+
+    paidParticipants();
+}
+
+function startPost() {
+    $('.monthlyFee').val(post['monthlyFee']);
+    $('.monthlyInterest').val(post['monthlyInterest']);
+
+    Object.keys(post).forEach(key => {
+        if (key.startsWith('i')) {
+            const itemName = post[key].itemName || '';
+            const amount = parseInt(post[key].amount) || 0;
+
+            const newItem = `
+                     <div class="item row">
+                        <label>
+                            <input class="itemName" type="text" name="${key}" value="${itemName}">
+                        </label>
+                        <label>
+                            <input class="amount" type="number" name="${key}" value="${amount}">
+                        </label>
+                        <span class="splitAmount"></span>
+                        <button class="remove-bt" data-id="${key}">🗑</button>
+                    </div>
+                    `;
+
+            $('.item-list').append(newItem);
+        } else if (key.startsWith('p')) {
+            const name = post[key].name || '';
+            const depositDate = post[key].depositDate || '';
+            const paymentBtClass = depositDate === '' ? '' : 'display: none;'
+            const paymentCancelBtClass = depositDate !== '' ? '' : 'display: none;'
+            const status = post[key].status || '불참';
+            const statusBtClass = status !== '참여' ? '' : 'display: none;'
+            const statusCancelBtClass = status === '참여' ? '' : 'display: none;'
+
+            const newItem = `
+                    <div class="person row">
+                        <label>
+                            <input class="name" type="text" name="${key} value="${name}"">
+                        </label>
+                        <label>
+                            <input style="width: calc(100% - 60px);"
+                                class="depositDate" type="text"
+                                name="${key}"
+                                value="${depositDate}">
+                            <button style="width: 50px; height: 36px; ${paymentBtClass}" class="button payment-bt payment-bt-${key}" data-id="${key}">납부</button>
+                            <button style="width: 50px; height: 36px; ${paymentCancelBtClass}" class="remove-button payment-cancel-bt payment-cancel-bt-${key}" data-id="${key}">취소</button>
+                        </label>
+                        <span class="flex gap-2">
+                            <span class="status-${key}" style="width: 50px;">${statusUpdate(key)}</span>
+                            <button style="width: 50px; height: 36px; ${statusBtClass}" class="button status-bt status-bt-${key}" data-id="${key}">참여</button>
+                            <button style="width: 50px; height: 36px; ${statusCancelBtClass}" class="remove-button status-cancel-bt status-cancel-bt-${key}" data-id="${key}">취소</button>
+                        </span>
+                        <button class="remove-bt" data-id="${key}">🗑</button>
+                    </div>
+                    `;
+
+            $('.person-list').append(newItem);
+        }
+    });
+
+    remainingAmountUpdate();
+}
+
+startPost();
