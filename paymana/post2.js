@@ -6,8 +6,8 @@ const dd = String(today.getDate()).padStart(2, '0');
 const urls = window.location.search;
 const postId = urls ? parseInt(urls.substring(1)) : 0;
 const dateString = urls.substring(1).split('&')[1];
-const decompressedData = LZString.decompressFromUTF16();
-const originalPost = JSON.parse(localStorage.getItem(`PM-${postId}`));
+const decompressedData = LZString.decompressFromUTF16(localStorage.getItem(`PM-${postId}`));
+const originalPost = JSON.parse(decompressedData);
 
 function checkAccess() {
     if (isNaN(postId) || !originalPost || originalPost.category !== 2 || !dateString) {
@@ -22,7 +22,7 @@ function checkAccess() {
 
 checkAccess();
 
-const post = originalPost[dateString];
+let post = originalPost[dateString];
 
 function titleUpdate() {
     $('.calendar').val(dateString);
@@ -47,8 +47,8 @@ function formatNum(num) {
 function originalPostUpdate(newOriginalPost) {
     if (checkAccess === 0) return;
 
-    // const compressedData = LZString.compressToUTF16(JSON.stringify(newOriginalPost));
-    const compressedData = JSON.stringify(newOriginalPost);
+    const compressedData = LZString.compressToUTF16(JSON.stringify(newOriginalPost));
+    // const compressedData = JSON.stringify(newOriginalPost);
     localStorage.setItem(`PM-${postId}`, compressedData);
 }
 
@@ -56,8 +56,8 @@ function postUpdate(newPost) {
     if (checkAccess === 0) return;
 
     originalPost[dateString] = newPost;
-    // const compressedData = LZString.compressToUTF16(JSON.stringify(newPost));
-    const compressedData = JSON.stringify(originalPost);
+    const compressedData = LZString.compressToUTF16(JSON.stringify(originalPost));
+    // const compressedData = JSON.stringify(originalPost);
     localStorage.setItem(`PM-${postId}`, compressedData);
 }
 
@@ -155,7 +155,7 @@ function addPerson() {
     $('.person-list').append(newItem);
 }
 
-$(document).on('input', 'input', function () {
+$(document).on('input', 'input', function (event) {
     const val = $(this).val();
     const nameAttr = $(this).attr('name');
     const classAttr = $(this).attr('class');
@@ -163,6 +163,8 @@ $(document).on('input', 'input', function () {
     if (classAttr === 'title') {
         originalPost[classAttr] = val;
         originalPostUpdate(originalPost);
+    } else if (classAttr === 'calendar') {
+
     } else if (classAttr === 'monthlyFee' || classAttr === 'monthlyInterest') {
         if (!post[classAttr]) {
             post[classAttr] = {};
@@ -178,8 +180,16 @@ $(document).on('input', 'input', function () {
     }
 
     if (classAttr !== 'title') {
-        remainingAmountUpdate();
+        remainingAmountUpdate(dateString);
         $(`.status-${nameAttr}`).text(statusUpdate(nameAttr));
+    }
+
+    if (classAttr === 'depositDate' && val) {
+        $(`.payment-bt-${nameAttr}`).hide();
+        $(`.payment-cancel-bt-${nameAttr}`).show();
+    } else if (classAttr === 'depositDate' && !val) {
+        $(`.payment-bt-${nameAttr}`).show();
+        $(`.payment-cancel-bt-${nameAttr}`).hide();
     }
 });
 
@@ -198,7 +208,7 @@ $(document).on('click', '.remove-bt', function () {
     postUpdate(post);
 
     if (id.startsWith('p') || id.startsWith('i')) {
-        remainingAmountUpdate();
+        remainingAmountUpdate(dateString);
     }
 });
 
@@ -219,7 +229,7 @@ $(document).on('click', '.payment-bt', function () {
 
     postUpdate(post);
 
-    remainingAmountUpdate();
+    remainingAmountUpdate(dateString);
 });
 
 $(document).on('click', '.payment-cancel-bt', function () {
@@ -239,7 +249,7 @@ $(document).on('click', '.payment-cancel-bt', function () {
 
     postUpdate(post);
 
-    remainingAmountUpdate();
+    remainingAmountUpdate(dateString);
 });
 
 $(document).on('click', '.status-bt', function () {
@@ -255,7 +265,7 @@ $(document).on('click', '.status-bt', function () {
 
     postUpdate(post);
 
-    remainingAmountUpdate();
+    remainingAmountUpdate(dateString);
 });
 
 $(document).on('click', '.status-cancel-bt', function () {
@@ -271,7 +281,7 @@ $(document).on('click', '.status-cancel-bt', function () {
 
     postUpdate(post);
 
-    remainingAmountUpdate();
+    remainingAmountUpdate(dateString);
 });
 
 function statusUpdate(id) {
@@ -283,23 +293,27 @@ function statusUpdate(id) {
     const depositDate = post[id][`depositDate`] || "";
 
     if (status === '불참' && depositDate === "") {
+        $(`.status-${id}`).css({backgroundColor: 'transparent', color: '#000000'});
         return '불참';
     } else if (status === '불참' && depositDate !== "") {
+        $(`.status-${id}`).css({backgroundColor: 'transparent', color: '#E53935'});
         return '환불';
     } else if (status === '참여' && depositDate === "") {
+        $(`.status-${id}`).css({backgroundColor: '#E53935', color: '#FFFFFF'});
         return '미납';
     } else if (status === '참여' && depositDate !== "") {
+        $(`.status-${id}`).css({backgroundColor: 'transparent', color: '#4CAF50'});
         return '참여';
     }
 
     return '오류';
 }
 
-function monthlySpentUpdate() {
+function monthlySpentUpdate(postItem) {
     let monthlySpent = 0;
-    Object.keys(post).forEach(key => {
+    Object.keys(postItem).forEach(key => {
         if (key.startsWith('i')) {
-            const amount = parseInt(post[key].amount) || 0;
+            const amount = parseInt(postItem[key].amount) || 0;
             monthlySpent += amount;
         }
     });
@@ -318,11 +332,11 @@ function monthlySpentUpdate() {
     return monthlySpent;
 }
 
-function participantCountUpdate() {
+function participantCountUpdate(postItem) {
     let participantCount = 0;
 
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('p') && post[key].depositDate !== '') {
+    Object.keys(postItem).forEach(key => {
+        if (key.startsWith('p') && postItem[key].depositDate !== '' && postItem[key].status === '참여' && /^(\d{4})-(\d{2})-(\d{2})$/.test(postItem[key].depositDate)) {
             participantCount++;
         }
     });
@@ -330,15 +344,13 @@ function participantCountUpdate() {
     return participantCount;
 }
 
-function paidParticipants() {
+function paidParticipants(postItem) {
     let paidParticipantsCount = 0;
-    Object.keys(post).forEach(key => {
-        if (key.startsWith('p') && post[key].status === '참여') {
-            console.log(post[key].status);
+    Object.keys(postItem).forEach(key => {
+        if (key.startsWith('p') && postItem[key].status === '참여') {
             paidParticipantsCount++;
         }
     });
-    console.log(paidParticipantsCount);
     const $paidParticipantsCount = $('.paidParticipantsCount');
 
     if (paidParticipantsCount === 0) {
@@ -348,26 +360,51 @@ function paidParticipants() {
     return paidParticipantsCount;
 }
 
-function remainingAmountUpdate() {
-    const remainingAmount = ((post['monthlyFee'] * participantCountUpdate()) - monthlySpentUpdate()) + post['monthlyInterest'];
+function checkValidNumber(value) {
+    if (typeof value !== 'number' || isNaN(value) || value < 0) {
+        return 0;
+    }
+    return value;
+}
+
+function remainingAmountUpdate(yearMonth) {
+    let totalRemainingAmount = 0;
+
+    const keys = Object.keys(originalPost);
+    const previousMonths = keys.filter(key => key <= yearMonth);
+    const filteredPosts = previousMonths.map(key => originalPost[key]);
+
+    filteredPosts.forEach(postItem => {
+        // post 객체에서 필요한 값을 추출하고 유효성 검사
+        let monthlyFee = checkValidNumber(postItem['monthlyFee']);
+        let participantCount = checkValidNumber(participantCountUpdate(postItem));
+        let monthlySpent = checkValidNumber(monthlySpentUpdate(postItem));
+        let monthlyInterest = checkValidNumber(postItem['monthlyInterest']);
+
+        // 남은 금액 계산
+        const remainingAmount = (monthlyFee * participantCount) - monthlySpent + monthlyInterest;
+
+        // 남은 금액을 totalRemainingAmount에 누적
+        totalRemainingAmount += remainingAmount;
+    });
 
     const $remainingAmount = $('.remainingAmount');
     $remainingAmount.removeClass('total-amount-negative total-amount');
 
-    const formatString = formatNum(remainingAmount);
+    const formatString = formatNum(totalRemainingAmount);
 
-    if (remainingAmount < 0) {
+    if (totalRemainingAmount < 0) {
         $remainingAmount.text(`${formatString}원`).addClass('total-amount-negative');
     } else {
         $remainingAmount.text(`${formatString}원`).addClass('total-amount');
     }
 
-    paidParticipants();
+    paidParticipants(post);
 }
 
 function startPost() {
-    $('.monthlyFee').val(post['monthlyFee']);
-    $('.monthlyInterest').val(post['monthlyInterest']);
+    $('.monthlyFee').val(post['monthlyFee' || 0]);
+    $('.monthlyInterest').val(post['monthlyInterest' || 0]);
 
     Object.keys(post).forEach(key => {
         if (key.startsWith('i')) {
@@ -400,7 +437,7 @@ function startPost() {
             const newItem = `
                     <div class="person row">
                         <label>
-                            <input class="name" type="text" name="${key} value="${name}"">
+                            <input class="name" type="text" name="${key}" value="${name}">
                         </label>
                         <label>
                             <input style="width: calc(100% - 60px);"
@@ -420,10 +457,56 @@ function startPost() {
                     `;
 
             $('.person-list').append(newItem);
+
+            statusUpdate(key)
         }
     });
 
-    remainingAmountUpdate();
+    remainingAmountUpdate(dateString);
 }
 
-startPost();
+if (post !== undefined) {
+    startPost();
+} else {
+    updatePostHistory(dateString);
+}
+
+function updatePostHistory(dateString) {
+    let currentDate = new Date(dateString + '-01');
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    let previousMonth = currentDate.toISOString().slice(0, 7);
+
+    if (!originalPost[dateString]) {
+        if (originalPost[previousMonth]) {
+            originalPost[dateString] = JSON.parse(JSON.stringify(originalPost[previousMonth]));
+        } else {
+            originalPost[dateString] = {};
+        }
+    }
+
+    let postData = originalPost[dateString];
+
+    Object.keys(postData).forEach(key => {
+        console.log(`key : ${key}`);
+        if (key === `monthlyInterest`) {
+            delete postData[key]
+        } else if (key.startsWith('i')) {
+            delete postData[key];
+        } else if (key.startsWith('p')) {
+            postData[key][`depositDate`] = '';
+            postData[key][`status`] = '';
+        }
+    });
+
+    post = postData || {};
+
+    const compressedData = LZString.compressToUTF16(JSON.stringify(originalPost));
+    localStorage.setItem(`PM-${postId}`, compressedData);
+
+    startPost()
+}
+
+$('#calendar').on('change', function () {
+    const selectedMonth = $(this).val();
+    window.location.href = `../paymana/post2?${postId}&${selectedMonth}`;
+});

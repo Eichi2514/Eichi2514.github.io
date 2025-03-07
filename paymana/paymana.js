@@ -159,23 +159,19 @@ $('.popup1-form').submit(async function (event) {
         localStorage.setItem(`PM-${postId}`, compressedData);
         window.location.href = `../paymana/post?${postId}`;
     } else if (category === 2) {
-        alert('현재 서비스 점검 중입니다. 점검이 완료된 후 다시 이용해주세요.');
-
-        /*
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
 
         const formattedDate = `${yyyy}-${mm}`;
 
-        const compressedData = JSON.stringify({
+        const compressedData = LZString.compressToUTF16(JSON.stringify({
             "title": title,
             "category": category,
             [formattedDate]: {}
-        });
+        }));
         localStorage.setItem(`PM-${postId}`, compressedData);
         window.location.href = `../paymana/post2?${postId}&${formattedDate}`;
-         */
     }
 
 });
