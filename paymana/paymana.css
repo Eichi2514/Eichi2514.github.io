@@ -126,6 +126,7 @@ input {
     padding: 0 5px;
     display: inline-block;
     width: 100%;
+    min-width: max-content;
 }
 
 .row input {
@@ -309,6 +310,17 @@ input {
     padding: 8px 0 10px 10px;
     width: 100%;
     word-break: keep-all;
+}
+
+.Guide-bt {
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 24px;
+    width: 42px;
+    height: 42px;
+    background: #CCC;
+    border-radius: 50px;
+    cursor: pointer;
 }
 
 .step {

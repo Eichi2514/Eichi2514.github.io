@@ -195,6 +195,20 @@ function getLocalStorageSize() {
     }
 }
 
+$(document).on('click', '.Guide-bt', function () {
+    const button = $(this);
+    const id = button.data('id');
+    const count = $('.Guide-bts .Guide-bt').length;
+
+    $(`.Guideline-${id}`).removeClass('hidden');
+
+    for (let i = 1; i <= count; i++) {
+        if (i !== id) {
+            $(`.Guideline-${i}`).addClass('hidden');
+        }
+    }
+});
+
 getLocalStorageSize();
 
 const now = new Date();
