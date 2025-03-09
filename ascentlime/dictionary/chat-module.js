@@ -9,7 +9,8 @@ import {
     onChildAdded,
     orderByChild,
     get,
-    query
+    query,
+    child
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -31,6 +32,7 @@ const database = getDatabase(app);
 // 채팅 데이터베이스 참조
 const chatRef = ref(database, 'chats');
 const membersRef = ref(database, 'members');
+const weaponFindRef = ref(database, 'weaponFind');
 
 window.userName = function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
@@ -102,3 +104,91 @@ onChildAdded(chatRef, async (data) => {
     var chat = $chat;
     chat.scrollTop(chat[0].scrollHeight); // 새 메시지가 오면 스크롤 맨 아래로
 });
+
+window.loginKeyCheckById = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+        if (!snapshot.exists()) {
+            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].id;
+    } catch (error) {
+        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
+        return null;
+    }
+};
+
+window.characCheckMap = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    try {
+        const snapshot = await get(characRef);
+        if (snapshot.exists()) {
+            return snapshot.val();
+        } else {
+            console.log("데이터가 존재하지 않습니다.");
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+    }
+};
+
+window.getMobFind = function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    return get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].mobFind;
+        })
+        .catch((error) => {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        });
+};
+
+window.getWeaponFind = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
+
+    try {
+        const snapshot = await get(newWeaponFindRef);
+        if (!snapshot.exists()) return;
+
+        const weaponData = snapshot.val();
+
+        Object.keys(weaponData).forEach((key) => {
+            if (weapon[key]) {
+                $(`.weaponImage${key}`).attr('src', weapon[key]);
+            }
+
+            // 현재 순서에 해당하는 weapon__dictionary_card2 선택
+            const indexNumber = parseInt(key, 10);
+            const currentCard = $('.weapon__dictionary_card2').eq(indexNumber - 1);
+
+            currentCard.append(`
+                <div class="dictionary_body_text absolute">            
+                    <div>${weaponNames[key]}</div>
+                    데미지 ${Math.ceil(indexNumber / 10) * 10} <br>
+                    사거리 ${key % 10 === 0 ? 12 : (key % 10) + 2}
+                </div>
+            `);
+        });
+    } catch (error) {
+        console.error("무기 데이터를 가져오는 중 오류 발생:", error);
+    }
+};

@@ -9,7 +9,8 @@ import {
     limitToFirst,
     get,
     update,
-    child
+    child,
+    set
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -143,16 +144,14 @@ logoutAndClearData();
 // 로컬스토리지 기록 DB로 업데이트
 window.saveLocalDataToDB = async function (memberKey) {
     const localStorageKey = `update__2025-03-09__${memberKey}`;
-    console.log("saveLocalDataToDB 시작")
     if (localStorage.getItem(localStorageKey)) {
         return;
     }
-
+    alert('DB 이전 작업으로 인해\n현재 캐릭터 정보 업데이트 중입니다.\n업데이트는 2025년 03월 09일 이후 1계정당 최초 1회만 진행되며,\n진행 중 페이지를 닫거나 컴퓨터를 종료하면\n데이터가 손실될 수 있습니다.\n"확인"을 클릭한 후 잠시만 기다려 주세요.');
     for (const key of Object.keys(localStorage)) {
         if (key === memberKey) {
-            console.log(`캐릭터 정보 시작`);
-            const newId = await loginKeyCheckById(memberKey);
-            const safeId = newId.toString();
+            const memberId = await loginKeyCheckById(memberKey);
+            const safeId = memberId.toString();
             const characString = localStorage.getItem(key);
             if (characString) {
                 try {
@@ -166,7 +165,6 @@ window.saveLocalDataToDB = async function (memberKey) {
                 }
             }
         } else if (key.startsWith(memberKey) && key.includes("MobFind")) {
-            console.log(`MobFind 시작`);
             const mobFind = localStorage.getItem(key);
             const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
             const snapshot = await get(queryRef);
@@ -189,7 +187,6 @@ window.saveLocalDataToDB = async function (memberKey) {
                 }
             }
         } else if (key.startsWith(memberKey) && key.includes("playCount")) {
-            console.log(`playCount 시작`);
             const playCount = localStorage.getItem(key);
             const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
             const snapshot = await get(queryRef);
@@ -213,10 +210,8 @@ window.saveLocalDataToDB = async function (memberKey) {
             }
         } else if (key.startsWith(memberKey) && key.includes("weaponFind")) {
             const weaponFind = key.replace(`${memberKey}weaponFind`, '');
-            const newId = await loginKeyCheckById(memberKey);
-            const safeId = newId.toString();
-
-            console.log(`weaponFind : ${weaponFind}`);
+            const memberId = await loginKeyCheckById(memberKey);
+            const safeId = memberId.toString();
 
             const newWeaponFindRef = child(weaponFindRef, safeId);
             const currentDataSnapshot = await get(newWeaponFindRef);
@@ -241,4 +236,81 @@ window.saveLocalDataToDB = async function (memberKey) {
     }
 
     localStorage.setItem(localStorageKey, `1`);
+}
+
+window.characCheck = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    try {
+        const characSnapshot = await get(characRef);
+        if (!characSnapshot.exists()) {
+            const charac = {
+                name: memberKey,
+                floor: 1,
+                room: 0,
+                hp: 100,
+                power: 0,
+                speed: 50,
+                weaponId: 1,
+                weaponUpgrade: 0,
+                clearTime: 0
+            };
+
+            await set(characRef, charac);
+            await weaponFindUpdate(memberKey, 1);
+            await playCountUpdate(memberKey);
+
+            alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+    }
+};
+
+window.weaponFindUpdate = async function (memberKey, weaponNum) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
+    const currentDataSnapshot = await get(newWeaponFindRef);
+
+    let updatedData = {};
+    if (currentDataSnapshot.exists()) {
+        const currentData = currentDataSnapshot.val();
+
+        if (!currentData.hasOwnProperty(`${weaponNum}`)) {
+            updatedData = {
+                ...currentData,
+                [`${weaponNum}`]: 1,
+            };
+        }
+    } else {
+        updatedData = {
+            [`${weaponNum}`]: 1,
+        };
+    }
+
+    await update(newWeaponFindRef, updatedData);
+}
+
+window.playCountUpdate = async function (memberKey) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
+    const snapshot = await get(queryRef);
+
+    if (snapshot.exists()) {
+        const key = Object.keys(snapshot.val())[0];
+        const data = snapshot.val()[key];
+
+        if (data) {
+            const updatedData = {
+                ...data,
+                playCount: (data.playCount || 0) + 1,
+            };
+
+            await update(ref(database, `members/${key}`), updatedData);
+        } else {
+            console.error("데이터를 찾을 수 없습니다:", data);
+        }
+    }
 }

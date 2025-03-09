@@ -34,7 +34,8 @@ $('.login-form').submit(async function (event) {
             if (memberData.loginPw === hashedPassword) {
                 loginSuccess = true;
                 alert(memberData.nickname + '님 환영합니다');
-                location.reload();
+                $('.logout').addClass('hidden');
+                $('.login').removeClass('hidden');
                 await login(memberData.key);
             }
 
@@ -96,23 +97,8 @@ async function login(nickname) {
     localStorage.setItem('nickname', nickname);
     const data = await loginKeyCheck(nickname);
 
-    // 로컬스토리지 있는지 확인 후 저장
-    if (!localStorage.getItem(nickname)) {
-        localStorage.setItem(nickname, JSON.stringify({
-            name: nickname,
-            floor: 1,
-            room: 0,
-            hp: 100,
-            power: 0,
-            speed: 50,
-            weaponId: 1,
-            weaponUpgrade: 0,
-            clearTime: 0
-        }));
-        localStorage.setItem(nickname + 'weaponFind1', true);
-        localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
-        alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
-    }
+    // 캐릭터 정보 있는지 확인 후 저장
+    await characCheck(nickname);
 
     // 닉네임 입력창 교체
     $logout.addClass("hidden");

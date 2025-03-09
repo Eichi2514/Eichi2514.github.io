@@ -1,7 +1,9 @@
+/*
 window.onerror = function () {
     window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
     return true;
 };
+*/
 
 const weapon = [
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
@@ -292,37 +294,185 @@ if (!localStorage.getItem('nickname')) {
 }
 
 const nickname = localStorage.getItem('nickname')
-const characString = localStorage.getItem(nickname);  // 문자열로 가져옴
-const charac = characString ? JSON.parse(characString) : {};  // JSON 파싱하여 객체로 변환
-
-var front_hp = charac.hp;
-var front_power = charac.power;
-var front_speed = charac.speed;
-var front_weaponId = charac.weaponId;
-var front_weaponUpgrade = 0;
-
-if (charac.weaponUpgrade != null) {
-    front_weaponUpgrade = charac.weaponUpgrade
-}
-
-var upgradeNum = front_weaponUpgrade < 100 ? front_weaponUpgrade : 90;
-
-if (charac.floor === 1 && charac.room === 0) $('.location').text('튜토리얼');
-else if (charac.room !== 0) $('.location').text(charac.floor + '층 ' + charac.room + '번방');
-else $('.location').text((charac.floor - 1) + '층 보스방');
+let charac = null;
+let front_hp = null;
+let front_power = null;
+let front_speed = null;
+let front_weaponId = null;
+let front_weaponUpgrade = null;
 
 const $hp_count = $('.hp_count');
-$hp_count.text(front_hp);
-
 const $power_count = $('.power_count');
-$power_count.text(front_power);
-
 const $speed_count = $('.speed_count');
-$speed_count.text(50 - front_speed);
-
 const $weapon_img = $('.weapon_img');
+let upgradeNum = null;
+let seconds = null;
 
-$('.weapon').append(`
+let $item = null;
+let $item_text = null;
+const $random_item = $(".random_item");
+const $random_item_text = $(".random_item_text");
+let weaponMax = null;
+let $randomWeapon = null;
+let randomItem = null;
+
+let previousFloor = null;
+let previousRoom = null;
+
+let previousTrackNumber = null;
+let currentTrackNumber = null;
+
+let $mob_index = null;
+
+let characFloor = null;
+let characRoom = null;
+let characWeaponId = null;
+
+let damage = null;
+
+// 캐릭터 위치 변수
+let LR = 10;
+let UD = 44;
+
+// 몬스터 좌표 셋팅
+let UD2 = getRandom(10, 70);
+if (UD2 % 2 !== 0) UD2++;
+let LR2 = getRandom(30, 70);
+if (LR2 % 2 !== 0) LR2++;
+
+let UD3 = getRandom(10, 70);
+if (UD3 % 2 !== 0) UD3++;
+let LR3 = getRandom(30, 70);
+if (LR3 % 2 !== 0) LR3++;
+
+let UD4 = getRandom(10, 70);
+if (UD4 % 2 !== 0) UD4++;
+let LR4 = getRandom(30, 70);
+if (LR4 % 2 !== 0) LR4++;
+
+let UD5 = getRandom(10, 70);
+if (UD5 % 2 !== 0) UD5++;
+let LR5 = getRandom(30, 70);
+if (LR5 % 2 !== 0) LR5++;
+
+let UD6 = getRandom(10, 40);
+if (UD6 % 2 !== 0) UD6++;
+let LR6 = getRandom(30, 40);
+if (LR6 % 2 !== 0) LR6++;
+
+const $mob2 = $(".mob2");
+const $mob3 = $(".mob3");
+const $mob4 = $(".mob4");
+const $mob5 = $(".mob5");
+const $mob6 = $(".mob6");
+
+let mobDamage = 0;
+
+async function updateCharacterData(nickname) {
+    if (nickname) {
+        charac = await characCheckMap(nickname);
+        front_hp = charac.hp;
+        front_power = charac.power;
+        front_speed = charac.speed;
+        front_weaponId = charac.weaponId;
+        front_weaponUpgrade = 0;
+        seconds = charac.clearTime;
+
+        characFloor = charac.floor;
+        characRoom = charac.room;
+        characWeaponId = charac.weaponId;
+
+        if (charac.weaponUpgrade != null) {
+            front_weaponUpgrade = charac.weaponUpgrade;
+        }
+
+        upgradeNum = front_weaponUpgrade < 100 ? front_weaponUpgrade : 90;
+
+        if (charac.floor === 1 && charac.room === 0) {
+            $('.location').text('튜토리얼');
+        } else if (charac.room !== 0) {
+            $('.location').text(charac.floor + '층 ' + charac.room + '번방');
+        } else {
+            $('.location').text((charac.floor - 1) + '층 보스방');
+        }
+
+        $hp_count.text(front_hp);
+        $power_count.text(front_power);
+        $speed_count.text(50 - front_speed);
+
+        $item = charac.weaponId < 70 ? $(".item1") : $(".item2");
+        $item_text = charac.weaponId < 70 ? $(".item_text1") : $(".item_text2");
+
+        weaponMax = (charac.floor - 1) * 10;
+        if (weaponMax > 70) weaponMax = 70;
+        $randomWeapon = getRandom(1, weaponMax);
+
+        randomItem = getRandom(1, 3);
+
+        if (randomItem === 3) $('.random_item_effect').removeClass('hidden');
+
+        if (charac.room === 1) {
+            if (mobFind < charac.floor) {
+                // localStorage.setItem(nickname + 'MobFind', charac.floor);
+                await mobFindUpdate(nickname, charac.floor);
+                mobFind = charac.floor;
+            }
+        }
+
+        previousFloor = charac.floor;
+        previousRoom = charac.room;
+
+        previousTrackNumber = calculateBgTrackNumber(previousFloor - (previousRoom === 0 ? 1 : 0), previousRoom === 0 ? 4 : previousRoom - 1);
+        currentTrackNumber = calculateBgTrackNumber(charac.floor, charac.room);
+
+        $mob_index = charac.floor;
+
+        // $('.attackSize').attr('src', weapon[front_weaponId]);
+        if (characWeaponId < 70) $item.attr('src', weapon[$randomWeapon]);
+
+        const $toggleButton = $('#toggleAutoplayButton');
+
+        // 오디오 파일 로드 및 준비
+        $audioPlayer[0].pause();
+        $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
+        $audioPlayer[0].load();
+
+        // 로컬 저장된 데이터가 있으면 그 상태로 복원
+        const savedData = JSON.parse(localStorage.getItem(storageKey));
+        if (savedData) {
+            $audioPlayer[0].currentTime = savedData.currentTime;
+            if (savedData.isPlaying) {
+                $audioPlayer[0].play();
+                $toggleButton.removeClass('play').addClass('pause');
+            } else {
+                $audioPlayer[0].pause();
+                $toggleButton.removeClass('pause').addClass('play');
+            }
+        }
+
+        // 첫 번째 클릭 시 오디오 재생
+        $toggleButton.on('click', function () {
+            if ($audioPlayer[0].paused) {
+                $audioPlayer[0].play().then(() => {
+                    localStorage.setItem(storageKey, JSON.stringify({
+                        currentTime: $audioPlayer[0].currentTime,
+                        isPlaying: true
+                    }));
+                    $(this).removeClass('play').addClass('pause');
+                }).catch((error) => {
+                    console.error("오디오 재생 실패:", error);
+                });
+            } else {
+                $audioPlayer[0].pause();
+                localStorage.setItem(storageKey, JSON.stringify({
+                    currentTime: $audioPlayer[0].currentTime,
+                    isPlaying: false
+                }));
+                $(this).removeClass('pause').addClass('play');
+            }
+        });
+
+        $('.weapon').append(`
         <div class="weapon_img_text">            
             <div>${weaponNames[front_weaponId]}</div>
             데미지 ${Math.ceil(front_weaponId / 10) * 10} <br>
@@ -330,9 +480,1069 @@ $('.weapon').append(`
         </div>
         `);
 
+        weapon_img();
+
+        if ($mob_index > 53) {
+            $mob_index = getRandom(1, 53);
+        }
+
+        $(".rate").text(100 - upgradeNum);
+
+        if (characRoom === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
+        else $('.mob_img').attr('src', mobs[$mob_index]);
+
+        damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power + front_weaponUpgrade;
+        if ((front_weaponId % 10) !== 0) {
+            damage += 10;
+        }
+
+        mobDamage = characFloor;
+        if (characRoom === 0) {
+            mobDamage--;
+        }
+
+        // 알림창을 표시
+        if (characFloor === 1 && characRoom === 0) {
+            let $tutorialContainer = $("#tutorialContainer");
+            // guide1 추가
+            $tutorialContainer.append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
+            // guide2 추가
+            $tutorialContainer.append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
+        }
+
+        $mob2.css("top", UD2 + "vh");
+        $mob3.css("top", UD3 + "vh");
+        $mob4.css("top", UD4 + "vh");
+        $mob5.css("top", UD5 + "vh");
+        $mob6.css("top", UD6 + "vh");
+
+        $mob2.css("left", LR2 + "vh");
+        $mob3.css("left", LR3 + "vh");
+        $mob4.css("left", LR4 + "vh");
+        $mob5.css("left", LR5 + "vh");
+        $mob6.css("left", LR6 + "vh");
+
+        let moveInterval; // 캐릭터 이동을 위한 interval
+        let moveActionChack = null; // 현재 움직이고 있는 방향 추적
+
+        function startMoving(moveAction) {
+            // 이미 해당 방향으로 움직이고 있으면 중복 방지
+            if (moveActionChack === moveAction) return;
+
+            // 새로운 방향으로 이동 시작
+            stopMoving(); // 이전 움직임을 중지하고 새로운 움직임 시작
+            moveActionChack = moveAction;
+
+            moveInterval = setInterval(function () {
+                moveCharacter(moveAction, 1)
+            }, front_speed);
+        }
+
+        function stopMoving() {
+            if (moveInterval) {
+                clearInterval(moveInterval); // 이전 움직임 중지
+                moveInterval = null; // interval 초기화
+            }
+            moveActionChack = null; // 현재 방향 초기화
+        }
+
+        let lastKeyDirection = null; // 마지막으로 처리된 키 방향
+
+        $(window).keydown(function (e) {
+            const $characImg = $('.front_charac_img');
+            const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
+
+            // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
+            if (chatInputFocused || !windowChack) {
+                return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
+            }
+
+            const keyMap = {
+                37: {direction: 'left', scale: -1},
+                38: {direction: 'up'},
+                39: {direction: 'right', scale: 1},
+                40: {direction: 'down'}
+            };
+
+            const keyAction = keyMap[e.keyCode];
+            if (keyAction && moveActionChack !== keyAction.direction) {
+                // 중복된 키 입력 방지
+                if (lastKeyDirection === keyAction.direction) return;
+                lastKeyDirection = keyAction.direction;
+
+                // 방향에 따라 이미지 반전
+                if (keyAction.scale !== undefined) {
+                    $characImg.css('transform', `scaleX(${keyAction.scale})`);
+                }
+
+                // 애니메이션 유지
+                $characImg.css('animation', 'move_action' + keyAction.scale + ' 1s linear infinite');
+
+                // 이동 시작
+                startMoving(keyAction.direction);
+            }
+
+            if (e.keyCode === 13) {
+                // 랜덤 아이템 안내창이 보여지는중인지 확인
+                const isRandomItemHidden = $random_item_text.hasClass('hidden');
+                const isItemHidden1 = $('.item_text1').hasClass('hidden');
+                const isItemHidden2 = $('.item_text2').hasClass('hidden');
+
+                console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + characFloor + ', ' + characRoom + ', ' + characWeaponId);
+
+                // 입력 필드가 포커스되어 있을 때만 전송 처리
+                if ($('.chat_var').is(':focus')) {
+                    e.preventDefault(); // 엔터로 인한 기본 동작(폼 제출 방지)을 막음
+                    $(e.target).closest('form').submit();  // 현재 입력 필드와 연결된 폼만 제출
+                } else if (!isRandomItemHidden && randomItem === 3) {
+                    Item_get();
+                } else if (!isItemHidden1 && characFloor !== 1 && characRoom === 0 && characWeaponId < 70) {
+                    Item_mix();
+                } else if (!isItemHidden2 && characFloor !== 1 && characRoom === 0 && characWeaponId >= 70) {
+                    Item_upgrade();
+                }
+            }
+        });
+
+        // 키에서 손을 뗄 때 움직임 멈춤
+        $(window).keyup(function (e) {
+            const $characImg = $('.front_charac_img');
+            const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
+
+            // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
+            if (chatInputFocused) {
+                return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
+            }
+
+            // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
+            if ((e.keyCode === 37 && moveActionChack === 'left') ||
+                (e.keyCode === 38 && moveActionChack === 'up') ||
+                (e.keyCode === 39 && moveActionChack === 'right') ||
+                (e.keyCode === 40 && moveActionChack === 'down')) {
+                lastKeyDirection = null; // 키 입력 상태 초기화
+                $characImg.css('animation', 'none');
+                stopMoving();
+            }
+
+            if (e.keyCode === 65) {
+                $characImg.css("transform", "scaleX(-1)");
+                attack('A', 1);
+            } else if (e.keyCode === 87) {
+                attack('W', 1);
+            } else if (e.keyCode === 68) {
+                $characImg.css("transform", "scaleX(1)");
+                attack('D', 1);
+            } else if (e.keyCode === 83) {
+                attack('S', 1);
+            }
+        });
+
+
+        const $touch_left = $('.key-left');
+        const $touch_up = $('.key-up');
+        const $touch_right = $('.key-right');
+        const $touch_down = $('.key-down');
+        const $characImg = $('.front_charac_img');
+
+        const handleTouchStart = (direction, scale) => {
+            if (moveActionChack === direction) return;
+            lastKeyDirection = direction;
+
+            if (scale !== undefined) {
+                $characImg.css('transform', `scaleX(${scale})`);
+            }
+            $characImg.css('animation', 'move_action' + scale + ' 1s linear infinite');
+            startMoving(direction);
+        };
+
+        const handleTouchEnd = (direction) => {
+            if (moveActionChack === direction) {
+                lastKeyDirection = null;
+                $characImg.css('animation', 'none');
+                stopMoving();
+            }
+        };
+
+        $touch_left.on("touchstart", () => {
+            handleTouchStart('left', -1)
+        });
+
+        $touch_up.on("touchstart", () => {
+            handleTouchStart('up')
+        });
+
+        $touch_right.on("touchstart", () => {
+            handleTouchStart('right', 1)
+        });
+
+        $touch_down.on("touchstart", () => {
+            handleTouchStart('down')
+        });
+
+        $touch_left.on("touchend", () => {
+            handleTouchEnd('left')
+        });
+
+        $touch_up.on("touchend", () => {
+            handleTouchEnd('up')
+        });
+
+        $touch_right.on("touchend", () => {
+            handleTouchEnd('right')
+        });
+
+        $touch_down.on("touchend", () => {
+            handleTouchEnd('down')
+        });
+
+        const $touch_Aattack = $('.key-Aattack');
+        const $touch_Wattack = $('.key-Wattack');
+        const $touch_Dattack = $('.key-Dattack');
+        const $touch_Sattack = $('.key-Sattack');
+
+        $touch_Aattack.on("touchstart", () => {
+            $characImg.css("transform", "scaleX(-1)");
+            attack('A', 1);
+        });
+
+        $touch_Wattack.on("touchstart", () => {
+            attack('W', 1)
+        });
+
+        $touch_Dattack.on("touchstart", () => {
+            $characImg.css("transform", "scaleX(1)");
+            attack('D', 1);
+        });
+
+        $touch_Sattack.on("touchstart", () => {
+            attack('S', 1)
+        });
+
+        function moveCharacter(moveAction, something) {
+            // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
+
+            if (!windowChack) return;
+
+            let data = moveChack(moveAction, something);
+
+
+            // console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
+
+            if (something !== 1 && data === 1) {
+                hpDown(mobDamage);
+                damage__motion('1', mobDamage);
+            } else if (something === 1 && data > 1) {
+                hpDown(mobDamage);
+                damage__motion('1', mobDamage);
+            }
+
+            if (something === 1) {
+                if (moveAction === 'up' && UD > 10) {
+                    UD -= 2;
+                    $(".charac").css("top", UD + "vh");
+                } else if (moveAction === 'down' && UD < 80) {
+                    UD += 2;
+                    $(".charac").css("top", UD + "vh");
+                } else if (moveAction === 'left' && LR > 10) {
+                    LR -= 2;
+                    $(".charac").css("left", LR + "vh");
+                } else if (moveAction === 'right' && LR < 80) {
+                    LR += 2;
+                    $(".charac").css("left", LR + "vh");
+                }
+
+                // console.log("UD :" + UD + ", LR : " + LR);
+                showDoor();
+                stageUp();
+                showItem_text();
+                showRandomItem_text();
+            } else if (something === 2) {
+                if (moveAction === 'up' && UD2 > 10) {
+                    UD2 -= 2;
+                    $(".mob" + something).css("top", UD2 + "vh");
+                } else if (moveAction === 'down' && UD2 < 80) {
+                    UD2 += 2;
+                    $(".mob" + something).css("top", UD2 + "vh");
+                } else if (moveAction === 'left' && LR2 > 10) {
+                    LR2 -= 2;
+                    $(".mob" + something).css("left", LR2 + "vh");
+                } else if (moveAction === 'right' && LR2 < 80) {
+                    LR2 += 2;
+                    $(".mob" + something).css("left", LR2 + "vh");
+                }
+            } else if (something === 3) {
+                if (moveAction === 'up' && UD3 > 10) {
+                    UD3 -= 2;
+                    $(".mob" + something).css("top", UD3 + "vh");
+                } else if (moveAction === 'down' && UD3 < 80) {
+                    UD3 += 2;
+                    $(".mob" + something).css("top", UD3 + "vh");
+                } else if (moveAction === 'left' && LR3 > 10) {
+                    LR3 -= 2;
+                    $(".mob" + something).css("left", LR3 + "vh");
+                } else if (moveAction === 'right' && LR3 < 80) {
+                    LR3 += 2;
+                    $(".mob" + something).css("left", LR3 + "vh");
+                }
+            } else if (something === 4) {
+                if (moveAction === 'up' && UD4 > 10) {
+                    UD4 -= 2;
+                    $(".mob" + something).css("top", UD4 + "vh");
+                } else if (moveAction === 'down' && UD4 < 80) {
+                    UD4 += 2;
+                    $(".mob" + something).css("top", UD4 + "vh");
+                } else if (moveAction === 'left' && LR4 > 10) {
+                    LR4 -= 2;
+                    $(".mob" + something).css("left", LR4 + "vh");
+                } else if (moveAction === 'right' && LR4 < 80) {
+                    LR4 += 2;
+                    $(".mob" + something).css("left", LR4 + "vh");
+                }
+            } else if (something === 5) {
+                if (moveAction === 'up' && UD5 > 10) {
+                    UD5 -= 2;
+                    $(".mob" + something).css("top", UD5 + "vh");
+                } else if (moveAction === 'down' && UD5 < 80) {
+                    UD5 += 2;
+                    $(".mob" + something).css("top", UD5 + "vh");
+                } else if (moveAction === 'left' && LR5 > 10) {
+                    LR5 -= 2;
+                    $(".mob" + something).css("left", LR5 + "vh");
+                } else if (moveAction === 'right' && LR5 < 80) {
+                    LR5 += 2;
+                    $(".mob" + something).css("left", LR5 + "vh");
+                }
+            } else if (something === 6) {
+                if (moveAction === 'up' && UD6 > 10) {
+                    UD6 -= 2;
+                    $(".mob" + something).css("top", UD6 + "vh");
+                } else if (moveAction === 'down' && UD6 < 70) {
+                    UD6 += 2;
+                    $(".mob" + something).css("top", UD6 + "vh");
+                } else if (moveAction === 'left' && LR6 > 10) {
+                    LR6 -= 2;
+                    $(".mob" + something).css("left", LR6 + "vh");
+                } else if (moveAction === 'right' && LR6 < 70) {
+                    LR6 += 2;
+                    $(".mob" + something).css("left", LR6 + "vh");
+                }
+            }
+        }
+
+        function attack(direction, something) {
+
+            if (!windowChack) return;
+
+            // 먼저 attack_motion 을 즉시 실행
+            attack_motion(something, direction);
+
+            // 나머지 로직은 0.5초 뒤에 실행
+            // setTimeout(() => {
+            let data = attackChack(something, direction);
+            // console.log(data);
+            if (something !== 1 && data === 1) {
+                if (something < 6) {
+                    hpDown(mobDamage);
+                    damage__motion('1', mobDamage);
+                } else {
+                    hpDown(mobDamage * 2);
+                    damage__motion('1', mobDamage * 2);
+                }
+            } else if (something === 1 && data === 2) {
+                mob2_hp -= damage;
+                damage__motion(data, damage);
+                if (mob2_hp <= 0) {
+                    mobHidden(2);
+                    clearInterval(stop2);
+                }
+            } else if (something === 1 && data === 3) {
+                mob3_hp -= damage;
+                damage__motion(data, damage);
+                if (mob3_hp <= 0) {
+                    mobHidden(3);
+                    clearInterval(stop3);
+                }
+            } else if (something === 1 && data === 4) {
+                mob4_hp -= damage;
+                damage__motion(data, damage);
+                if (mob4_hp <= 0) {
+                    mobHidden(4);
+                    clearInterval(stop4);
+                }
+            } else if (something === 1 && data === 5) {
+                mob5_hp -= damage;
+                damage__motion(data, damage);
+                if (mob5_hp <= 0) {
+                    mobHidden(5);
+                    clearInterval(stop5);
+                }
+            } else if (something === 1 && data === 6) {
+                mob6_hp -= damage;
+                damage__motion(data, damage);
+                if (mob6_hp <= 0) {
+                    mobHidden(6);
+                    clearInterval(stop6);
+                    showItem();
+                }
+                BossHpDown();
+            }
+            if (something === 1) {
+                showDoor();
+                showRandomItem();
+            }
+            // }, 400);
+        }
+
+        let saveCooldown = false; // 저장 쿨타임 변수
+
+        async function saveLog() {
+            if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
+
+            saveCooldown = true;  // 저장 시작
+
+            try {
+                await saveFirebaseLogs(charac, seconds);
+                await playCountUpdate(nickname);
+                await characReset(nickname);
+                // 비동기 작업 완료될 때까지 기다림
+            } catch (error) {
+                console.error("로그 저장 중 오류 발생:", error);
+            } finally {
+                saveCooldown = false; // 작업이 끝나면 쿨타임 해제
+                location.href = '../over';
+            }
+        }
+
+        // hp 감소
+        async function hpDown(mobDamage) {
+            front_hp -= mobDamage;
+            $hp_count.text(front_hp);
+            characHpDown();
+            if (front_hp <= 0) {
+                await saveLog();
+            }
+        }
+
+        // 캐릭 체력바 변화 함수
+        function characHpDown() {
+            let new_characHp_width = (8 / 10) * (front_hp % 10);
+            // console.log(new_characHp_width);
+            let characHp_number = Math.floor(front_hp / 10);
+            if (front_hp % 10 === 0) {
+                new_characHp_width = 8;
+                characHp_number--;
+            }
+            // console.log("체력 넓이 : " + new_characHp_width + ", 줄 수 : " + characHp_number);
+            for (let i = characHp_number - 1; i >= 0; i--) {
+                $(".characHP_bar" + i).css('width', '8vh');
+            }
+            for (let i = characHp_number + 1; i < 11; i++) {
+                $(".characHP_bar" + i).css('width', '0vh');
+            }
+
+            // console.log(".characHP_bar"+(characHp_number-1));
+            $(".characHP_bar" + characHp_number).css('width', new_characHp_width + 'vh');
+            $(".characHP_bar_text").text('x' + (characHp_number + 1));
+        }
+
+        //몬스터 사라지게하는 함수
+        function mobHidden(num) {
+            $(".mob" + num).fadeOut(2000, function () {
+                $(this).addClass('hidden');
+            });
+        }
+
+        function moveChack(moveAction, something) {
+            let Xcode = somethingXcode(something) - 5;
+            let Ycode = somethingYcode(something) - 5;
+            let height = something > 5 ? 10 : 5;
+            let width = something > 5 ? 10 : 5;
+
+            // 맵 생성
+            const map2 = mapChack(something);
+
+            // for (i = 0; i < 40; i++) {
+            //    let log = '';
+            //    for (j = 0; j < 40; j++) {
+            //        log += '[' + map2[i][j] + ']';
+            //    }
+            //    console.log(log);
+            //}
+
+            // something 주위 공간 확인
+            if (moveAction === 'up') {
+                for (let y = Ycode; y < Ycode + width && y < 40; y++) {
+                    if (Xcode - 1 >= 0 && map2[Xcode - 1][y] !== 0) {
+                        return map2[Xcode - 1][y];
+                    }
+                }
+            } else if (moveAction === 'down') {
+                for (let y = Ycode; y < Ycode + width && y < 40; y++) {
+                    if (Xcode + height < 40 && map2[Xcode + height][y] !== 0) {
+                        return map2[Xcode + height][y];
+                    }
+                }
+            } else if (moveAction === 'left') {
+                for (let x = Xcode; x < Xcode + height && x < 40; x++) {
+                    if (Ycode - 1 >= 0 && map2[x][Ycode - 1] !== 0) {
+                        return map2[x][Ycode - 1];
+                    }
+                }
+            } else if (moveAction === 'right') {
+                for (let x = Xcode; x < Xcode + height && x < 40; x++) {
+                    if (Ycode + width < 40 && map2[x][Ycode + width] !== 0) {
+                        return map2[x][Ycode + width];
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        // 공격 대상 확인 함수
+        function attackChack(something, direction) {
+            let Xcode = somethingXcode(something) - 5;
+            let Ycode = somethingYcode(something) - 5;
+            let height = something > 5 ? 8 : 4;
+            let width = something > 5 ? 8 : 4;
+
+            // console.log('Xcode : ' + Xcode);
+            // console.log('Ycode : ' + Ycode);
+
+            let distance = somethingDistance(something, front_weaponId, characFloor);
+
+            // console.log('something : ' + something);
+
+            // 맵 생성
+            const map3 = mapChack(something);
+
+            if (direction === 'A') {
+                let x = Xcode + (height / 2);
+                let y = Ycode - distance;
+                // console.log('x : ' + x);
+                // console.log('y : ' + y);
+
+                for (let i = Ycode - 1; i > y && i >= 0; i--) {
+                    if (map3[x][i] !== 0) {
+                        return map3[x][i];
+                    }
+                }
+            } else if (direction === 'W') {
+                let x = Xcode - distance;
+                let y = Ycode + (width / 2);
+                // console.log('x : ' + x);
+                // console.log('y : ' + y);
+
+                for (let i = Xcode - 1; i > x && i >= 0; i--) {
+                    if (map3[i][y] !== 0) {
+                        return map3[i][y];
+                    }
+                }
+            } else if (direction === 'D') {
+                let x = Xcode + (height / 2);
+                let y = Ycode + width + distance;
+                // console.log('x : ' + x);
+                // console.log('y : ' + y);
+
+                for (let i = Ycode + width; i < y && i < 40; i++) {
+                    if (map3[x][i] !== 0) {
+                        return map3[x][i];
+                    }
+                }
+            } else if (direction === 'S') {
+                let x = Xcode + height + distance;
+                let y = Ycode + (width / 2);
+                // console.log('x : ' + x);
+                // console.log('y : ' + y);
+
+                for (let i = Xcode + height; i < x && i < 40; i++) {
+                    if (map3[i][y] !== 0) {
+                        return map3[i][y];
+                    }
+                }
+            }
+            return 0;
+        }
+
+        // 아이템 안내창 공개
+        function showItem_text() {
+            let itemChack = $item.hasClass('hidden');
+            // console.log("아이템 공개 여부"+itemChack);
+            if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && characFloor > 1 && characRoom === 0) {
+                $item_text.fadeIn(1000).removeClass('hidden');
+            }
+        }
+
+        // 아이템 공개
+        function showItem() {
+            $item.fadeIn(1000).removeClass('hidden');
+        }
+
+        // 랜덤아이템 안내창 공개
+        function showRandomItem_text() {
+            let randomItemChack = $random_item.hasClass('hidden');
+            // console.log("아이템 공개 여부"+itemChack);
+            if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
+                $random_item_text.fadeIn(1000).removeClass('hidden');
+            }
+        }
+
+        let isItem = true;
+
+        function showRandomItem() {
+            const isSpecialRoom = (characFloor === 8 && characRoom === 0);
+            const allMobsDefeated = (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0);
+            const isSpecialItem = (randomItem === 3);
+            const isExcludedRoom = (characFloor === 1 && characRoom === 0);
+
+            if (!isExcludedRoom && allMobsDefeated && isSpecialItem && (isSpecialRoom || isItem)) {
+                isItem = false;
+                $random_item.fadeIn(1000).removeClass('hidden');
+            }
+        }
+
+        function somethingXcode(something) {
+            if (something === 1) return UD / 2;
+            else if (something === 2) return UD2 / 2;
+            else if (something === 3) return UD3 / 2;
+            else if (something === 4) return UD4 / 2;
+            else if (something === 5) return UD5 / 2;
+            else if (something === 6) return UD6 / 2;
+            return 0;
+        }
+
+        function somethingYcode(something) {
+            if (something === 1) return LR / 2;
+            else if (something === 2) return LR2 / 2;
+            else if (something === 3) return LR3 / 2;
+            else if (something === 4) return LR4 / 2;
+            else if (something === 5) return LR5 / 2;
+            else if (something === 6) return LR6 / 2;
+            return 0;
+        }
+
+        function mapChack(something) {
+            let characXCode = (UD / 2) - 5;
+            let characYCode = (LR / 2) - 5;
+            let mob2XCode = (UD2 / 2) - 5;
+            let mob2YCode = (LR2 / 2) - 5;
+            let mob2life = mob2_hp > 0;
+            let mob3XCode = (UD3 / 2) - 5;
+            let mob3YCode = (LR3 / 2) - 5;
+            let mob3life = mob3_hp > 0;
+            let mob4XCode = (UD4 / 2) - 5;
+            let mob4YCode = (LR4 / 2) - 5;
+            let mob4life = mob4_hp > 0;
+            let mob5XCode = (UD5 / 2) - 5;
+            let mob5YCode = (LR5 / 2) - 5;
+            let mob5life = mob5_hp > 0;
+            let mob6XCode = (UD6 / 2) - 5;
+            let mob6YCode = (LR6 / 2) - 5;
+            let mob6life = mob6_hp > 0;
+            let floor = characFloor;
+            let room = characRoom;
+
+            let rows = 40;
+            let cols = 40;
+
+            const map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
+
+            // 캐릭터 위치 부여
+            if (something !== 1) {
+                for (let x = characXCode; x < characXCode + 5; x++) {
+                    for (let y = characYCode; y < characYCode + 5; y++) {
+                        map[x][y] = 1;
+                    }
+                }
+            }
+
+            // 몬스터 위치 부여
+            if (room > 0 && room < 5 && mob2life && something !== 2) {
+                for (let x = mob2XCode; x < mob2XCode + 5; x++) {
+                    for (let y = mob2YCode; y < mob2YCode + 5; y++) {
+                        map[x][y] = 2;
+                    }
+                }
+            }
+            if (room > 1 && room < 5 && mob3life && something !== 3) {
+                for (let x = mob3XCode; x < mob3XCode + 5; x++) {
+                    for (let y = mob3YCode; y < mob3YCode + 5; y++) {
+                        map[x][y] = 3;
+                    }
+                }
+            }
+            if (room > 2 && room < 5 && mob4life && something !== 4) {
+                for (let x = mob4XCode; x < mob4XCode + 5; x++) {
+                    for (let y = mob4YCode; y < mob4YCode + 5; y++) {
+                        map[x][y] = 4;
+                    }
+                }
+            }
+            if (room > 3 && room < 5 && mob5life && something !== 5) {
+                for (let x = mob5XCode; x < mob5XCode + 5; x++) {
+                    for (let y = mob5YCode; y < mob5YCode + 5; y++) {
+                        map[x][y] = 5;
+                    }
+                }
+            }
+            if (floor > 1 && room === 0 && mob6life && something !== 6) {
+                for (let x = mob6XCode; x < mob6XCode + 10; x++) {
+                    for (let y = mob6YCode; y < mob6YCode + 10; y++) {
+                        map[x][y] = 6;
+                    }
+                }
+            }
+            return map;
+        }
+
+        function somethingDistance(something, weaponId, floor) {
+            if (something === 1) {
+                if (weaponId % 10 === 1) {
+                    return 4;
+                } else if (weaponId % 10 === 2) {
+                    return 5;
+                } else if (weaponId % 10 === 3) {
+                    return 6;
+                } else if (weaponId % 10 === 4) {
+                    return 7;
+                } else if (weaponId % 10 === 5) {
+                    return 8;
+                } else if (weaponId % 10 === 6) {
+                    return 9;
+                } else if (weaponId % 10 === 7) {
+                    return 10;
+                } else if (weaponId % 10 === 8) {
+                    return 11;
+                } else if (weaponId % 10 === 9) {
+                    return 12;
+                } else if (weaponId % 10 === 0) {
+                    return 13;
+                }
+            } else {
+                if (floor <= 4) {
+                    return 3;
+                } else if (floor <= 5) {
+                    return 4;
+                } else if (floor <= 6) {
+                    return 5;
+                } else if (floor <= 7) {
+                    return 6;
+                } else if (floor <= 8) {
+                    return 7;
+                } else if (floor <= 9) {
+                    return 8;
+                } else if (floor <= 10) {
+                    return 9;
+                } else if (floor <= 11) {
+                    return 10;
+                } else if (floor <= 12) {
+                    return 11;
+                } else {
+                    return 12;
+                }
+            }
+            return 3;
+        }
+
+        // 공격 모션 실행 함수
+        function attack_motion(something, motion) {
+            let Distance = 0;
+
+            // console.log(front_weaponId);
+
+            if (something === 1) {
+                Distance = front_weaponId % 10; // 소수점 아래 버림
+                if (front_weaponId % 10 === 0) {
+                    Distance = 10;
+                }
+            } else {
+                Distance = characFloor - 3;
+                if (Distance > 10) {
+                    Distance = 10;
+                }
+            }
+
+            const $attackElement = $("." + motion + "attack" + something);
+
+            // hidden 클래스를 제거해서 모습을 드러냄
+            $attackElement.removeClass('hidden');
+
+            // 약간의 딜레이 후에 css 를 변경해 이동하는 모습을 표현
+            setTimeout(function () {
+                if (motion === 'A') {
+                    $attackElement.css('left', (-4 - (Distance * 2)) + "vh");
+                } else if (motion === 'W') {
+                    $attackElement.css('top', (-4 - (Distance * 2)) + "vh");
+                } else if (motion === 'D') {
+                    if (something < 6) {
+                        $attackElement.css('left', (12 + (Distance * 2)) + "vh");
+                    } else if (something === 6) {
+                        $attackElement.css('left', (22 + (Distance * 2)) + "vh");
+                    }
+                } else if (motion === 'S') {
+                    if (something < 6) {
+                        $attackElement.css('top', (12 + (Distance * 2)) + "vh");
+                    } else if (something === 6) {
+                        $attackElement.css('top', (22 + (Distance * 2)) + "vh");
+                    }
+                }
+            }, 10);  // 10ms 정도의 짧은 딜레이를 줘서 CSS 변경을 애니메이션으로 적용
+
+            // 0.5초 뒤에 애니메이션이 끝나고, 모습을 없애고 원래 자리로
+            setTimeout(function () {
+                $attackElement.addClass('hidden'); // 다시 hidden 추가
+                if (something < 6) {
+                    $attackElement.css({top: "4vh", left: "4vh"}); // 원래 위치로 복귀
+                } else if (something === 6) {
+                    $attackElement.css({top: "9vh", left: "9vh"}); // 원래 위치로 복귀
+                }
+            }, 500);  // 애니메이션 시간 500ms 이후
+        }
+
+        let isConfirm = true; // 알림창 중복 방지 플래그
+
+        // 스테이지 이동
+        async function stageUp(callback) {
+            let doorChack = $(".door").hasClass("hidden");
+            if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorChack) {
+                stopMoving();
+                const isItemHidden = $item.hasClass('hidden');
+                if (!isItemHidden && isConfirm && characFloor <= 5) {
+                    console.log('2단계 진입' + isConfirm);
+                    // isConfirm이 true일 때만 confirm() 실행
+                    if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
+                        console.log('3단계 진입' + isConfirm);
+                        isConfirm = false; // 취소한 경우, 이동하지 않음
+                        return;
+                    } else {
+                        console.log('4단계 진입' + isConfirm);
+                        await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                    }
+                } else if (!isConfirm && characFloor <= 5) {
+                    console.log('5단계 진입' + isConfirm);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                } else if (characFloor > 5) {
+                    console.log('6단계 진입' + isConfirm);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                } else if (isItemHidden) {
+                    console.log('7단계 진입' + isConfirm);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                }
+                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+            } else {
+                if (callback) callback(); // 조건이 안 맞아도 실행
+            }
+        }
+
+        // 버튼 클릭 시 스테이지 업 후 페이지 이동
+        $(".mob__list_bt").on("click", function () {
+            stageUp(function () {
+                location.href = '../dictionary/mob';
+            });
+        });
+
+        $(".weapon__list_bt").on("click", function () {
+            stageUp(function () {
+                location.href = '../dictionary/weapon';
+            });
+        });
+
+        // 데미지 화면에 보여주기
+        function damage__motion(data, damage) {
+            // console.log(data, damage)
+            mobHpDown(data);
+            $(".damage" + data).text(damage);
+            setTimeout(function () {
+                $(".damage" + data).text('');
+            }, 1000);
+        }
+
+        // 몬스터 체력바 변화 함수
+        function mobHpDown(something) {
+            let mob_hp = 0;
+            if (something === 2) {
+                mob_hp = mob2_hp;
+            } else if (something === 3) {
+                mob_hp = mob3_hp;
+            } else if (something === 4) {
+                mob_hp = mob4_hp;
+            } else if (something === 5) {
+                mob_hp = mob5_hp;
+            }
+            let new_mobHp_width = (8 / (characFloor * 10)) * mob_hp;
+            if (mob_hp <= 0) new_mobHp_width = 0;
+            $(".mob" + something + "HP_bar").css('width', new_mobHp_width + 'vh');
+        }
+
+        // 보스 체력바 변화 함수
+        function BossHpDown() {
+            let new_bossHp_width = (50 / ((characFloor - 1) * 100) * mob6_hp);
+            if (mob6_hp <= 0) new_bossHp_width = 0;
+            $(".bossHP_bar").css('width', new_bossHp_width + 'vh');
+        }
+
+        // 몬스터 hp 셋팅
+        let mob2_hp = 0;
+        let mob3_hp = 0;
+        let mob4_hp = 0;
+        let mob5_hp = 0;
+        let mob6_hp = 0;
+
+        // 몬스터의 체력 부여
+        if (characRoom > 0 && characRoom < 5) {
+            $('.mob2').removeClass('hidden');
+            mob2_hp = characFloor * 10;
+        }
+        if (characRoom > 1 && characRoom < 5) {
+            $('.mob3').removeClass('hidden');
+            mob3_hp = characFloor * 10;
+        }
+        if (characRoom > 2 && characRoom < 5) {
+            $('.mob4').removeClass('hidden');
+            mob4_hp = characFloor * 10;
+        }
+        if (characRoom > 3 && characRoom < 5) {
+            $('.mob5').removeClass('hidden');
+            mob5_hp = characFloor * 10;
+        }
+        if (characFloor > 1 && characRoom === 0) {
+            $('.mob6').removeClass('hidden');
+            $('.bossHP').removeClass('hidden');
+            mob6_hp = (characFloor - 1) * 100;
+        }
+
+        // 자동 실행 move 함수 담아놓을 변수 생성
+        let stop2, stop3, stop4, stop5, stop6;
+
+        //일정 시간마다 move 함수를 호출
+        function show() {
+            console.log("페이지가 모두 로드된 후 실행됩니다.");
+            // console.log(((8 / 100) * front_hp));
+
+            setTimeout(characHpDown, 1000);
+            setTimeout(() => mobHpDown(2), 1000);
+            setTimeout(() => mobHpDown(3), 1000);
+            setTimeout(() => mobHpDown(4), 1000);
+            setTimeout(() => mobHpDown(5), 1000);
+            $('body').css('cursor', 'none');
+
+            if (characFloor <= 10) {
+                if (characRoom > 0 && characRoom < 5) {
+                    stop2 = setInterval(() => move(2), 1000);
+                }
+                if (characRoom > 1 && characRoom < 5) {
+                    stop3 = setInterval(() => move(3), 800);
+                }
+                if (characRoom > 2 && characRoom < 5) {
+                    stop4 = setInterval(() => move(4), 500);
+                }
+                if (characRoom > 3 && characRoom < 5) {
+                    stop5 = setInterval(() => move(5), 200);
+                }
+                if (characFloor > 1 && characRoom === 0) {
+                    stop6 = setInterval(() => move(6), 200);
+                }
+            } else {
+                if (characRoom > 0 && characRoom < 5) {
+                    stop2 = setInterval(() => move(2), 500);
+                }
+                if (characRoom > 1 && characRoom < 5) {
+                    stop3 = setInterval(() => move(3), 400);
+                }
+                if (characRoom > 2 && characRoom < 5) {
+                    stop4 = setInterval(() => move(4), 250);
+                }
+                if (characRoom > 3 && characRoom < 5) {
+                    stop5 = setInterval(() => move(5), 100);
+                }
+                if (characFloor > 1 && characRoom === 0) {
+                    stop6 = setInterval(() => move(6), 100);
+                }
+            }
+        }
+
+        // 랜덤 행동을 사용하는 함수
+        function move(something) {
+            let random;
+            // 1에서 5까지의 랜덤 숫자 생성
+            if (characFloor < 4) {
+                random = getRandom(1, 4);
+            } else {
+                random = getRandom(1, 5);
+            }
+
+            // console.log('random : ' + random);
+            // console.log('windowChack : ' + windowChack);
+            // console.log('something : ' + something);
+
+            if (random === 1) {
+                moveCharacter('left', something)
+            } else if (random === 2) {
+                moveCharacter('up', something)
+            } else if (random === 3) {
+                moveCharacter('right', something)
+            } else if (random === 4) {
+                moveCharacter('down', something)
+            } else if (random === 5) {
+                mobAttack(something);
+            }
+        }
+
+
+        // 몬스터의 공격
+        function mobAttack(something) {
+            let randomAttack = getRandom(1, 4);
+            if (randomAttack === 1) {
+                attack('A', something);
+            } else if (randomAttack === 2) {
+                attack('W', something);
+            } else if (randomAttack === 3) {
+                attack('D', something);
+            } else if (randomAttack === 4) {
+                attack('S', something);
+            }
+        }
+
+        // 문 개방
+        function showDoor() {
+            if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
+                $(".door").fadeIn(1000).removeClass('hidden');
+            }
+        }
+
+        let timeoutId;
+
+        // 마우스가 움직이면 호출되는 함수
+        function resetCursorTimer() {
+            // 커서를 다시 보이도록 설정
+            $('body').css('cursor', 'default');
+
+            // 이전 타이머가 있다면 취소
+            clearTimeout(timeoutId);
+
+            // 설정한 시간 후에 커서를 숨김
+            timeoutId = setTimeout(function () {
+                $('body').css('cursor', 'none');
+            }, 1000);
+        }
+
+        // 페이지가 처음 로드될 때 타이머 시작
+        timeoutId = setTimeout(function () {
+            $('body').css('cursor', 'none');
+        }, 3000);
+
+        // 마우스가 움직일 때마다 타이머를 리셋
+        $(document).on('mousemove', resetCursorTimer);
+
+        show();
+
+        getWeaponFind(nickname);
+    }
+}
+
 // 페이지가 시작될 때 시간 기록
 const startTime = new Date().getTime();
-var estimatedLoadTime = 1500; // 예상 로드 시간
+let estimatedLoadTime = 1500; // 예상 로드 시간
 
 // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
 const interval = setInterval(function () {
@@ -350,14 +1560,14 @@ const interval = setInterval(function () {
 }, 100); // 100ms 마다 로딩 바 업데이트
 
 // 윈도우 로딩 체크
-var windowChack = false;
+let windowChack = false;
 
 // window.onload 이벤트 감지
 window.onload = function () {
     // console.clear();
     const loadTime = new Date().getTime() - startTime;
 
-    if (charac.floor >= 0) {
+    if (characFloor >= 0) {
         startTimer();
         updateTime();
     }
@@ -375,8 +1585,6 @@ window.onload = function () {
         windowChack = true;
     }, 1000);
 }
-
-var seconds = charac.clearTime;
 
 function updateTime() {
     const hrs = Math.floor(seconds / 3600);
@@ -403,23 +1611,10 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const $item = charac.weaponId < 70 ? $(".item1") : $(".item2");
-const $item_text = charac.weaponId < 70 ? $(".item_text1") : $(".item_text2");
-const $random_item = $(".random_item");
-const $random_item_text = $(".random_item_text");
-
-var weaponMax = (charac.floor - 1) * 10;
-if (weaponMax > 70) weaponMax = 70;
-var $randomWeapon = getRandom(1, weaponMax);
-
-var randomItem = getRandom(1, 3);
-
-if (randomItem === 3) $('.random_item_effect').removeClass('hidden');
-
 function weapon_img(img) {
     $weapon_img.attr('src', img != null ? img : weapon[front_weaponId]);
     // 색상 값을 변수로 선언
-    var shadowColor = 'rgba(255, 255, 255, 0.7)';
+    let shadowColor = 'rgba(255, 255, 255, 0.7)';
 
     if (upgradeNum <= 10) shadowColor = 'rgba(255, 255, 255, 0.7)';
     else if (upgradeNum <= 20) shadowColor = 'rgba(150, 150, 150, 0.7)';
@@ -441,7 +1636,8 @@ function weapon_img(img) {
 
 //아이템 안내창 교체 버튼 눌렀을 떄
 function Item_change() {
-    localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
+    // localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
+    weaponFindUpdate(nickname, $randomWeapon);
     let changeImg = weapon[$randomWeapon];
     front_weaponId = $randomWeapon;
     // console.log('교체' + front_weaponId);
@@ -452,10 +1648,11 @@ function Item_change() {
 
 //아이템 안내창 조합 버튼 눌렀을 떄
 function Item_mix() {
-    let changeNum = charac.weaponId + ($randomWeapon % 10);
+    let changeNum = characWeaponId + ($randomWeapon % 10);
     if ($randomWeapon % 10 === 0) changeNum += 10;
     if (changeNum > 70) changeNum -= 10;
-    localStorage.setItem(nickname + 'weaponFind' + changeNum, true);
+    // localStorage.setItem(nickname + 'weaponFind' + changeNum, true);
+    weaponFindUpdate(nickname, changeNum);
     let changeImg = weapon[changeNum];
     front_weaponId = changeNum;
     // console.log('합성' + front_weaponId);
@@ -492,7 +1689,7 @@ function Item_exit() {
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
 function Item_get() {
-    let randomMax = charac.floor * 50;
+    let randomMax = characFloor * 50;
     if (randomMax > 2000) {
         randomMax = 2000;
     }
@@ -598,1185 +1795,37 @@ function updateStats(stats, action, number) {
 }
 
 $(document).ready(function () {
-    var $mob_index = charac.floor;
-
-    if ($mob_index > 53) {
-        $mob_index = getRandom(1, 53);
-    }
-
-    // $('.attackSize').attr('src', weapon[front_weaponId]);
-    if (charac.weaponId < 70) $item.attr('src', weapon[$randomWeapon]);
-
-    weapon_img();
-
-    $(".rate").text(100 - upgradeNum);
-
-    if (charac.room === 0) $('.mob_img').attr('src', mobs[$mob_index - 1]);
-    else $('.mob_img').attr('src', mobs[$mob_index]);
-
-    var damage = ((Math.floor(front_weaponId / 10)) * 10) + front_power + front_weaponUpgrade;
-    if ((front_weaponId % 10) !== 0) {
-        damage += 10;
-    }
-
-    // 캐릭터 위치 변수
-    var LR = 10;
-    var UD = 44;
-
-    // 몬스터 좌표 셋팅
-    var UD2 = getRandom(10, 70);
-    if (UD2 % 2 !== 0) UD2++;
-    var LR2 = getRandom(30, 70);
-    if (LR2 % 2 !== 0) LR2++;
-
-    var UD3 = getRandom(10, 70);
-    if (UD3 % 2 !== 0) UD3++;
-    var LR3 = getRandom(30, 70);
-    if (LR3 % 2 !== 0) LR3++;
-
-    var UD4 = getRandom(10, 70);
-    if (UD4 % 2 !== 0) UD4++;
-    var LR4 = getRandom(30, 70);
-    if (LR4 % 2 !== 0) LR4++;
-
-    var UD5 = getRandom(10, 70);
-    if (UD5 % 2 !== 0) UD5++;
-    var LR5 = getRandom(30, 70);
-    if (LR5 % 2 !== 0) LR5++;
-
-    var UD6 = getRandom(10, 40);
-    if (UD6 % 2 !== 0) UD6++;
-    var LR6 = getRandom(30, 40);
-    if (LR6 % 2 !== 0) LR6++;
-
-    var mobDamage = charac.floor;
-    if (charac.room === 0) {
-        mobDamage--;
-    }
-
-    // 알림창을 표시
-    if (charac.floor === 1 && charac.room === 0) {
-        let $tutorialContainer = $("#tutorialContainer");
-        // guide1 추가
-        $tutorialContainer.append('<div class="guide1 bg-black text-gray-400 text-center absolute">A W D S : 공격</div>');
-        // guide2 추가
-        $tutorialContainer.append('<div class="guide2 bg-black text-gray-400 text-center absolute">← ↑ → ↓ : 이동</div>');
-    }
-
-    const $mob2 = $(".mob2");
-    const $mob3 = $(".mob3");
-    const $mob4 = $(".mob4");
-    const $mob5 = $(".mob5");
-    const $mob6 = $(".mob6");
-
-    $mob2.css("top", UD2 + "vh");
-    $mob3.css("top", UD3 + "vh");
-    $mob4.css("top", UD4 + "vh");
-    $mob5.css("top", UD5 + "vh");
-    $mob6.css("top", UD6 + "vh");
-
-    $mob2.css("left", LR2 + "vh");
-    $mob3.css("left", LR3 + "vh");
-    $mob4.css("left", LR4 + "vh");
-    $mob5.css("left", LR5 + "vh");
-    $mob6.css("left", LR6 + "vh");
-
-    var moveInterval; // 캐릭터 이동을 위한 interval
-    var moveActionChack = null; // 현재 움직이고 있는 방향 추적
-
-    function startMoving(moveAction) {
-        // 이미 해당 방향으로 움직이고 있으면 중복 방지
-        if (moveActionChack === moveAction) return;
-
-        // 새로운 방향으로 이동 시작
-        stopMoving(); // 이전 움직임을 중지하고 새로운 움직임 시작
-        moveActionChack = moveAction;
-
-        moveInterval = setInterval(function () {
-            moveCharacter(moveAction, 1)
-        }, front_speed);
-    }
-
-    function stopMoving() {
-        if (moveInterval) {
-            clearInterval(moveInterval); // 이전 움직임 중지
-            moveInterval = null; // interval 초기화
-        }
-        moveActionChack = null; // 현재 방향 초기화
-    }
-
-    let lastKeyDirection = null; // 마지막으로 처리된 키 방향
-
-    $(window).keydown(function (e) {
-        const $characImg = $('.front_charac_img');
-        const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
-
-        // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
-        if (chatInputFocused || !windowChack) {
-            return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
-        }
-
-        const keyMap = {
-            37: {direction: 'left', scale: -1},
-            38: {direction: 'up'},
-            39: {direction: 'right', scale: 1},
-            40: {direction: 'down'}
-        };
-
-        const keyAction = keyMap[e.keyCode];
-        if (keyAction && moveActionChack !== keyAction.direction) {
-            // 중복된 키 입력 방지
-            if (lastKeyDirection === keyAction.direction) return;
-            lastKeyDirection = keyAction.direction;
-
-            // 방향에 따라 이미지 반전
-            if (keyAction.scale !== undefined) {
-                $characImg.css('transform', `scaleX(${keyAction.scale})`);
-            }
-
-            // 애니메이션 유지
-            $characImg.css('animation', 'move_action' + keyAction.scale + ' 1s linear infinite');
-
-            // 이동 시작
-            startMoving(keyAction.direction);
-        }
-
-        if (e.keyCode === 13) {
-            // 랜덤 아이템 안내창이 보여지는중인지 확인
-            const isRandomItemHidden = $('.random_item_text').hasClass('hidden');
-            const isItemHidden1 = $('.item_text1').hasClass('hidden');
-            const isItemHidden2 = $('.item_text2').hasClass('hidden');
-
-            console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + charac.floor + ', ' + charac.room + ', ' + charac.weaponId);
-
-            // 입력 필드가 포커스되어 있을 때만 전송 처리
-            if ($('.chat_var').is(':focus')) {
-                e.preventDefault(); // 엔터로 인한 기본 동작(폼 제출 방지)을 막음
-                $(e.target).closest('form').submit();  // 현재 입력 필드와 연결된 폼만 제출
-            } else if (!isRandomItemHidden && randomItem === 3) {
-                Item_get();
-            } else if (!isItemHidden1 && charac.floor !== 1 && charac.room === 0 && charac.weaponId < 70) {
-                Item_mix();
-            } else if (!isItemHidden2 && charac.floor !== 1 && charac.room === 0 && charac.weaponId >= 70) {
-                Item_upgrade();
-            }
-        }
-    });
-
-    // 키에서 손을 뗄 때 움직임 멈춤
-    $(window).keyup(function (e) {
-        const $characImg = $('.front_charac_img');
-        const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
-
-        // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
-        if (chatInputFocused) {
-            return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
-        }
-
-        // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
-        if ((e.keyCode === 37 && moveActionChack === 'left') ||
-            (e.keyCode === 38 && moveActionChack === 'up') ||
-            (e.keyCode === 39 && moveActionChack === 'right') ||
-            (e.keyCode === 40 && moveActionChack === 'down')) {
-            lastKeyDirection = null; // 키 입력 상태 초기화
-            $characImg.css('animation', 'none');
-            stopMoving();
-        }
-
-        if (e.keyCode === 65) {
-            $characImg.css("transform", "scaleX(-1)");
-            attack('A', 1);
-        } else if (e.keyCode === 87) {
-            attack('W', 1);
-        } else if (e.keyCode === 68) {
-            $characImg.css("transform", "scaleX(1)");
-            attack('D', 1);
-        } else if (e.keyCode === 83) {
-            attack('S', 1);
-        }
-    });
-
-
-    const $touch_left = $('.key-left');
-    const $touch_up = $('.key-up');
-    const $touch_right = $('.key-right');
-    const $touch_down = $('.key-down');
-    const $characImg = $('.front_charac_img');
-
-    const handleTouchStart = (direction, scale) => {
-        if (moveActionChack === direction) return;
-        lastKeyDirection = direction;
-
-        if (scale !== undefined) {
-            $characImg.css('transform', `scaleX(${scale})`);
-        }
-        $characImg.css('animation', 'move_action' + scale + ' 1s linear infinite');
-        startMoving(direction);
-    };
-
-    const handleTouchEnd = (direction) => {
-        if (moveActionChack === direction) {
-            lastKeyDirection = null;
-            $characImg.css('animation', 'none');
-            stopMoving();
-        }
-    };
-
-    $touch_left.on("touchstart", () => {
-        handleTouchStart('left', -1)
-    });
-
-    $touch_up.on("touchstart", () => {
-        handleTouchStart('up')
-    });
-
-    $touch_right.on("touchstart", () => {
-        handleTouchStart('right', 1)
-    });
-
-    $touch_down.on("touchstart", () => {
-        handleTouchStart('down')
-    });
-
-    $touch_left.on("touchend", () => {
-        handleTouchEnd('left')
-    });
-
-    $touch_up.on("touchend", () => {
-        handleTouchEnd('up')
-    });
-
-    $touch_right.on("touchend", () => {
-        handleTouchEnd('right')
-    });
-
-    $touch_down.on("touchend", () => {
-        handleTouchEnd('down')
-    });
-
-    const $touch_Aattack = $('.key-Aattack');
-    const $touch_Wattack = $('.key-Wattack');
-    const $touch_Dattack = $('.key-Dattack');
-    const $touch_Sattack = $('.key-Sattack');
-
-    $touch_Aattack.on("touchstart", () => {
-        $characImg.css("transform", "scaleX(-1)");
-        attack('A', 1);
-    });
-
-    $touch_Wattack.on("touchstart", () => {
-        attack('W', 1)
-    });
-
-    $touch_Dattack.on("touchstart", () => {
-        $characImg.css("transform", "scaleX(1)");
-        attack('D', 1);
-    });
-
-    $touch_Sattack.on("touchstart", () => {
-        attack('S', 1)
-    });
-
-    function moveCharacter(moveAction, something) {
-        // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
-
-        if (!windowChack) return;
-
-        let data = moveChack(moveAction, something);
-
-
-        // console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
-
-        if (something !== 1 && data === 1) {
-            hpDown(mobDamage);
-            damage__motion('1', mobDamage);
-        } else if (something === 1 && data > 1) {
-            hpDown(mobDamage);
-            damage__motion('1', mobDamage);
-        }
-
-        if (something === 1) {
-            if (moveAction === 'up' && UD > 10) {
-                UD -= 2;
-                $(".charac").css("top", UD + "vh");
-            } else if (moveAction === 'down' && UD < 80) {
-                UD += 2;
-                $(".charac").css("top", UD + "vh");
-            } else if (moveAction === 'left' && LR > 10) {
-                LR -= 2;
-                $(".charac").css("left", LR + "vh");
-            } else if (moveAction === 'right' && LR < 80) {
-                LR += 2;
-                $(".charac").css("left", LR + "vh");
-            }
-
-            // console.log("UD :" + UD + ", LR : " + LR);
-            showDoor();
-            stageUp();
-            showItem_text();
-            showRandomItem_text();
-        } else if (something === 2) {
-            if (moveAction === 'up' && UD2 > 10) {
-                UD2 -= 2;
-                $(".mob" + something).css("top", UD2 + "vh");
-            } else if (moveAction === 'down' && UD2 < 80) {
-                UD2 += 2;
-                $(".mob" + something).css("top", UD2 + "vh");
-            } else if (moveAction === 'left' && LR2 > 10) {
-                LR2 -= 2;
-                $(".mob" + something).css("left", LR2 + "vh");
-            } else if (moveAction === 'right' && LR2 < 80) {
-                LR2 += 2;
-                $(".mob" + something).css("left", LR2 + "vh");
-            }
-        } else if (something === 3) {
-            if (moveAction === 'up' && UD3 > 10) {
-                UD3 -= 2;
-                $(".mob" + something).css("top", UD3 + "vh");
-            } else if (moveAction === 'down' && UD3 < 80) {
-                UD3 += 2;
-                $(".mob" + something).css("top", UD3 + "vh");
-            } else if (moveAction === 'left' && LR3 > 10) {
-                LR3 -= 2;
-                $(".mob" + something).css("left", LR3 + "vh");
-            } else if (moveAction === 'right' && LR3 < 80) {
-                LR3 += 2;
-                $(".mob" + something).css("left", LR3 + "vh");
-            }
-        } else if (something === 4) {
-            if (moveAction === 'up' && UD4 > 10) {
-                UD4 -= 2;
-                $(".mob" + something).css("top", UD4 + "vh");
-            } else if (moveAction === 'down' && UD4 < 80) {
-                UD4 += 2;
-                $(".mob" + something).css("top", UD4 + "vh");
-            } else if (moveAction === 'left' && LR4 > 10) {
-                LR4 -= 2;
-                $(".mob" + something).css("left", LR4 + "vh");
-            } else if (moveAction === 'right' && LR4 < 80) {
-                LR4 += 2;
-                $(".mob" + something).css("left", LR4 + "vh");
-            }
-        } else if (something === 5) {
-            if (moveAction === 'up' && UD5 > 10) {
-                UD5 -= 2;
-                $(".mob" + something).css("top", UD5 + "vh");
-            } else if (moveAction === 'down' && UD5 < 80) {
-                UD5 += 2;
-                $(".mob" + something).css("top", UD5 + "vh");
-            } else if (moveAction === 'left' && LR5 > 10) {
-                LR5 -= 2;
-                $(".mob" + something).css("left", LR5 + "vh");
-            } else if (moveAction === 'right' && LR5 < 80) {
-                LR5 += 2;
-                $(".mob" + something).css("left", LR5 + "vh");
-            }
-        } else if (something === 6) {
-            if (moveAction === 'up' && UD6 > 10) {
-                UD6 -= 2;
-                $(".mob" + something).css("top", UD6 + "vh");
-            } else if (moveAction === 'down' && UD6 < 70) {
-                UD6 += 2;
-                $(".mob" + something).css("top", UD6 + "vh");
-            } else if (moveAction === 'left' && LR6 > 10) {
-                LR6 -= 2;
-                $(".mob" + something).css("left", LR6 + "vh");
-            } else if (moveAction === 'right' && LR6 < 70) {
-                LR6 += 2;
-                $(".mob" + something).css("left", LR6 + "vh");
-            }
-        }
-    }
-
-    function attack(direction, something) {
-
-        if (!windowChack) return;
-
-        // 먼저 attack_motion 을 즉시 실행
-        attack_motion(something, direction);
-
-        // 나머지 로직은 0.5초 뒤에 실행
-        // setTimeout(() => {
-        let data = attackChack(something, direction);
-        // console.log(data);
-        if (something !== 1 && data === 1) {
-            if (something < 6) {
-                hpDown(mobDamage);
-                damage__motion('1', mobDamage);
-            } else {
-                hpDown(mobDamage * 2);
-                damage__motion('1', mobDamage * 2);
-            }
-        } else if (something === 1 && data === 2) {
-            mob2_hp -= damage;
-            damage__motion(data, damage);
-            if (mob2_hp <= 0) {
-                mobHidden(2);
-                clearInterval(stop2);
-            }
-        } else if (something === 1 && data === 3) {
-            mob3_hp -= damage;
-            damage__motion(data, damage);
-            if (mob3_hp <= 0) {
-                mobHidden(3);
-                clearInterval(stop3);
-            }
-        } else if (something === 1 && data === 4) {
-            mob4_hp -= damage;
-            damage__motion(data, damage);
-            if (mob4_hp <= 0) {
-                mobHidden(4);
-                clearInterval(stop4);
-            }
-        } else if (something === 1 && data === 5) {
-            mob5_hp -= damage;
-            damage__motion(data, damage);
-            if (mob5_hp <= 0) {
-                mobHidden(5);
-                clearInterval(stop5);
-            }
-        } else if (something === 1 && data === 6) {
-            mob6_hp -= damage;
-            damage__motion(data, damage);
-            if (mob6_hp <= 0) {
-                mobHidden(6);
-                clearInterval(stop6);
-                showItem();
-            }
-            BossHpDown();
-        }
-        if (something === 1) {
-            showDoor();
-            showRandomItem();
-        }
-        // }, 400);
-    }
-
-    let saveCooldown = false; // 저장 쿨타임 변수
-
-    async function saveLog() {
-        if (saveCooldown) return; // 쿨타임 중이면 저장하지 않음
-
-        saveCooldown = true;  // 저장 시작
-
-        try {
-            await saveFirebaseLogs(charac, seconds); // 비동기 작업 완료될 때까지 기다림
-            localStorage.setItem(nickname + 'playCount', (parseInt(localStorage.getItem(nickname + 'playCount')) || 0) + 1);
-        } catch (error) {
-            console.error("로그 저장 중 오류 발생:", error);
-        } finally {
-            saveCooldown = false; // 작업이 끝나면 쿨타임 해제
-            location.href = '../over';
-        }
-    }
-
-    // hp 감소
-    async function hpDown(mobDamage) {
-        front_hp -= mobDamage;
-        $('.hp_count').text(front_hp);
-        characHpDown();
-        if (front_hp <= 0) {
-            /* localStorage.setItem(nickname, nickname + "/1/0/100/0/50/1/0"); */
-            localStorage.setItem(nickname, JSON.stringify({
-                name: nickname,
-                floor: 1,
-                room: 0,
-                hp: 100,
-                power: 0,
-                speed: 50,
-                weaponId: 1,
-                weaponUpgrade: 0,
-                clearTime: 0
-            }));
-            await saveLog();
-        }
-    }
-
-    // 캐릭 체력바 변화 함수
-    function characHpDown() {
-        let new_characHp_width = (8 / 10) * (front_hp % 10);
-        // console.log(new_characHp_width);
-        let characHp_number = Math.floor(front_hp / 10);
-        if (front_hp % 10 === 0) {
-            new_characHp_width = 8;
-            characHp_number--;
-        }
-        // console.log("체력 넓이 : " + new_characHp_width + ", 줄 수 : " + characHp_number);
-        for (let i = characHp_number - 1; i >= 0; i--) {
-            $(".characHP_bar" + i).css('width', '8vh');
-        }
-        for (let i = characHp_number + 1; i < 11; i++) {
-            $(".characHP_bar" + i).css('width', '0vh');
-        }
-
-        // console.log(".characHP_bar"+(characHp_number-1));
-        $(".characHP_bar" + characHp_number).css('width', new_characHp_width + 'vh');
-        $(".characHP_bar_text").text('x' + (characHp_number + 1));
-    }
-
-    //몬스터 사라지게하는 함수
-    function mobHidden(num) {
-        $(".mob" + num).fadeOut(2000, function () {
-            $(this).addClass('hidden');
-        });
-    }
-
-    function moveChack(moveAction, something) {
-        let Xcode = somethingXcode(something) - 5;
-        let Ycode = somethingYcode(something) - 5;
-        let height = something > 5 ? 10 : 5;
-        let width = something > 5 ? 10 : 5;
-
-        // 맵 생성
-        const map2 = mapChack(something);
-
-        // for (i = 0; i < 40; i++) {
-        //    let log = '';
-        //    for (j = 0; j < 40; j++) {
-        //        log += '[' + map2[i][j] + ']';
-        //    }
-        //    console.log(log);
-        //}
-
-        // something 주위 공간 확인
-        if (moveAction === 'up') {
-            for (let y = Ycode; y < Ycode + width && y < 40; y++) {
-                if (Xcode - 1 >= 0 && map2[Xcode - 1][y] !== 0) {
-                    return map2[Xcode - 1][y];
-                }
-            }
-        } else if (moveAction === 'down') {
-            for (let y = Ycode; y < Ycode + width && y < 40; y++) {
-                if (Xcode + height < 40 && map2[Xcode + height][y] !== 0) {
-                    return map2[Xcode + height][y];
-                }
-            }
-        } else if (moveAction === 'left') {
-            for (let x = Xcode; x < Xcode + height && x < 40; x++) {
-                if (Ycode - 1 >= 0 && map2[x][Ycode - 1] !== 0) {
-                    return map2[x][Ycode - 1];
-                }
-            }
-        } else if (moveAction === 'right') {
-            for (let x = Xcode; x < Xcode + height && x < 40; x++) {
-                if (Ycode + width < 40 && map2[x][Ycode + width] !== 0) {
-                    return map2[x][Ycode + width];
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    // 공격 대상 확인 함수
-    function attackChack(something, direction) {
-        let Xcode = somethingXcode(something) - 5;
-        let Ycode = somethingYcode(something) - 5;
-        let height = something > 5 ? 8 : 4;
-        let width = something > 5 ? 8 : 4;
-
-        // console.log('Xcode : ' + Xcode);
-        // console.log('Ycode : ' + Ycode);
-
-        let distance = somethingDistance(something, front_weaponId, charac.floor);
-
-        // console.log('something : ' + something);
-
-        // 맵 생성
-        const map3 = mapChack(something);
-
-        if (direction === 'A') {
-            let x = Xcode + (height / 2);
-            let y = Ycode - distance;
-            // console.log('x : ' + x);
-            // console.log('y : ' + y);
-
-            for (let i = Ycode - 1; i > y && i >= 0; i--) {
-                if (map3[x][i] !== 0) {
-                    return map3[x][i];
-                }
-            }
-        } else if (direction === 'W') {
-            let x = Xcode - distance;
-            let y = Ycode + (width / 2);
-            // console.log('x : ' + x);
-            // console.log('y : ' + y);
-
-            for (let i = Xcode - 1; i > x && i >= 0; i--) {
-                if (map3[i][y] !== 0) {
-                    return map3[i][y];
-                }
-            }
-        } else if (direction === 'D') {
-            let x = Xcode + (height / 2);
-            let y = Ycode + width + distance;
-            // console.log('x : ' + x);
-            // console.log('y : ' + y);
-
-            for (let i = Ycode + width; i < y && i < 40; i++) {
-                if (map3[x][i] !== 0) {
-                    return map3[x][i];
-                }
-            }
-        } else if (direction === 'S') {
-            let x = Xcode + height + distance;
-            let y = Ycode + (width / 2);
-            // console.log('x : ' + x);
-            // console.log('y : ' + y);
-
-            for (let i = Xcode + height; i < x && i < 40; i++) {
-                if (map3[i][y] !== 0) {
-                    return map3[i][y];
-                }
-            }
-        }
-        return 0;
-    }
-
-    // 아이템 안내창 공개
-    function showItem_text() {
-        let itemChack = $item.hasClass('hidden');
-        // console.log("아이템 공개 여부"+itemChack);
-        if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && charac.floor > 1 && charac.room === 0) {
-            $item_text.fadeIn(1000).removeClass('hidden');
-        }
-    }
-
-    // 아이템 공개
-    function showItem() {
-        $item.fadeIn(1000).removeClass('hidden');
-    }
-
-    // 랜덤아이템 안내창 공개
-    function showRandomItem_text() {
-        let randomItemChack = $(".random_item").hasClass('hidden');
-        // console.log("아이템 공개 여부"+itemChack);
-        if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
-            $(".random_item_text").fadeIn(1000).removeClass('hidden');
-        }
-    }
-
-    var isItem = true;
-
-    function showRandomItem() {
-        const isSpecialRoom = (charac.floor === 8 && charac.room === 0);
-        const allMobsDefeated = (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0);
-        const isSpecialItem = (randomItem === 3);
-        const isExcludedRoom = (charac.floor === 1 && charac.room === 0);
-
-        if (!isExcludedRoom && allMobsDefeated && isSpecialItem && (isSpecialRoom || isItem)) {
-            isItem = false;
-            $(".random_item").fadeIn(1000).removeClass('hidden');
-        }
-    }
-
-    function somethingXcode(something) {
-        if (something === 1) return UD / 2;
-        else if (something === 2) return UD2 / 2;
-        else if (something === 3) return UD3 / 2;
-        else if (something === 4) return UD4 / 2;
-        else if (something === 5) return UD5 / 2;
-        else if (something === 6) return UD6 / 2;
-        return 0;
-    }
-
-    function somethingYcode(something) {
-        if (something === 1) return LR / 2;
-        else if (something === 2) return LR2 / 2;
-        else if (something === 3) return LR3 / 2;
-        else if (something === 4) return LR4 / 2;
-        else if (something === 5) return LR5 / 2;
-        else if (something === 6) return LR6 / 2;
-        return 0;
-    }
-
-    function mapChack(something) {
-        let characXCode = (UD / 2) - 5;
-        let characYCode = (LR / 2) - 5;
-        let mob2XCode = (UD2 / 2) - 5;
-        let mob2YCode = (LR2 / 2) - 5;
-        let mob2life = mob2_hp > 0;
-        let mob3XCode = (UD3 / 2) - 5;
-        let mob3YCode = (LR3 / 2) - 5;
-        let mob3life = mob3_hp > 0;
-        let mob4XCode = (UD4 / 2) - 5;
-        let mob4YCode = (LR4 / 2) - 5;
-        let mob4life = mob4_hp > 0;
-        let mob5XCode = (UD5 / 2) - 5;
-        let mob5YCode = (LR5 / 2) - 5;
-        let mob5life = mob5_hp > 0;
-        let mob6XCode = (UD6 / 2) - 5;
-        let mob6YCode = (LR6 / 2) - 5;
-        let mob6life = mob6_hp > 0;
-        let floor = charac.floor;
-        let room = charac.room;
-
-        let rows = 40;
-        let cols = 40;
-
-        const map = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
-
-        // 캐릭터 위치 부여
-        if (something !== 1) {
-            for (let x = characXCode; x < characXCode + 5; x++) {
-                for (let y = characYCode; y < characYCode + 5; y++) {
-                    map[x][y] = 1;
-                }
-            }
-        }
-
-        // 몬스터 위치 부여
-        if (room > 0 && room < 5 && mob2life && something !== 2) {
-            for (let x = mob2XCode; x < mob2XCode + 5; x++) {
-                for (let y = mob2YCode; y < mob2YCode + 5; y++) {
-                    map[x][y] = 2;
-                }
-            }
-        }
-        if (room > 1 && room < 5 && mob3life && something !== 3) {
-            for (let x = mob3XCode; x < mob3XCode + 5; x++) {
-                for (let y = mob3YCode; y < mob3YCode + 5; y++) {
-                    map[x][y] = 3;
-                }
-            }
-        }
-        if (room > 2 && room < 5 && mob4life && something !== 4) {
-            for (let x = mob4XCode; x < mob4XCode + 5; x++) {
-                for (let y = mob4YCode; y < mob4YCode + 5; y++) {
-                    map[x][y] = 4;
-                }
-            }
-        }
-        if (room > 3 && room < 5 && mob5life && something !== 5) {
-            for (let x = mob5XCode; x < mob5XCode + 5; x++) {
-                for (let y = mob5YCode; y < mob5YCode + 5; y++) {
-                    map[x][y] = 5;
-                }
-            }
-        }
-        if (floor > 1 && room === 0 && mob6life && something !== 6) {
-            for (let x = mob6XCode; x < mob6XCode + 10; x++) {
-                for (let y = mob6YCode; y < mob6YCode + 10; y++) {
-                    map[x][y] = 6;
-                }
-            }
-        }
-        return map;
-    }
-
-    function somethingDistance(something, weaponId, floor) {
-        if (something === 1) {
-            if (weaponId % 10 === 1) {
-                return 4;
-            } else if (weaponId % 10 === 2) {
-                return 5;
-            } else if (weaponId % 10 === 3) {
-                return 6;
-            } else if (weaponId % 10 === 4) {
-                return 7;
-            } else if (weaponId % 10 === 5) {
-                return 8;
-            } else if (weaponId % 10 === 6) {
-                return 9;
-            } else if (weaponId % 10 === 7) {
-                return 10;
-            } else if (weaponId % 10 === 8) {
-                return 11;
-            } else if (weaponId % 10 === 9) {
-                return 12;
-            } else if (weaponId % 10 === 0) {
-                return 13;
-            }
-        } else {
-            if (floor <= 4) {
-                return 3;
-            } else if (floor <= 5) {
-                return 4;
-            } else if (floor <= 6) {
-                return 5;
-            } else if (floor <= 7) {
-                return 6;
-            } else if (floor <= 8) {
-                return 7;
-            } else if (floor <= 9) {
-                return 8;
-            } else if (floor <= 10) {
-                return 9;
-            } else if (floor <= 11) {
-                return 10;
-            } else if (floor <= 12) {
-                return 11;
-            } else {
-                return 12;
-            }
-        }
-        return 3;
-    }
-
-    // 공격 모션 실행 함수
-    function attack_motion(something, motion) {
-        let Distance = 0;
-
-        // console.log(front_weaponId);
-
-        if (something === 1) {
-            Distance = front_weaponId % 10; // 소수점 아래 버림
-            if (front_weaponId % 10 === 0) {
-                Distance = 10;
-            }
-        } else {
-            Distance = charac.floor - 3;
-            if (Distance > 10) {
-                Distance = 10;
-            }
-        }
-
-        const $attackElement = $("." + motion + "attack" + something);
-
-        // hidden 클래스를 제거해서 모습을 드러냄
-        $attackElement.removeClass('hidden');
-
-        // 약간의 딜레이 후에 css 를 변경해 이동하는 모습을 표현
-        setTimeout(function () {
-            if (motion === 'A') {
-                $attackElement.css('left', (-4 - (Distance * 2)) + "vh");
-            } else if (motion === 'W') {
-                $attackElement.css('top', (-4 - (Distance * 2)) + "vh");
-            } else if (motion === 'D') {
-                if (something < 6) {
-                    $attackElement.css('left', (12 + (Distance * 2)) + "vh");
-                } else if (something === 6) {
-                    $attackElement.css('left', (22 + (Distance * 2)) + "vh");
-                }
-            } else if (motion === 'S') {
-                if (something < 6) {
-                    $attackElement.css('top', (12 + (Distance * 2)) + "vh");
-                } else if (something === 6) {
-                    $attackElement.css('top', (22 + (Distance * 2)) + "vh");
-                }
-            }
-        }, 10);  // 10ms 정도의 짧은 딜레이를 줘서 CSS 변경을 애니메이션으로 적용
-
-        // 0.5초 뒤에 애니메이션이 끝나고, 모습을 없애고 원래 자리로
-        setTimeout(function () {
-            $attackElement.addClass('hidden'); // 다시 hidden 추가
-            if (something < 6) {
-                $attackElement.css({top: "4vh", left: "4vh"}); // 원래 위치로 복귀
-            } else if (something === 6) {
-                $attackElement.css({top: "9vh", left: "9vh"}); // 원래 위치로 복귀
-            }
-        }, 500);  // 애니메이션 시간 500ms 이후
-    }
-
-    var isConfirm = true; // 알림창 중복 방지 플래그
-
-    // 스테이지 이동
-    function stageUp(callback) {
-        let doorChack = $(".door").hasClass("hidden");
-        if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorChack) {
-            stopMoving();
-            const isItemHidden = $item.hasClass('hidden');
-            if (!isItemHidden && isConfirm && charac.floor <= 5) {
-                console.log('2단계 진입' + isConfirm);
-                // isConfirm이 true일 때만 confirm() 실행
-                if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
-                    console.log('3단계 진입' + isConfirm);
-                    isConfirm = false; // 취소한 경우, 이동하지 않음
-                    return;
-                } else {
-                    console.log('4단계 진입' + isConfirm);
-                    stageSave(callback);
-                }
-            } else if (!isConfirm && charac.floor <= 5) {
-                console.log('5단계 진입' + isConfirm);
-                stageSave(callback);
-            } else if (charac.floor > 5) {
-                console.log('6단계 진입' + isConfirm);
-                stageSave(callback);
-            } else if (isItemHidden) {
-                console.log('7단계 진입' + isConfirm);
-                stageSave(callback);
-            }
-            stageSave(callback);
-        } else {
-            if (callback) callback(); // 조건이 안 맞아도 실행
-        }
-    }
-
-    function stageSave(callback) {
-        let floor = charac.floor;
-        let room = charac.room;
-
-        if (room + 1 < 5) {
-            room++;
-        } else {
-            room = 0;
-            floor++;
-        }
-
-        setTimeout(function () {
-            const characData = {
-                name: nickname,
-                floor: floor,
-                room: room,
-                hp: front_hp,
-                power: front_power,
-                speed: front_speed,
-                weaponId: front_weaponId,
-                weaponUpgrade: front_weaponUpgrade,
-                clearTime: seconds
-            };
-
-            if (characData.room !== 1) {
-                localStorage.setItem(nickname, JSON.stringify(characData));
-            } else if (front_hp + 10 > 100) {
-                characData.hp = 100;
-                localStorage.setItem(nickname, JSON.stringify(characData));
-            } else if (characData.room === 1) {
-                characData.hp = front_hp + 10;
-                localStorage.setItem(nickname, JSON.stringify(characData));
-            }
-
-            // 로컬 저장 후 이동 (콜백 함수 실행)
-            if (callback) callback();
-            else location.reload();
-        }, 100);
-    }
-
-    // 버튼 클릭 시 스테이지 업 후 페이지 이동
-    $(".mob__list_bt").on("click", function () {
-        stageUp(function () {
-            location.href = '../dictionary/mob';
-        });
-    });
-
-    $(".weapon__list_bt").on("click", function () {
-        stageUp(function () {
-            location.href = '../dictionary/weapon';
-        });
-    });
-
-    // 데미지 화면에 보여주기
-    function damage__motion(data, damage) {
-        // console.log(data, damage)
-        mobHpDown(data);
-        $(".damage" + data).text(damage);
-        setTimeout(function () {
-            $(".damage" + data).text('');
-        }, 1000);
-    }
-
-    // 몬스터 체력바 변화 함수
-    function mobHpDown(something) {
-        let mob_hp = 0;
-        if (something === 2) {
-            mob_hp = mob2_hp;
-        } else if (something === 3) {
-            mob_hp = mob3_hp;
-        } else if (something === 4) {
-            mob_hp = mob4_hp;
-        } else if (something === 5) {
-            mob_hp = mob5_hp;
-        }
-        let new_mobHp_width = (8 / (charac.floor * 10)) * mob_hp;
-        if (mob_hp <= 0) new_mobHp_width = 0;
-        $(".mob" + something + "HP_bar").css('width', new_mobHp_width + 'vh');
-    }
-
-    // 보스 체력바 변화 함수
-    function BossHpDown() {
-        let new_bossHp_width = (50 / ((charac.floor - 1) * 100) * mob6_hp);
-        if (mob6_hp <= 0) new_bossHp_width = 0;
-        $(".bossHP_bar").css('width', new_bossHp_width + 'vh');
-    }
-
-    // 몬스터 hp 셋팅
-    var mob2_hp = 0;
-    var mob3_hp = 0;
-    var mob4_hp = 0;
-    var mob5_hp = 0;
-    var mob6_hp = 0;
-
-    // 몬스터의 체력 부여
-    if (charac.room > 0 && charac.room < 5) {
-        $('.mob2').removeClass('hidden');
-        mob2_hp = charac.floor * 10;
-    }
-    if (charac.room > 1 && charac.room < 5) {
-        $('.mob3').removeClass('hidden');
-        mob3_hp = charac.floor * 10;
-    }
-    if (charac.room > 2 && charac.room < 5) {
-        $('.mob4').removeClass('hidden');
-        mob4_hp = charac.floor * 10;
-    }
-    if (charac.room > 3 && charac.room < 5) {
-        $('.mob5').removeClass('hidden');
-        mob5_hp = charac.floor * 10;
-    }
-    if (charac.floor > 1 && charac.room === 0) {
-        $('.mob6').removeClass('hidden');
-        $('.bossHP').removeClass('hidden');
-        mob6_hp = (charac.floor - 1) * 100;
-    }
-
-    // 자동 실행 move 함수 담아놓을 변수 생성
-    var stop2, stop3, stop4, stop5, stop6;
-
-    //일정 시간마다 move 함수를 호출
-    function show() {
-        console.log("페이지가 모두 로드된 후 실행됩니다.");
-        // console.log(((8 / 100) * front_hp));
-
-        setTimeout(characHpDown, 1000);
-        setTimeout(() => mobHpDown(2), 1000);
-        setTimeout(() => mobHpDown(3), 1000);
-        setTimeout(() => mobHpDown(4), 1000);
-        setTimeout(() => mobHpDown(5), 1000);
-        $('body').css('cursor', 'none');
-
-        if (charac.floor <= 10) {
-            if (charac.room > 0 && charac.room < 5) {
-                stop2 = setInterval(() => move(2), 1000);
-            }
-            if (charac.room > 1 && charac.room < 5) {
-                stop3 = setInterval(() => move(3), 800);
-            }
-            if (charac.room > 2 && charac.room < 5) {
-                stop4 = setInterval(() => move(4), 500);
-            }
-            if (charac.room > 3 && charac.room < 5) {
-                stop5 = setInterval(() => move(5), 200);
-            }
-            if (charac.floor > 1 && charac.room === 0) {
-                stop6 = setInterval(() => move(6), 200);
-            }
-        } else {
-            if (charac.room > 0 && charac.room < 5) {
-                stop2 = setInterval(() => move(2), 500);
-            }
-            if (charac.room > 1 && charac.room < 5) {
-                stop3 = setInterval(() => move(3), 400);
-            }
-            if (charac.room > 2 && charac.room < 5) {
-                stop4 = setInterval(() => move(4), 250);
-            }
-            if (charac.room > 3 && charac.room < 5) {
-                stop5 = setInterval(() => move(5), 100);
-            }
-            if (charac.floor > 1 && charac.room === 0) {
-                stop6 = setInterval(() => move(6), 100);
-            }
-        }
-    }
-
-    // 랜덤 행동을 사용하는 함수
-    function move(something) {
-        let random;
-        // 1에서 5까지의 랜덤 숫자 생성
-        if (charac.floor < 4) {
-            random = getRandom(1, 4);
-        } else {
-            random = getRandom(1, 5);
-        }
-
-        // console.log('random : ' + random);
-        // console.log('windowChack : ' + windowChack);
-        // console.log('something : ' + something);
-
-        if (random === 1) {
-            moveCharacter('left', something)
-        } else if (random === 2) {
-            moveCharacter('up', something)
-        } else if (random === 3) {
-            moveCharacter('right', something)
-        } else if (random === 4) {
-            moveCharacter('down', something)
-        } else if (random === 5) {
-            mobAttack(something);
-        }
-    }
-
-
-    // 몬스터의 공격
-    function mobAttack(something) {
-        let randomAttack = getRandom(1, 4);
-        if (randomAttack === 1) {
-            attack('A', something);
-        } else if (randomAttack === 2) {
-            attack('W', something);
-        } else if (randomAttack === 3) {
-            attack('D', something);
-        } else if (randomAttack === 4) {
-            attack('S', something);
-        }
-    }
-
-    // 문 개방
-    function showDoor() {
-        if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
-            $(".door").fadeIn(1000).removeClass('hidden');
-        }
-    }
-
-    var timeoutId;
-
-    // 마우스가 움직이면 호출되는 함수
-    function resetCursorTimer() {
-        // 커서를 다시 보이도록 설정
-        $('body').css('cursor', 'default');
-
-        // 이전 타이머가 있다면 취소
-        clearTimeout(timeoutId);
-
-        // 설정한 시간 후에 커서를 숨김
-        timeoutId = setTimeout(function () {
-            $('body').css('cursor', 'none');
-        }, 1000);
-    }
-
-    // 페이지가 처음 로드될 때 타이머 시작
-    timeoutId = setTimeout(function () {
-        $('body').css('cursor', 'none');
-    }, 3000);
-
-    // 마우스가 움직일 때마다 타이머를 리셋
-    $(document).on('mousemove', resetCursorTimer);
-
-    show();
+    updateCharacterData(nickname);
 });
 
-var mobFind = localStorage.getItem(nickname + 'MobFind') || 1;
+// let mobFind = localStorage.getItem(nickname + 'MobFind') || 1;
+let mobFind = null;
+(async () => {
+    mobFind = await getMobFind(nickname) || 0;
 
-if (charac.room === 1) {
-    if (mobFind < charac.floor) {
-        localStorage.setItem(nickname + 'MobFind', charac.floor);
-        mobFind = charac.floor;
-    }
-}
+    if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
 
-if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
+    for (let i = 1; i <= mobFind; i++) {
+        $('.mobImage' + i).attr('src', mobs[i])
 
-for (let i = 1; i <= mobFind; i++) {
-    $('.mobImage' + i).attr('src', mobs[i])
+        // 현재 순서에 해당하는 mob__dictionary_card2 선택
+        const currentCard = $('.mob__dictionary_card2').eq(i - 1);
 
-    // 현재 순서에 해당하는 mob__dictionary_card2 선택
-    const currentCard = $('.mob__dictionary_card2').eq(i - 1);
-
-    // 카드 요소에 새로운 div 추가
-    currentCard.append(`
+        // 카드 요소에 새로운 div 추가
+        currentCard.append(`
         <div class="dictionary_body_text absolute">
             <div>${mobNames[i]}</div>
             데미지 ${i} <br> 체력 ${i * 10} <br> 사거리 ${i < 4 ? 0 : i - 1 > 12 ? 12 : i - 1}
         </div>
     `);
-}
+    }
+})();
 
 /*for (i = 1; i <= 70; i++) {
     let weaponFind = localStorage.getItem(nickname + 'weaponFind' + i);
     if(weaponFind) $('.weaponImage' + i).attr('src', weapon[i])
 }*/
-
+/*
 $.each(Object.keys(localStorage), function (_, key) {
     if (key.startsWith(`${nickname}weaponFind`)) {
         const index = key.replace(`${nickname}weaponFind`, ''); // 숫자 추출
@@ -1790,7 +1839,7 @@ $.each(Object.keys(localStorage), function (_, key) {
         const currentCard = $('.weapon__dictionary_card2').eq(indexNumber - 1);
 
         currentCard.append(`
-        <div class="dictionary_body_text absolute">            
+        <div class="dictionary_body_text absolute">
             <div>${weaponNames[indexNumber]}</div>
             데미지 ${Math.ceil(indexNumber / 10) * 10} <br>
             사거리 ${indexNumber % 10 === 0 ? 12 : (indexNumber % 10) + 2}
@@ -1798,17 +1847,18 @@ $.each(Object.keys(localStorage), function (_, key) {
         `);
     }
 });
+ */
 
 // 인게임 헤드 js
-var mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
-var mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
-var mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
-var mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
+let mob__itemsPerPage = 4; // 몬스터 도감 한 페이지에 보여줄 카드 개수
+let mob__currentIndex = 0; // 몬스터 도감 현재 첫 번째로 보여지는 카드의 인덱스
+let mob__totalItems = $('.mob__dictionary_card').length; // 몬스터 도감 총 몬스터 수
+let mob__cardWidth = 20; // 몬스터 도감 카드의 너비(마진 포함)
 
-var weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
-var weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
-var weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
-var weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
+let weapon__itemsPerPage = 4; // 무기 도감 한 페이지에 보여줄 카드 개수
+let weapon__currentIndex = 0; // 무기 도감 현재 첫 번째로 보여지는 카드의 인덱스
+let weapon__totalItems = $('.weapon__dictionary_card').length; // 무기 도감 총 무기 수
+let weapon__cardWidth = 20; // 무기 도감 카드의 너비(마진 포함)
 
 function mob__updateSlide() {
     // 이동할 위치 계산 (현재 인덱스에 맞게 이동)
@@ -1894,13 +1944,6 @@ function calculateBgTrackNumber(floor, room) {
     return Math.floor((floor / 10) % bgTrackCount) + roomOffset;
 }
 
-let previousFloor = charac.floor;
-let previousRoom = charac.room;
-
-// 이전 오디오 트랙 계산
-let previousTrackNumber = calculateBgTrackNumber(previousFloor - (previousRoom === 0 ? 1 : 0), previousRoom === 0 ? 4 : previousRoom - 1);
-let currentTrackNumber = calculateBgTrackNumber(charac.floor, charac.room);
-
 function bgChange() {
     // console.log('previousTrackNumber : ' + previousTrackNumber);
     // console.log('currentTrackNumber : ' + currentTrackNumber);
@@ -1921,48 +1964,4 @@ $(window).on('beforeunload', function () {
         isPlaying: !$audioPlayer[0].paused
     };
     localStorage.setItem(storageKey, JSON.stringify(unloadAudioData));
-});
-
-$(document).ready(function () {
-    const $toggleButton = $('#toggleAutoplayButton');
-
-    // 오디오 파일 로드 및 준비
-    $audioPlayer[0].pause();
-    $audioPlayer.attr('src', `../audio/bg${currentTrackNumber}.mp3`);
-    $audioPlayer[0].load();
-
-    // 로컬 저장된 데이터가 있으면 그 상태로 복원
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    if (savedData) {
-        $audioPlayer[0].currentTime = savedData.currentTime;
-        if (savedData.isPlaying) {
-            $audioPlayer[0].play();
-            $toggleButton.removeClass('play').addClass('pause');
-        } else {
-            $audioPlayer[0].pause();
-            $toggleButton.removeClass('pause').addClass('play');
-        }
-    }
-
-    // 첫 번째 클릭 시 오디오 재생
-    $toggleButton.on('click', function () {
-        if ($audioPlayer[0].paused) {
-            $audioPlayer[0].play().then(() => {
-                localStorage.setItem(storageKey, JSON.stringify({
-                    currentTime: $audioPlayer[0].currentTime,
-                    isPlaying: true
-                }));
-                $(this).removeClass('play').addClass('pause');
-            }).catch((error) => {
-                console.error("오디오 재생 실패:", error);
-            });
-        } else {
-            $audioPlayer[0].pause();
-            localStorage.setItem(storageKey, JSON.stringify({
-                currentTime: $audioPlayer[0].currentTime,
-                isPlaying: false
-            }));
-            $(this).removeClass('pause').addClass('play');
-        }
-    });
 });

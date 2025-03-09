@@ -8,7 +8,9 @@ import {
     onChildAdded,
     orderByChild,
     get,
-    query
+    query,
+    update,
+    child
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -27,9 +29,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// 채팅 데이터베이스 참조
+// 데이터베이스 참조
 const chatRef = ref(database, 'chats');
 const membersRef = ref(database, 'members');
+const weaponFindRef = ref(database, 'weaponFind');
 
 window.userName = function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
@@ -48,6 +51,25 @@ window.userName = function (key) {
             console.error("로그인 아이디 확인 중 오류 발생:", error);
             return null;
         });
+};
+
+window.loginKeyCheckById = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+        if (!snapshot.exists()) {
+            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].id;
+    } catch (error) {
+        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
+        return null;
+    }
 };
 
 // 채팅 전송 함수 (전역 함수로 만들어야 함)
@@ -156,5 +178,206 @@ window.saveFirebaseLogs = async function (charac, seconds) {
         console.log("로그가 성공적으로 업데이트되었습니다.");
     } catch (error) {
         console.error("로그 저장 중 오류 발생: ", error);
+    }
+};
+
+window.characCheckMap = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    try {
+        const snapshot = await get(characRef);
+        if (snapshot.exists()) {
+            return snapshot.val();
+        } else {
+            console.log("데이터가 존재하지 않습니다.");
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+    }
+};
+
+window.playCountUpdate = async function (memberKey) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
+    const snapshot = await get(queryRef);
+
+    if (snapshot.exists()) {
+        const key = Object.keys(snapshot.val())[0];
+        const data = snapshot.val()[key];
+
+        if (data) {
+            const updatedData = {
+                ...data,
+                playCount: (data.playCount || 0) + 1,
+            };
+
+            await update(ref(database, `members/${key}`), updatedData);
+        } else {
+            console.error("데이터를 찾을 수 없습니다:", data);
+        }
+    }
+}
+
+window.characReset = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    try {
+        const characSnapshot = await get(characRef);
+        if (characSnapshot.exists()) {
+            const updatedCharac = {
+                floor: 1,
+                room: 0,
+                hp: 100,
+                power: 0,
+                speed: 50,
+                weaponId: 1,
+                weaponUpgrade: 0,
+                clearTime: 0
+            };
+
+            await update(characRef, updatedCharac);
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+    }
+}
+
+window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds) {
+    const memberId = await loginKeyCheckById(nickname);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    if (room + 1 < 5) {
+        room++;
+    } else {
+        room = 0;
+        floor++;
+    }
+
+    setTimeout(async function () {
+        const characData = {
+            name: nickname,
+            floor: floor,
+            room: room,
+            hp: front_hp,
+            power: front_power,
+            speed: front_speed,
+            weaponId: front_weaponId,
+            weaponUpgrade: front_weaponUpgrade,
+            clearTime: seconds
+        };
+
+        if (characData.room !== 1) {
+            await set(characRef, characData);
+        } else if (front_hp + 10 > 100) {
+            characData.hp = 100;
+            await set(characRef, characData);
+        } else if (characData.room === 1) {
+            characData.hp = front_hp + 10;
+            await set(characRef, characData);
+        }
+
+        // 로컬 저장 후 이동 (콜백 함수 실행)
+        if (callback) callback();
+        else location.reload();
+    }, 100);
+}
+
+window.weaponFindUpdate = async function (memberKey, weaponNum) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
+    const currentDataSnapshot = await get(newWeaponFindRef);
+
+    let updatedData = {};
+    if (currentDataSnapshot.exists()) {
+        const currentData = currentDataSnapshot.val();
+
+        if (!currentData.hasOwnProperty(`${weaponNum}`)) {
+            updatedData = {
+                ...currentData,
+                [`${weaponNum}`]: 1,
+            };
+        }
+    } else {
+        updatedData = {
+            [`${weaponNum}`]: 1,
+        };
+    }
+
+    await update(newWeaponFindRef, updatedData);
+}
+
+window.getMobFind = function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    return get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].mobFind;
+        })
+        .catch((error) => {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        });
+};
+
+window.mobFindUpdate = function (key, floor) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+
+    get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) return;
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            const currentMobFind = memberData[memberKey].mobFind || 0;
+
+            if (currentMobFind < floor) {
+                update(ref(database, `members/${memberKey}`), { mobFind: floor })
+                    .catch((error) => console.error("mobFind 업데이트 중 오류 발생:", error));
+            }
+        })
+        .catch((error) => console.error("로그인 아이디 확인 중 오류 발생:", error));
+};
+
+window.getWeaponFind = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
+
+    try {
+        const snapshot = await get(newWeaponFindRef);
+        if (!snapshot.exists()) return;
+
+        const weaponData = snapshot.val();
+
+        Object.keys(weaponData).forEach((key) => {
+            if (weapon[key]) {
+                $(`.weaponImage${key}`).attr('src', weapon[key]);
+            }
+
+            // 현재 순서에 해당하는 weapon__dictionary_card2 선택
+            const indexNumber = parseInt(key, 10);
+            const currentCard = $('.weapon__dictionary_card2').eq(indexNumber - 1);
+
+            currentCard.append(`
+                <div class="dictionary_body_text absolute">            
+                    <div>${weaponNames[key]}</div>
+                    데미지 ${Math.ceil(indexNumber / 10) * 10} <br>
+                    사거리 ${key % 10 === 0 ? 12 : (key % 10) + 2}
+                </div>
+            `);
+        });
+    } catch (error) {
+        console.error("무기 데이터를 가져오는 중 오류 발생:", error);
     }
 };

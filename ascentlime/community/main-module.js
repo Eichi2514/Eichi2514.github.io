@@ -41,7 +41,8 @@ import {
     orderByChild,
     orderByKey,
     equalTo,
-    update
+    update,
+    child
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -62,6 +63,7 @@ const database = getDatabase(app);
 const articlesRef = ref(database, 'articles');
 const membersRef = ref(database, 'members');
 const repliesRef = ref(database, 'replies')
+const weaponFindRef = ref(database, 'weaponFind');
 
 const boardName = ['오류', '공지', '자유', 'Q&A'];
 const boardFullName = ['내가 작성한 글', '공지사항', '자유 게시판', 'Q&A'];
@@ -149,10 +151,30 @@ if (key) {
     $('.current-profile-img').attr('src', profileImages[profileImageId]);
     $('.profile-image-name').text(profileImageNames[profileImageId])
     $('.profile-image' + profileImageId).addClass('border');
-    $('.achieved-status').text(achievedStatusText(profileImageId));
+    $('.achieved-status').text(await achievedStatusText(profileImageId));
     $('.nickname').text(nickname);
 }
 
+window.loginKeyCheckById = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+        if (!snapshot.exists()) {
+            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].id;
+    } catch (error) {
+        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
+        return null;
+    }
+};
+
+/*
 function getWeaponCount() {
     let weaponCount = 0;
     for (let i = 0; i < localStorage.length; i++) {
@@ -163,35 +185,84 @@ function getWeaponCount() {
     }
     return weaponCount;
 }
+*/
 
-function getClearStatusText(profileImageId) {
-    let playLog = localStorage.getItem(key + 'MobFind') || 0;
-    let targetFloor = (profileImageId - 3) * 10;
+async function getWeaponCount() {
+    const memberId = await loginKeyCheckById(localStorage.getItem('nickname'));
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
 
-    if (playLog < targetFloor) {
-        return `${targetFloor}층 클리어 : ${playLog} / ${targetFloor}층`;
+    try {
+        const snapshot = await get(newWeaponFindRef);
+        if (!snapshot.exists()) return 0; // 데이터가 없으면 0 반환
+
+        return Object.keys(snapshot.val()).length; // 데이터 개수 반환
+    } catch (error) {
+        console.error("무기 개수를 가져오는 중 오류 발생:", error);
+        return 0;
     }
-    return null;
 }
 
-function achievedStatusText(profileImageId) {
+async function getplayCount() {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`)));
+    try {
+        // Firebase에서 데이터를 비동기적으로 가져오기
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const key = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[key];
+            return data.playCount || 0;
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching data: ", error);
+        return null;
+    }
+}
+
+async function getClearStatusText(profileImageId) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`)));
+    try {
+        // Firebase에서 데이터를 비동기적으로 가져오기
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const key = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[key];
+            const mobFindLog = data.mobFind;
+
+            const targetFloor = (profileImageId - 3) * 10;
+
+            if (mobFindLog < targetFloor) {
+                return `${targetFloor}층 클리어 : ${mobFindLog} / ${targetFloor}층`;
+            }
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching data: ", error);
+        return null;
+    }
+}
+
+async function achievedStatusText(profileImageId) {
     if (profileImageId > 3) {
         let statusText = null;
 
         if (profileImageId <= 8) {
-            statusText = getClearStatusText(profileImageId);
+            statusText = await getClearStatusText(profileImageId);
         } else if (profileImageId === 9) {
-            let weaponCount = getWeaponCount();
+            let weaponCount = await getWeaponCount();
             if (weaponCount < 30) {
                 statusText = `무기 컬렉션 : ${weaponCount} / 30종 획득`;
             }
         } else if (profileImageId === 10) {
-            let weaponCount = getWeaponCount();
+            let weaponCount = await getWeaponCount();
             if (weaponCount < 70) {
                 statusText = `무기 컬렉션 : ${weaponCount} / 70종 획득`;
             }
         } else if (profileImageId === 11) {
-            let playCount = localStorage.getItem(key + 'playCount') || 0;
+            let playCount = await getplayCount();
             if (playCount < 100) {
                 statusText = `게임 플레이 : ${playCount} / 100회`;
             }
@@ -206,7 +277,6 @@ function achievedStatusText(profileImageId) {
     return '획득 완료';
 }
 
-
 const $profileBg = $(".profile-bg");
 
 $(".profile-photo").click(async function () {
@@ -214,13 +284,13 @@ $(".profile-photo").click(async function () {
 });
 
 for (let i = 1; i <= 12; i++) {
-    $('.profile-image' + i).on('click', function () {
+    $('.profile-image' + i).on('click', async function () {
         $('.profile-image-container img').removeClass('border');
         $(this).addClass('border');
 
         $('.current-profile-img').attr('src', profileImages[i]);
 
-        const statusText = achievedStatusText(i);
+        const statusText = await achievedStatusText(i);
         $('.achieved-status').text(statusText);
         $('.profile-image-name').text(profileImageNames[i]);
 
