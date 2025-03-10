@@ -145,7 +145,8 @@
                 <div class="step">
                     <h2>인원 관리</h2>
                     <div>
-                        멤버별로 "납부" 및 "참여" 버튼을 사용해 회비 납부 여부와 모임 참여 여부를 관리할 수 있습니다. 납부한 날짜는 수정할 수 있지만, '연도-월(YYYY-MM)' 형식으로 입력해야 정상적으로 적용됩니다.
+                        멤버별로 "납부" 및 "참여" 버튼을 사용해 회비 납부 여부와 모임 참여 여부를 관리할 수 있습니다. 납부한 날짜는 수정할 수 있지만, '연도-월(YYYY-MM)' 형식으로
+                        입력해야 정상적으로 적용됩니다.
                     </div>
                 </div>
             </div>
@@ -182,7 +183,7 @@
                <span class="shield">
                     <span>7</span>
                </span>
-               <div class="step">
+                <div class="step">
                     <h2>이전 모임 기록 확인</h2>
                     <div>
                         사이트를 나갔다가 다시 방문하면 이전에 작성한 모임 기록이 목록에 저장됩니다. 모임 목록에서 클릭하여 다시 확인할 수 있습니다.
@@ -369,7 +370,25 @@
     </form>
 </div>
 
+<span class="recommendedMenu">
+    🍽 오늘 뭐 먹지?
+</span>
+
+
+<div class="popup-bg popup4-bg hidden">
+    <div class="popup-box">
+        <div class="popup-title">이런 음식은 어때요?</div>
+        <div class="close-button">✖</div>
+        <div class="popup-form-container flex-col">
+            <div class="menu-1">메뉴1</div>
+            <div class="menu-2">메뉴2</div>
+            <div class="menu-3">메뉴</div>
+        </div>
+    </div>
+</div>
+
 <script src="paymana/post-module.js" defer type="module"></script>
 <script src="paymana/paymana.js" defer></script>
+<script src="paymana/recommendedMenu.js" defer></script>
 </body>
 </html>

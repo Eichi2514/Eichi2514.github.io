@@ -427,7 +427,64 @@ input {
 .contact {
     position: fixed;
     right: 10px;
+    bottom: 60px;
+}
+
+.recommendedMenu {
+    position: fixed;
+    right: 10px;
     bottom: 10px;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 24px;
+    padding: 3px 6px;
+    background: #CCC;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    transition: width 0.3s ease;
+}
+
+.recommendedMenu:hover {
+    padding: 3px 15px;
+    width: 220px;
+}
+
+.menu-1, .menu-2, .menu-3 {
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+    border: 1px solid #CCC;
+    transform-style: preserve-3d;
+}
+
+.menu-1::after, .menu-2::after, .menu-3::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #CCC;
+    backface-visibility: hidden;
+}
+
+.removeBackBg::after {
+    background-color: transparent;
+}
+
+@keyframes rotate3d {
+    0% {
+        transform: rotate3d(1, 0, 0, 0deg);
+    }
+    50% {
+        transform: rotate3d(1, 0, 0, 360deg);
+    }
+    100% {
+        transform: rotate3d(1, 0, 0, 0deg);
+    }
 }
 
 /* 팝업 */
