@@ -458,6 +458,7 @@ input {
     text-align: center;
     border: 1px solid #CCC;
     transform-style: preserve-3d;
+    position: relative;
 }
 
 .menu-1::after, .menu-2::after, .menu-3::after {
@@ -471,8 +472,8 @@ input {
     backface-visibility: hidden;
 }
 
-.removeBackBg::after {
-    background-color: transparent;
+.removeBack::after {
+    display: none;
 }
 
 @keyframes rotate3d {

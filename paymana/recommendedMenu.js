@@ -47,23 +47,70 @@ $('.recommendedMenu').click(function () {
 
     $('.popup4-bg').removeClass('hidden').addClass('flex');
 
-    for (let i = 1; i <= 3; i++) {
-        asd(i, foods[randomIndexes[i-1]]);
+    let area = "근처"; // 기본값 설정
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.log("주소 가져오기 오류");
+                } else {
+                    if (data.address.suburb) {
+                        area = data.address.suburb;
+                    } else if (data.address.road) {
+                        area = data.address.road;
+                    } else if (data.address.village) {
+                        area = data.address.village;
+                    } else if (data.address.city) {
+                        area = data.address.city;
+                    }
+                }
+
+                console.log(`area : ${area}`);
+
+                for (let i = 1; i <= 3; i++) {
+                    updateMenu(i, foods[randomIndexes[i - 1]], area);
+                }
+            } catch (error) {
+                console.log(`위치 정보 가져오기 오류: ${error}`);
+            }
+        }, (error) => {
+            console.log(`위치 정보 오류: ${error.message}`);
+            for (let i = 1; i <= 3; i++) {
+                updateMenu(i, foods[randomIndexes[i - 1]], "근처");
+            }
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+        for (let i = 1; i <= 3; i++) {
+            updateMenu(i, foods[randomIndexes[i - 1]], "근처");
+        }
     }
 });
 
-function asd(index, food) {
+function updateMenu(index, food, area) {
     const $menu = $('.menu-' + index);
 
-    $menu.removeClass('removeBackBg');
+    $menu.removeClass('removeBack');
 
-    $menu.text(`${food}`);
+    const newFood = `
+                <a href="https://map.naver.com/p/search/${area}%20${food}%20맛집" class="cursor-pointer" target="_blank" style="display: block">                    
+                    ${food}
+                </a>
+                `;
+
+    $menu.html(newFood);
 
     $menu.css('animation', 'none');
     $menu.offset();
     $menu.css('animation', `rotate3d ${index}s linear`);
 
     setTimeout(function () {
-        $menu.addClass('removeBackBg');
+        $menu.addClass('removeBack');
     }, index * 1000);
 }
