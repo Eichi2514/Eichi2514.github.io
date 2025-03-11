@@ -958,6 +958,199 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     color: red;
 }
 
+.gold {
+    width: 2vh;
+    position: absolute;
+}
+
+.goldDrop-1 {
+    animation: goldDrop1 2s linear;
+}
+
+.goldDrop-2 {
+    animation: goldDrop2 2s linear;
+}
+
+.goldDrop-3 {
+    animation: goldDrop3 2s linear;
+}
+
+.goldDrop-4 {
+    animation: goldDrop4 2s linear;
+}
+
+@keyframes goldDrop1 {
+    0% {
+        bottom: 0;
+        left: 50%;
+    }
+    20% {
+        bottom: 10%;
+        left: 60%;
+    }
+    30% {
+        bottom: 20%;
+        left: 70%;
+    }
+    40% {
+        bottom: 30%;
+        left: 90%;
+    }
+    50% {
+        bottom: 40%;
+        left: 110%;
+    }
+    60% {
+        bottom: 30%;
+        left: 120%;
+    }
+    70% {
+        bottom: 20%;
+        left: 140%;
+    }
+    80% {
+        bottom: 10%;
+        left: 160%;
+    }
+    90% {
+        bottom: 0;
+        left: 180%;
+    }
+    100% {
+        bottom: 0;
+        left: 180%;
+    }
+}
+
+@keyframes goldDrop2 {
+    0% {
+        bottom: 0;
+        right: 50%;
+    }
+    36% {
+        bottom: 10%;
+        right: 60%;
+    }
+    44% {
+        bottom: 20%;
+        right: 70%;
+    }
+    52% {
+        bottom: 30%;
+        right: 90%;
+    }
+    60% {
+        bottom: 40%;
+        right: 110%;
+    }
+    68% {
+        bottom: 30%;
+        right: 120%;
+    }
+    76% {
+        bottom: 20%;
+        right: 140%;
+    }
+    84% {
+        bottom: 10%;
+        right: 160%;
+    }
+    92% {
+        bottom: 0;
+        right: 180%;
+    }
+    100% {
+        bottom: 0;
+        right: 180%;
+    }
+}
+
+@keyframes goldDrop3 {
+    0% {
+        bottom: 0;
+        left: 50%;
+    }
+    32% {
+        bottom: 20%;
+        left: 70%;
+    }
+    44% {
+        bottom: 40%;
+        left: 90%;
+    }
+    52% {
+        bottom: 60%;
+        left: 110%;
+    }
+    60% {
+        bottom: 80%;
+        left: 120%;
+    }
+    68% {
+        bottom: 70%;
+        left: 140%;
+    }
+    76% {
+        bottom: 60%;
+        left: 160%;
+    }
+    84% {
+        bottom: 50%;
+        left: 180%;
+    }
+    92% {
+        bottom: 40%;
+        left: 200%;
+    }
+    100% {
+        bottom: 40%;
+        left: 200%;
+    }
+}
+
+@keyframes goldDrop4 {
+    0% {
+        bottom: 0;
+        right: 50%;
+    }
+    20% {
+        bottom: 20%;
+        right: 70%;
+    }
+    30% {
+        bottom: 40%;
+        right: 90%;
+    }
+    40% {
+        bottom: 60%;
+        right: 110%;
+    }
+    50% {
+        bottom: 80%;
+        right: 120%;
+    }
+    60% {
+        bottom: 70%;
+        right: 140%;
+    }
+    70% {
+        bottom: 60%;
+        right: 160%;
+    }
+    80% {
+        bottom: 50%;
+        right: 180%;
+    }
+    90% {
+        bottom: 40%;
+        right: 200%;
+    }
+    100% {
+        bottom: 40%;
+        right: 200%;
+    }
+}
+
 /* [class^='Aattack'] {
 	left: -6vh;
 	top: 4vh;

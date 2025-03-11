@@ -965,7 +965,7 @@ async function updateCharacterData(nickname) {
         // 돈 획득시 증가 함수
         function getMoney(data) {
             if (data < 6) {
-                front_money ++;
+                front_money++;
             } else if (data === 6) {
                 front_money += 10;
             }
@@ -974,7 +974,27 @@ async function updateCharacterData(nickname) {
 
         //몬스터 사라지게하는 함수
         function mobHidden(num) {
-            $(".mob" + num).fadeOut(2000, function () {
+            let $mob = $(".mob" + num);
+            if (num < 6) {
+                let goldDropNum = getRandom(1, 4);
+                $mob.append(`
+                    <img class="gold goldDrop-${goldDropNum}" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
+                         alt=""/>
+                `)
+            } else if (num === 6) {
+                $mob.append(`
+                    <img class="gold goldDrop-1" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
+                         alt=""/>
+                    <img class="gold goldDrop-2" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
+                         alt=""/>
+                    <img class="gold goldDrop-3" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
+                         alt=""/>
+                    <img class="gold goldDrop-4" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
+                         alt=""/>
+                `)
+            }
+
+            $mob.fadeOut(2000, function () {
                 $(this).addClass('hidden');
             });
         }
