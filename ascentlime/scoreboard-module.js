@@ -140,7 +140,7 @@ function updatePagination() {
         <a class="pagination_right absolute" href="../ascentlime/scoreboard?page=${page < lastPage ? page + 1 : lastPage}" style="${page === lastPage ? 'display: none;' : ''}">
             <i class="fa-solid fa-caret-right" style="font-size: 10vh;"></i>
         </a>
-        <button class="scoreboard_exit_bt absolute" onclick="history.back();">나가기</button>
+        <button class="scoreboard_exit_bt absolute" onclick="window.location.href = 'https://eichi2514.github.io/ascentlime';">나가기</button>
         <div class="pagination flex justify-center absolute">
             <!-- '처음' 버튼 -->
             <a href="../ascentlime/scoreboard?page=1" style="${page === 1 ? 'display: none;' : ''}">처음</a>

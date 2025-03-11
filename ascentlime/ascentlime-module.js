@@ -58,7 +58,7 @@ window.updateTop3Table = async function () {
         // 상위 3개 데이터 추가
         logs.forEach((log) => {
             const row = tableBody.insertRow();
-            row.insertCell().textContent = log.room === 0 ? (log.floor + 1) + '층' : log.floor + '층';
+            row.insertCell().textContent = log.room === 0 ? (log.floor - 1) + '층' : log.floor + '층';
             row.insertCell().textContent = log.room === 0 ? '보스방' : log.room + '번방';
             row.insertCell().textContent = `${log.clearTime}초`;
         });

@@ -166,10 +166,15 @@ window.saveFirebaseLogs = async function (charac, seconds) {
             log.id = index + 1; // 등수는 1부터 시작
         });
 
+        // 로그 갯수를 확인하여 자리 수 계산
+        const logCount = logs.length;
+        const maxLength = logCount.toString().length;
+
         // 기존 데이터를 삭제하지 않고 새 데이터를 추가
         const updates = {};
         logs.forEach((log, index) => {
-            updates[`log${index}`] = log;  // 각 로그를 고유한 key로 설정
+            const key = `log${String(index + 1).padStart(maxLength, '0')}`;
+            updates[key] = log;  // 각 로그를 고유한 key로 설정
         });
 
         // Firebase에 업데이트된 로그 저장
