@@ -483,7 +483,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     left: 0;
     top: 18vh;
     width: 20vh;
-    height: 9vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -496,9 +496,9 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .hp {
     left: 0;
-    top: 28vh;
+    top: 26vh;
     width: 20vh;
-    height: 9vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -511,9 +511,9 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .power {
     left: 0;
-    top: 38vh;
+    top: 34vh;
     width: 20vh;
-    height: 9vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -526,9 +526,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .speed {
     left: 0;
-    top: 48vh;
+    top: 42vh;
     width: 20vh;
-    height: 9vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.money {
+    left: 0;
+    top: 50vh;
+    width: 20vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;

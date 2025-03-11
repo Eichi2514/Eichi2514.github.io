@@ -198,7 +198,7 @@ window.characCheckMap = async function (memberKey) {
     }
 };
 
-window.playCountUpdate = async function (memberKey) {
+window.playStatsUpdate = async function (memberKey, front_money) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
     const snapshot = await get(queryRef);
 
@@ -210,6 +210,7 @@ window.playCountUpdate = async function (memberKey) {
             const updatedData = {
                 ...data,
                 playCount: (data.playCount || 0) + 1,
+                money: (data.playCount || 0) + front_money,
             };
 
             await update(ref(database, `members/${key}`), updatedData);
@@ -233,6 +234,7 @@ window.characReset = async function (memberKey) {
                 hp: 100,
                 power: 0,
                 speed: 50,
+                money: 0,
                 weaponId: 1,
                 weaponUpgrade: 0,
                 clearTime: 0
@@ -245,7 +247,7 @@ window.characReset = async function (memberKey) {
     }
 }
 
-window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds) {
+window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds) {
     const memberId = await loginKeyCheckById(nickname);
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
@@ -265,6 +267,7 @@ window.stageSave = async function (callback, nickname, floor, room, front_hp, fr
             hp: front_hp,
             power: front_power,
             speed: front_speed,
+            money: front_money,
             weaponId: front_weaponId,
             weaponUpgrade: front_weaponUpgrade,
             clearTime: seconds

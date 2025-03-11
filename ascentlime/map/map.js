@@ -298,12 +298,14 @@ let charac = null;
 let front_hp = null;
 let front_power = null;
 let front_speed = null;
+let front_money = null;
 let front_weaponId = null;
 let front_weaponUpgrade = null;
 
 const $hp_count = $('.hp_count');
 const $power_count = $('.power_count');
 const $speed_count = $('.speed_count');
+const $money_count = $('.money_count');
 const $weapon_img = $('.weapon_img');
 let upgradeNum = null;
 let seconds = null;
@@ -371,9 +373,10 @@ let mobDamage = 0;
 async function updateCharacterData(nickname) {
     if (nickname) {
         charac = await characCheckMap(nickname);
-        front_hp = charac.hp;
-        front_power = charac.power;
-        front_speed = charac.speed;
+        front_hp = charac.hp || 0;
+        front_power = charac.power || 0;
+        front_speed = charac.speed || 0;
+        front_money = charac.money || 0;
         front_weaponId = charac.weaponId;
         front_weaponUpgrade = 0;
         seconds = charac.clearTime;
@@ -399,6 +402,7 @@ async function updateCharacterData(nickname) {
         $hp_count.text(front_hp);
         $power_count.text(front_power);
         $speed_count.text(50 - front_speed);
+        $money_count.text(front_money);
 
         $item = charac.weaponId < 70 ? $(".item1") : $(".item2");
         $item_text = charac.weaponId < 70 ? $(".item_text1") : $(".item_text2");
@@ -860,35 +864,40 @@ async function updateCharacterData(nickname) {
                 mob2_hp -= newDamage;
                 damage__motion(data, newDamage);
                 if (mob2_hp <= 0) {
-                    mobHidden(2);
+                    getMoney(data);
+                    mobHidden(data);
                     clearInterval(stop2);
                 }
             } else if (something === 1 && data === 3) {
                 mob3_hp -= newDamage;
                 damage__motion(data, newDamage);
                 if (mob3_hp <= 0) {
-                    mobHidden(3);
+                    getMoney(data);
+                    mobHidden(data);
                     clearInterval(stop3);
                 }
             } else if (something === 1 && data === 4) {
                 mob4_hp -= newDamage;
                 damage__motion(data, newDamage);
                 if (mob4_hp <= 0) {
-                    mobHidden(4);
+                    getMoney(data);
+                    mobHidden(data);
                     clearInterval(stop4);
                 }
             } else if (something === 1 && data === 5) {
                 mob5_hp -= newDamage;
                 damage__motion(data, newDamage);
                 if (mob5_hp <= 0) {
-                    mobHidden(5);
+                    getMoney(data);
+                    mobHidden(data);
                     clearInterval(stop5);
                 }
             } else if (something === 1 && data === 6) {
                 mob6_hp -= newDamage;
                 damage__motion(data, newDamage);
                 if (mob6_hp <= 0) {
-                    mobHidden(6);
+                    getMoney(data);
+                    mobHidden(data);
                     clearInterval(stop6);
                     showItem();
                 }
@@ -910,7 +919,7 @@ async function updateCharacterData(nickname) {
 
             try {
                 await saveFirebaseLogs(charac, seconds);
-                await playCountUpdate(nickname);
+                await playStatsUpdate(nickname, front_money);
                 await characReset(nickname);
                 // 비동기 작업 완료될 때까지 기다림
             } catch (error) {
@@ -951,6 +960,16 @@ async function updateCharacterData(nickname) {
             // console.log(".characHP_bar"+(characHp_number-1));
             $(".characHP_bar" + characHp_number).css('width', new_characHp_width + 'vh');
             $(".characHP_bar_text").text('x' + (characHp_number + 1));
+        }
+
+        // 돈 획득시 증가 함수
+        function getMoney(data) {
+            if (data < 6) {
+                front_money ++;
+            } else if (data === 6) {
+                front_money += 10;
+            }
+            $money_count.text(front_money);
         }
 
         //몬스터 사라지게하는 함수
@@ -1324,19 +1343,19 @@ async function updateCharacterData(nickname) {
                         return;
                     } else {
                         console.log('4단계 진입' + isConfirm);
-                        await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                        await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
                     }
                 } else if (!isConfirm && characFloor <= 5) {
                     console.log('5단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
                 } else if (characFloor > 5) {
                     console.log('6단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
                 } else if (isItemHidden) {
                     console.log('7단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
                 }
-                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_weaponId, front_weaponUpgrade, seconds);
+                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
             } else {
                 if (callback) callback(); // 조건이 안 맞아도 실행
             }
