@@ -836,6 +836,14 @@ async function updateCharacterData(nickname) {
             // 먼저 attack_motion 을 즉시 실행
             attack_motion(something, direction);
 
+            let newDamage = damage;
+
+            if (getRandom(1, 5) === 3) {
+                newDamage = Math.floor(damage * 1.5);
+            } else if (direction === 'A') {
+                newDamage = Math.floor(damage * 1.5);
+            }
+
             // 나머지 로직은 0.5초 뒤에 실행
             // setTimeout(() => {
             let data = attackChack(something, direction);
@@ -849,36 +857,36 @@ async function updateCharacterData(nickname) {
                     damage__motion('1', mobDamage * 2);
                 }
             } else if (something === 1 && data === 2) {
-                mob2_hp -= damage;
-                damage__motion(data, damage);
+                mob2_hp -= newDamage;
+                damage__motion(data, newDamage);
                 if (mob2_hp <= 0) {
                     mobHidden(2);
                     clearInterval(stop2);
                 }
             } else if (something === 1 && data === 3) {
-                mob3_hp -= damage;
-                damage__motion(data, damage);
+                mob3_hp -= newDamage;
+                damage__motion(data, newDamage);
                 if (mob3_hp <= 0) {
                     mobHidden(3);
                     clearInterval(stop3);
                 }
             } else if (something === 1 && data === 4) {
-                mob4_hp -= damage;
-                damage__motion(data, damage);
+                mob4_hp -= newDamage;
+                damage__motion(data, newDamage);
                 if (mob4_hp <= 0) {
                     mobHidden(4);
                     clearInterval(stop4);
                 }
             } else if (something === 1 && data === 5) {
-                mob5_hp -= damage;
-                damage__motion(data, damage);
+                mob5_hp -= newDamage;
+                damage__motion(data, newDamage);
                 if (mob5_hp <= 0) {
                     mobHidden(5);
                     clearInterval(stop5);
                 }
             } else if (something === 1 && data === 6) {
-                mob6_hp -= damage;
-                damage__motion(data, damage);
+                mob6_hp -= newDamage;
+                damage__motion(data, newDamage);
                 if (mob6_hp <= 0) {
                     mobHidden(6);
                     clearInterval(stop6);
@@ -1348,12 +1356,15 @@ async function updateCharacterData(nickname) {
         });
 
         // 데미지 화면에 보여주기
-        function damage__motion(data, damage) {
-            // console.log(data, damage)
+        function damage__motion(data, newDamage) {
+            // console.log(data, newDamage)
+            newDamage = newDamage > damage ? `Critical<br>${newDamage}` : newDamage;
+
             mobHpDown(data);
-            $(".damage" + data).text(damage);
+
+            $(".damage" + data).html(newDamage);
             setTimeout(function () {
-                $(".damage" + data).text('');
+                $(".damage" + data).html('');
             }, 1000);
         }
 
