@@ -33,10 +33,9 @@ $('.login-form').submit(async function (event) {
 
             if (memberData.loginPw === hashedPassword) {
                 loginSuccess = true;
+                localStorage.setItem('nickname', memberData.key);
                 alert(memberData.nickname + '님 환영합니다');
-                $('.logout').addClass('hidden');
-                $('.login').removeClass('hidden');
-                await login(memberData.key);
+                location.reload();
             }
 
             if (!loginSuccess) {
@@ -81,32 +80,13 @@ async function hashPassword(password, salt) {
     }
 }
 
-const $login = $(".login");
-const $logout = $(".logout");
-const $loginBg = $(".login-bg");
-const $logout_bt = $(".logout_bt");
+$logout = $('.logout');
+$login = $('.login');
 
 $('.logout_bt').on('click', function () {
     localStorage.removeItem('nickname');
-    $login.addClass("hidden");
-    $logout_bt.addClass("hidden");
-    $logout.removeClass("hidden");
+    location.reload();
 });
-
-async function login(nickname) {
-    localStorage.setItem('nickname', nickname);
-    const data = await loginKeyCheck(nickname);
-
-    // 캐릭터 정보 있는지 확인 후 저장
-    await characCheck(nickname);
-
-    // 닉네임 입력창 교체
-    $logout.addClass("hidden");
-    $login.removeClass("hidden");
-    $logout_bt.removeClass("hidden");
-    $(".member_name1").text(data + "님")
-    $loginBg.toggle('hidden');
-}
 
 async function login_check() {
     if (localStorage.getItem('nickname')) {
@@ -115,12 +95,9 @@ async function login_check() {
             $logout.addClass("hidden");
             $login.removeClass("hidden");
             $(".member_name1").text(data + "님");
-        } else {
-            localStorage.clear();
         }
     } else {
         $login.addClass("hidden");
-        $logout_bt.addClass("hidden");
         $logout.removeClass("hidden");
     }
 }

@@ -19,27 +19,27 @@ $(document).ready(function () {
                         </div>
                         <ul class="submenu">
                             <li>
-                                <a href="../restricted/restricted">
+                                <a href="../restricted/restricted.html">
                                     <div class="button submenu-item">상 점</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="../community/main">
+                                <a href="../community/main.html">
                                     <div class="button submenu-item">전체게시판</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="../community/main?boardId=1">
+                                <a href="../community/main.html?boardId=1">
                                     <div class="button submenu-item">공지사항</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="../community/main?boardId=2">
+                                <a href="../community/main.html?boardId=2">
                                     <div class="button submenu-item">자유게시판</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="../community/main?boardId=3">
+                                <a href="../community/main.html?boardId=3">
                                     <div class="button submenu-item">Q & A</div>
                                 </a>
                             </li>

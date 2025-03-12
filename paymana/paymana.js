@@ -98,7 +98,7 @@ $(document).ready(function () {
 
             if (category === 1) {
                 const newPost = `
-                <a href="../paymana/post?${post.postId}">
+                <a href="../paymana/post.html?${post.postId}">
                     <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
                     <div>${post.title}</div>
                 </a>
@@ -106,7 +106,7 @@ $(document).ready(function () {
                 $postList.append(newPost);
             } else if (category === 2) {
                 const newPost = `
-                <a href="../paymana/post2?${post.postId}&${formattedDate}">
+                <a href="../paymana/post2.html?${post.postId}&${formattedDate}">
                     <img src="https://github.com/user-attachments/assets/e86ae66f-cd1b-407f-a195-d5c2e030ee01" alt="폴더">
                     <div>${post.title}</div>
                 </a>

@@ -38,22 +38,11 @@ input:focus {
     position: relative;
 }
 
-.mapBody {
-    width: 100vh;
-    left: 21vh;
-    position: relative;
-}
-
 /* 가로(width)가 세로(height) 이상일 때 */
 @media (min-aspect-ratio: 1625/1000) {
     .body {
         left: 50%;
         transform: translateX(-50vh);
-    }
-
-    .mapBody {
-        left: 50%;
-        transform: translateX(-60vh);
     }
 }
 

@@ -151,6 +151,8 @@ if (key) {
     profileImageId = userInfo.profileImageId;
     $('.profile-photo').attr('src', profileImages[profileImageId !== undefined ? profileImageId : 1]);
     $('.nickname').text(nickname);
+    $('.logout').addClass('hidden');
+    $('.login').removeClass('hidden');
 }
 
 const likeRef = ref(database, `articleLike/${articleNum}/${memberId}`);
