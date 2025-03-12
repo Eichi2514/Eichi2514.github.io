@@ -15,6 +15,24 @@ input:focus {
     user-modify: read-write-plaintext-only;
 }
 
+.head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1vh;
+    width: 100%;
+}
+
+.head-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 10vh;
+    height: 10vh;
+}
+
 .body {
     width: 100vh;
     position: relative;

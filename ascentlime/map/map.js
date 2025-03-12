@@ -845,7 +845,7 @@ async function updateCharacterData(nickname) {
             if (getRandom(1, 5) === 3) {
                 newDamage = Math.floor(damage * 1.5);
             } else if (direction === 'A') {
-                newDamage = Math.floor(damage * 1.5);
+                newDamage = Math.floor(damage * 2);
             }
 
             // 나머지 로직은 0.5초 뒤에 실행
