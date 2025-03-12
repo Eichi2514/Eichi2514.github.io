@@ -1,0 +1,232 @@
+@charset "UTF-8";
+
+/* 공용 */
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    font-size: 2.8vh;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
+.head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1vh;
+    width: 100%;
+}
+
+.head-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 10vh;
+    height: 10vh;
+}
+
+.body {
+    width: 100vh;
+    position: relative;
+}
+
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1625/1000) {
+    .body {
+        left: 50%;
+        transform: translateX(-50vh);
+    }
+}
+
+img {
+    /* mix-blend-mode: multiply; */
+    /* opacity: 0.9; */
+
+}
+
+body {
+    background: rgb(0, 0, 30);
+}
+
+input {
+    padding-left: 1vh !important;
+    /* background-color: transparent; */
+}
+
+input::placeholder {
+    color: black !important;
+}
+
+input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+    color: black;
+}
+
+input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+    color: black;
+}
+
+input::-ms-input-placeholder { /* 엣지 */
+    color: black;
+}
+
+input::-moz-placeholder { /* 파이어폭스 19+ */
+    color: black;
+}
+
+input:-moz-placeholder { /* 파이어폭스 4-18 */
+    color: black;
+}
+
+.s-button {
+    text-align: center;
+    border: 0.3vh solid;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+    cursor: pointer;
+}
+
+.button {
+    text-align: center;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.bg_img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.bo {
+    border: 1vh solid red;
+}
+
+/* 상점 화면 */
+.shop_bg {
+    top: 12vh;
+    left: 2vh;
+    width: 96vh;
+    height: 86vh;
+    border-radius: 3vh;
+}
+
+.shop_title {
+    top: 8vh;
+    left: 5vh;
+    width: 82vh;
+    font-size: 6.4vh;
+    -webkit-text-stroke: 0.1vh white;
+}
+
+.money {
+    top: 19vh;
+    right: 3vh;
+    border: 0.3vh solid;
+    padding: 0.5vh 1vh;
+    background: rgb(255, 71, 48);
+    border-radius: 1vh;
+}
+
+.tabs {
+    display: flex;
+    position: absolute;
+    top: 19vh;
+    left: 1vh;
+}
+
+.tab {
+    border-top: 0.3vh solid;
+    border-right: 0.3vh solid;
+    border-left: 0.3vh solid;
+    padding: 1vh 3vh;
+    background: rgb(255, 71, 48);
+    border-top-left-radius: 1vh;
+    border-top-right-radius: 1vh;
+    cursor: pointer;
+}
+
+.tab-all {
+    z-index: 1;
+}
+
+.shop-container {
+    display: flex;
+    position: absolute;
+    top: 25vh;
+    left: 1vh;
+    width: 92vh;
+    height: 60vh;
+    padding: 1vh;
+    gap: 1vh;
+    border: 0.3vh solid;
+    background: rgb(255, 71, 48);
+    border-top-right-radius: 3vh;
+    border-bottom-left-radius: 3vh;
+    border-bottom-right-radius: 3vh;
+    flex-wrap: wrap;
+}
+
+.product-item {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+}
+
+.product-item img {
+    background: #FFFFFF;
+    width: 17vh;
+    height: 17vh;
+    border-radius: 1vh;
+}
+
+.product-details {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    flex-direction: column;
+    width: 17vh;
+    height: 17vh;
+    background: rgb(0, 0, 30, 0.7);
+    border-radius: 1vh;
+    gap : 0.5vh;
+    font-size: 2vh;
+}
+
+.product-item:hover .product-details {
+    display: flex;
+}
+
+.product-name {
+    padding: 1vh;
+    color: white;
+    text-align: center;
+    word-break: keep-all;
+}
+
+.buy-button {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 1vh;
+    white-space: nowrap;
+}
