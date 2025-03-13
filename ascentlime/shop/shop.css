@@ -195,6 +195,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: #FFFFFF;
     width: 17vh;
     height: 17vh;
+    padding: 1vh;
     border-radius: 1vh;
 }
 
