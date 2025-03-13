@@ -942,10 +942,10 @@ async function updateCharacterData(nickname) {
 
         // 캐릭 체력바 변화 함수
         function characHpDown() {
-            let new_characHp_width = (8 / 10) * (front_hp % 10);
+            let new_characHp_width = (8 / 100) * (front_hp % 100);
             // console.log(new_characHp_width);
-            let characHp_number = Math.floor(front_hp / 10);
-            if (front_hp % 10 === 0) {
+            let characHp_number = Math.floor(front_hp / 100);
+            if (front_hp % 100 === 0) {
                 new_characHp_width = 8;
                 characHp_number--;
             }
@@ -1384,13 +1384,13 @@ async function updateCharacterData(nickname) {
         // 버튼 클릭 시 스테이지 업 후 페이지 이동
         $(".mob__list_bt").on("click", function () {
             stageUp(function () {
-                location.href = '../dictionary/mob';
+                location.href = '../dictionary/mob.html';
             });
         });
 
         $(".weapon__list_bt").on("click", function () {
             stageUp(function () {
-                location.href = '../dictionary/weapon';
+                location.href = '../dictionary/weapon.html';
             });
         });
 

@@ -280,8 +280,8 @@ window.stageSave = async function (callback, nickname, floor, room, front_hp, fr
 
         if (characData.room !== 1) {
             await set(characRef, characData);
-        } else if (front_hp + 10 > 100) {
-            characData.hp = 100;
+        } else if (front_hp + 10 > 1000) {
+            characData.hp = 1000;
             await set(characRef, characData);
         } else if (characData.room === 1) {
             characData.hp = front_hp + 10;

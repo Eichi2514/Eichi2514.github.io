@@ -59,7 +59,7 @@ if (key) {
     authenticationStep2 = userInfo.salt;
 } else {
     alert('로그인이 필요한 서비스 입니다');
-    window.location.href = 'https://eichi2514.github.io/ascentlime';
+    window.location.href = 'ascentlime.html';
 }
 
 const $myPage_bt = $('.myPage_bt');

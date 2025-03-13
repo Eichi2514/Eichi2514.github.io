@@ -23,7 +23,7 @@ function removePost() {
 
     if (deleteCheck) {
         localStorage.removeItem(`PM-${postId}`);
-        window.location.href = `../paymana`;
+        window.location.href = `paymana.html`;
     }
 }
 

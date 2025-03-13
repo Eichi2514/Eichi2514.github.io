@@ -158,7 +158,7 @@ $('.popup1-form').submit(async function (event) {
             "category": category
         }));
         localStorage.setItem(`PM-${postId}`, compressedData);
-        window.location.href = `../paymana/post?${postId}`;
+        window.location.href = `../paymana/post.html?${postId}`;
     } else if (category === 2) {
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -172,7 +172,7 @@ $('.popup1-form').submit(async function (event) {
             [formattedDate]: {}
         }));
         localStorage.setItem(`PM-${postId}`, compressedData);
-        window.location.href = `../paymana/post2?${postId}&${formattedDate}`;
+        window.location.href = `../paymana/post2.html?${postId}&${formattedDate}`;
     }
 
 });

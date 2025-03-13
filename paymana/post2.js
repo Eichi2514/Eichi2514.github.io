@@ -36,7 +36,7 @@ function removePost() {
 
     if (deleteCheck) {
         localStorage.removeItem(`PM-${postId}`);
-        window.location.href = `../paymana`;
+        window.location.href = `paymana.html`;
     }
 }
 
@@ -508,5 +508,5 @@ function updatePostHistory(dateString) {
 
 $('#calendar').on('change', function () {
     const selectedMonth = $(this).val();
-    window.location.href = `../paymana/post2?${postId}&${selectedMonth}`;
+    window.location.href = `../paymana/post2.html?${postId}&${selectedMonth}`;
 });

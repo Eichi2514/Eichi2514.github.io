@@ -465,7 +465,7 @@ window.loadPosts = async function (boardId) {
 
             const postElement = document.createElement("a");
             postElement.classList.add("post-item", "border");
-            postElement.href = `../community/detail?${article.id}`;
+            postElement.href = `../community/detail.html?${article.id}`;
 
             const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
 
