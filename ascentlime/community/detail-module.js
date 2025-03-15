@@ -193,10 +193,12 @@ $('.title').text(article.title);
 $('.author-photo').attr('src', profileImages[await profileImageIdGet(article.author) ?? 1]);
 $('.author').text(article.author);
 $('.meta').text(`${dateOnly} / 조회수 ${article.viewCount}`);
-$('.article-body').html(article.body.replace(/\n/g, '<br>'));
+$('.article-body').html(
+    article.body.replace(/ /g, '&nbsp;').replace(/\n/g, '<br>')
+);
 
 $edit.click(function () {
-    location.href = `../community/write?${articleNum}`;
+    location.href = `../community/write.html?${articleNum}`;
 });
 
 $delete.click(async function () {
