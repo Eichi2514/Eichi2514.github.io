@@ -19,7 +19,7 @@ $(document).ready(function () {
                         </div>
                         <ul class="submenu">
                             <li>
-                                <a href="../restricted/restricted.html">
+                                <a href="../shop/shop.html">
                                     <div class="button submenu-item">상 점</div>
                                 </a>
                             </li>

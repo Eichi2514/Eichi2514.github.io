@@ -1,13 +1,58 @@
-const productGoldItems = {
-    "g1": {
-        "img": "https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e",
-        "name": "힘 + 10",
+const productStatItems = {
+    "s1": {
+        "img": "https://github.com/user-attachments/assets/c8fa776d-4542-4ff9-a720-3def28066354",
+        "name": "힘 10 증가",
         "price": 200
     },
-    "g2": {
-        "img": "https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e",
-        "name": "체력 + 10",
+    "s2": {
+        "img": "https://github.com/user-attachments/assets/d2325c86-7fa2-4c39-a105-8b51c3a8d496",
+        "name": "힘 20 증가",
+        "price": 380
+    },
+    "s3": {
+        "img": "https://github.com/user-attachments/assets/3529dc2b-8a3d-478c-9bcf-078736ee5b0b",
+        "name": "힘 50 증가",
+        "price": 900
+    },
+    "s4": {
+        "img": "https://github.com/user-attachments/assets/1bff301c-0adb-4109-94fa-6eff7be8ef66",
+        "name": "힘 80 증가",
+        "price": 1360
+    },
+    "s5": {
+        "img": "https://github.com/user-attachments/assets/3a61e399-7e23-4a81-9a85-fa0bfc5fb1bb",
+        "name": "힘 100 증가",
+        "price": 1600
+    },
+    "s6": {
+        "img": "https://github.com/user-attachments/assets/140b3b12-d14b-4168-9e8c-c2a652f25704",
+        "name": "체력 10 회복",
         "price": 200
+    },
+    "s7": {
+        "img": "https://github.com/user-attachments/assets/b3795aa4-bbfc-4658-bd19-02eacafa7020",
+        "name": "체력 20 회복",
+        "price": 380
+    },
+    "s8": {
+        "img": "https://github.com/user-attachments/assets/a992c00d-36ef-4cde-a602-8ff5af49d73b",
+        "name": "체력 50 회복",
+        "price": 900
+    },
+    "s9": {
+        "img": "https://github.com/user-attachments/assets/1289412b-5507-4f13-a9a4-9809a3d979ff",
+        "name": "체력 80 회복",
+        "price": 1360
+    },
+    "s10": {
+        "img": "https://github.com/user-attachments/assets/0a978402-9dd5-4280-8d95-ac0f57193ac6",
+        "name": "체력 100 회복",
+        "price": 1600
+    },
+    "s11": {
+        "img": "https://github.com/user-attachments/assets/274f7067-2d2b-4ec3-96c4-c8ee9149cea7",
+        "name": "속도 10 증가",
+        "price": 1000
     }
 };
 
@@ -366,7 +411,7 @@ const productWeaponItems = {
 
 const productCashItems = {
     "c1": {
-        "img": "https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e",
+        "img": "https://github.com/user-attachments/assets/58999c47-910e-4eea-8fc0-9c2cf3a1ca3f",
         "name": "닉네임 변경권",
         "price": 1000
     },
@@ -386,7 +431,8 @@ import {
     orderByChild,
     equalTo,
     get,
-    child
+    child,
+    update
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -510,23 +556,24 @@ window.getWeaponFind = async function (memberKey) {
         console.error("무기 데이터를 가져오는 중 오류 발생:", error);
     }
 };
+let userMoney = 0;
 
 async function displayShopItems() {
     let itemsToDisplay = [];
 
     try {
-        let userMoney = await getUserMoney(key);
-        userMoney = formatNumber(userMoney);
-        $('.money_count').text(userMoney);
+        userMoney = await getUserMoney(key);
+        let userMoneyString = formatNumber(userMoney);
+        $('.money_count').text(userMoneyString);
     } catch (error) {
         console.error('돈 불러오는 중 오류 발생:', error);
         $('.money_count').text('불러오기 실패');
     }
 
-    const renderItems = (productItems, isGold) => {
+    const renderItems = (productItems, isStat) => {
         Object.keys(productItems).forEach(itemKey => {
             const product = productItems[itemKey];
-            const price = isGold ? `$ ${formatNumber(product.price)}` : `${formatNumber(product.price)}원`;
+            const price = isStat ? `$ ${formatNumber(product.price)}` : `${formatNumber(product.price)}원`;
             const newItem = `
                 <div class="product-item">
                     <img src="${product.img}" alt="상품 이미지" class="product-image"/>
@@ -544,7 +591,7 @@ async function displayShopItems() {
     };
 
     if (shopTap === 1 || shopTap === 0) {
-        renderItems(productGoldItems, true);
+        renderItems(productStatItems, true);
     }
     if (shopTap === 2 || shopTap === 0) {
         const newProductWeaponItems = await getWeaponFind(key);
@@ -558,3 +605,186 @@ async function displayShopItems() {
 }
 
 displayShopItems();
+
+$(document).on('click', '.buy-button', async function () {
+    const button = $(this);
+    button.prop('disabled', true).text('구매 중...');
+
+    const id = button.data('id');
+
+    let success = false;
+
+    try {
+        if (id.startsWith('s')) {
+            if (userMoney < productStatItems[id].price) {
+                alert(`재화가 부족합니다.`);
+            } else {
+                await applyStatItem(key, id);
+                success = true;
+            }
+        } else if (id.startsWith('w')) {
+            if (userMoney < productWeaponItems[id].price) {
+                alert(`재화가 부족합니다.`);
+            } else {
+                await equipWeaponItem(key, id);
+                success = true;
+            }
+        } else if (id.startsWith('c')) {
+            alert('현재 구매가 불가능한 상품입니다.');
+        }
+    } catch (error) {
+        button.prop('disabled', false).text('구매');
+        console.error('구매 처리 실패:', error);
+        return;
+    }
+
+    if (success) {
+        const productName = id.startsWith('s')
+            ? productStatItems[id].name
+            : productWeaponItems[id].name;
+
+        alert(`${productName}을(를) 구매하셨습니다!`);
+        location.reload();
+    }
+});
+
+window.updateUserMoney = async function (memberKey, newMoney) {
+    try {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const key = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[key];
+
+            if (data) {
+                const updatedData = {
+                    ...data,
+                    money: newMoney,
+                };
+
+                await update(ref(database, `members/${key}`), updatedData);
+            }
+        }
+    } catch (error) {
+        console.error("금액 업데이트 실패:", error);
+        throw error;
+    }
+};
+
+
+window.applyStatItem = async function (memberKey, id) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    let newId = parseInt(id.replace('s', ''), 10);
+    const characSnapshot = await get(characRef);
+    const characData = characSnapshot.val();
+    const originalCharacData = JSON.parse(JSON.stringify(characData));
+
+    const updateHp = async (hpIncrease) => {
+        if (characData.hp >= 1000) {
+            throw new Error('현재 체력이 이미 최대치입니다!');
+        } else if (characData.hp + hpIncrease > 1000) {
+            await update(characRef, {hp: 1000});
+        } else {
+            await update(characRef, {hp: characData.hp + hpIncrease});
+        }
+    };
+
+    const updatePower = async (powerIncrease) => {
+        await update(characRef, {power: characData.power + powerIncrease});
+    };
+
+    const updateSpeed = async (powerIncrease) => {
+        if (characData.speed <= 10) {
+            throw new Error('현재 속도가 이미 최대치입니다!');
+        } else {
+            await update(characRef, {speed: characData.speed - powerIncrease});
+        }
+    };
+
+    try {
+        switch (newId) {
+            case 1:
+                await updatePower(10);
+                break;
+            case 2:
+                await updatePower(20);
+                break;
+            case 3:
+                await updatePower(50);
+                break;
+            case 4:
+                await updatePower(80);
+                break;
+            case 5:
+                await updatePower(100);
+                break;
+            case 6:
+                await updateHp(10);
+                break;
+            case 7:
+                await updateHp(20);
+                break;
+            case 8:
+                await updateHp(50);
+                break;
+            case 9:
+                await updateHp(80);
+                break;
+            case 10:
+                await updateHp(100);
+                break;
+            case 11:
+                await updateSpeed(10);
+                break;
+        }
+
+        await updateUserMoney(memberKey, userMoney - productStatItems[id].price);
+    } catch (err) {
+        try {
+            await update(characRef, {...originalCharacData});
+            await updateUserMoney(memberKey, userMoney);
+            alert(err.message);
+        } catch (recoveryError) {
+            console.error("원상복구에 실패했습니다!", recoveryError);
+            alert("Error : 원상복구에 실패했습니다. Q & A 게시판으로 문의해주세요.");
+            throw recoveryError;
+        }
+        throw err;
+    }
+};
+
+window.equipWeaponItem = async function (memberKey, id) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const characRef = ref(database, `characs/${safeId}`);
+
+    let newId = parseInt(id.replace('w', ''), 10);
+    const characSnapshot = await get(characRef);
+    const characData = characSnapshot.val();
+    const originalCharacData = JSON.parse(JSON.stringify(characData));
+
+    if (characData.weaponId === newId) {
+        alert('이미 착용중인 무기 입니다.');
+        throw new Error('이미 착용중인 무기 입니다.');
+    }
+
+    try {
+        await update(characRef, {weaponId: newId});
+        await updateUserMoney(memberKey, userMoney - productWeaponItems[id].price);
+    } catch (err) {
+        try {
+            await update(characRef, {...originalCharacData});
+            await updateUserMoney(memberKey, userMoney);
+            alert(err.message);
+        } catch (recoveryError) {
+            console.error("원상복구에 실패했습니다!", recoveryError);
+            alert("Error : 원상복구에 실패했습니다. Q & A 게시판으로 문의해주세요.");
+            throw recoveryError;
+        }
+        throw err;
+    }
+};
