@@ -220,6 +220,11 @@
         <button class="item_exit absolute z-20" onclick="Item_exit()">취소</button>
     </div>
 
+    <div class="alert absolute z-20 hidden">
+        <div class="alert_title z-20"></div>
+        <button class="alert_exit absolute z-20" onclick="hide_alert()">확인</button>
+    </div>
+
     <!-- 랜덤 아이템 (알약) -->
     <img class="random_item hidden absolute"
          src="https://github.com/user-attachments/assets/64a8dc0c-b9bc-41a7-a500-8a9466c0dd04"
@@ -1081,6 +1086,11 @@
             <div class="key-right absolute cursor-pointer">
                 <!-- 화면 조작키 오른쪽 버튼 이미지 -->
                 <div class="absolute key-img"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            <!-- 화면 조작키 가운데 버튼 영역 -->
+            <div class="key-center absolute cursor-pointer">
+                <!-- 화면 조작키 아래쪽 버튼 이미지 -->
+                <div class="absolute key-img">E</div>
             </div>
             <!-- 화면 조작키 아래쪽 버튼 영역 -->
             <div class="key-down absolute cursor-pointer">

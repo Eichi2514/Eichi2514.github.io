@@ -314,6 +314,8 @@ let $item = null;
 let $item_text = null;
 const $random_item = $(".random_item");
 const $random_item_text = $(".random_item_text");
+const $alert = $('.alert')
+const $alert_title = $('.alert_title');
 let weaponMax = null;
 let $randomWeapon = null;
 let randomItem = null;
@@ -587,26 +589,34 @@ async function updateCharacterData(nickname) {
             }
 
             if (e.keyCode === 13) {
-                // 랜덤 아이템 안내창이 보여지는중인지 확인
-                const isRandomItemHidden = $random_item_text.hasClass('hidden');
-                const isItemHidden1 = $('.item_text1').hasClass('hidden');
-                const isItemHidden2 = $('.item_text2').hasClass('hidden');
-
-                console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + characFloor + ', ' + characRoom + ', ' + characWeaponId);
-
                 // 입력 필드가 포커스되어 있을 때만 전송 처리
                 if ($('.chat_var').is(':focus')) {
                     e.preventDefault(); // 엔터로 인한 기본 동작(폼 제출 방지)을 막음
                     $(e.target).closest('form').submit();  // 현재 입력 필드와 연결된 폼만 제출
-                } else if (!isRandomItemHidden && randomItem === 3) {
-                    Item_get();
-                } else if (!isItemHidden1 && characFloor !== 1 && characRoom === 0 && characWeaponId < 70) {
-                    Item_mix();
-                } else if (!isItemHidden2 && characFloor !== 1 && characRoom === 0 && characWeaponId >= 70) {
-                    Item_upgrade();
+                } else {
+                    processItemAction();
                 }
             }
         });
+
+        function processItemAction() {
+            // 랜덤 아이템 안내창이 보여지는중인지 확인
+            const isRandomItemHidden = $random_item_text.hasClass('hidden');
+            const isItemHidden1 = $('.item_text1').hasClass('hidden');
+            const isItemHidden2 = $('.item_text2').hasClass('hidden');
+
+            console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + characFloor + ', ' + characRoom + ', ' + characWeaponId);
+
+            if (!isRandomItemHidden && randomItem === 3) {
+                Item_get();
+            } else if (!isItemHidden1 && characFloor !== 1 && characRoom === 0 && characWeaponId < 70) {
+                Item_mix();
+            } else if (!isItemHidden2 && characFloor !== 1 && characRoom === 0 && characWeaponId >= 70) {
+                Item_upgrade();
+            } else {
+                hide_alert();
+            }
+        }
 
         // 키에서 손을 뗄 때 움직임 멈춤
         $(window).keyup(function (e) {
@@ -644,6 +654,7 @@ async function updateCharacterData(nickname) {
 
         const $touch_left = $('.key-left');
         const $touch_up = $('.key-up');
+        const $touch_center = $('.key-center');
         const $touch_right = $('.key-right');
         const $touch_down = $('.key-down');
         const $characImg = $('.front_charac_img');
@@ -673,6 +684,10 @@ async function updateCharacterData(nickname) {
 
         $touch_up.on("touchstart", () => {
             handleTouchStart('up')
+        });
+
+        $touch_center.on("touchstart", () => {
+            processItemAction();
         });
 
         $touch_right.on("touchstart", () => {
@@ -1717,24 +1732,32 @@ function Item_upgrade() {
     if (rate < 100 - upgradeNum) {
         front_weaponUpgrade += 10;
         upgradeNum += 10;
-        alert("강화 성공! 무기가 한 단계 강화되었습니다. (" + rate + ")");
+        show_alert("강화 성공! 무기가 한 단계 강화되었습니다. (" + rate + ")");
     } else if (rate < 100 - upgradeNum + 10) {
         front_weaponUpgrade -= 10;
         upgradeNum -= 10;
-        alert("강화 실패! 무기가 한 단계 하락했습니다. (" + rate + ")");
+        show_alert("강화 실패! 무기가 한 단계 하락했습니다. (" + rate + ")");
     } else {
-        alert("아무일도 일어나지 않았습니다. (" + rate + ")");
+        show_alert("아무일도 일어나지 않았습니다. (" + rate + ")");
     }
     weapon_img();
     $item.fadeOut(1000).addClass('hidden');
     $item_text.fadeOut(1000).addClass('hidden');
 }
 
-
 //아이템 안내창 취소 버튼 눌렀을 떄
 function Item_exit() {
     $item_text.fadeOut(1000).addClass('hidden');
     $random_item_text.fadeOut(1000).addClass('hidden');
+}
+
+function show_alert(message) {
+    $alert_title.html(message);
+    $alert.removeClass('hidden');
+}
+
+function hide_alert() {
+    $alert.addClass('hidden');
 }
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
@@ -1807,7 +1830,7 @@ function Item_get() {
     } else if (random_ability <= (probability + 1)) {
         updateStats('speed', 'down', 50);
     } else {
-        alert('꽝');
+        show_alert('꽝');
     }
     $random_item.fadeOut(1000).addClass('hidden');
     $random_item_text.fadeOut(1000).addClass('hidden');
@@ -1841,7 +1864,7 @@ function updateStats(stats, action, number) {
     $power_count.text(front_power);
     $speed_count.text(50 - front_speed);
 
-    alert(stats + action + number);
+    show_alert(stats + action + number);
 }
 
 $(document).ready(function () {
