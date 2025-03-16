@@ -116,7 +116,7 @@ $('.popup2-form').submit(async function (event) {
     const category = parseInt(postData?.category) || 1;
 
     if (category === 1){
-        window.location.href = `../paymana/post.html?${postId}`;
+        window.location.href = `paymana/post.html?${postId}`;
     }else if (category === 2) {
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -124,6 +124,6 @@ $('.popup2-form').submit(async function (event) {
 
         const formattedDate = `${yyyy}-${mm}`;
 
-        window.location.href = `../paymana/post2.html?${postId}&${formattedDate}`;
+        window.location.href = `paymana/post2.html?${postId}&${formattedDate}`;
     }
 });

@@ -36,7 +36,7 @@ function removePost() {
 
     if (deleteCheck) {
         localStorage.removeItem(`PM-${postId}`);
-        window.location.href = `paymana.html`;
+        window.location.href = '../paymana.html';
     }
 }
 
@@ -73,21 +73,24 @@ function addItem() {
         }
     });
 
+    const formattedNum = String(lastItemId+1).padStart(2, '0');
+    console.log(`${formattedNum}`);
+
     // 새로운 아이템 추가 HTML 구조
     const newItem = `
          <div class="item row">
              <label>
-                 <input class="itemName" type="text" name="i${lastItemId + 1}">
+                 <input class="itemName" type="text" name="i${formattedNum}">
              </label>
              <label>
-                 <input class="amount" type="number" name="i${lastItemId + 1}">
+                 <input class="amount" type="number" name="i${formattedNum}">
              </label>
              <span class="splitAmount"></span>
-             <button class="remove-bt" data-id="i${lastItemId + 1}">🗑</button>
+             <button class="remove-bt" data-id="i${formattedNum}">🗑</button>
          </div>
         `;
 
-    const nameAttr = `i${lastItemId + 1}`;
+    const nameAttr = `i${formattedNum}`;
     const itemName = `itemName`;
     const amount = `amount`;
 
@@ -116,28 +119,31 @@ function addPerson() {
         }
     });
 
+    const formattedNum = String(lastPersonId+1).padStart(2, '0');
+    console.log(`${formattedNum}`);
+
     const newItem = `
         <div class="person row">
             <label>
-                <input class="name" type="text" name="p${lastPersonId + 1}">
+                <input class="name" type="text" name="p${formattedNum}">
             </label>
             <label>
                 <input style="width: calc(100% - 60px);"
                        class="depositDate" type="text"
-                       name="p${lastPersonId + 1}">
-                <button style="width: 50px; height: 36px" class="black-button payment-bt payment-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">납부</button>
-                <button style="width: 50px; height: 36px; display: none;" class="red-button payment-cancel-bt payment-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
+                       name="p${formattedNum}">
+                <button style="width: 50px; height: 36px" class="black-button payment-bt payment-bt-p${formattedNum}" data-id="p${formattedNum}">납부</button>
+                <button style="width: 50px; height: 36px; display: none;" class="red-button payment-cancel-bt payment-cancel-bt-p${formattedNum}" data-id="p${formattedNum}">취소</button>
             </label>
             <span class="flex gap-2">
-                <span class="status-p${lastPersonId + 1}" style="width: 50px;">불참</span>
-                <button style="width: 50px; height: 36px" class="black-button status-bt status-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">참여</button>
-                <button style="width: 50px; height: 36px; display: none;" class="red-button status-cancel-bt status-cancel-bt-p${lastPersonId + 1}" data-id="p${lastPersonId + 1}">취소</button>
+                <span class="status-p${formattedNum}" style="width: 50px;">불참</span>
+                <button style="width: 50px; height: 36px" class="black-button status-bt status-bt-p${formattedNum}" data-id="p${formattedNum}">참여</button>
+                <button style="width: 50px; height: 36px; display: none;" class="red-button status-cancel-bt status-cancel-bt-p${formattedNum}" data-id="p${formattedNum}">취소</button>
             </span>
-            <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
+            <button class="remove-bt" data-id="p${formattedNum}">🗑</button>
         </div>
         `;
 
-    const nameAttr = `p${lastPersonId + 1}`;
+    const nameAttr = `p${formattedNum}`;
     const name = `name`;
     const depositDate = `depositDate`;
     const status = `status`;
@@ -202,6 +208,7 @@ $(document).on('click', '.remove-bt', function () {
     const id = button.data('id');
 
     button.closest('div').remove();
+    console.log(id);
 
     delete post[`${id}`];
 

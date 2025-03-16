@@ -23,7 +23,7 @@ function removePost() {
 
     if (deleteCheck) {
         localStorage.removeItem(`PM-${postId}`);
-        window.location.href = `paymana.html`;
+        window.location.href = '../paymana.html';
     }
 }
 
@@ -135,6 +135,7 @@ function startPost() {
     Object.keys(post).forEach(key => {
         if (key.startsWith('i')) {
             const num = parseInt(key.substring(1), 10);
+            const formattedNum = String(num).padStart(2, '0');
 
             const itemName = post[key].itemName || '';
             const amount = parseInt(post[key].amount) || 0;
@@ -142,19 +143,20 @@ function startPost() {
             const newItem = `
                     <div class="item row">
                         <label>
-                            <input class="itemName" type="text" name="i${num}" value="${itemName}">
+                            <input class="itemName" type="text" name="i${formattedNum}" value="${itemName}">
                         </label>
                         <label>
-                            <input class="amount" type="number" name="i${num}" value="${amount}">
+                            <input class="amount" type="number" name="i${formattedNum}" value="${amount}">
                         </label>
                         <span class="splitAmount"></span>
-                        <button class="remove-bt" data-id="i${num}">🗑</button>
+                        <button class="remove-bt" data-id="i${formattedNum}">🗑</button>
                     </div>
                     `;
 
             $('.item-list').append(newItem);
         } else if (key.startsWith('p')) {
             const num = parseInt(key.substring(1), 10);
+            const formattedNum = String(num).padStart(2, '0');
 
             const name = post[key].name || '';
             const advanceAmount = parseInt(post[key].advanceAmount) || 0;
@@ -162,13 +164,13 @@ function startPost() {
             const newItem = `
                     <div class="person row">
                         <label>
-                            <input class="name" type="text" name="p${num}" value="${name}">
+                            <input class="name" type="text" name="p${formattedNum}" value="${name}">
                         </label>
-                        <span class="settledAmount-p${num}">0원</span>
+                        <span class="settledAmount-p${formattedNum}">0원</span>
                         <label>
-                            <input class="advanceAmount" type="number" name="p${num}" value="${advanceAmount}">
+                            <input class="advanceAmount" type="number" name="p${formattedNum}" value="${advanceAmount}">
                         </label>
-                        <button class="remove-bt" data-id="p${num}">🗑</button>
+                        <button class="remove-bt" data-id="p${formattedNum}">🗑</button>
                     </div>
                     `;
 
@@ -194,20 +196,23 @@ function addItem() {
         }
     });
 
+    const formattedNum = String(lastItemId+1).padStart(2, '0');
+    console.log(`${formattedNum}`);
+
     const newItem = `
         <div class="item row">
             <label>
-                <input class="itemName" type="text" name="i${lastItemId + 1}">
+                <input class="itemName" type="text" name="i${formattedNum}">
             </label>
             <label>
-                <input class="amount" type="number" name="i${lastItemId + 1}">
+                <input class="amount" type="number" name="i${formattedNum}">
             </label>
             <span class="splitAmount"></span>
-            <button class="remove-bt" data-id="i${lastItemId + 1}">🗑</button>
+            <button class="remove-bt" data-id="i${formattedNum}">🗑</button>
         </div>
         `;
 
-    const nameAttr = `i${lastItemId + 1}`;
+    const nameAttr = `i${formattedNum}`;
     const itemName = `itemName`;
     const amount = `amount`;
 
@@ -234,20 +239,23 @@ function addPerson() {
         }
     });
 
+    const formattedNum = String(lastPersonId+1).padStart(2, '0');
+    console.log(`${formattedNum}`);
+
     const newItem = `
         <div class="person row">
             <label>
-                <input class="name" type="text" name="p${lastPersonId + 1}">
+                <input class="name" type="text" name="p${formattedNum}">
             </label>
-            <span class="settledAmount-p${lastPersonId + 1}">0원</span>
+            <span class="settledAmount-p${formattedNum}">0원</span>
             <label>
-                <input class="advanceAmount" type="number" name="p${lastPersonId + 1}">
+                <input class="advanceAmount" type="number" name="p${formattedNum}">
             </label>
-            <button class="remove-bt" data-id="p${lastPersonId + 1}">🗑</button>
+            <button class="remove-bt" data-id="p${formattedNum}">🗑</button>
         </div>
         `;
 
-    const nameAttr = `p${lastPersonId + 1}`;
+    const nameAttr = `p${formattedNum}`;
     const name = `name`;
     const advanceAmount = `advanceAmount`;
 
@@ -295,6 +303,7 @@ $(document).on('click', '.remove-bt', function () {
     const id = button.data('id');
 
     button.closest('div').remove();
+    console.log(id);
 
     delete post[`${id}`];
 
