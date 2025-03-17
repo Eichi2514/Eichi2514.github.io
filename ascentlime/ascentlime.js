@@ -35,6 +35,7 @@ $('.login-form').submit(async function (event) {
                 loginSuccess = true;
                 localStorage.setItem('nickname', memberData.key);
                 alert(memberData.nickname + '님 환영합니다');
+                await characCheck(memberData.key);
                 location.reload();
             }
 

@@ -456,7 +456,7 @@ const weaponFindRef = ref(database, 'weaponFind');
 const key = localStorage.getItem('nickname');
 if (!key) {
     alert('로그인이 필요한 서비스 입니다');
-    window.location.href = 'ascentlime.html';
+    window.location.href = '../../ascentlime.html';
 }
 
 window.getUserMoney = function (key) {
@@ -562,7 +562,7 @@ async function displayShopItems() {
     let itemsToDisplay = [];
 
     try {
-        userMoney = await getUserMoney(key);
+        userMoney = await getUserMoney(key) || 0;
         let userMoneyString = formatNumber(userMoney);
         $('.money_count').text(userMoneyString);
     } catch (error) {
@@ -595,7 +595,9 @@ async function displayShopItems() {
     }
     if (shopTap === 2 || shopTap === 0) {
         const newProductWeaponItems = await getWeaponFind(key);
-        renderItems(newProductWeaponItems, true);
+        if (newProductWeaponItems) {
+            renderItems(newProductWeaponItems, true);
+        }
     }
     if (shopTap === 3 || shopTap === 0) {
         renderItems(productCashItems, false);
@@ -793,7 +795,7 @@ window.equipWeaponItem = async function (memberKey, id) {
 // 페이지네이션 동적 링크 계산
 async function updatePagination(totalLogsCount) {
     const pagination = $('.pagination');
-    let lastPage = Math.ceil(totalLogsCount / 15.0);
+    let lastPage = Math.ceil(totalLogsCount / 15.0) || 1;
 
     if (page > lastPage) {
         location.href = `../shop/shop.html?tap=${shopTap}&page=${lastPage}`;

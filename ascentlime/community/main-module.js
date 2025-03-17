@@ -42,7 +42,8 @@ import {
     orderByKey,
     equalTo,
     update,
-    child
+    child,
+    set
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -554,6 +555,71 @@ async function updatePagination() {
     `);
 }
 
+window.loginKeyCheckById = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+        if (!snapshot.exists()) {
+            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].id;
+    } catch (error) {
+        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
+        return null;
+    }
+};
+
+window.weaponFindUpdate = async function (memberKey, weaponNum) {
+    const memberId = await loginKeyCheckById(memberKey);
+    const safeId = memberId.toString();
+    const newWeaponFindRef = child(weaponFindRef, safeId);
+    const currentDataSnapshot = await get(newWeaponFindRef);
+
+    let updatedData = {};
+    if (currentDataSnapshot.exists()) {
+        const currentData = currentDataSnapshot.val();
+
+        if (!currentData.hasOwnProperty(`${weaponNum}`)) {
+            updatedData = {
+                ...currentData,
+                [`${weaponNum}`]: 1,
+            };
+        }
+    } else {
+        updatedData = {
+            [`${weaponNum}`]: 1,
+        };
+    }
+
+    await update(newWeaponFindRef, updatedData);
+}
+
+window.playCountUpdate = async function (memberKey) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
+    const snapshot = await get(queryRef);
+
+    if (snapshot.exists()) {
+        const key = Object.keys(snapshot.val())[0];
+        const data = snapshot.val()[key];
+
+        if (data) {
+            const updatedData = {
+                ...data,
+                playCount: (data.playCount || 0) + 1,
+            };
+
+            await update(ref(database, `members/${key}`), updatedData);
+        } else {
+            console.error("데이터를 찾을 수 없습니다:", data);
+        }
+    }
+}
+
 window.characCheck = async function (memberKey) {
     const memberId = await loginKeyCheckById(memberKey);
     const safeId = memberId.toString();
@@ -581,26 +647,9 @@ window.characCheck = async function (memberKey) {
             alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
     } catch (error) {
+        alert(`오류 발생:, ${error}`);
+        localStorage.removeItem('nickname');
         console.error("오류 발생:", error);
-    }
-};
-
-window.loginKeyCheckById = async function (key) {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
-    try {
-        const snapshot = await get(queryRef);
-        if (!snapshot.exists()) {
-            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
-            return null;
-        }
-
-        const memberData = snapshot.val();
-
-        const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].id;
-    } catch (error) {
-        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
-        return null;
     }
 };
 

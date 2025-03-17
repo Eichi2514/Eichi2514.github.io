@@ -265,6 +265,8 @@ window.characCheck = async function (memberKey) {
             alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
     } catch (error) {
+        alert(`오류 발생:, ${error}`);
+        localStorage.removeItem('nickname');
         console.error("오류 발생:", error);
     }
 };
