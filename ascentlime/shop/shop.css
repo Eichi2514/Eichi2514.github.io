@@ -210,7 +210,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 17vh;
     background: rgb(0, 0, 30, 0.7);
     border-radius: 1vh;
-    gap : 0.5vh;
+    gap: 0.5vh;
     font-size: 2vh;
 }
 
@@ -227,6 +227,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     color: white;
     word-break: keep-all;
 }
+
 .product-purchase {
     display: flex;
     position: absolute;
@@ -242,4 +243,26 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     align-items: center;
     flex-grow: 1;
     color: white;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 1vh;
+    position: absolute;
+    top: 80vh;
+    left: 1vh;
+    width: 92vh;
+}
+
+.page {
+    display: block;
+    width: 4.5vh;
+    height: 4.5vh;
+    border-radius: 5vh;
+    text-align: center;
+}
+
+.page.active {
+    border: 0.3vh solid;
 }

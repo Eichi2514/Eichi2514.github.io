@@ -143,7 +143,7 @@ function updatePagination() {
         <button class="scoreboard_exit_bt absolute" onclick="window.location.href = '../ascentlime.html';">나가기</button>
         <div class="pagination flex justify-center absolute">
             <!-- '처음' 버튼 -->
-            <a href="../ascentlime/scoreboard.html?page=1" style="${page === 1 ? 'display: none;' : ''}">처음</a>
+            <a href="../ascentlime/scoreboard.html?page=1" style="${page === 1 ? 'display: none;' : ''}">처음)</a>
             <button style="${page === 1 ? 'display: none;' : ''}">&nbsp;</button>
             <!-- 이전 페이지 버튼들 -->
             <a href="../ascentlime/scoreboard.html?page=${Math.max(page - 4, 1)}" style="${page <= 4 ? 'display: none;' : ''}">${Math.max(page - 4, 1)}</a>
@@ -158,8 +158,8 @@ function updatePagination() {
             <a href="../ascentlime/scoreboard.html?page=${Math.min(page + 3, lastPage)}" style="${page + 2 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 3, lastPage)}</a>
             <a href="../ascentlime/scoreboard.html?page=${Math.min(page + 4, lastPage)}" style="${page + 3 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 4, lastPage)}</a>
             <!-- '마지막' 버튼 -->
-            <button style="${page === lastPage ? 'display: none;' : ''}">&nbsp;(</button>
-            <a href="../ascentlime/scoreboard.html?page=${lastPage}" style="${page === lastPage ? 'display: none;' : ''}">마지막</a>
+            <button style="${page === lastPage ? 'display: none;' : ''}">&nbsp;</button>
+            <a href="../ascentlime/scoreboard.html?page=${lastPage}" style="${page === lastPage ? 'display: none;' : ''}">(마지막</a>
         </div>
     `;
 }

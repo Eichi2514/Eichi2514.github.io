@@ -134,43 +134,37 @@ function postUpdate(newPost) {
 function startPost() {
     Object.keys(post).forEach(key => {
         if (key.startsWith('i')) {
-            const num = parseInt(key.substring(1), 10);
-            const formattedNum = String(num).padStart(2, '0');
-
             const itemName = post[key].itemName || '';
             const amount = parseInt(post[key].amount) || 0;
 
             const newItem = `
                     <div class="item row">
                         <label>
-                            <input class="itemName" type="text" name="i${formattedNum}" value="${itemName}">
+                            <input class="itemName" type="text" name="${key}" value="${itemName}">
                         </label>
                         <label>
-                            <input class="amount" type="number" name="i${formattedNum}" value="${amount}">
+                            <input class="amount" type="number" name="${key}" value="${amount}">
                         </label>
                         <span class="splitAmount"></span>
-                        <button class="remove-bt" data-id="i${formattedNum}">🗑</button>
+                        <button class="remove-bt" data-id="${key}">🗑</button>
                     </div>
                     `;
 
             $('.item-list').append(newItem);
         } else if (key.startsWith('p')) {
-            const num = parseInt(key.substring(1), 10);
-            const formattedNum = String(num).padStart(2, '0');
-
             const name = post[key].name || '';
             const advanceAmount = parseInt(post[key].advanceAmount) || 0;
 
             const newItem = `
                     <div class="person row">
                         <label>
-                            <input class="name" type="text" name="p${formattedNum}" value="${name}">
+                            <input class="name" type="text" name="${key}" value="${name}">
                         </label>
-                        <span class="settledAmount-p${formattedNum}">0원</span>
+                        <span class="settledAmount-${key}">0원</span>
                         <label>
-                            <input class="advanceAmount" type="number" name="p${formattedNum}" value="${advanceAmount}">
+                            <input class="advanceAmount" type="number" name="${key}" value="${advanceAmount}">
                         </label>
-                        <button class="remove-bt" data-id="p${formattedNum}">🗑</button>
+                        <button class="remove-bt" data-id="${key}">🗑</button>
                     </div>
                     `;
 

@@ -602,6 +602,7 @@ async function displayShopItems() {
     }
 
     itemsToDisplay.slice((page - 1) * 15, page * 15).forEach(item => $('.shop-container').append(item));
+    await updatePagination(itemsToDisplay.length);
 }
 
 displayShopItems();
@@ -788,3 +789,34 @@ window.equipWeaponItem = async function (memberKey, id) {
         throw err;
     }
 };
+
+// 페이지네이션 동적 링크 계산
+async function updatePagination(totalLogsCount) {
+    const pagination = $('.pagination');
+    let lastPage = Math.ceil(totalLogsCount / 15.0);
+
+    if (page > lastPage) {
+        location.href = `../shop/shop.html?tap=${shopTap}&page=${lastPage}`;
+    }
+
+    pagination.html(`        
+            <!-- '처음' 버튼 -->
+            <a href="../shop/shop.html?page=1">처음 )</a>
+            &nbsp;
+            <!-- 이전 페이지 버튼들 -->
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 4, 1)}" style="${page <= 4 ? 'display: none;' : ''}">${Math.max(page - 4, 1)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 3, 1)}" style="${page <= 3 ? 'display: none;' : ''}">${Math.max(page - 3, 1)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 2, 1)}" style="${page <= 2 ? 'display: none;' : ''}">${Math.max(page - 2, 1)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 1, 1)}" style="${page === 1 ? 'display: none;' : ''}">${Math.max(page - 1, 1)}</a>
+            <!-- 현재 페이지 -->
+            <a class="page active" href="../scoreboard.html?tap=${shopTap}&page=${page}">${page}</a>
+            <!-- 다음 페이지 버튼들 -->
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 1, lastPage)}" style="${page >= lastPage ? 'display: none;' : ''}">${Math.min(page + 1, lastPage)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 2, lastPage)}" style="${page + 1 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 2, lastPage)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 3, lastPage)}" style="${page + 2 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 3, lastPage)}</a>
+            <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 4, lastPage)}" style="${page + 3 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 4, lastPage)}</a>
+            <!-- '마지막' 버튼 -->
+            &nbsp;
+            <a href="../shop/shop.html?tap=${shopTap}&page=${lastPage}">( 마지막</a>        
+    `);
+}
