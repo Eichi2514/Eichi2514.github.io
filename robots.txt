@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /
 Allow: /ascentlime
-Sitemap: https://Eichi2514.github.io/sitemap.xml
+Allow: /paymana
+Sitemap: https://eichi2514.github.io/sitemap.xml
