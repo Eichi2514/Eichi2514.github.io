@@ -556,7 +556,9 @@ window.getWeaponFind = async function (memberKey) {
         console.error("무기 데이터를 가져오는 중 오류 발생:", error);
     }
 };
+
 let userMoney = 0;
+const unknownItems = 'https://github.com/user-attachments/assets/34628dee-0e58-4d89-a510-13ebb9a2dcae';
 
 async function displayShopItems() {
     let itemsToDisplay = [];
@@ -570,37 +572,42 @@ async function displayShopItems() {
         $('.money_count').text('불러오기 실패');
     }
 
-    const renderItems = (productItems, isStat) => {
-        Object.keys(productItems).forEach(itemKey => {
-            const product = productItems[itemKey];
-            const price = isStat ? `$ ${formatNumber(product.price)}` : `${formatNumber(product.price)}원`;
-            const newItem = `
-                <div class="product-item">
-                    <img src="${product.img}" alt="상품 이미지" class="product-image"/>
-                    <div class="product-details">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-purchase">
-                            <span class="product-price">${price}</span>
-                            <button class="s-button buy-button" data-id="${itemKey}">구매</button>
-                        </div>
-                    </div>
+    const createProductItem = (product, itemKey, price) => `
+        <div class="product-item">
+            <img src="${product.img || unknownItems}" alt="상품 이미지" class="product-image"/>
+            
+            <div class="product-details">
+                <div class="product-name">${product.name || '미확인 아이템'}</div>
+                <div class="product-purchase">
+                    ${product.name ? `
+                    <span class="product-price">${price}</span>
+                    <button class="s-button buy-button" data-id="${itemKey}">구매</button>
+                    ` : ''}
                 </div>
-            `;
-            itemsToDisplay.push(newItem);
-        });
+            </div>
+        </div>
+    `;
+
+    const renderItems = (productItems, isStat, prefix, length = Object.keys(productItems).length) => {
+        for (let i = 1; i <= length; i++) {
+            const itemKey = prefix ? `${prefix}${i}` : `c${i}`;
+            const product = productItems[itemKey] || {};
+            const price = isStat ? `$ ${formatNumber(product.price || 0)}` : `${formatNumber(product.price || 0)}원`;
+            itemsToDisplay.push(createProductItem(product, itemKey, price));
+        }
     };
 
     if (shopTap === 1 || shopTap === 0) {
-        renderItems(productStatItems, true);
+        renderItems(productStatItems, true, 's');
     }
     if (shopTap === 2 || shopTap === 0) {
         const newProductWeaponItems = await getWeaponFind(key);
         if (newProductWeaponItems) {
-            renderItems(newProductWeaponItems, true);
+            renderItems(newProductWeaponItems, true, 'w', Object.keys(productWeaponItems).length);
         }
     }
     if (shopTap === 3 || shopTap === 0) {
-        renderItems(productCashItems, false);
+        renderItems(productCashItems, false, 'c');
     }
 
     itemsToDisplay.slice((page - 1) * 15, page * 15).forEach(item => $('.shop-container').append(item));

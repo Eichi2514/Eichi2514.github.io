@@ -1879,7 +1879,7 @@ let mobFind = null;
     if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
 
     for (let i = 1; i <= mobFind; i++) {
-        $('.mobImage' + i).attr('src', mobs[i])
+        $('.mobImage' + i).attr('src', mobs[i]).addClass('cursor-help');
 
         // 현재 순서에 해당하는 mob__dictionary_card2 선택
         const currentCard = $('.mob__dictionary_card2').eq(i - 1);

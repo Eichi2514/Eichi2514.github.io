@@ -745,7 +745,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
     position: relative;
-    cursor: pointer;
 }
 
 .weapon_img {
@@ -1457,7 +1456,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border: 0.1vh solid;
     flex-shrink: 0;
     position: relative;
-    cursor: pointer;
 }
 
 .mob__dictionary_title2 {
@@ -1504,7 +1502,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border: 0.1vh solid;
     flex-shrink: 0;
     position: relative;
-    cursor: pointer;
 }
 
 .weapon__dictionary_title2 {
