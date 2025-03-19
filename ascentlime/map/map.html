@@ -37,6 +37,41 @@
 
     <div id="tutorialContainer"></div>
 
+    <ul class="profile menu">
+        <li class="submenu-container">
+            <div class="profile-container menu-item">
+                <img class="profile-img"
+                     src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+                     alt="프로필 사진">
+                <div class="profile-nickname">
+                    닉네임
+                </div>
+            </div>
+            <ul class="submenu absolute">
+                <li>
+                    <a href="../shop/shop.html">
+                        <div class="profile-container submenu-item">상 점</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="../community/main.html">
+                        <div class="profile-container submenu-item">커뮤니티</div>
+                    </a>
+                </li>
+                <li>
+                    <div>
+                        <button id="toggleAutoplayButton" class="profile-container submenu-item">소리</button>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- 배경음악 -->
+    <audio id="audioPlayer" class="audioPlayer hidden absolute" controls loop preload="auto">
+        <source class="audios" src="../audio/bg1.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- 타이머 -->
     <div class="timer absolute">
         <div class="time"></div>
@@ -259,7 +294,8 @@
             <section class="speed_count inline-block" style="padding-left: 1vh;">NaN</section>
         </div>
         <div class="money absolute">
-            $<section class="money_count inline-block" style="padding-left: 1vh;">NaN</section>
+            $
+            <section class="money_count inline-block" style="padding-left: 1vh;">NaN</section>
         </div>
         <button class="mob__dictionary_bt absolute play"
                 onclick="showMob__dictionary()">몬스터 도감
@@ -1040,12 +1076,6 @@
         </label>
         <button type="submit" class="chat_bt absolute">전송</button>
     </form>
-
-    <!-- 배경음악 -->
-    <audio id="audioPlayer" class="audioPlayer hidden absolute" controls loop preload="auto">
-        <source class="audios" src="../audio/bg1.mp3" type="audio/mpeg">
-    </audio>
-    <button id="toggleAutoplayButton" class="audio_bt absolute">소리</button>
 </div>
 <!-- 화면 조작키 영역 -->
 <div class="keybord_box flex justify-between absolute">
@@ -1107,5 +1137,6 @@
 </div>
 <script src="../map/map-module.js" defer type="module"></script>
 <script src="../map/map.js" defer></script>
+<script src="../common/profileImages.js" defer></script>
 </body>
 </html>

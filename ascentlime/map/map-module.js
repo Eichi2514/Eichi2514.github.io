@@ -53,6 +53,25 @@ window.userName = function (key) {
         });
 };
 
+window.userProfileImage = function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    return get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].profileImageId;
+        })
+        .catch((error) => {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        });
+};
+
 window.loginKeyCheckById = async function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
     try {
@@ -387,3 +406,12 @@ window.getWeaponFind = async function (memberKey) {
         console.error("무기 데이터를 가져오는 중 오류 발생:", error);
     }
 };
+
+async function profileUpdate() {
+    const profileImageId = await userProfileImage(localStorage.getItem('nickname') || 1);
+    const nickname = await userName(localStorage.getItem('nickname'));
+    $('.profile-img').attr('src', profileImages[profileImageId]);
+    $('.profile-nickname').text(nickname);
+}
+
+profileUpdate();

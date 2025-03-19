@@ -203,32 +203,15 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .play::after {
-    display: block;
     padding-left: 1vh;
     padding-right: 1vh;
     content: "켜기";
 }
 
 .pause::after {
-    display: block;
     padding-left: 1vh;
     padding-right: 1vh;
     content: "끄기";
-}
-
-.audio_bt {
-    top: 1vh;
-    left: 101vh;
-    width: 20vh;
-    height: 9vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
 }
 
 /* 메인화면 */
@@ -770,7 +753,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .weapon_img_text div {
-    border-bottom: 1px solid;
+    border-bottom: 0.5vh solid;
 }
 
 .weapon:hover > .weapon_img_text {
@@ -854,10 +837,44 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 1vh;
 }
 
+.profile {
+    top: 0.5vh;
+    left: 101vh;
+    gap: 1vh;
+    position: absolute;
+}
+
+.profile-container {
+    display: flex;
+    width: 25vh;
+    height: 9vh;
+    background: rgb(0, 0, 30);
+    color: rgb(156, 163, 175);
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    z-index: 50;
+}
+
+.profile-img {
+    height: 7.5vh;
+    margin: 0.5vh;
+    border-radius: 0.5vh;
+    background: #FFFFFF;
+}
+
+.profile-nickname {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    font-size: 2vh;
+    margin: 0.5vh;
+}
+
 .timer {
     top: 1vh;
-    left: 122vh;
-    width: 20vh;
+    left: 127vh;
+    width: 15vh;
     height: 9vh;
     display: flex;
     justify-content: center;
@@ -867,6 +884,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     /* background: rgb(255, 71, 48); */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
+    font-size: 2.5vh;
 }
 
 .front_charac {
@@ -1412,8 +1430,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 /* 몬스터 도감 */
 .dictionary_exit_bt {
     top: 1vh;
-    left: 122vh;
-    width: 20vh;
+    left: 127vh;
+    width: 15vh;
     height: 9vh;
     display: flex;
     justify-content: center;
@@ -1532,7 +1550,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .dictionary_body_text div {
-    border-bottom: 1px solid;
+    border-bottom: 0.1vh solid;
 }
 
 .weapon__dictionary_card2:hover > .dictionary_body_text, .mob__dictionary_card2:hover > .dictionary_body_text {
@@ -1561,7 +1579,7 @@ ul li:first-child {
 .menu {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.1vh;
 }
 
 .submenu {
@@ -1571,7 +1589,7 @@ ul li:first-child {
 }
 
 /* 메뉴 항목 스타일 */
-li button, li a, li a div {
+li button, li a, li a div, li div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1595,7 +1613,7 @@ li button, li a, li a div {
 
 .motivation_wrapper {
     width: 100vh;
-    height: 38px;
+    height: 4.5vh;
     overflow: hidden;
     position: absolute;
     z-index: 50;

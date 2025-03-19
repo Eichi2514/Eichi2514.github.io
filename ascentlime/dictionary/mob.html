@@ -609,6 +609,41 @@
         </div>
     </div>
 
+    <ul class="profile menu">
+        <li class="submenu-container">
+            <div class="profile-container menu-item">
+                <img class="profile-img"
+                     src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+                     alt="프로필 사진">
+                <div class="profile-nickname">
+                    닉네임
+                </div>
+            </div>
+            <ul class="submenu absolute">
+                <li>
+                    <a href="../shop/shop.html">
+                        <div class="profile-container submenu-item">상 점</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="../community/main.html">
+                        <div class="profile-container submenu-item">커뮤니티</div>
+                    </a>
+                </li>
+                <li>
+                    <div>
+                        <button id="toggleAutoplayButton" class="profile-container submenu-item">소리</button>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- 배경음악 -->
+    <audio id="audioPlayer" class="audioPlayer hidden absolute" controls loop preload="auto">
+        <source class="audios" src="../audio/bg1.mp3" type="audio/mpeg">
+    </audio>
+
     <a class="dictionary_exit_bt absolute cursor-pointer"
        href="../map/map.html">나가기</a>
 
@@ -656,14 +691,9 @@
         </label>
         <button type="submit" class="chat_bt absolute">전송</button>
     </form>
-
-    <!-- 배경음악 -->
-    <audio id="audioPlayer" class="audioPlayer hidden absolute" controls loop preload="auto">
-        <source class="audios" src="../audio/bg1.mp3" type="audio/mpeg">
-    </audio>
-    <button id="toggleAutoplayButton" class="audio_bt absolute">소리</button>
 </div>
 <script src="../dictionary/chat-module.js" defer type="module"></script>
 <script src="../map/map.js" defer></script>
+<script src="../common/profileImages.js" defer></script>
 </body>
 </html>
