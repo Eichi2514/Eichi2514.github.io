@@ -92,6 +92,8 @@ async function loadUserData() {
             window.location.href = '../../ascentlime.html';
         }
 
+        setInterval(updateTime, 1000);
+
     } catch (error) {
         console.error('돈 불러오는 중 오류 발생:', error);
         $('.money_count').text('불러오기 실패');
@@ -99,3 +101,25 @@ async function loadUserData() {
 }
 
 loadUserData();
+
+function formatTime(now) {
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return { hours, minutes, seconds };
+}
+
+function updateTime() {
+    const now = new Date();
+    const { hours, minutes, seconds } = formatTime(now);
+
+    $('.current-time').text(`${hours}:${minutes}:${seconds}`);
+
+    const hourAngle = (now.getHours() % 12) * 30 + (now.getMinutes() / 60) * 30;
+    const minuteAngle = now.getMinutes() * 6 + (now.getSeconds() / 60) * 6;
+    const secondAngle = now.getSeconds() * 6;
+
+    $('.clock-hour').css('transform', `rotate(${hourAngle}deg)`);
+    $('.clock-minute').css('transform', `rotate(${minuteAngle}deg)`);
+    $('.clock-second').css('transform', `rotate(${secondAngle}deg)`);
+}

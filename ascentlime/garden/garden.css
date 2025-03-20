@@ -145,18 +145,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .garden-container {
-    display: grid;
-    grid-template-columns: repeat(3, 18vh);
+    display: flex;
+    justify-content: space-around;
     position: absolute;
     top: 25vh;
     left: 1vh;
     width: 92vh;
     height: 60vh;
     padding: 1vh;
-    gap: 1vh;
+    gap: 2vh;
     border: 0.3vh solid;
     background: rgb(255, 71, 48);
     border-radius: 3vh;
+}
+
+.plant-section {
+    display: grid;
+    grid-template-columns: repeat(3, 18vh);
+    gap: 1vh;
 }
 
 .plant-slot {
@@ -175,4 +181,92 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .plant-slot:hover .buy-button {
     display: block;
+}
+
+.info-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 5vh;
+}
+
+.time-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3vh;
+    gap: 2vh;
+}
+
+.clock {
+    width: 18vh;
+    height: 18vh;
+    border: 1vh solid rgb(174, 0, 27);
+    border-radius: 100%;
+    position: relative;
+    background: #fff;
+}
+
+.clock-hour, .clock-minute, .clock-second {
+    position: absolute;
+    transform-origin: 50% 100%;
+    bottom: 50%;
+    background: rgb(174, 0, 27);
+    border-top-right-radius: 2vh;
+    border-top-left-radius: 2vh;
+}
+
+.clock-pattern1 {
+    position: absolute;
+    top: 1vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1vh;
+    height: 14vh;
+    border-top: 0.5vh solid rgb(174, 0, 27);
+    border-bottom: 0.5vh solid rgb(174, 0, 27);
+}
+
+.clock-pattern2 {
+    position: absolute;
+    top: 50%;
+    left: 1vh;
+    transform: translateY(-50%);
+    width: 14vh;
+    height: 1vh;
+    border-left: 0.5vh solid rgb(174, 0, 27);
+    border-right: 0.5vh solid rgb(174, 0, 27);
+}
+
+.clock-pattern3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1vh;
+    height: 1vh;
+    background: rgb(174, 0, 27);
+    border-radius: 100%;
+}
+
+.clock-hour {
+    height: 5vh;
+    width: 0.5vh;
+    left: calc(50% - 0.25vh);
+    z-index: 2;
+}
+
+.clock-minute {
+    height: 7vh;
+    width: 0.5vh;
+    left: calc(50% - 0.25vh);
+    z-index: 1;
+}
+
+.clock-second {
+    height: 7vh;
+    width: 0.2vh;
+    left: calc(50% - 0.1vh);
+    z-index: 3;
 }
