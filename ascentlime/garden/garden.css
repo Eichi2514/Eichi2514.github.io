@@ -1,0 +1,178 @@
+@charset "UTF-8";
+
+/* 공용 */
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    font-size: 2.8vh;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
+.head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1vh;
+    width: 100%;
+}
+
+.head-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 10vh;
+    height: 10vh;
+}
+
+.body {
+    width: 100vh;
+    position: relative;
+}
+
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1625/1000) {
+    .body {
+        left: 50%;
+        transform: translateX(-50vh);
+    }
+}
+
+img {
+    /* mix-blend-mode: multiply; */
+    /* opacity: 0.9; */
+
+}
+
+body {
+    background: rgb(0, 0, 30);
+}
+
+input {
+    padding-left: 1vh !important;
+    /* background-color: transparent; */
+}
+
+input::placeholder {
+    color: black !important;
+}
+
+input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+    color: black;
+}
+
+input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+    color: black;
+}
+
+input::-ms-input-placeholder { /* 엣지 */
+    color: black;
+}
+
+input::-moz-placeholder { /* 파이어폭스 19+ */
+    color: black;
+}
+
+input:-moz-placeholder { /* 파이어폭스 4-18 */
+    color: black;
+}
+
+.s-button {
+    text-align: center;
+    border: 0.3vh solid;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+    cursor: pointer;
+}
+
+.button {
+    text-align: center;
+    width: 20vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.bg_img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.bo {
+    border: 1vh solid red;
+}
+
+/* 정원 화면 */
+.garden_bg {
+    top: 12vh;
+    left: 2vh;
+    width: 96vh;
+    height: 86vh;
+    border-radius: 3vh;
+}
+
+.garden_title {
+    top: 8vh;
+    left: 5vh;
+    width: 82vh;
+    font-size: 6.4vh;
+    -webkit-text-stroke: 0.1vh white;
+}
+
+.money {
+    top: 19vh;
+    right: 3vh;
+    border: 0.3vh solid;
+    padding: 0.5vh 1vh;
+    background: rgb(255, 71, 48);
+    border-radius: 1vh;
+}
+
+.garden-container {
+    display: grid;
+    grid-template-columns: repeat(3, 18vh);
+    position: absolute;
+    top: 25vh;
+    left: 1vh;
+    width: 92vh;
+    height: 60vh;
+    padding: 1vh;
+    gap: 1vh;
+    border: 0.3vh solid;
+    background: rgb(255, 71, 48);
+    border-radius: 3vh;
+}
+
+.plant-slot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18vh;
+    height: 18vh;
+    background: #FFFFFF;
+    border-radius: 3vh;
+}
+
+.buy-button {
+    display: none;
+}
+
+.plant-slot:hover .buy-button {
+    display: block;
+}

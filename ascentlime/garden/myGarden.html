@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../favicon/AscentLime.png" type="image/png">
+    <title>AscentLime</title>
+
+    <link rel="stylesheet" href="../garden/garden.css"/>
+    <link rel="stylesheet" href="../common/menu.css"/>
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+</head>
+<body>
+<div class="body">
+    <!-- p2 홈페이지 배경 -->
+    <img class="bg_img"
+         src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
+         alt=""/>
+
+    <div class="head">
+        <div class="head-line">
+            <a class="logo" href="../../ascentlime.html">
+                <img class="logo" src="../../favicon/AscentLime.png"
+                     alt="로고 이미지"/>
+            </a>
+        </div>
+    </div>
+
+    <div class="garden_bg absolute">
+        <!-- p2 나무판 -->
+        <img class="garden_bg" src="https://github.com/user-attachments/assets/2017f1b7-9290-4387-a5ac-daee1743354c"
+             alt=""/>
+        <div class="garden_title absolute text-center">정원</div>
+        <div class="money absolute">
+            $<section class="money_count inline-block" style="padding-left: 1vh;">0</section>
+        </div>
+        <div class="garden-container">
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="1">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="2">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="3">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="4">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="5">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="6">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="7">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="8">구매</button>
+            </div>
+            <div class="plant-slot">
+                <button class="s-button buy-button" data-id="9">구매</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="plant-shop"></div>
+<script src="myGarden-module.js" defer type="module"></script>
+<script src="../common/menu.js" defer></script>
+</body>
+</html>
