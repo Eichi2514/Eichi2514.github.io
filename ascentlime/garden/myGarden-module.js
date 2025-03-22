@@ -1,3 +1,42 @@
+const plantItems = {
+    "1": {
+        "name": "5분",
+        "price": 5
+    },
+    "2": {
+        "name": "10분",
+        "price": 10
+    },
+    "3": {
+        "name": "30분",
+        "price": 30
+    },
+    "4": {
+        "name": "1시간",
+        "price": 50
+    },
+    "5": {
+        "name": "3시간",
+        "price": 150
+    },
+    "6": {
+        "name": "6시간",
+        "price": 300
+    },
+    "7": {
+        "name": "12시간",
+        "price": 800
+    },
+    "8": {
+        "name": "1일",
+        "price": 1600
+    },
+    "9": {
+        "name": "3일",
+        "price": 4500
+    }
+};
+
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -55,9 +94,6 @@ function formatNumber(number) {
     return number.toLocaleString();
 }
 
-const urls = window.location.search;
-const memberId = urls ? parseInt(urls.substring(1)) : 0;
-
 window.loginKeyCheckById = async function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
     try {
@@ -78,19 +114,12 @@ window.loginKeyCheckById = async function (key) {
 };
 
 let userMoney = 0;
-let gardenId = 0;
 
 async function loadUserData() {
     try {
         userMoney = await getUserMoney(key) || 0;
-        gardenId = await loginKeyCheckById(key);
         let userMoneyString = formatNumber(userMoney);
         $('.money_count').text(userMoneyString);
-
-        if (gardenId !== memberId) {
-            alert('입장 권한이 없습니다.');
-            window.location.href = '../../ascentlime.html';
-        }
 
         setInterval(updateTime, 1000);
 
@@ -123,3 +152,74 @@ function updateTime() {
     $('.clock-minute').css('transform', `rotate(${minuteAngle}deg)`);
     $('.clock-second').css('transform', `rotate(${secondAngle}deg)`);
 }
+
+$('.buy-button').click(async function (event) {
+    const button = $(this);
+    const id = button.data('id');
+
+    $('.body').append(`
+    <div class="popup-bg buy-bg">
+        <form class="buy-form" method="POST">
+            <div class="popup-box">
+                <div class="popup-title">씨앗 상점</div>
+                <div class="close-button">✖</div>
+                <div class="popup-form-container">
+                    <button class="plant-buy-button" data-id="${id}-1">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(5분)">
+                        <span>$5</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-2">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(10분)">
+                        <span>$10</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-3">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(30분)">
+                        <span>$30</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-4">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(1시간)">
+                        <span>$50</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-5">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(3시간)">
+                        <span>$150</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-6">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(6시간)">
+                        <span>$300</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-7">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(12시간)">
+                        <span>$800</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-8">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(1일)">
+                        <span>$1600</span>
+                    </button>
+                    <button class="plant-buy-button" data-id="${id}-9">
+                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(3일)">
+                        <span>$4500</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    `);
+
+    $('.close-button').click(function () {
+        $('.popup-bg').remove();
+    });
+
+    $('.plant-buy-button').click(function (event) {
+        event.preventDefault();
+        const button = $(this);
+        const id = button.data('id');
+
+        const [locationId, selectedId] = id.split('-');
+
+        let isConfirm = confirm(`${plantItems[selectedId].name}(을)를 구매하시겠습니까?`)
+        if (!isConfirm) return;
+
+        alert(`Location ID : ${locationId}, Selected ID : ${selectedId}`);
+    });
+});
