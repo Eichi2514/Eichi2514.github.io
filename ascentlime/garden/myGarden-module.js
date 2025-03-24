@@ -71,7 +71,9 @@ import {
     query,
     orderByChild,
     equalTo,
-    get
+    get,
+    set,
+    update
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -90,6 +92,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
+const gardensRef = ref(database, 'gardens');
 
 const key = localStorage.getItem('nickname');
 if (!key) {
@@ -236,16 +239,75 @@ $('.buy-button').click(async function (event) {
         $('.popup-bg').remove();
     });
 
-    $('.plant-buy-button').click(function (event) {
+    $('.plant-buy-button').click(async function (event) {
         event.preventDefault();
         const button = $(this);
         const id = button.data('id');
 
         const [locationId, selectedId] = id.split('-');
 
-        let isConfirm = confirm(`${plantItems[selectedId].name}(을)를 구매하시겠습니까?`)
+        let success = false;
+
+        let isConfirm = confirm(`${plantItems[selectedId].name}을(를) 구매하시겠습니까?`)
         if (!isConfirm) return;
 
-        alert(`Location ID : ${locationId}, Selected ID : ${selectedId}`);
+        if (userMoney < plantItems[selectedId].price) {
+            alert(`재화가 부족합니다.`);
+        } else {
+            await buyPlant(locationId, selectedId)
+            success = true;
+        }
+
+        if (success) {
+            location.reload();
+        }
     });
 });
+
+window.updateUserMoney = async function (memberKey, newMoney) {
+    try {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const key = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[key];
+
+            if (data) {
+                const updatedData = {
+                    ...data,
+                    money: newMoney,
+                };
+
+                await update(ref(database, `members/${key}`), updatedData);
+            }
+        }
+    } catch (error) {
+        console.error("금액 업데이트 실패:", error);
+        throw error;
+    }
+};
+
+window.buyPlant = async function (locationId, plantId) {
+    const memberId = await loginKeyCheckById(key);
+    const safeId = memberId.toString();
+
+    const now = new Date();
+    const { hours, minutes, seconds } = formatTime(now);
+
+    const timestamp = `${hours}:${minutes}:${seconds}`;
+
+    try {
+        const gardenRef = ref(database, `gardens/${safeId}/${locationId}`);
+        await set(gardenRef, {
+            plantId: plantId,
+            plantedAt: timestamp,
+        });
+
+        await updateUserMoney(key, userMoney - plantItems[plantId].price);
+
+        console.log(`씨앗 심기 완료, 위치: ${locationId}, 시간: ${timestamp}`);
+    } catch (error) {
+        console.error('씨앗 구매에 실패했습니다:', error);
+    }
+};
