@@ -27,39 +27,48 @@ const fullyGrown = [
 const plantItems = {
     "1": {
         "name": "5분",
-        "price": 5
+        "price": 5,
+        "growthTime": 300
     },
     "2": {
         "name": "10분",
-        "price": 10
+        "price": 10,
+        "growthTime": 600
     },
     "3": {
         "name": "30분",
-        "price": 30
+        "price": 30,
+        "growthTime": 1800
     },
     "4": {
         "name": "1시간",
-        "price": 50
+        "price": 50,
+        "growthTime": 3600
     },
     "5": {
         "name": "3시간",
-        "price": 150
+        "price": 150,
+        "growthTime": 10800
     },
     "6": {
         "name": "6시간",
-        "price": 300
+        "price": 300,
+        "growthTime": 21600
     },
     "7": {
         "name": "12시간",
-        "price": 800
+        "price": 800,
+        "growthTime": 43200
     },
     "8": {
         "name": "1일",
-        "price": 1600
+        "price": 1600,
+        "growthTime": 86400
     },
     "9": {
         "name": "3일",
-        "price": 4500
+        "price": 4500,
+        "growthTime": 259200
     }
 };
 
@@ -95,6 +104,7 @@ const membersRef = ref(database, 'members');
 const gardensRef = ref(database, 'gardens');
 
 const key = localStorage.getItem('nickname');
+
 if (!key) {
     alert('로그인이 필요한 서비스 입니다');
     window.location.href = '../../ascentlime.html';
@@ -142,6 +152,10 @@ window.loginKeyCheckById = async function (key) {
     }
 };
 
+
+const memberId = await loginKeyCheckById(key);
+const safeId = memberId.toString();
+
 let userMoney = 0;
 
 async function loadUserData() {
@@ -152,6 +166,8 @@ async function loadUserData() {
 
         setInterval(updateTime, 1000);
 
+        loadPlantDate();
+
     } catch (error) {
         console.error('돈 불러오는 중 오류 발생:', error);
         $('.money_count').text('불러오기 실패');
@@ -161,10 +177,14 @@ async function loadUserData() {
 loadUserData();
 
 function formatTime(now) {
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    return { hours, minutes, seconds };
+
+    return { year, month, day, hours, minutes, seconds };
 }
 
 function updateTime() {
@@ -182,7 +202,7 @@ function updateTime() {
     $('.clock-second').css('transform', `rotate(${secondAngle}deg)`);
 }
 
-$('.buy-button').click(async function (event) {
+$(document).on('click', '.buy-button', async function (event) {
     const button = $(this);
     const id = button.data('id');
 
@@ -234,34 +254,32 @@ $('.buy-button').click(async function (event) {
         </form>
     </div>
     `);
+});
 
-    $('.close-button').click(function () {
-        $('.popup-bg').remove();
-    });
+$(document).on('click', '.close-button', function () {
+    $('.popup-bg').remove();
+});
 
-    $('.plant-buy-button').click(async function (event) {
-        event.preventDefault();
-        const button = $(this);
-        const id = button.data('id');
+$(document).on('click', '.plant-buy-button', async function () {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+    const [locationId, selectedId] = id.split('-');
 
-        const [locationId, selectedId] = id.split('-');
+    let success = false;
 
-        let success = false;
+    let isConfirm = confirm(`${plantItems[selectedId].name}을(를) 구매하시겠습니까?`)
+    if (!isConfirm) return;
+    if (userMoney < plantItems[selectedId].price) {
+        alert(`재화가 부족합니다.`);
+    } else {
+        await buyPlant(locationId, selectedId)
+        success = true;
+    }
 
-        let isConfirm = confirm(`${plantItems[selectedId].name}을(를) 구매하시겠습니까?`)
-        if (!isConfirm) return;
-
-        if (userMoney < plantItems[selectedId].price) {
-            alert(`재화가 부족합니다.`);
-        } else {
-            await buyPlant(locationId, selectedId)
-            success = true;
-        }
-
-        if (success) {
-            location.reload();
-        }
-    });
+    if (success) {
+        location.reload();
+    }
 });
 
 window.updateUserMoney = async function (memberKey, newMoney) {
@@ -289,13 +307,10 @@ window.updateUserMoney = async function (memberKey, newMoney) {
 };
 
 window.buyPlant = async function (locationId, plantId) {
-    const memberId = await loginKeyCheckById(key);
-    const safeId = memberId.toString();
-
     const now = new Date();
-    const { hours, minutes, seconds } = formatTime(now);
+    const { year, month, day, hours, minutes, seconds } = formatTime(now);
 
-    const timestamp = `${hours}:${minutes}:${seconds}`;
+    const timestamp = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
     try {
         const gardenRef = ref(database, `gardens/${safeId}/${locationId}`);
@@ -311,3 +326,79 @@ window.buyPlant = async function (locationId, plantId) {
         console.error('씨앗 구매에 실패했습니다:', error);
     }
 };
+
+function loadPlantDate() {
+    $('.plant-section .plant-slot').each(function(index) {
+        const gardenRef = ref(database, `gardens/${safeId}/${index+1}`);
+
+        get(gardenRef).then(snapshot => {
+            if (!snapshot.exists()) {
+                $(this).html(`
+                    <button class="s-button buy-button" data-id="${index+1}">구매</button>
+                `);
+            } else {
+                setInterval(() => updatePlant(this, index + 1, snapshot.val()), 1000);
+            }
+        }).catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    });
+}
+
+function updatePlant(plantSlot, index, plantData) {
+    const plantId = plantData.plantId;
+    const plantedAt = new Date(plantData.plantedAt);
+    const growthTime = plantItems[plantId].growthTime * 1000;
+
+    const now = new Date();
+    const completionTime = plantedAt.getTime() + growthTime;
+    const timeRemaining = completionTime - now.getTime();
+
+    if (timeRemaining > 0) {
+        const elapsedTime = now.getTime() - plantedAt.getTime();
+
+        const growthStagesId = updateGrowthStage(elapsedTime);
+
+        const hours = String(Math.floor(timeRemaining / (1000 * 60 * 60))).padStart(2, '0');
+        const minutes = String(Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        const seconds = String(Math.floor((timeRemaining % (1000 * 60)) / 1000)).padStart(2, '0');
+
+        $(plantSlot).html(`
+            <img class="plant-img" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
+            <span class="s-button plant-time${index}">${hours}:${minutes}:${seconds}</span>
+        `);
+    } else {
+        $(plantSlot).html(`
+            <img class="plant-img" src="${fullyGrown[plantId]}" alt="Plant Stage ${index}">
+            <button class="s-button harvest-button" data-id="${index}">수확</button>
+        `);
+    }
+}
+
+function updateGrowthStage(elapsedTime) {
+    const elapsedSeconds = Math.floor(elapsedTime / 1000);
+
+    let growthStagesId = 0;
+
+    if (elapsedSeconds >= 300 && elapsedSeconds < 600) {
+        growthStagesId = 1;
+    } else if (elapsedSeconds >= 600 && elapsedSeconds < 1800) {
+        growthStagesId = 2;
+    } else if (elapsedSeconds >= 1800 && elapsedSeconds < 3600) {
+        growthStagesId = 3;
+    } else if (elapsedSeconds >= 3600 && elapsedSeconds < 10800) {
+        growthStagesId = 4;
+    } else if (elapsedSeconds >= 10800 && elapsedSeconds < 21600) {
+        growthStagesId = 5;
+    } else if (elapsedSeconds >= 21600 && elapsedSeconds < 43200) {
+        growthStagesId = 6;
+    } else if (elapsedSeconds >= 43200 && elapsedSeconds < 86400) {
+        growthStagesId = 7;
+    } else if (elapsedSeconds >= 86400 && elapsedSeconds < 259200) {
+        growthStagesId = 8;
+    } else if (elapsedSeconds >= 259200) {
+        growthStagesId = 9;
+    }
+
+    return growthStagesId;
+}

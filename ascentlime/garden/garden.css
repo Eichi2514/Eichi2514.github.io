@@ -167,6 +167,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .plant-slot {
     display: flex;
+    position: relative;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 18vh;
@@ -175,11 +177,12 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 3vh;
 }
 
-.buy-button {
+.s-button {
     display: none;
+    z-index: 5;
 }
 
-.plant-slot:hover .buy-button {
+.plant-slot:hover .s-button {
     display: block;
 }
 
@@ -271,6 +274,28 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     z-index: 3;
 }
 
+.plant-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: swing 2s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(0deg);
+    }
+    30% {
+        transform: rotate(5deg);
+    }
+    70% {
+        transform: rotate(-5deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
 
 /* 팝업 */
 .popup-bg {
@@ -324,3 +349,4 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 3vh;
     background: #FFFFFF;
 }
+
