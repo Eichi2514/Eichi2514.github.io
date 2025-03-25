@@ -26,47 +26,47 @@ const fullyGrown = [
 
 const plantItems = {
     "1": {
-        "name": "5분",
+        "name": "씨앗 (5분)",
         "price": 5,
         "growthTime": 300
     },
     "2": {
-        "name": "10분",
+        "name": "꽃망울 (10분)",
         "price": 10,
         "growthTime": 600
     },
     "3": {
-        "name": "30분",
+        "name": "플라워 (30분)",
         "price": 30,
         "growthTime": 1800
     },
     "4": {
-        "name": "1시간",
+        "name": "새싹 (1시간)",
         "price": 50,
         "growthTime": 3600
     },
     "5": {
-        "name": "3시간",
+        "name": "풍성한 새싹 (3시간)",
         "price": 150,
         "growthTime": 10800
     },
     "6": {
-        "name": "6시간",
+        "name": "묘목 (6시간)",
         "price": 300,
         "growthTime": 21600
     },
     "7": {
-        "name": "12시간",
+        "name": "가지나무 (12시간)",
         "price": 800,
         "growthTime": 43200
     },
     "8": {
-        "name": "1일",
+        "name": "돈나무 (1일)",
         "price": 1600,
         "growthTime": 86400
     },
     "9": {
-        "name": "3일",
+        "name": "풍성한 돈나무 (3일)",
         "price": 4500,
         "growthTime": 259200
     }
@@ -187,11 +187,15 @@ function formatTime(now) {
     return { year, month, day, hours, minutes, seconds };
 }
 
+function displayTime($element, hours, minutes, seconds) {
+    $element.text(`${hours}:${minutes}:${seconds}`);
+}
+
 function updateTime() {
     const now = new Date();
     const { hours, minutes, seconds } = formatTime(now);
 
-    $('.current-time').text(`${hours}:${minutes}:${seconds}`);
+    displayTime($('.current-time'), hours, minutes, seconds)
 
     const hourAngle = (now.getHours() % 12) * 30 + (now.getMinutes() / 60) * 30;
     const minuteAngle = now.getMinutes() * 6 + (now.getSeconds() / 60) * 6;
@@ -206,53 +210,33 @@ $(document).on('click', '.buy-button', async function (event) {
     const button = $(this);
     const id = button.data('id');
 
+    const generatePlantButton = (plantId) => {
+        return `
+            <button class="plant-buy-button" data-id="${id}-${plantId}">
+                <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(${plantItems[plantId].name})">
+                <span class="plant-name">${plantItems[plantId].name}</span>
+                <span>$${plantItems[plantId].price}</span>
+            </button>
+        `;
+    };
+
+    let plantButtonsHtml = '';
+    for (let i = 1; i <= 9; i++) {
+        plantButtonsHtml += generatePlantButton(i);
+    }
+
     $('.body').append(`
-    <div class="popup-bg buy-bg">
-        <form class="buy-form" method="POST">
-            <div class="popup-box">
-                <div class="popup-title">씨앗 상점</div>
-                <div class="close-button">✖</div>
-                <div class="popup-form-container">
-                    <button class="plant-buy-button" data-id="${id}-1">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(5분)">
-                        <span>$5</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-2">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(10분)">
-                        <span>$10</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-3">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(30분)">
-                        <span>$30</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-4">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(1시간)">
-                        <span>$50</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-5">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(3시간)">
-                        <span>$150</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-6">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(6시간)">
-                        <span>$300</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-7">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(12시간)">
-                        <span>$800</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-8">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(1일)">
-                        <span>$1600</span>
-                    </button>
-                    <button class="plant-buy-button" data-id="${id}-9">
-                        <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(3일)">
-                        <span>$4500</span>
-                    </button>
+        <div class="popup-bg buy-bg">
+            <form class="buy-form" method="POST">
+                <div class="popup-box">
+                    <div class="popup-title">씨앗 상점</div>
+                    <div class="close-button">✖</div>
+                    <div class="popup-form-container">
+                        ${plantButtonsHtml}
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
     `);
 });
 
@@ -273,7 +257,7 @@ $(document).on('click', '.plant-buy-button', async function () {
     if (userMoney < plantItems[selectedId].price) {
         alert(`재화가 부족합니다.`);
     } else {
-        await buyPlant(locationId, selectedId)
+        await buyPlant(locationId, selectedId, plantItems[selectedId].price * 3)
         success = true;
     }
 
@@ -306,7 +290,7 @@ window.updateUserMoney = async function (memberKey, newMoney) {
     }
 };
 
-window.buyPlant = async function (locationId, plantId) {
+window.buyPlant = async function (locationId, plantId, reward) {
     const now = new Date();
     const { year, month, day, hours, minutes, seconds } = formatTime(now);
 
@@ -317,6 +301,7 @@ window.buyPlant = async function (locationId, plantId) {
         await set(gardenRef, {
             plantId: plantId,
             plantedAt: timestamp,
+            reward: reward
         });
 
         await updateUserMoney(key, userMoney - plantItems[plantId].price);
@@ -326,6 +311,18 @@ window.buyPlant = async function (locationId, plantId) {
         console.error('씨앗 구매에 실패했습니다:', error);
     }
 };
+
+function calculateTime(plantedAt, growthTime) {
+    const now = new Date();
+    const completionTime = plantedAt.getTime() + growthTime;
+    const timeRemaining = completionTime - now.getTime();
+
+    const hours = String(Math.floor(timeRemaining / (1000 * 60 * 60))).padStart(2, '0');
+    const minutes = String(Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+    const seconds = String(Math.floor((timeRemaining % (1000 * 60)) / 1000)).padStart(2, '0');
+
+    return { timeRemaining, hours, minutes, seconds };
+}
 
 function loadPlantDate() {
     $('.plant-section .plant-slot').each(function(index) {
@@ -337,7 +334,8 @@ function loadPlantDate() {
                     <button class="s-button buy-button" data-id="${index+1}">구매</button>
                 `);
             } else {
-                setInterval(() => updatePlant(this, index + 1, snapshot.val()), 1000);
+            updatePlant(this, index + 1, snapshot.val());
+            // setInterval(() => updatePlant(this, index + 1, snapshot.val()), 1000);
             }
         }).catch(error => {
             console.error('Error fetching data:', error);
@@ -346,59 +344,72 @@ function loadPlantDate() {
 }
 
 function updatePlant(plantSlot, index, plantData) {
-    const plantId = plantData.plantId;
     const plantedAt = new Date(plantData.plantedAt);
-    const growthTime = plantItems[plantId].growthTime * 1000;
+    const growthTime = plantItems[plantData.plantId].growthTime * 1000;
 
-    const now = new Date();
-    const completionTime = plantedAt.getTime() + growthTime;
-    const timeRemaining = completionTime - now.getTime();
+    const { timeRemaining, hours, minutes, seconds } = calculateTime(plantedAt, growthTime);
 
     if (timeRemaining > 0) {
-        const elapsedTime = now.getTime() - plantedAt.getTime();
-
+        const elapsedTime = new Date().getTime() - plantedAt.getTime();
         const growthStagesId = updateGrowthStage(elapsedTime);
 
-        const hours = String(Math.floor(timeRemaining / (1000 * 60 * 60))).padStart(2, '0');
-        const minutes = String(Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-        const seconds = String(Math.floor((timeRemaining % (1000 * 60)) / 1000)).padStart(2, '0');
-
         $(plantSlot).html(`
-            <img class="plant-img" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
+            <img class="plant-img item${index}" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
+            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
             <span class="s-button plant-time${index}">${hours}:${minutes}:${seconds}</span>
         `);
+
+        $(plantSlot).data('currentStage', growthStagesId);
+
+        setInterval(() => updatePlantTime(plantSlot, plantData, index), 1000);
     } else {
+        updateFullyGrown(plantSlot, timeRemaining, plantData, index);
+    }
+}
+
+function updatePlantTime(plantSlot, plantData, index) {
+    const { timeRemaining, hours, minutes, seconds } = calculateTime(
+        new Date(plantData.plantedAt), plantItems[plantData.plantId].growthTime * 1000
+    );
+
+    const $plantTime = $(`.plant-time${index}`);
+    displayTime($plantTime, hours, minutes, seconds);
+
+    if (timeRemaining < 300000) {
+        $plantTime.css('display', 'block');
+    }
+
+    updateFullyGrown(plantSlot, timeRemaining, plantData, index);
+
+    const elapsedTime = new Date().getTime() - new Date(plantData.plantedAt).getTime();
+    const newGrowthStage = updateGrowthStage(elapsedTime);
+
+    if ($(plantSlot).data('currentStage') !== newGrowthStage) {
+        $(plantSlot).find('.plant-img').attr('src', growthStages[newGrowthStage]);
+        $(plantSlot).data('currentStage', newGrowthStage);
+    }
+}
+
+function updateFullyGrown(plantSlot, timeRemaining, plantData, index) {
+    if (-86400000 < timeRemaining && timeRemaining <= 0) {
         $(plantSlot).html(`
-            <img class="plant-img" src="${fullyGrown[plantId]}" alt="Plant Stage ${index}">
+            <img class="plant-img item${index}" src="${fullyGrown[plantData.plantId]}" alt="Plant Stage ${index}">
+            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
             <button class="s-button harvest-button" data-id="${index}">수확</button>
+        `);
+    } else if (timeRemaining <= -86400000) {
+        $(plantSlot).html(`
+            <img class="plant-img item${index}" src="${fullyGrown[0]}" alt="Plant Stage ${index}">
+            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
+            <button class="s-button dispose-button" data-id="${index}">처분</button>
         `);
     }
 }
 
 function updateGrowthStage(elapsedTime) {
     const elapsedSeconds = Math.floor(elapsedTime / 1000);
-
-    let growthStagesId = 0;
-
-    if (elapsedSeconds >= 300 && elapsedSeconds < 600) {
-        growthStagesId = 1;
-    } else if (elapsedSeconds >= 600 && elapsedSeconds < 1800) {
-        growthStagesId = 2;
-    } else if (elapsedSeconds >= 1800 && elapsedSeconds < 3600) {
-        growthStagesId = 3;
-    } else if (elapsedSeconds >= 3600 && elapsedSeconds < 10800) {
-        growthStagesId = 4;
-    } else if (elapsedSeconds >= 10800 && elapsedSeconds < 21600) {
-        growthStagesId = 5;
-    } else if (elapsedSeconds >= 21600 && elapsedSeconds < 43200) {
-        growthStagesId = 6;
-    } else if (elapsedSeconds >= 43200 && elapsedSeconds < 86400) {
-        growthStagesId = 7;
-    } else if (elapsedSeconds >= 86400 && elapsedSeconds < 259200) {
-        growthStagesId = 8;
-    } else if (elapsedSeconds >= 259200) {
-        growthStagesId = 9;
-    }
-
-    return growthStagesId;
+    const growthStagesDurations = [300, 600, 1800, 3600, 10800, 21600, 43200, 86400, 259200];
+    return growthStagesDurations.findIndex(time => elapsedSeconds < time) !== -1
+        ? growthStagesDurations.findIndex(time => elapsedSeconds < time)
+        : growthStagesDurations.length;
 }

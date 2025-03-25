@@ -167,22 +167,28 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .plant-slot {
     display: flex;
-    position: relative;
+    gap: 2vh;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    position: relative;
+
     width: 18vh;
     height: 18vh;
     background: #FFFFFF;
     border-radius: 3vh;
 }
 
-.s-button {
+.s-button, .plant-name {
     display: none;
+    font-size: 2.5vh;
+    text-align: center;
     z-index: 5;
+    word-break: keep-all;
 }
 
-.plant-slot:hover .s-button {
+.plant-slot:hover .s-button, .plant-slot:hover .plant-name {
     display: block;
 }
 
@@ -309,7 +315,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 0;
     left: 0;
     background: rgb(0, 0, 30, 0.7);
-    z-index: 3;
+    z-index: 5;
 }
 
 .popup-box {
@@ -350,3 +356,19 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: #FFFFFF;
 }
 
+.plant-buy-button {
+    position: relative;
+}
+
+.plant-buy-button:hover .plant-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20vh;
+    height: 20vh;
+    border-radius: 3vh;
+    background: rgba(255, 255, 255, 0.7);
+}
