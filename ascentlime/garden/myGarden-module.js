@@ -324,22 +324,53 @@ function calculateTime(plantedAt, growthTime) {
     return { timeRemaining, hours, minutes, seconds };
 }
 
+const $endTime = $('.end-time');
+
 function loadPlantDate() {
+    let completionTime = 0;
+    let plantExists = 0;
+
+    const promises = [];
+
     $('.plant-section .plant-slot').each(function(index) {
         const gardenRef = ref(database, `gardens/${safeId}/${index+1}`);
 
-        get(gardenRef).then(snapshot => {
+        const promise = get(gardenRef).then(snapshot => {
             if (!snapshot.exists()) {
                 $(this).html(`
                     <button class="s-button buy-button" data-id="${index+1}">구매</button>
                 `);
             } else {
-            updatePlant(this, index + 1, snapshot.val());
-            // setInterval(() => updatePlant(this, index + 1, snapshot.val()), 1000);
+                plantExists = 1;
+                const plantData = snapshot.val();
+                const plantedAt = new Date(plantData.plantedAt);
+                const growthTime = plantItems[plantData.plantId].growthTime * 1000;
+                const newCompletionTime = plantedAt.getTime() + growthTime;
+
+                if (completionTime < newCompletionTime) {
+                    completionTime = newCompletionTime;
+                }
+
+                updatePlant(this, index + 1, snapshot.val());
             }
         }).catch(error => {
             console.error('Error fetching data:', error);
         });
+
+        promises.push(promise);
+    });
+
+    Promise.all(promises).then(() => {
+        if (new Date(completionTime) > new Date()) {
+            const { year, month, day, hours, minutes, seconds } = formatTime(new Date(completionTime));
+            $('.end-time').html(`완료 예정 시간 <br> ${year}-${month}-${day} <br> ${hours}:${minutes}:${seconds}`);
+        } else {
+            if (plantExists) {
+                $('.end-time').html(`식물이 시들기 전에 <br> 얼른 수확하세요!`);
+            } else {
+                $('.end-time').html(`새로운 식물을 <br> 심어보세요`);
+            }
+        }
     });
 }
 
