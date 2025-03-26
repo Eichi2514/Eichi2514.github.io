@@ -122,6 +122,8 @@ $('.find-chackID-Form').submit(async function (event) {
                 const loginId = data[userKey].loginId;
                 showError($('.errorFindID'), `인증 성공! 회원님의 아이디는 "${loginId}"입니다.`);
                 alert(`인증 성공! 회원님의 아이디는 "${loginId}"입니다.`);
+                sessionStorage.removeItem('authEmail');
+                sessionStorage.removeItem('authIDCode');
             } else {
                 alert('등록된 이메일로 찾을 수 없습니다. 다시 시도해주세요.');
             }
@@ -247,6 +249,8 @@ $('.find-chackPW-Form').submit(async function (event) {
             if (result === "이메일 전송 완료") {
                 showError($('.errorFindPW'), `${data[userKey].email}로 임시비밀번호가 전송되었습니다`);
                 alert(`${data[userKey].email}로 임시비밀번호가 전송되었습니다`);
+                sessionStorage.removeItem('authLoginID');
+                sessionStorage.removeItem('authPWCode');
             } else {
                 alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
             }

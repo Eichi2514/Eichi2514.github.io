@@ -166,7 +166,7 @@ window.doJoin = async function (member) {
             return;
         }
     }
-
+    sessionStorage.removeItem('isVerifyCode');
     await saveMembers(member);
 };
 
@@ -388,6 +388,8 @@ window.verifyCode = async function () {
 
     if (inputCode === storedCode) {
         sessionStorage.setItem('isVerifyCode', true);
+        sessionStorage.removeItem('authJoinEmail');
+        sessionStorage.removeItem('authJoinCode');
         $('.doJoin_code').addClass('hidden');
         showError($('.errorEmail'), '인증 성공! 요청 버튼을 눌러 회원가입을 완료하세요');
     } else {
