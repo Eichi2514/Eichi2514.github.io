@@ -81,12 +81,17 @@
             <div class="doJoin_email absolute">
                 <div class="label">이 메 일</div>
                 <label>
-                    <input class="inputEmail label" type="email" placeholder="이메일 입력" name="email"/>
+                    <input class="inputEmail label2" type="email" placeholder="이메일 입력" name="email"/>
+                    <button type="button" class="s-button" onclick="sendEmail()">인증</button>
+                </label>
+                <label class="doJoin_code hidden">
+                    <input class="inputCode label2" type="email" placeholder="인증번호 입력" name="code"/>
+                    <button type="button" class="s-button" onclick="verifyCode()">확인</button>
                 </label>
                 <div class="errorMessageVew errorEmail">* 회원찾기용 이메일을 입력해 주세요.</div>
             </div>
             <button class="doJoin_bt button" type="submit">요청</button>
-            <button class="doJoin_exit button" type="button" onclick="history.back();">취소</button>
+            <button class="doJoin_exit button" type="button" onclick="history.back()">취소</button>
         </form>
 
         <a class="auth-bt" href="../member/find.html">
@@ -96,7 +101,6 @@
     </div>
 </div>
 <script src="../member/join-module.js" defer type="module"></script>
-<script src="../member/join.js" defer></script>
 <script src="../common/menu.js" defer></script>
 </body>
 </html>

@@ -164,7 +164,7 @@ $('.myPage_form').submit(async function (event) {
         const data = snapshot.val();
         const userKey = Object.keys(data)[0];
 
-        const scriptURL = "https://script.google.com/macros/s/AKfycbx8lMPXgtQ-Uwrots_yQBuAlZQxjlFN1W8XT5WceTqsZ8yt8wuT6WRZmIrxeVjzPgZOuw/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbz1rE9h2EciLTdWw5W0_Kz62plzd7S2fM_0CaIdwp-B7VAWLQyWEXisUN86inxLP-LZ_Q/exec";
 
         // 이메일로 비밀번호 변경 사실 전송
         const response = await fetch(scriptURL, {

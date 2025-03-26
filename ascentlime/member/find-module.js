@@ -55,7 +55,7 @@ $('.find-ID-Form').submit(async function (event) {
         if (snapshot.exists()) {
             const authCode = generateAuthCode(6);
 
-            const scriptURL = "https://script.google.com/macros/s/AKfycbx8lMPXgtQ-Uwrots_yQBuAlZQxjlFN1W8XT5WceTqsZ8yt8wuT6WRZmIrxeVjzPgZOuw/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbz1rE9h2EciLTdWw5W0_Kz62plzd7S2fM_0CaIdwp-B7VAWLQyWEXisUN86inxLP-LZ_Q/exec";
 
             const response = await fetch(scriptURL, {
                 method: "POST",
@@ -152,7 +152,7 @@ $('.find-PW-Form').submit(async function (event) {
         if (snapshot.exists()) {
             const authCode = generateAuthCode(6); // 인증 코드 생성
 
-            const scriptURL = "https://script.google.com/macros/s/AKfycbx8lMPXgtQ-Uwrots_yQBuAlZQxjlFN1W8XT5WceTqsZ8yt8wuT6WRZmIrxeVjzPgZOuw/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbz1rE9h2EciLTdWw5W0_Kz62plzd7S2fM_0CaIdwp-B7VAWLQyWEXisUN86inxLP-LZ_Q/exec";
 
             const data = snapshot.val();
             const userKey = Object.keys(data)[0];
@@ -229,7 +229,7 @@ $('.find-chackPW-Form').submit(async function (event) {
                 loginPw: newHashedPw // 해싱된 새로운 비밀번호로 업데이트
             });
 
-            const scriptURL = "https://script.google.com/macros/s/AKfycbx8lMPXgtQ-Uwrots_yQBuAlZQxjlFN1W8XT5WceTqsZ8yt8wuT6WRZmIrxeVjzPgZOuw/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbz1rE9h2EciLTdWw5W0_Kz62plzd7S2fM_0CaIdwp-B7VAWLQyWEXisUN86inxLP-LZ_Q/exec";
 
             // 이메일로 임시 비밀번호 전송
             const response = await fetch(scriptURL, {

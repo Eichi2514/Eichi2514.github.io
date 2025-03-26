@@ -92,6 +92,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 1vh;
     background: rgb(255, 71, 48);
     cursor: pointer;
+    -webkit-text-stroke: 0;
 }
 
 .button {
@@ -102,6 +103,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 1vh;
     background: rgb(255, 71, 48);
     cursor: pointer;
+    -webkit-text-stroke: 0;
 }
 
 .link:hover {
@@ -144,6 +146,10 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     width: 34vh;
 }
 
+.label2 {
+    width: 27vh;
+}
+
 .doJoin_id {
     top: 27.5vh;
     left: 5vh;
@@ -164,19 +170,19 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .doJoin_name {
     top: 27.5vh;
-    right: 5vh;
+    left: 41vh;
     -webkit-text-stroke: 0.05vh white;
 }
 
 .doJoin_nickname {
     top: 40vh;
-    right: 5vh;
+    left: 41vh;
     -webkit-text-stroke: 0.05vh white;
 }
 
 .doJoin_email {
     top: 53vh;
-    right: 5vh;
+    left: 41vh;
     -webkit-text-stroke: 0.05vh white;
 }
 
@@ -208,9 +214,9 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 49vh;
     font-size: 1.5vh;
     color: #3C0000;
-    text-shadow: 0.3vh 0.3vh 0.8vh rgba(0, 0, 0, 0.8);
     background: rgb(255, 71, 48);
     padding: 0 1vh;
+    -webkit-text-stroke: 0;
 }
 
 /* 아이디 비밀번호 찾기 화면 */
