@@ -15,12 +15,17 @@ $(document).ready(function () {
                 <ul class="menu">
                     <li class="submenu-container">
                         <div>
-                            <div class="button menu-item">메 뉴</div>
+                            <div class="button">메 뉴</div>
                         </div>
                         <ul class="submenu">
                             <li>
                                 <a href="../shop/shop.html">
                                     <div class="button submenu-item">상 점</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../garden/myGarden.html">
+                                    <div class="button submenu-item">정 원</div>
                                 </a>
                             </li>
                             <li>

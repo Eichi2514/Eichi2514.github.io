@@ -459,6 +459,24 @@ $(document).on('click', '.harvest-button', async function (event) {
     }
 });
 
+$(document).on('click', '.dispose-button', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    const gardenRef = ref(database, `gardens/${safeId}/${id}`);
+
+    try {
+        const snapshot = await get(gardenRef);
+        if (snapshot.exists()) {
+            await remove(gardenRef);
+            location.reload();
+        }
+    } catch (error) {
+        console.error("데이터 가져오기 실패", error);
+    }
+});
+
 
 function updateGrowthStage(elapsedTime) {
     const elapsedSeconds = Math.floor(elapsedTime / 1000);
