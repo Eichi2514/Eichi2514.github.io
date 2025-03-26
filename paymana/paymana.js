@@ -53,10 +53,17 @@ $(".popup3-form").submit(function (event) {
 
     $("#submitBtn").prop("disabled", true);
 
+    let formData = new FormData(this);
+
+    let bodyValue = formData.get("body");
+    if (bodyValue.trim() !== "" && !bodyValue.startsWith("[PayMana] ")) {
+        formData.set("body", "[PayMana] " + bodyValue);
+    }
+
     $.ajax({
         url: this.action,
         type: "POST",
-        data: new FormData(this),
+        data: formData,
         processData: false,
         contentType: false,
         success: function () {

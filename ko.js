@@ -58,32 +58,35 @@ $(window).on('load', function () {
 });
 
 $(document).ready(function () {
-    document.querySelector(".gform").addEventListener("submit", function (event) {
-        event.preventDefault(); // 폼 기본 동작 중지
-        document.getElementById("submitBtn").disabled = true; // 버튼 비활성화
+    $(".gform").submit(function (event) {
+        event.preventDefault();
 
-        // 비동기로 폼 데이터 전송
-        fetch(event.target.action, {
-            method: "POST",
-            body: new FormData(event.target)
-        })
-            .then((response) => {
-                if (response.ok) {
-                    alert("이메일이 성공적으로 전송되었습니다!");
-                } else {
-                    response.text().then((errorMessage) => {
-                        console.log("전송 중 오류 발생 : " + errorMessage);
-                        alert("이메일 전송에 실패했습니다");
-                    });
-                }
-            })
-            .catch((error) => {
-                console.log("전송 중 오류 발생 : " + error);
-                alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
-            })
-            .finally(() => {
-                document.getElementById("submitBtn").disabled = false; // 버튼 활성화
-            });
+        $("#submitBtn").prop("disabled", true);
+
+        let formData = new FormData(this);
+
+        let bodyValue = formData.get("body");
+        if (bodyValue.trim() !== "" && !bodyValue.startsWith("[PayMana] ")) {
+            formData.set("body", "[Portfolio] " + bodyValue);
+        }
+
+        $.ajax({
+            url: this.action,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert("이메일이 성공적으로 전송되었습니다!");
+            },
+            error: function (xhr) {
+                console.log("전송 중 오류 발생 : " + xhr.responseText);
+                alert("이메일 전송 실패");
+            },
+            complete: function () {
+                $("#submitBtn").prop("disabled", false);
+            }
+        });
     });
 
     const followImageBasic = document.querySelector('.mouse__basic'); // 기본 이미지 선택
@@ -135,12 +138,18 @@ $(document).ready(function () {
             followImageAction.style.display = 'none';
         }
 
+        let photoSize = 2;
+
+        if (window.innerWidth / window.innerHeight <= 1) {
+            photoSize = 0.7;
+        }
+
         // 이미지 크기 설정
         const imageHeight = window.innerHeight * 0.04;
-        followImageAction.style.width = imageHeight * 2 + 'px';
-        followImageAction.style.height = imageHeight * 2 + 'px';
-        followImageBasic.style.width = imageHeight * 2 + 'px';
-        followImageBasic.style.height = imageHeight * 2 + 'px';
+        followImageAction.style.width = imageHeight * photoSize + 'px';
+        followImageAction.style.height = imageHeight * photoSize + 'px';
+        followImageBasic.style.width = imageHeight * photoSize + 'px';
+        followImageBasic.style.height = imageHeight * photoSize + 'px';
 
         requestAnimationFrame(animate);
     }

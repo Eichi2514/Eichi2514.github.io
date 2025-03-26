@@ -64,18 +64,25 @@ $(document).ready(function () {
 
         $("#submitBtn").prop("disabled", true);
 
+        let formData = new FormData(this);
+
+        let bodyValue = formData.get("body");
+        if (bodyValue.trim() !== "" && !bodyValue.startsWith("[PayMana] ")) {
+            formData.set("body", "[Portfolio] " + bodyValue);
+        }
+
         $.ajax({
             url: this.action,
             type: "POST",
-            data: new FormData(this),
+            data: formData,
             processData: false,
             contentType: false,
             success: function () {
-                alert("이메일이 성공적으로 전송되었습니다!");
+                alert("Email has been sent successfully!");
             },
             error: function (xhr) {
                 console.log("전송 중 오류 발생 : " + xhr.responseText);
-                alert("이메일 전송 실패");
+                alert("Failed to send email.");
             },
             complete: function () {
                 $("#submitBtn").prop("disabled", false);
