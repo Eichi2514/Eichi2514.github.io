@@ -82,7 +82,8 @@ import {
     equalTo,
     get,
     set,
-    update
+    update,
+    remove
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -244,7 +245,7 @@ $(document).on('click', '.close-button', function () {
     $('.popup-bg').remove();
 });
 
-$(document).on('click', '.plant-buy-button', async function () {
+$(document).on('click', '.plant-buy-button', async function (event) {
     event.preventDefault();
     const button = $(this);
     const id = button.data('id');
@@ -436,6 +437,28 @@ function updateFullyGrown(plantSlot, timeRemaining, plantData, index) {
         `);
     }
 }
+
+$(document).on('click', '.harvest-button', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    const gardenRef = ref(database, `gardens/${safeId}/${id}`);
+
+    try {
+        const snapshot = await get(gardenRef);
+        if (snapshot.exists()) {
+            const reward = snapshot.val().reward;
+            await updateUserMoney(key, userMoney + reward);
+            await remove(gardenRef);
+            alert(`$${reward}을(를) 획득하였습니다`)
+            location.reload();
+        }
+    } catch (error) {
+        console.error("데이터 가져오기 실패", error);
+    }
+});
+
 
 function updateGrowthStage(elapsedTime) {
     const elapsedSeconds = Math.floor(elapsedTime / 1000);
