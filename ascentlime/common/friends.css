@@ -1,0 +1,17 @@
+.friend-form-container {
+    height: 66vh;
+    overflow: auto;
+    flex-direction: column;
+    flex-wrap: nowrap;;
+}
+
+.friend-name {
+    width: 20vh;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2vh 0;
+}

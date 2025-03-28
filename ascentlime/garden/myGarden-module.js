@@ -83,7 +83,8 @@ import {
     get,
     set,
     update,
-    remove
+    remove,
+    child
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -208,6 +209,7 @@ function updateTime() {
 }
 
 $(document).on('click', '.buy-button', async function (event) {
+    event.preventDefault();
     const button = $(this);
     const id = button.data('id');
 
@@ -229,7 +231,7 @@ $(document).on('click', '.buy-button', async function (event) {
     $('.body').append(`
         <div class="popup-bg buy-bg">
             <form class="buy-form" method="POST">
-                <div class="popup-box">
+                <div class="popup-box w-66vh">
                     <div class="popup-title">씨앗 상점</div>
                     <div class="close-button">✖</div>
                     <div class="popup-form-container">
@@ -339,7 +341,7 @@ function loadPlantDate() {
         const promise = get(gardenRef).then(snapshot => {
             if (!snapshot.exists()) {
                 $(this).html(`
-                    <button class="s-button buy-button" data-id="${index+1}">구매</button>
+                    <button class="s-button none buy-button" data-id="${index+1}">구매</button>
                 `);
             } else {
                 plantExists = 1;
@@ -387,8 +389,8 @@ function updatePlant(plantSlot, index, plantData) {
 
         $(plantSlot).html(`
             <img class="plant-img item${index}" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
-            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
-            <span class="s-button plant-time${index}">${hours}:${minutes}:${seconds}</span>
+            <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
+            <span class="s-button none plant-time plant-time${index}">${hours}:${minutes}:${seconds}</span>
         `);
 
         $(plantSlot).data('currentStage', growthStagesId);
@@ -426,14 +428,14 @@ function updateFullyGrown(plantSlot, timeRemaining, plantData, index) {
     if (-86400000 < timeRemaining && timeRemaining <= 0) {
         $(plantSlot).html(`
             <img class="plant-img item${index}" src="${fullyGrown[plantData.plantId]}" alt="Plant Stage ${index}">
-            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
-            <button class="s-button harvest-button" data-id="${index}">수확</button>
+            <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
+            <button class="s-button none harvest-button" data-id="${index}">수확</button>
         `);
     } else if (timeRemaining <= -86400000) {
         $(plantSlot).html(`
             <img class="plant-img item${index}" src="${fullyGrown[0]}" alt="Plant Stage ${index}">
-            <span class="plant-name">${plantItems[plantData.plantId].name}</span>
-            <button class="s-button dispose-button" data-id="${index}">처분</button>
+            <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
+            <button class="s-button none dispose-button" data-id="${index}">처분</button>
         `);
     }
 }
@@ -476,7 +478,6 @@ $(document).on('click', '.dispose-button', async function (event) {
         console.error("데이터 가져오기 실패", error);
     }
 });
-
 
 function updateGrowthStage(elapsedTime) {
     const elapsedSeconds = Math.floor(elapsedTime / 1000);

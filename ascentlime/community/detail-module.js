@@ -675,7 +675,7 @@ window.characCheck = async function (memberKey) {
             await weaponFindUpdate(memberKey, 1);
             await playCountUpdate(memberKey);
 
-            alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
+            // alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
     } catch (error) {
         alert(`오류 발생:, ${error}`);
