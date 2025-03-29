@@ -135,7 +135,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     -webkit-text-stroke: 0.1vh white;
 }
 
-.friends {
+.friends, .myGarden-link {
     top: 19vh;
     left: 3vh;
     border: 0.3vh solid;
@@ -203,13 +203,13 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .plant-name, .plant-time {
     cursor: default;
+    word-break: keep-all;
 }
 
 .plant-slot:hover .plant-name {
     background: rgb(0, 0, 0, 0.3);
     border-radius: 3vh;
     padding: 1vh;
-    word-break: keep-all;
     width: 95%;
 }
 
@@ -227,6 +227,27 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     align-items: center;
     border-radius: 3vh;
     gap: 2vh;
+}
+
+.profile-container img {
+    width: 10vh;
+}
+
+.profile-info {
+    font-size: 2vh;
+    width: 18vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    border: 0.1vh solid;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+}
+
+.garden-label {
+    text-align: end;
 }
 
 .clock {

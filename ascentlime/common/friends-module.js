@@ -92,7 +92,7 @@ $(document).on('click', '.search-btn', async function () {
                         <div class="user-info">
                             <span class="friend-name">${user.nickname}</span>
                             <button type="button" class="s-button friend-request-btn" data-id="${user.id}">친구요청</button>
-                            <a class="s-button visit-garden-btn" href="../restricted/restricted.html">방문하기</a>
+                            <a class="s-button visit-garden-btn" href="../garden/friendGarden.html?${user.id}">방문하기</a>
                         </div>
                     </div>
                 `);
@@ -106,8 +106,6 @@ $(document).on('click', '.search-btn', async function () {
         console.error("데이터 검색 오류:", error);
     }
 });
-
-// <a class="s-button visit-garden-btn" href="../garden/friendGarden.html?${user.id}">방문하기</a>
 
 $(document).on('click', '.friend-request-btn', async function () {
     window.location.href = "../restricted/restricted.html";
