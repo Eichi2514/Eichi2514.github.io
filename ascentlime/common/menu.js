@@ -19,6 +19,11 @@ $(document).ready(function () {
                         </div>
                         <ul class="submenu">
                             <li>
+                                <a href="../member/myPage.html">
+                                    <div class="button submenu-item">내정보</div>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="../shop/shop.html">
                                     <div class="button submenu-item">상 점</div>
                                 </a>

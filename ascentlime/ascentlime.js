@@ -90,12 +90,15 @@ $('.logout_bt').on('click', function () {
 });
 
 async function login_check() {
-    if (localStorage.getItem('nickname')) {
-        const data = await loginKeyCheck(localStorage.getItem('nickname'));
+    const nickname = localStorage.getItem('nickname');
+
+    if (nickname) {
+        const data = await loginKeyCheck(nickname);
         if (data !== null) {
             $logout.addClass("hidden");
             $login.removeClass("hidden");
-            $(".member_name1").text(data + "님");
+            $(".member_name1").text(`${data}님`);
+            notifyCheck(nickname);
         }
     } else {
         $login.addClass("hidden");
@@ -112,11 +115,11 @@ $(document).ready(function () {
         const alertDiv = $('<div>')
             .html(`
             <div style="position:fixed; top:50%; left:0; width:100%; background:#ffeb3b; padding:1vh; gap: 2vh; text-align:center; font-weight:bold; display:flex; justify-content:center; align-items:center; flex-direction:column; transform: translateY(-50%);">
-                <span>⚠️ 원활한 이용을 위해</span> 
+                <span>⚠️ 원활한 이용을 위해</span>
                 <a href="#" id="openChrome" style="display:inline-flex; text-decoration:none; border:2px solid #f1c40f; border-radius:2vh; padding:1vh; align-items:center;">
                     <img src="https://github.com/user-attachments/assets/c52f19f8-2b86-45a2-87e3-34de5a538ec3" alt="Chrome" style="width:10vh; height:10vh; vertical-align:middle; margin-right:1vh;">
                     Chrome에서 열기
-                </a> 
+                </a>
                 <span>또는</span>
                 <a href="#" id="openNaver" style="display:inline-flex; text-decoration:none; border:2px solid #f1c40f; border-radius:2vh; padding:1vh; align-items:center;">
                     <img src="https://github.com/user-attachments/assets/21ddeb0c-1c7b-4a10-929f-24c64e877bd2" alt="Naver" style="width:10vh; height:10vh; vertical-align:middle; margin-right:1vh;">

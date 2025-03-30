@@ -216,7 +216,7 @@ $(document).on('click', '.buy-button', async function (event) {
         return `
             <button class="plant-buy-button" data-id="${id}-${plantId}">
                 <img src="https://github.com/user-attachments/assets/2990b137-d228-4d76-b384-d903880392cd" alt="씨앗(${plantItems[plantId].name})">
-                <span class="plant-name none">${plantItems[plantId].name}</span>
+                <span class="none">${plantItems[plantId].name}</span>
                 <span>$${plantItems[plantId].price}</span>
             </button>
         `;

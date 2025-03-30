@@ -30,6 +30,10 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 
+const key = localStorage.getItem('nickname');
+const memberId = await loginKeyCheckById(key);
+const safeId = memberId.toString();
+
 $(document).on('click', '.friends', async function (event) {
     event.preventDefault();
     const button = $(this);
@@ -107,6 +111,38 @@ $(document).on('click', '.search-btn', async function () {
     }
 });
 
-$(document).on('click', '.friend-request-btn', async function () {
-    window.location.href = "../restricted/restricted.html";
+$(document).on('click', '.friend-request-btn', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    if (!memberId) {
+        alert("친구신청 중 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+        return;
+    }
+
+    if (safeId.includes(id)) {
+        alert("본인에게는 친구신청을 할 수 없습니다.");
+        return;
+    }
+
+    try {
+        const friendRequestRef = ref(database, `notify/${id}/${safeId}`);
+        const snapshot = await get(friendRequestRef);
+
+        if (snapshot.exists()) {
+            const isConfirm = confirm("현재 친구신청 진행 중입니다. 취소하시겠습니까?")
+            if (isConfirm) {
+                await remove(friendRequestRef);
+            }
+        } else {
+            await set(friendRequestRef, true);
+            alert("친구 신청이 완료되었습니다.");
+        }
+    } catch (error) {
+        console.error("친구신청 중 오류 발생:", error);
+        alert("친구신청 중 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+    } finally {
+        button.prop('disabled', false);
+    }
 });

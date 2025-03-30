@@ -316,3 +316,30 @@ window.playCountUpdate = async function (memberKey) {
         }
     }
 }
+
+window.notifyCheck = async function (memberKey) {
+    const memberId = await loginKeyCheckById(memberKey);
+
+    try {
+        const friendRequestRef = ref(database, `notify/${memberId}`);
+        const snapshot = await get(friendRequestRef);
+
+        if (snapshot.exists()) {
+            $('.body').append(`
+                <button class="notify">
+                    <img class="on" src="https://github.com/user-attachments/assets/a1ae55e9-6b3b-4732-a365-87bd473f7797" alt="알림 이미지"/>
+                    <img class="off" src="https://github.com/user-attachments/assets/ee782062-cd53-4fc7-80a4-cf32827261d4" alt="알림 이미지"/>
+                </div>
+            `)
+        } else {
+            $('.body').append(`
+                <div class="notify">
+                    <img class="on" src="https://github.com/user-attachments/assets/9b1987e4-8aac-479d-94de-aa386e00a394" alt="알림 이미지"/>
+                    <img class="off" src="https://github.com/user-attachments/assets/dcf0de3f-321d-4889-b2af-14d285d7a8f5" alt="알림 이미지"/>
+                </div>
+            `)
+        }
+    } catch (error) {
+        console.error("데이터 조회 중 오류 발생:", error);
+    }
+}
