@@ -272,6 +272,15 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.7vh;
 }
 
+.s-button {
+    text-align: center;
+    border: 0.3vh solid;
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    background: rgb(255, 71, 48);
+    cursor: pointer;
+}
+
 .button {
     display: inline-block;
     text-align: center;

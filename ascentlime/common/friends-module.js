@@ -39,22 +39,62 @@ $(document).on('click', '.friends', async function (event) {
     const button = $(this);
     const id = button.data('id');
 
-    $('.body').append(`
-        <div class="popup-bg friend-bg">
-            <form class="friend-form" method="POST">
-                <div class="popup-box">
-                    <div class="popup-title">친구 목록</div>
-                    <div class="close-button">✖</div>
-                    <div>
-                        <input class="friend-input" name="friend"/>
-                        <button type="button" class="s-button search-btn">검색</button>
+    const friendsRef = ref(database, `friends`);
+
+    try {
+        const snapshot = await get(friendsRef);
+        let friendCards = [];
+
+        if (snapshot.exists()) {
+            const friendsList = snapshot.val();
+            const filteredFriends = Object.entries(friendsList)
+                .filter(([key, value]) => key.startsWith(safeId) || key.endsWith(safeId))
+                .map(async ([key, value]) => {
+                    const parts = key.split('-');
+                    const otherId = parts.find(part => part !== safeId);
+                    const numericOtherId = Number(otherId);
+
+                    const queryRef = query(membersRef, orderByChild("id"), equalTo(numericOtherId));
+                    const userSnapshot = await get(queryRef);
+                    if (userSnapshot.exists()) {
+                        const users = userSnapshot.val();
+                        const user = Object.values(users)[0];
+
+                        friendCards.push(`
+                            <div class="user-card flex gap-2">
+                                <img src="${profileImages[user.profileImageId]}" alt="프로필 이미지">
+                                <div class="user-info">
+                                    <span class="friend-name">${user.nickname}</span>
+                                    <button type="button" class="s-button friend-delete-btn" data-id="${user.id}">친구삭제</button>
+                                    <a class="s-button visit-garden-btn" href="../garden/friendGarden.html?${user.id}">방문하기</a>
+                                </div>
+                            </div>
+                        `);
+                    }
+                });
+            await Promise.all(filteredFriends);
+        }
+
+        $('.body').append(`
+            <div class="popup-bg friend-bg">
+                <form class="friend-form" method="POST">
+                    <div class="popup-box">
+                        <div class="popup-title">친구 목록</div>
+                        <div class="close-button">✖</div>
+                        <div>
+                            <input class="friend-input" name="friend"/>
+                            <button type="button" class="s-button search-btn">검색</button>
+                        </div>
+                        <div class="popup-form-container friend-form-container">
+                            ${friendCards.length > 0 ? friendCards.join('') : '<p>친구가 없습니다.</p>'}
+                        </div>
                     </div>
-                    <div class="popup-form-container friend-form-container">
-                    </div>
-                </div>
-            </form>
-        </div>
-    `);
+                </form>
+            </div>
+        `);
+    } catch (error) {
+        console.error('친구 목록을 가져오는 데 오류가 발생했습니다:', error);
+    }
 });
 
 $(document).on('keydown', 'input[name="friend"]', function (event) {
@@ -67,7 +107,7 @@ $(document).on('keydown', 'input[name="friend"]', function (event) {
 $(document).on('click', '.search-btn', async function () {
     const friend = $('input[name="friend"]').val().trim();
 
-    if(!friend) {
+    if (!friend) {
         return
     }
 
@@ -126,12 +166,21 @@ $(document).on('click', '.friend-request-btn', async function (event) {
         return;
     }
 
+    const [firstId, secondId] = [Number(safeId), Number(id)].sort((a, b) => a - b);
+    const friendsRef = ref(database, `friends/${firstId}-${secondId}`);
+    const friendRequestSnapshot = await get(friendsRef);
+
+    if (friendRequestSnapshot.exists()) {
+        alert("이미 친구 추가된 상태입니다.");
+        return;
+    }
+
     try {
         const friendRequestRef = ref(database, `notify/${id}/${safeId}`);
-        const snapshot = await get(friendRequestRef);
+        const notificationSnapshot = await get(friendRequestRef);
 
-        if (snapshot.exists()) {
-            const isConfirm = confirm("현재 친구신청 진행 중입니다. 취소하시겠습니까?")
+        if (notificationSnapshot.exists()) {
+            const isConfirm = confirm("현재 친구신청 진행 중입니다. 취소하시겠습니까?");
             if (isConfirm) {
                 await remove(friendRequestRef);
             }
@@ -144,5 +193,145 @@ $(document).on('click', '.friend-request-btn', async function (event) {
         alert("친구신청 중 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
     } finally {
         button.prop('disabled', false);
+    }
+});
+
+$(document).on('click', '.notify', async function (event) {
+    event.preventDefault();
+    $('body').append(`
+        <div class="friend-bg">
+            <div class="friend-box">
+                <div class="friend-taps">
+                    <button class="friend-tab friend-request selected-tab">요청</button>
+                    <button class="friend-tab friend-chat">채팅</button>
+                    <div class="close-btn">✖</div>
+                </div>
+                <div class="friend-container">
+                </div>
+            </div>
+        </div>
+    `);
+
+    notifyList();
+});
+
+$(document).on('click', '.close-btn', async function (event) {
+    event.preventDefault();
+
+    $('.friend-bg').remove();
+});
+
+async function notifyList() {
+    const $friendContainer = $('.friend-container');
+    let resultMessage = '';
+
+    try {
+        const friendRequestRef = ref(database, `notify/${safeId}`);
+        const snapshot = await get(friendRequestRef);
+        if (snapshot.exists()) {
+            for (const [childId, childData] of Object.entries(snapshot.val())) {
+                const childIdNumber = Number(childId);
+
+                const queryRef = query(membersRef, orderByChild("id"), equalTo(childIdNumber));
+                const userSnapshot = await get(queryRef);
+                if (userSnapshot.exists()) {
+                    const users = userSnapshot.val();
+                    const user = Object.values(users)[0];
+
+                    resultMessage += `
+                        <div class="user-card flex gap-2">
+                            <img src="${profileImages[user.profileImageId]}" alt="프로필 이미지">
+                            <div class="user-info">
+                                <span class="friend-name">${user.nickname}</span>
+                                <button class="friend-accept-btn" data-id="${user.id}">수락</button>
+                                <button class="friend-reject-btn" data-id="${user.id}">거절</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+        $friendContainer.html(resultMessage);
+    } catch (error) {
+        console.error("데이터 검색 오류:", error);
+    }
+}
+
+$(document).on('click', '.friend-accept-btn', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    if (!memberId) {
+        alert("오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+        return;
+    }
+
+    try {
+        const friendRequestRef = ref(database, `notify/${safeId}/${id}`);
+        const snapshot = await get(friendRequestRef);
+
+        if (snapshot.exists()) {
+            const [firstId, secondId] = [Number(safeId), Number(id)].sort((a, b) => a - b);
+            const friendsRef = ref(database, `friends/${firstId}-${secondId}`);
+            await set(friendsRef, true);
+            await remove(friendRequestRef);
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+        alert("오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+    } finally {
+        button.closest('.user-card').remove();
+    }
+});
+
+
+$(document).on('click', '.friend-reject-btn', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    if (!memberId) {
+        alert("reject 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+        return;
+    }
+
+    try {
+        const friendRequestRef = ref(database, `notify/${safeId}/${id}`);
+        const snapshot = await get(friendRequestRef);
+
+        if (snapshot.exists()) {
+            await remove(friendRequestRef);
+        }
+    } catch (error) {
+        console.error("reject 오류 발생:", error);
+        alert("reject 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+    } finally {
+        button.closest('.user-card').remove();
+    }
+});
+
+
+$(document).on('click', '.friend-delete-btn', async function (event) {
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    if (!memberId) {
+        alert("delete 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+        return;
+    }
+
+    try {
+        const [firstId, secondId] = [Number(safeId), Number(id)].sort((a, b) => a - b);
+        const friendsRef = ref(database, `friends/${firstId}-${secondId}`);
+        const isConfirm = confirm("친구를 삭제하시겠습니까?");
+        if (isConfirm) {
+            await remove(friendsRef);
+            button.closest('.user-card').remove();
+        }
+    } catch (error) {
+        console.error("오류 발생:", error);
+        alert("delete 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
     }
 });

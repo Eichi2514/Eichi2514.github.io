@@ -113,6 +113,31 @@ if (!key || !safeId) {
     window.location.href = '../../ascentlime.html';
 }
 
+window.loginKeyCheckById = async function (key) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+    try {
+        const snapshot = await get(queryRef);
+        if (!snapshot.exists()) {
+            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].id;
+    } catch (error) {
+        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
+        return null;
+    }
+};
+
+let memberId = await loginKeyCheckById(key);
+
+if (memberId === safeId) {
+    window.location.href = 'myGarden.html';
+}
+
 window.getUserMoney = function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
     return get(queryRef)

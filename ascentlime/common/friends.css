@@ -5,6 +5,14 @@
     flex-wrap: nowrap;;
 }
 
+.user-card img {
+    width: 20vh;
+    height: 20vh;
+    padding: 3vh;
+    border-radius: 3vh;
+    background: #FFFFFF;
+}
+
 .friend-name {
     width: 20vh;
 }
@@ -14,4 +22,88 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 2vh 0;
+}
+
+.friend-bg {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    background: rgb(0, 0, 30, 0.7);
+    z-index: 50;
+}
+
+.friend-box {
+    width: 60vh;
+    height: 70vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: rgb(0, 0, 30);
+    gap: 1vh;
+    padding: 2vh;
+    border-radius: 3vh;
+}
+
+.friend-tabs {
+    display: flex;
+    position: absolute;
+    top: 19vh;
+    left: 1vh;
+}
+
+.friend-tab {
+    border-top: 0.3vh solid rgb(174, 0, 27);
+    border-right: 0.3vh solid rgb(174, 0, 27);
+    border-left: 0.3vh solid rgb(174, 0, 27);
+    border-top-left-radius: 1vh;
+    border-top-right-radius: 1vh;
+    padding: 1vh 3vh;
+    color: #ffffff;
+    cursor: pointer;
+    background: rgb(0, 0, 30);
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    color: #ffffff;
+    top: 1.5vh;
+    right: 2.5vh;
+    cursor: pointer;
+}
+
+.selected-tab {
+    z-index: 11;
+}
+
+.friend-container {
+    display: flex;
+    position: absolute;
+    align-content: start;
+    top: 8.5vh;
+    left: 2vh;
+    width: 56vh;
+    height: 59vh;
+    padding: 1vh;
+    gap: 1vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-bottom-left-radius: 3vh;
+    flex-wrap: wrap;
+    background: inherit;
+    overflow: auto;
+    color: #ffffff;
+}
+
+.friend-accept-btn, .friend-reject-btn {
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    padding: 0.2vh 1vh;
+    border-radius: 1vh;
+    cursor: pointer;
 }
