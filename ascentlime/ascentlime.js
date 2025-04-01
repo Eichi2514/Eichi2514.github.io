@@ -1,6 +1,5 @@
 window.onerror = function () {
    window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
-   return true;
 };
 
 // window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';

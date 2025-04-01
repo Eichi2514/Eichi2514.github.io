@@ -31,8 +31,13 @@ const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 
 const key = localStorage.getItem('nickname');
-const memberId = await loginKeyCheckById(key);
-const safeId = memberId.toString();
+let memberId = null;
+let safeId = null;
+
+if (key) {
+    memberId = await loginKeyCheckById(key);
+    safeId = memberId.toString();
+}
 
 $(document).on('click', '.friends', async function (event) {
     event.preventDefault();
