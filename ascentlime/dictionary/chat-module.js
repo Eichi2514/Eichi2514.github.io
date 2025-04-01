@@ -124,8 +124,12 @@ onChildAdded(chatRef, async (data) => {
     chat.scrollTop(chat[0].scrollHeight); // 새 메시지가 오면 스크롤 맨 아래로
 });
 
-window.loginKeyCheckById = async function (key) {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+window.loginKeyCheckById = async function () {
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+
+    if (!loginKeyCheckByIdKey) return;
+
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(loginKeyCheckByIdKey));
     try {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {

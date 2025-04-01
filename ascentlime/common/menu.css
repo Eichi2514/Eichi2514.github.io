@@ -6,6 +6,7 @@
 /* 전체 */
 .menu-container {
     display: flex;
+    position: relative;
 }
 
 ul li:first-child {

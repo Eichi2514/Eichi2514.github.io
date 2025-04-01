@@ -1,8 +1,24 @@
+.on {
+    display: none;
+}
+
+.notify:hover .on {
+    display: block;
+}
+
+.notify:hover .off {
+    display: none;
+}
+
 .friend-form-container {
-    height: 66vh;
+    padding-top: 1vh;
     overflow: auto;
     flex-direction: column;
     flex-wrap: nowrap;;
+}
+
+.friend-input {
+    color: rgb(0, 0, 30);
 }
 
 .user-card img {
@@ -39,7 +55,7 @@
 }
 
 .friend-box {
-    width: 60vh;
+    width: 62vh;
     height: 70vh;
     position: relative;
     display: flex;
@@ -47,7 +63,8 @@
     background: rgb(0, 0, 30);
     gap: 1vh;
     padding: 2vh;
-    border-radius: 3vh;
+    border-top-left-radius: 3vh;
+    border-bottom-left-radius: 3vh;
 }
 
 .friend-tabs {
@@ -80,15 +97,16 @@
 
 .selected-tab {
     z-index: 11;
+    color: rgb(174, 0, 27);
 }
 
 .friend-container {
     display: flex;
     position: absolute;
     align-content: start;
-    top: 8.5vh;
+    top: 8.2vh;
     left: 2vh;
-    width: 56vh;
+    width: 58vh;
     height: 59vh;
     padding: 1vh;
     gap: 1vh;
@@ -100,10 +118,11 @@
     color: #ffffff;
 }
 
-.friend-accept-btn, .friend-reject-btn {
+.btn {
     text-align: center;
     border: 0.3vh solid rgb(174, 0, 27);
     padding: 0.2vh 1vh;
     border-radius: 1vh;
     cursor: pointer;
+    width: 20vh;
 }

@@ -134,8 +134,12 @@ function formatNumber(number) {
     return number.toLocaleString();
 }
 
-window.loginKeyCheckById = async function (key) {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+window.loginKeyCheckById = async function () {
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+
+    if (!loginKeyCheckByIdKey) return;
+
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(loginKeyCheckByIdKey));
     try {
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
