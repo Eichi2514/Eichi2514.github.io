@@ -33,7 +33,7 @@ const membersRef = ref(database, 'members');
 $('head').append('<link rel="stylesheet" href="../common/friends.css" type="text/css"/>');
 
 $(document).ready(async function () {
-    let notifyHtml = await notifyCheck();
+    let notifyHtml = await notifyCheck() || '';
 
     let logoutLi = ``;
 
@@ -128,6 +128,8 @@ window.loginKeyCheckById = async function () {
 };
 
 window.notifyCheck = async function () {
+    if (!localStorage.getItem('nickname')) return;
+
     const memberId = await loginKeyCheckById();
 
     try {
