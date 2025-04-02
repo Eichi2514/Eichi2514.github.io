@@ -17,8 +17,12 @@
     flex-wrap: nowrap;;
 }
 
-.friend-input {
+.friend-input, .friendChat-input {
     color: rgb(0, 0, 30);
+}
+
+.search-btn, .send-btn {
+    padding: 0 1vh
 }
 
 .user-card img {
@@ -55,7 +59,7 @@
 }
 
 .friend-box {
-    width: 62vh;
+    width: 64vh;
     height: 70vh;
     position: relative;
     display: flex;
@@ -102,11 +106,12 @@
 
 .friend-container {
     display: flex;
+    flex-direction: column;
     position: absolute;
     align-content: start;
     top: 8.2vh;
     left: 2vh;
-    width: 58vh;
+    width: 60vh;
     height: 59vh;
     padding: 1vh;
     gap: 1vh;
@@ -125,4 +130,41 @@
     border-radius: 1vh;
     cursor: pointer;
     width: 20vh;
+}
+
+.friendChat-form-container {
+    overflow: auto;
+    flex-direction: column;
+    flex-wrap: nowrap;;
+    width: 57.5vh;
+    height: 43.5vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    padding: 1vh;
+}
+
+.friendChat, .myChat {
+    padding: 0.5vh 1vh;
+    border-radius: 1vh;
+    width: max-content;
+    max-width: 50vh;
+    text-shadow: 1px 1px 3px rgba(255,255,255,0.3)
+    white-space: pre-line;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.friendChat {
+    margin-right: auto;
+    background: rgb(60, 60, 120, 0.8);
+}
+
+.myChat {
+    margin-left: auto;
+    background: rgb(30, 30, 80, 0.8);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }

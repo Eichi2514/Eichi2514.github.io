@@ -10,7 +10,9 @@ import {
     set,
     update,
     remove,
-    child
+    child,
+    onChildAdded,
+    push
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -29,7 +31,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
-const friendsRef = ref(database, `friends`);
+const friendsRef = ref(database, 'friends');
 
 const key = localStorage.getItem('nickname');
 let memberId = null;
@@ -263,14 +265,12 @@ async function friendSearch() {
     event.preventDefault();
 
     $friendContainer.html(`
-        <form class="friend-form" method="POST">
-            <div>
-                <input class="friend-input" name="friend"/>
-                <button type="button" class="search-btn">검색</button>
-            </div>
-            <div class="popup-form-container friend-form-container">
-            </div>
-        </form>
+        <div>
+            <input class="friend-input" name="friend"/>
+            <button type="button" class="search-btn">검색</button>
+        </div>
+        <div class="popup-form-container friend-form-container">
+        </div>
     `);
 }
 
@@ -350,5 +350,94 @@ $(document).on('click', '.friend-delete-btn', async function (event) {
     } catch (error) {
         console.error("오류 발생:", error);
         alert("delete 오류가 발생하였습니다. 잠시후 다시 신청해주세요.");
+    }
+});
+
+window.userName = function (id) {
+    const queryRef = query(membersRef, orderByChild("id"), equalTo(id));
+    return get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                console.log('해당 아이디를 찾을 수 없습니다.');
+                return null;
+            }
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            return memberData[memberKey].nickname;
+        })
+        .catch((error) => {
+            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            return null;
+        });
+};
+
+$(document).on('click', '.friend-chat-btn', async function (event) {
+    const $friendContainer = $('.friend-container');
+    event.preventDefault();
+    const button = $(this);
+    const id = button.data('id');
+
+    if (!memberId) {
+        alert("chat 오류가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+        return;
+    }
+
+    const name = await userName(id);
+
+    const [firstId, secondId] = [Number(memberId), Number(id)].sort((a, b) => a - b);
+    const chatId = `${firstId}-${secondId}`;
+    const friendChatsRef = ref(database, `friendChats/${chatId}`);
+
+    $friendContainer.html(`
+        <div>
+            상대 : ${name}
+        </div>
+        <div class="popup-form-container friendChat-form-container chat${chatId}"></div>
+        <div>
+            <input class="friendChat-input chat-input-${chatId}" name="body"/>
+            <button type="button" class="send-btn" data-chat="${chatId}">전송</button>
+        </div>
+    `);
+
+    onChildAdded(friendChatsRef, async (data) => {
+        const chatLog = data.val();
+        const chatClass = chatLog.id === memberId ? 'myChat' : 'friendChat';
+        const chatElement = `
+            <div class="${chatClass}">
+                ${chatLog.body}
+            </div>
+        `;
+        const $friendChatFormContainer = $(`.chat${chatId}`);
+        $friendChatFormContainer.append(chatElement);
+        $friendChatFormContainer.scrollTop($friendChatFormContainer[0].scrollHeight);
+    });
+});
+
+$(document).on('click', '.send-btn', async function () {
+    const button = $(this);
+    const chatId = button.data('chat');
+    const inputField = $(`.chat-input-${chatId}`);
+    const message = inputField.val().trim();
+
+    if (!message) return;
+
+    const [firstId, secondId] = chatId.split('-').map(Number);
+    const friendChatsRef = ref(database, `friendChats/${chatId}`);
+
+    const now = new Date();
+    const formattedTime = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}.${String(now.getMinutes()).padStart(2, '0')}.${String(now.getSeconds()).padStart(2, '0')}`;
+
+    try {
+        const newMessageRef = push(friendChatsRef);
+        await set(newMessageRef, {
+            id: memberId,
+            body: message,
+            timestamp: formattedTime
+        });
+
+        inputField.val('');
+    } catch (error) {
+        console.error("채팅 전송 중 오류 발생:", error);
     }
 });
