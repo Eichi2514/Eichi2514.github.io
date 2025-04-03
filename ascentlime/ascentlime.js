@@ -23,7 +23,7 @@ $('.login-form').submit(async function (event) {
     try {
         const memberData = await loginIdCheck(loginId);
         if (memberData) {
-            await saveLocalDataToDB(memberData.key)
+            // await saveLocalDataToDB(memberData.key)
 
             let loginSuccess = false;
             const salt = memberData.salt;

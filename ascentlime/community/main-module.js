@@ -619,7 +619,7 @@ window.characCheck = async function (memberKey) {
             await weaponFindUpdate(memberKey, 1);
             await playCountUpdate(memberKey);
 
-            // alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
+            alert('처음 오셨군요 화면에 보이는 슬라임에 마우스를 올려보세요!');
         }
     } catch (error) {
         alert(`오류 발생:, ${error}`);
@@ -629,6 +629,7 @@ window.characCheck = async function (memberKey) {
 };
 
 // 로컬스토리지 기록 DB로 업데이트
+/*
 window.saveLocalDataToDB = async function (memberKey) {
     const localStorageKey = `update__2025-03-09__${memberKey}`;
     if (localStorage.getItem(localStorageKey)) {
@@ -724,3 +725,4 @@ window.saveLocalDataToDB = async function (memberKey) {
 
     localStorage.setItem(localStorageKey, `1`);
 }
+*/
