@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="AscentLime - 도전적인 로그라이크 스타일의 게임으로, 스테이지를 클리어하며 캐릭터를 성장시킬 수 있는 재미있는 게임입니다. 지금 바로 플레이해보세요!">
+    <meta name="keywords" content="어센트라임, AscentLime, AL, ASCENTLIME, ascentlime, 슬라임의 탑, 로그라이크, 게임, 게임 성장, 캐릭터 강화">
+    <meta name="author" content="G.Eichi">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph 메타 태그 -->
+    <meta property="og:title" content="AscentLime">
+    <meta property="og:description"
+          content="AscentLime - 흥미진진한 로그라이크 스타일의 게임으로, 도전적인 스테이지를 클리어하며 캐릭터를 성장시킬 수 있는 재미있는 게임입니다.">
+    <meta property="og:image" content="https://www.h2514.site/favicon/AscentLime.png">
+    <meta property="og:url" content="https://www.h2514.site/ascentlime">
+
+    <!-- Twitter Card 메타 태그 -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AscentLime">
+    <meta name="twitter:description"
+          content="AscentLime - 흥미진진한 로그라이크 스타일의 게임으로, 도전적인 스테이지를 클리어하며 캐릭터를 성장시킬 수 있는 재미있는 게임입니다.">
+    <meta name="twitter:image" content="https://www.h2514.site/favicon/AscentLime.png">
+
+    <!-- Google 검색 등록 -->
+    <meta name="google-site-verification" content="AIZgY4w62JVeJD1sDaOsT83bAPGOGvyFTKn_qU1OH0I"/>
+
+    <!-- Naver 검색 등록 -->
+    <meta name="naver-site-verification" content="40255624b9ad2652d95fb6535e1af3825ccf5b39"/>
+
+    <link rel="icon" href="../../favicon/AscentLime.png" type="image/png">
+    <title>AscentLime</title>
+
+    <link rel="stylesheet" href="landing.css"/>
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+</head>
+<body>
+<div class="motivation_wrapper">
+    <div class="motivation_container"></div>
+</div>
+<div class="body">
+    <a class="logo absolute cursor-pointer" href="">
+        <img class="logo" src="../../favicon/AscentLime.png"
+             alt="로고 이미지"/>
+    </a>
+
+    <!-- p2 홈페이지 배경 -->
+    <img class="bg_img" src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
+         alt="배경 이미지"/>
+
+    <!-- p2 두루마리 -->
+    <div class="TOP3 absolute">
+        <img class="TOP3_img absolute"
+             src="https://github.com/user-attachments/assets/2ad87f22-47df-4929-9e1d-10b172cb3aa7"
+             alt="두루마리 이미지"/>
+
+        <table class="TOP3_table absolute">
+            <caption style="padding-bottom: 1vh;">TOP 3</caption>
+            <tbody>
+            </tbody>
+        </table>
+        <a class="TOP3_list_bt absolute z-30" href="../scoreboard.html">리스트</a>
+    </div>
+    <!-- 로그아웃 상태일 경우 -->
+    <div class="logout">
+        <form class="login-form" method="POST">
+            <label>
+                <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
+            </label>
+            <label>
+                <input class="pw absolute text-center" type="password" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
+            </label>
+
+            <a class="join_bt button absolute" href="../member/join.html">회원가입</a>
+            <div>
+                <button class="login_bt button login_out_bt absolute" type="submit">로그인</button>
+            </div>
+        </form>
+    </div>
+    <!-- 로그인 상태일 경우 -->
+    <div class="login hidden">
+        <div class="member_name1 absolute text-center">Tester님</div>
+        <div class="member_name2 absolute text-center">환영합니다</div>
+        <div class="start absolute cursor-pointer">
+            <a class="start-text absolute" href="../map/map.html">게임시작</a>
+            <!-- p2 게임시작 호버 전 -->
+            <i class="fa-solid fa-square-up-right arrow1 absolute"></i>
+            <i class="fa-solid fa-square-up-right arrow2 absolute"></i>
+            <img class="start-1"
+                 src="https://github.com/user-attachments/assets/dddce550-c44d-45df-adfb-479191d45307"
+                 alt="게임 시작 버튼"/>
+            <!-- p2 게임시작 호버 후 -->
+            <img class="start-2"
+                 src="https://github.com/user-attachments/assets/7afa0678-efe6-4107-ab0f-a154bd841994"
+                 alt="게임 시작 버튼"/>
+        </div>
+        <a class="join_bt button absolute" href="../member/myPage.html">내 정 보</a>
+        <div>
+            <button class="logout_bt button login_out_bt absolute">로그아웃</button>
+        </div>
+    </div>
+
+    <!-- 메뉴바 -->
+    <div class="menu-bg">
+        <div class="menu-container">
+            <ul class="menu">
+                <li class="submenu-container">
+                    <div>
+                        <a class="button menu-item" href="../shop/shop.html">상 점</a>
+                    </div>
+                </li>
+                <li class="submenu-container">
+                    <div>
+                        <a class="button menu-item" href="../garden/myGarden.html">정 원</a>
+                    </div>
+                </li>
+                <li class="submenu-container">
+                    <div>
+                        <div class="button">커뮤니티</div>
+                    </div>
+                    <ul class="submenu">
+                        <li>
+                            <a href="../community/main.html">
+                                <div class="button submenu-item">전체게시판</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../community/main.html?boardId=1">
+                                <div class="button submenu-item">공지사항</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../community/main.html?boardId=2">
+                                <div class="button submenu-item">자유게시판</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../community/main.html?boardId=3">
+                                <div class="button submenu-item">Q & A</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button class="localStorageClear absolute"
+            onclick="if (confirm('정말로 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) { localStorage.clear(); alert('초기화 되었습니다.'); location.reload(); }">
+        초기화
+    </button>
+</div>
+<script src="landing-module.js" defer type="module"></script>
+<script src="../common/profileImages.js"></script>
+<script src="../common/friends-module.js" defer type="module"></script>
+<script src="landing.js" defer></script>
+</body>
+</html>

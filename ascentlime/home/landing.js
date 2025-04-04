@@ -24,26 +24,21 @@ $('.login-form').submit(async function (event) {
         const memberData = await loginIdCheck(loginId);
         if (memberData) {
             // await saveLocalDataToDB(memberData.key)
-
-            let loginSuccess = false;
             const salt = memberData.salt;
 
             const hashedPassword = await hashPassword(loginPw, salt);
 
             if (memberData.loginPw === hashedPassword) {
-                loginSuccess = true;
                 localStorage.setItem('nickname', memberData.key);
                 alert(memberData.nickname + '님 환영합니다');
                 await characCheck(memberData.key);
                 location.reload();
-            }
-
-            if (!loginSuccess) {
-                alert('아이디 또는 비밀번호가 잘못되었습니다.');
+            } else {
+                alert('로그인 오류 (코드: L-178) 아이디 또는 비밀번호가 올바르지 않습니다.');
             }
 
         } else {
-            alert('아이디 또는 비밀번호가 잘못되었습니다');
+            alert('로그인 오류 (코드: L-486) 아이디 또는 비밀번호가 올바르지 않습니다.');
         }
 
     } catch (error) {

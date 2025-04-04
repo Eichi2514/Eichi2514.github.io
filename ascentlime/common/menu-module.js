@@ -30,7 +30,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 
-$('head').append('<link rel="stylesheet" href="../common/friends.css" type="text/css"/>');
+$('head').append('<link rel="stylesheet" href="../common/menu.css" type="text/css"/>');
 
 $(document).ready(async function () {
     let notifyHtml = await notifyCheck() || '';
