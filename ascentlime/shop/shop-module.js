@@ -538,7 +538,7 @@ window.loginKeyCheckById = async function () {
 };
 
 window.getWeaponFind = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
 
@@ -688,7 +688,7 @@ window.updateUserMoney = async function (memberKey, newMoney) {
 
 
 window.applyStatItem = async function (memberKey, id) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -772,7 +772,7 @@ window.applyStatItem = async function (memberKey, id) {
 };
 
 window.equipWeaponItem = async function (memberKey, id) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 

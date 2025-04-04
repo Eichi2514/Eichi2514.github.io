@@ -148,7 +148,7 @@ window.loginKeyCheckById = async function () {
 };
 
 window.characCheckMap = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -184,7 +184,7 @@ window.getMobFind = function (key) {
 };
 
 window.getWeaponFind = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
 

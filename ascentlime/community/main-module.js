@@ -550,7 +550,7 @@ window.loginKeyCheckById = async function () {
 };
 
 window.weaponFindUpdate = async function (memberKey, weaponNum) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
     const currentDataSnapshot = await get(newWeaponFindRef);
@@ -596,7 +596,7 @@ window.playCountUpdate = async function (memberKey) {
 }
 
 window.characCheck = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 

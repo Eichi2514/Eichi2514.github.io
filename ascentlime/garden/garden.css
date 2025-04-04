@@ -153,6 +153,22 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     cursor: pointer;
 }
 
+.fertilizer {
+    display: flex;
+    align-items: center;
+    top: 19vh;
+    left: 16vh;
+    border: 0.3vh solid;
+    padding: 0.5vh 1vh 0.5vh 0.5vh;
+    background: rgb(255, 71, 48);
+    border-radius: 1vh;
+    gap: 1vh;
+}
+
+.fertilizer img {
+    height: 4vh;
+}
+
 .money {
     top: 19vh;
     right: 3vh;
@@ -421,4 +437,30 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 20vh;
     border-radius: 3vh;
     background: rgba(255, 255, 255, 0.7);
+}
+
+.fertilizer-action {
+    position: absolute;
+    width: 17vh;
+    height: 17vh;
+    mix-blend-mode: multiply;
+    animation: swing2 2s ease-in-out infinite;
+}
+
+@keyframes swing2 {
+    0% {
+        transform: rotate(0deg);
+    }
+    30% {
+        transform: rotate(-5deg);
+    }
+    50% {
+        transform: rotate(0deg);
+    }
+    70% {
+        transform: rotate(-5deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
 }

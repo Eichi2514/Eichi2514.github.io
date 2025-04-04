@@ -136,7 +136,7 @@ window.loginKeyCheckById = async function () {
     }
 };
 
-let memberId = await loginKeyCheckById(key);
+let memberId = await loginKeyCheckById();
 
 if (memberId === safeId) {
     window.location.href = 'myGarden.html';
@@ -174,8 +174,8 @@ async function loadUserData() {
         $('.money_count').text(userMoneyString);
 
         setInterval(updateTime, 1000);
-
         loadPlantDate();
+        loadFertilizerDate();
 
     } catch (error) {
         console.error('돈 불러오는 중 오류 발생:', error);
@@ -306,6 +306,7 @@ function updatePlant(plantSlot, index, plantData) {
         $(plantSlot).html(`
             <img class="plant-img item${index}" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
             <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
+            <button class="s-button none assist-button" data-id="${index}">도움</button>
         `);
     } else {
         updateFullyGrown(plantSlot, timeRemaining, plantData, index);
@@ -389,8 +390,10 @@ $(document).on('click', '.steal-button', async function (event) {
                 await update(gardenRef, { reward: newReward });
                 await updateUserMoney(key, userMoney + reward - newReward);
 
-                alert(`$${reward - newReward}을(를) 획득하였습니다`);
+                alert(`$${reward - newReward}을(를) 획득하였습니다!`);
                 location.reload();
+            } else {
+                alert(`아쉽지만, 이미 다른 사람이 서리해 갔어요! 다음 기회를 노려보세요.`);
             }
         }
     } catch (error) {
@@ -405,3 +408,99 @@ function updateGrowthStage(elapsedTime) {
         ? growthStagesDurations.findIndex(time => elapsedSeconds < time)
         : growthStagesDurations.length;
 }
+
+const $fertilizerCount = $('.fertilizer-count');
+
+function loadFertilizerDate() {
+    const now = new Date();
+    const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+
+    const fertilizersRef = ref(database, `fertilizers/${memberId}`);
+    const todayFertilizerRef = ref(database, `fertilizers/${memberId}/${formattedTime}`);
+
+    get(todayFertilizerRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+            remove(fertilizersRef)
+                .then(() => {
+                    console.log(`이전 비료 데이터 삭제 완료!`);
+                    return set(todayFertilizerRef, 10);
+                })
+                .then(() => {
+                    console.log(`새로운 비료 데이터 추가 완료! (날짜: ${formattedTime}, 값: 10)`);
+                    $fertilizerCount.text('10');
+                })
+                .catch((error) => {
+                    console.error("오류 발생:", error);
+                });
+        } else {
+            console.log(`이미 존재하는 비료 개수: ${snapshot.val()} (날짜: ${formattedTime})`);
+            $fertilizerCount.text(`${snapshot.val()}`);
+        }
+    }).catch((error) => {
+        console.error("데이터 조회 실패:", error);
+    });
+}
+
+$(document).on('click', '.assist-button', async function (event) {
+    event.preventDefault();
+
+    const now = new Date();
+    const formattedTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+    const todayFertilizerRef = ref(database, `fertilizers/${memberId}/${formattedTime}`);
+    const button = $(this);
+    const id = button.data('id');
+    const gardenRef = ref(database, `gardens/${safeId}/${id}`);
+
+    try {
+        const fertilizerSnapshot = await get(todayFertilizerRef);
+        if (fertilizerSnapshot.exists()) {
+            let currentCount = fertilizerSnapshot.val();
+
+            if (currentCount > 0) {
+                await set(todayFertilizerRef, currentCount - 1);
+                console.log(`비료 개수 감소: ${currentCount} → ${currentCount - 1}`);
+            } else {
+                alert('사용 가능한 비료가 없습니다.');
+                return;
+            }
+        } else {
+            alert("오늘 사용 가능한 비료가 없습니다.");
+            return;
+        }
+    } catch (error) {
+        console.error("비료 개수 감소 실패:", error);
+        return;
+    }
+
+    $(`.item${id}`).parent().append(`
+        <img class="fertilizer-action" src="https://github.com/user-attachments/assets/16357e92-a575-4eae-89f2-fdc46f281b44" alt="비료 뿌리기">
+    `);
+
+    try {
+        const gardenSnapshot = await get(gardenRef);
+        if (gardenSnapshot.exists()) {
+            const data = gardenSnapshot.val();
+            if (!data.plantId || !plantItems[data.plantId]) {
+                console.error("식물 데이터 오류: plantId가 없거나 plantItems에서 찾을 수 없음.");
+                return;
+            }
+
+            const growthTime = plantItems[data.plantId].growthTime * 1000;
+            const plantedAtDate = new Date(Date.now() - growthTime);
+            const plantedAtString = plantedAtDate.toLocaleString('sv-SE').replace(' ', 'T');
+
+            await update(gardenRef, {
+                plantedAt: plantedAtString
+            });
+
+             setTimeout(() => {
+                location.reload();
+             }, 3000);
+        } else {
+            console.log("해당 식물 데이터를 찾을 수 없습니다.");
+        }
+    } catch (error) {
+        console.error("식물 데이터 업데이트 실패:", error);
+    }
+});
+

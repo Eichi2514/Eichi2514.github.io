@@ -210,7 +210,7 @@ window.saveFirebaseLogs = async function (charac, seconds) {
 };
 
 window.characCheckMap = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -249,7 +249,7 @@ window.playStatsUpdate = async function (memberKey, front_money) {
 }
 
 window.characReset = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -276,7 +276,7 @@ window.characReset = async function (memberKey) {
 }
 
 window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds) {
-    const memberId = await loginKeyCheckById(nickname);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -316,7 +316,7 @@ window.stageSave = async function (callback, nickname, floor, room, front_hp, fr
 }
 
 window.weaponFindUpdate = async function (memberKey, weaponNum) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
     const currentDataSnapshot = await get(newWeaponFindRef);
@@ -379,7 +379,7 @@ window.mobFindUpdate = function (key, floor) {
 };
 
 window.getWeaponFind = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
 

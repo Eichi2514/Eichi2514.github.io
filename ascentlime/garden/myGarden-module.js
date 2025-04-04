@@ -158,7 +158,7 @@ window.loginKeyCheckById = async function () {
 };
 
 
-const memberId = await loginKeyCheckById(key);
+const memberId = await loginKeyCheckById();
 const safeId = memberId.toString();
 
 let userMoney = 0;

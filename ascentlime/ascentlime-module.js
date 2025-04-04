@@ -245,7 +245,7 @@ window.saveLocalDataToDB = async function (memberKey) {
 */
 
 window.characCheck = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
@@ -278,7 +278,7 @@ window.characCheck = async function (memberKey) {
 };
 
 window.weaponFindUpdate = async function (memberKey, weaponNum) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
     const currentDataSnapshot = await get(newWeaponFindRef);
@@ -324,7 +324,7 @@ window.playCountUpdate = async function (memberKey) {
 }
 
 window.notifyCheck = async function (memberKey) {
-    const memberId = await loginKeyCheckById(memberKey);
+    const memberId = await loginKeyCheckById();
 
     try {
         const friendRequestRef = ref(database, `notify/${memberId}`);

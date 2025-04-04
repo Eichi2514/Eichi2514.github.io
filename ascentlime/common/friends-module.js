@@ -38,7 +38,7 @@ let memberId = null;
 let safeId = null;
 
 if (key) {
-    memberId = await loginKeyCheckById(key);
+    memberId = await loginKeyCheckById();
     safeId = memberId.toString();
 }
 
