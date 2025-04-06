@@ -1,5 +1,3 @@
-$('head').append('<link rel="stylesheet" href="../common/chatBot.css" type="text/css"/>');
-
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
@@ -32,7 +30,43 @@ const firebaseConfig = {
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const membersRef = ref(database, 'members');
 const chatBotRef = ref(database, 'chatBots');
+
+window.profileImageIdGet = async function () {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem('nickname')));
+    try {
+        const snapshot = await get(queryRef);
+
+        if (!snapshot.exists()) {
+            console.log('해당 아이디를 찾을 수 없습니다.');
+            return null;
+        }
+
+        const memberData = snapshot.val();
+        const memberKey = Object.keys(memberData)[0];
+        return memberData[memberKey].profileImageId;
+
+    } catch (error) {
+        console.error("아이디 확인 중 오류 발생:", error);
+        return null;
+    }
+}
+
+// let profileImageId = Math.floor(Math.random() * 3) + 1;
+let profileImage = 0;
+
+if (localStorage.getItem('nickname')) {
+    profileImageIdGet().then(function(id) {
+        if (id !== null) {
+            profileImage = profileImages[id];
+        } else {
+            console.log('프로필 ID를 불러오지 못했습니다.');
+        }
+    }).catch(function(error) {
+        console.error('프로필 이미지 로딩 중 오류:', error);
+    });
+}
 
 $(document).on('keydown', 'input[name="chatBot-question"]', function (event) {
     if (event.key === 'Enter') {
@@ -47,25 +81,30 @@ $(document).on('click', '.close-btn', async function () {
     }
 });
 
-$(document).on('click', '.chatBot', async function () {
-    $('body').append(`
-        <div class="chatBot-bg">
-            <div class="close-btn">✖</div>
-            <div class="chatBot-box">
-                <div class="chatBot-title">무엇이든 물어보세요</div>
-	            <div class="popup-form-container chatBot-form-container"></div>
-	            <div>
-	                <input class="chatBot-input" name="chatBot-question"/>
-            	    <button type="button" class="chatBot-sand">전송</button>
-	            </div>
-            </div>
-        </div>
-    `)
-});
-
 function appendChat(text, isUser = false) {
     const className = isUser ? 'myChat' : 'friendChat';
-    $('.chatBot-form-container').append(`<div class="${className}">${text}</div>`);
+    const profileImg = isUser ? `<img class="my-img" src="${profileImage}" alt="프로필 이미지"/>` : '<img class="chatBot-img" src="https://github.com/user-attachments/assets/dd225148-5388-409f-8d33-dda7a669711f" alt="챗봇"/>';
+    const message = isUser ?
+        `
+        <div class="flex gap-2">
+            <div class="${className}">
+                ${text}
+            </div>
+            ${profileImg}
+        </div>
+        `
+         :
+        `
+        <div class="flex gap-2">
+            ${profileImg}
+            <div class="${className}">
+                ${text}
+            </div>
+        </div>
+        `;
+    $('.chatBot-form-container').append(`
+        ${message}
+    `);
 }
 
 function parseQuestion(question) {

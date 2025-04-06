@@ -1666,3 +1666,12 @@ li button, li a, li a div, li div {
         transform: translateX(-50vh);
     }
 }
+
+.chatBot {
+    position: absolute;
+    left: 0;
+    bottom: 1vh;
+    height: 15vh;
+    cursor: pointer;
+    transform: scaleX(-1);
+}
