@@ -146,12 +146,21 @@
     padding: 0.5vh 1vh;
     border-radius: 1vh;
     height: max-content;
+    width: max-content;
     max-width: 80%;
     text-shadow: 1px 1px 3px rgba(255,255,255,0.3)
     white-space: pre-line;
     word-break: keep-all;
     overflow-wrap: break-word;
     animation: fadeIn 0.2s ease-in-out;
+    font-size: 2vh;
+}
+
+/* 세로(height)가 가로(width) 이상일 때 */
+@media (max-aspect-ratio: 1625/1000) {
+    .friendChat, .myChat {
+        font-size: 1.5vw;
+    }
 }
 
 .friendChat {
