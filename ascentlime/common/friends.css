@@ -156,13 +156,6 @@
     font-size: 2vh;
 }
 
-/* 세로(height)가 가로(width) 이상일 때 */
-@media (max-aspect-ratio: 1625/1000) {
-    .friendChat, .myChat {
-        font-size: 1.5vw;
-    }
-}
-
 .friendChat {
     margin-right: auto;
     background: rgb(60, 60, 120, 0.8);
