@@ -121,12 +121,18 @@ function parseQuestion(question) {
         /(.+?)라고 말하면 (.+?)이라고/,
         /(.+?)이라고 말하면 (.+?)라고/,
         /(.+?)라고 말하면 (.+?)라고/,
-        /(.+?) ?: (.+?) Eichi(\d{4})/
+        /([\s\S]+?)\s*:\s*([\s\S]+?)\s*Eichi(\d{4})/i
     ];
 
     for (const pattern of patterns) {
         const match = question.match(pattern);
-        if (match) return { qText: match[1], aText: match[2], editable: match[3] };
+        if (match) {
+            return {
+                qText: match[1].trim().replace(/^<br>|<br>$/g, ''),
+                aText: match[2].trim().replace(/^<br>|<br>$/g, ''),
+                editable: match[3]
+            };
+        }
     }
     return null;
 }
@@ -149,42 +155,48 @@ function scrollToBottom() {
 
 $(document).on('click', '.chatBot-sand', async function () {
     const $textarea = $('textarea[name="chatBot-question"]');
-    const question = $textarea.val().trim();
+    const question = $textarea.val().trim().replace(/\n/g, '<br>');
     const forbiddenChars = /[.#$/\[\]]/;
 
     if (!question) return;
 
     appendChat(question, true);
 
-    if (forbiddenChars.test(question)) {
-        appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요 😐");
-    } else {
-        const parsed = parseQuestion(question);
-        const directAnswer = await fetchAnswer(question);
+    const parsed = parseQuestion(question);
 
-        if (directAnswer) {
-            appendChat(directAnswer.answer);
-        } else if (parsed) {
-            const { qText, aText, editable } = parsed;
-            const existing = await fetchAnswer(qText);
+    if (parsed) {
+        const { qText, aText, editable } = parsed;
+        const existing = await fetchAnswer(qText);
 
-            if (existing) {
+        if (existing) {
+            if (forbiddenChars.test(qText)) {
+                appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
+            } else {
                 if (existing.editable === true) {
-                    appendChat("이 질문은 수정할 수 없어요 🤖");
+                    appendChat("이 질문은 수정할 수 없어요🤖");
                 } else {
-                    appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요 😊`);
+                    appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요😊`);
                     await storeAnswer(qText, aText);
                 }
-            } else {
-                appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요 😄`);
-                const isEditable = editable === '2514';
-                await storeAnswer(qText, aText, isEditable);
             }
         } else {
-            appendChat(`아직 그 질문에 대한 답변이 없어요 😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
+            appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요😄`);
+            const isEditable = editable === '2514';
+            await storeAnswer(qText, aText, isEditable);
+        }
+    } else {
+        if (forbiddenChars.test(question)) {
+            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
+        } else {
+            const directAnswer = await fetchAnswer(question);
+
+            if (directAnswer) {
+                appendChat(directAnswer.answer);
+            } else {
+                appendChat(`아직 그 질문에 대한 답변이 없어요😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
+            }
         }
     }
-
     $textarea.val('');
     scrollToBottom();
 });
