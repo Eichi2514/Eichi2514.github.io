@@ -31,7 +31,6 @@ body {
 .head {
     position: absolute;
     width: 100%;
-    min-width: 900px;
     padding: 10px;
     z-index: 2;
 }
@@ -39,7 +38,8 @@ body {
 .head-line {
     display: flex;
     justify-content: space-between;
-    width: 1440px;
+    min-width: max-content;
+    max-width: 1440px;
     position: relative;
 }
 
@@ -131,10 +131,10 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 .chatBot-box {
     display: flex;
     flex-direction: column;
-    width: 1440px;
-    margin: auto;
     gap: 10px;
     padding-top: 120px;
+    max-width: 1440px;
+    margin: auto;
 }
 
 .chatBot-form-container {
@@ -142,7 +142,10 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    height: 80vh;
+    width: 100%;
+    min-width:  840px;
+    max-width: 1440px;
+    height: calc(100vh - 250px);
     border: 3px solid rgb(174, 0, 27);
     padding: 10px;
     gap: 10px;
@@ -159,8 +162,13 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     color: rgb(0, 0, 30);
 }
 
-.chatBot-input input {
+.chatBot-input textarea {
     width: 100%;
+    font-size: 16px;
+    font-family: Galmuri11, serif !important;
+    font-weight: 800 !important;
+    font-size: 30px !important;
+    padding: 10px;
 }
 
 .chatBot-img, .my-img {

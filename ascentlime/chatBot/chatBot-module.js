@@ -53,8 +53,7 @@ window.profileImageIdGet = async function () {
     }
 }
 
-// let profileImageId = Math.floor(Math.random() * 3) + 1;
-let profileImage = 0;
+let profileImage = profileImages[Math.floor(Math.random() * 3) + 1];
 
 if (localStorage.getItem('nickname')) {
     profileImageIdGet().then(function(id) {
@@ -68,10 +67,22 @@ if (localStorage.getItem('nickname')) {
     });
 }
 
-$(document).on('keydown', 'input[name="chatBot-question"]', function (event) {
+$(document).on('keydown', 'textarea[name="chatBot-question"]', function (event) {
+    const $textarea = $(this);
+
     if (event.key === 'Enter') {
         event.preventDefault();
-        $('.chatBot-sand').click();
+        if (event.ctrlKey) {
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const text = $textarea.val();
+            const newText = text.substring(0, start) + "\n" + text.substring(end);
+            $textarea.val(newText);
+
+            this.selectionStart = this.selectionEnd = start + 1;
+        } else {
+            $('.chatBot-sand').click();
+        }
     }
 });
 
@@ -83,28 +94,25 @@ $(document).on('click', '.close-btn', async function () {
 
 function appendChat(text, isUser = false) {
     const className = isUser ? 'myChat' : 'friendChat';
-    const profileImg = isUser ? `<img class="my-img" src="${profileImage}" alt="프로필 이미지"/>` : '<img class="chatBot-img" src="https://github.com/user-attachments/assets/dd225148-5388-409f-8d33-dda7a669711f" alt="챗봇"/>';
-    const message = isUser ?
-        `
+    const imgClass = isUser ? 'my-img' : 'chatBot-img';
+    const imgSrc = isUser ? profileImage : 'https://github.com/user-attachments/assets/dd225148-5388-409f-8d33-dda7a669711f';
+    const imgAlt = isUser ? '프로필 이미지' : '챗봇';
+
+    const profileImg = `<img class="${imgClass}" src="${imgSrc}" alt="${imgAlt}"/>`;
+
+    const message = `
         <div class="flex gap-2">
-            <div class="${className}">
-                ${text}
-            </div>
-            ${profileImg}
+            ${isUser ? `
+                <div class="${className}">${text}</div>
+                ${profileImg}
+            ` : `
+                ${profileImg}
+                <div class="${className}">${text}</div>
+            `}
         </div>
-        `
-         :
-        `
-        <div class="flex gap-2">
-            ${profileImg}
-            <div class="${className}">
-                ${text}
-            </div>
-        </div>
-        `;
-    $('.chatBot-form-container').append(`
-        ${message}
-    `);
+    `;
+
+    $('.chatBot-form-container').append(message);
 }
 
 function parseQuestion(question) {
@@ -140,36 +148,43 @@ function scrollToBottom() {
 }
 
 $(document).on('click', '.chatBot-sand', async function () {
-    const $input = $('input[name="chatBot-question"]');
-    const question = $input.val().trim();
+    const $textarea = $('textarea[name="chatBot-question"]');
+    const question = $textarea.val().trim();
+    const forbiddenChars = /[.#$/\[\]]/;
+
     if (!question) return;
 
     appendChat(question, true);
-    const parsed = parseQuestion(question);
 
-    const directAnswer = await fetchAnswer(question);
-    if (directAnswer) {
-        appendChat(directAnswer.answer);
-    } else if (parsed) {
-        const { qText, aText, editable } = parsed;
-        const existing = await fetchAnswer(qText);
+    if (forbiddenChars.test(question)) {
+        appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요 😐");
+    } else {
+        const parsed = parseQuestion(question);
+        const directAnswer = await fetchAnswer(question);
 
-        if (existing) {
-            if (existing.editable === true) {
-                appendChat("이 질문은 수정할 수 없어요 🤖");
+        if (directAnswer) {
+            appendChat(directAnswer.answer);
+        } else if (parsed) {
+            const { qText, aText, editable } = parsed;
+            const existing = await fetchAnswer(qText);
+
+            if (existing) {
+                if (existing.editable === true) {
+                    appendChat("이 질문은 수정할 수 없어요 🤖");
+                } else {
+                    appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요 😊`);
+                    await storeAnswer(qText, aText);
+                }
             } else {
-                appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요 😊`);
-                await storeAnswer(qText, aText);
+                appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요 😄`);
+                const isEditable = editable === '2514';
+                await storeAnswer(qText, aText, isEditable);
             }
         } else {
-            appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요 😄`);
-            const isEditable = editable === '2514';
-            await storeAnswer(qText, aText, isEditable);
+            appendChat(`아직 그 질문에 대한 답변이 없어요 😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
         }
-    } else {
-        appendChat(`아직 그 질문에 대한 답변이 없어요 😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
     }
 
-    $input.val('');
+    $textarea.val('');
     scrollToBottom();
 });
