@@ -56,6 +56,11 @@ $(document).ready(async function () {
                         </div>
                         <ul class="submenu">
                             <li>
+                                <a href="../chatBot/chatBot.html">
+                                    <div class="button submenu-item">채팅봇</div>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="../member/myPage.html">
                                     <div class="button submenu-item">내정보</div>
                                 </a>

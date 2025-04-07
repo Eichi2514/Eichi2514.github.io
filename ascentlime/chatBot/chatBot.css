@@ -31,6 +31,7 @@ body {
 .head {
     position: absolute;
     width: 100%;
+    min-width: 840px;
     padding: 10px;
     z-index: 2;
 }
@@ -38,7 +39,6 @@ body {
 .head-line {
     display: flex;
     justify-content: space-between;
-    min-width: max-content;
     max-width: 1440px;
     position: relative;
 }
@@ -48,7 +48,7 @@ body {
     flex-direction: column;
     position: absolute;
     top: 120px;
-    width: 1440px;
+    max-width: 1440px;
     gap: 10px;
 }
 
@@ -132,9 +132,17 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-top: 120px;
+    position: absolute;
+    top: 120px;
+    width: 100%;
     max-width: 1440px;
-    margin: auto;
+}
+
+@media (min-width: 1440px) {
+    .head-line, .chatBot-box {
+        left: 50%;
+        transform: translateX(-720px);
+    }
 }
 
 .chatBot-form-container {
@@ -143,13 +151,12 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     flex-direction: column;
     flex-wrap: nowrap;
     width: 100%;
-    min-width:  840px;
+    min-width: 840px;
     max-width: 1440px;
     height: calc(100vh - 250px);
     border: 3px solid rgb(174, 0, 27);
     padding: 10px;
     gap: 10px;
-    font-size: 20px;
 }
 
 .chatBot-input-container {
@@ -183,9 +190,9 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 10px;
 }
 
-.friendChat, .myChat {
-    padding: 0.5vh 1vh;
-    border-radius: 1vh;
+.botChat, .userChat {
+    padding: 5px 10px;
+    border-radius: 10px;
     height: max-content;
     width: max-content;
     max-width: 80%;
@@ -193,25 +200,24 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     white-space: pre-line;
     word-break: keep-all;
     overflow-wrap: break-word;
-    animation: fadeIn 0.2s ease-in-out;
-    font-size: 2vh;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-/* 세로(height)가 가로(width) 이상일 때 */
-@media (max-aspect-ratio: 1/1) {
-    .friendChat, .myChat {
-        font-size: 3vw;
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1/1) {
+    .botChat, .userChat {
+        font-size: 20px;
     }
 }
 
-.friendChat {
+.botChat {
     margin-right: auto;
-    background: rgb(60, 60, 120, 0.8);
+    background: rgb(90, 90, 150, 0.8);
 }
 
-.myChat {
+.userChat {
     margin-left: auto;
-    background: rgb(30, 30, 80, 0.8);
+    background: rgb(60, 60, 90, 0.8);
 }
 
 @keyframes fadeIn {

@@ -69,9 +69,9 @@ if (localStorage.getItem('nickname')) {
 
 $(document).on('keydown', 'textarea[name="chatBot-question"]', function (event) {
     const $textarea = $(this);
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
     if (event.key === 'Enter') {
-        event.preventDefault();
         if (event.ctrlKey) {
             const start = this.selectionStart;
             const end = this.selectionEnd;
@@ -80,7 +80,8 @@ $(document).on('keydown', 'textarea[name="chatBot-question"]', function (event) 
             $textarea.val(newText);
 
             this.selectionStart = this.selectionEnd = start + 1;
-        } else {
+        } else if (!isMobile) {
+            event.preventDefault();
             $('.chatBot-sand').click();
         }
     }
@@ -93,7 +94,7 @@ $(document).on('click', '.close-btn', async function () {
 });
 
 function appendChat(text, isUser = false) {
-    const className = isUser ? 'myChat' : 'friendChat';
+    const className = isUser ? 'userChat' : 'botChat';
     const imgClass = isUser ? 'my-img' : 'chatBot-img';
     const imgSrc = isUser ? profileImage : 'https://github.com/user-attachments/assets/dd225148-5388-409f-8d33-dda7a669711f';
     const imgAlt = isUser ? '프로필 이미지' : '챗봇';
@@ -112,7 +113,16 @@ function appendChat(text, isUser = false) {
         </div>
     `;
 
-    $('.chatBot-form-container').append(message);
+    const append = () => {
+        $('.chatBot-form-container').append(message);
+        scrollToBottom();
+    };
+
+    if (isUser) {
+        append();
+    } else {
+        setTimeout(append, 1000);
+    }
 }
 
 function parseQuestion(question) {
@@ -160,39 +170,46 @@ $(document).on('click', '.chatBot-sand', async function () {
 
     if (!question) return;
 
+    // 질문
     appendChat(question, true);
 
     const parsed = parseQuestion(question);
 
     if (parsed) {
         const { qText, aText, editable } = parsed;
-        const existing = await fetchAnswer(qText);
-
-        if (existing) {
-            if (forbiddenChars.test(qText)) {
-                appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
-            } else {
+        if (forbiddenChars.test(qText)) {
+            // 대답
+            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
+        } else {
+            const existing = await fetchAnswer(qText);
+            if (existing) {
                 if (existing.editable === true) {
+                    // 대답
                     appendChat("이 질문은 수정할 수 없어요🤖");
                 } else {
+                    // 대답
                     appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요😊`);
                     await storeAnswer(qText, aText);
                 }
+            } else {
+                // 대답
+                appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요😄`);
+                const isEditable = editable === '2514';
+                await storeAnswer(qText, aText, isEditable);
             }
-        } else {
-            appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요😄`);
-            const isEditable = editable === '2514';
-            await storeAnswer(qText, aText, isEditable);
         }
     } else {
         if (forbiddenChars.test(question)) {
+            // 대답
             appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
         } else {
             const directAnswer = await fetchAnswer(question);
 
             if (directAnswer) {
+                // 대답
                 appendChat(directAnswer.answer);
             } else {
+                // 대답
                 appendChat(`아직 그 질문에 대한 답변이 없어요😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
             }
         }
