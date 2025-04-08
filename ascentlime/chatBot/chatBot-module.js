@@ -173,6 +173,16 @@ async function initChat() {
 
 initChat();
 
+const $container = $('.chatBot-form-container');
+const container = $container[0];
+
+const observer = new ResizeObserver(() => {
+    scrollToBottom();
+});
+
+observer.observe(container);
+
+
 $(document).on('click', '.chatBot-sand', async function () {
     const $textarea = $('textarea[name="chatBot-question"]');
     const question = $textarea.val()

@@ -217,6 +217,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 
     .chatBot-form-container {
         height: calc(100vh - 340px);
+        font-size: 40px;
         gap: 20px;
     }
 
