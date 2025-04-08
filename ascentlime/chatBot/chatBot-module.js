@@ -164,6 +164,15 @@ function scrollToBottom() {
     container.scrollTop = container.scrollHeight;
 }
 
+async function initChat() {
+    const answerObj = await fetchAnswer("?");
+    if (answerObj && answerObj.answer) {
+        appendChat(answerObj.answer);
+    }
+}
+
+initChat();
+
 $(document).on('click', '.chatBot-sand', async function () {
     const $textarea = $('textarea[name="chatBot-question"]');
     const question = $textarea.val()
@@ -182,21 +191,21 @@ $(document).on('click', '.chatBot-sand', async function () {
     if (parsed) {
         const { qText, aText, editable } = parsed;
         if (forbiddenChars.test(qText)) {
-            // 대답
+            console.log(`대답1`);
             appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
         } else {
             const existing = await fetchAnswer(qText);
             if (existing) {
                 if (existing.editable === true) {
-                    // 대답
+                    console.log(`대답2`);
                     appendChat("이 질문은 수정할 수 없어요🤖");
                 } else {
-                    // 대답
+                    console.log(`대답3`);
                     appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요😊`);
                     await storeAnswer(qText, aText);
                 }
             } else {
-                // 대답
+                console.log(`대답4`);
                 appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요😄`);
                 const isEditable = editable === '2514';
                 await storeAnswer(qText, aText, isEditable);
@@ -204,21 +213,21 @@ $(document).on('click', '.chatBot-sand', async function () {
         }
     } else {
         if (forbiddenChars.test(question)) {
-            // 대답
+            console.log(`대답5`);
             appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
         } else {
             const directAnswer = await fetchAnswer(question);
 
             if (directAnswer) {
-                // 대답
+                console.log(`대답6`);
                 appendChat(directAnswer.answer);
             } else {
-                const intentAnswer = getIntentAnswer(question);
+                const intentAnswer = await getIntentAnswer(question);
                 if (intentAnswer) {
-                    // 대답
+                    console.log(`대답7`);
                     appendChat(intentAnswer);
                 } else {
-                    // 대답
+                    console.log(`대답8`);
                     appendChat(`아직 그 질문에 대한 답변이 없어요😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 등록해 주세요!`);
                 }
             }
@@ -233,7 +242,7 @@ function getRandomAnswer(answers) {
 }
 
 // \s* == 0개 이상의 공백
-function getIntentAnswer(text) {
+async function getIntentAnswer(text) {
     // 인사
     if (/안\s*녕|하\s*이|h\s*e\s*l\s*l\s*o|ㅎ\s*ㅇ|h\s*i/i.test(text)) {
         return getRandomAnswer([
@@ -762,5 +771,40 @@ function getIntentAnswer(text) {
         ]);
     }
 
+    // "질문"
+    if (/질문|뭐\s*라\s*고/i.test(text)) {
+        const directAnswer = await fetchAnswer(`?`);
+
+        return getRandomAnswer([
+            `${directAnswer.answer}`
+        ]);
+    }
+
+    for (const intent of intentList) {
+        if (intent.pattern.test(text)) {
+            const directAnswer = await fetchAnswer(intent.key);
+            return getRandomAnswer([directAnswer.answer]);
+        }
+    }
+
     return null;
 }
+
+const intentList = [
+    { pattern: /회원가입/i, key: "회원가입" },
+    { pattern: /공격/i, key: "공격" },
+    { pattern: /이동/i, key: "이동" },
+    { pattern: /도감/i, key: "도감" },
+    { pattern: /무기/i, key: "무기" },
+    { pattern: /기록/i, key: "기록" },
+    { pattern: /강화/i, key: "강화" },
+    { pattern: /커뮤니티/i, key: "커뮤니티" },
+    { pattern: /재화/i, key: "재화" },
+    { pattern: /상점/i, key: "상점" },
+    { pattern: /닉네임/i, key: "닉네임 변경" },
+    { pattern: /캐시/i, key: "캐시 상점" },
+    { pattern: /정원/i, key: "정원" },
+    { pattern: /친구/i, key: "친구" },
+    { pattern: /서리/i, key: "서리" },
+    { pattern: /도움/i, key: "도움" },
+];
