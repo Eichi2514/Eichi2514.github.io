@@ -44,6 +44,11 @@ $(document).ready(async function () {
                     </li>
                     `
     }
+    $('.head-line').prepend(`
+        <a class="logo" href="../../ascentlime.html">
+            <img class="logo" src="../../favicon/AscentLime.png" alt="로고 이미지"/>
+        </a>
+    `);
 
     $('.head-line').append(`
         <div class="menu-bg">
@@ -56,13 +61,13 @@ $(document).ready(async function () {
                         </div>
                         <ul class="submenu">
                             <li>
-                                <a href="../chatBot/chatBot.html">
-                                    <div class="button submenu-item">채팅봇</div>
+                                <a href="../member/myPage.html">
+                                    <div class="button submenu-item">내정보</div>
                                 </a>
                             </li>
                             <li>
-                                <a href="../member/myPage.html">
-                                    <div class="button submenu-item">내정보</div>
+                                <a href="../chatBot/chatBot.html">
+                                    <div class="button submenu-item">채팅봇</div>
                                 </a>
                             </li>
                             <li>
@@ -78,21 +83,6 @@ $(document).ready(async function () {
                             <li>
                                 <a href="../community/main.html">
                                     <div class="button submenu-item">전체게시판</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="../community/main.html?boardId=1">
-                                    <div class="button submenu-item">공지사항</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="../community/main.html?boardId=2">
-                                    <div class="button submenu-item">자유게시판</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="../community/main.html?boardId=3">
-                                    <div class="button submenu-item">Q & A</div>
                                 </a>
                             </li>
                             ${logoutLi}
