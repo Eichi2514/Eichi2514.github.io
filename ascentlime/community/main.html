@@ -28,20 +28,42 @@
     </div>
 </div>
 <div class="body">
-    <div class="boards">
-        <a href="../community/main.html">
-            <div class="button">전 체</div>
-        </a>
-        <a href="../community/main.html?boardId=1">
-            <div class="button">공지사항</div>
-        </a>
-        <a href="../community/main.html?boardId=2">
-            <div class="button">자유게시판</div>
-        </a>
-        <a href="../community/main.html?boardId=3">
-            <div class="button">Q & A</div>
-        </a>
+    <div class="flex justify-between items-end">
+        <div class="boards">
+            <a href="../community/main.html">
+                <div class="button">전 체</div>
+            </a>
+            <a href="../community/main.html?boardId=1">
+                <div class="button">공지사항</div>
+            </a>
+            <a href="../community/main.html?boardId=2">
+                <div class="button">자유게시판</div>
+            </a>
+            <a href="../community/main.html?boardId=3">
+                <div class="button">Q & A</div>
+            </a>
+        </div>
+        <div class="search-sort-bar">
+             <div class="search-box">
+                 <label class="search-label">
+                     <select class="search-category">
+                         <option value="title">제목</option>
+                         <option value="body">내용</option>
+                         <option value="author">작성자</option>
+                     </select>
+                     <input type="text" class="search-input" placeholder="검색어를 입력하세요" />
+                     <button class="search-button">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" fill="currentColor" style="width: 45px;">
+                             <path fill-rule="evenodd"
+                                   d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                                   clip-rule="evenodd"/>
+                         </svg>
+                    </button>
+                 </label>
+             </div>
+        </div>
     </div>
+
     <div class="profile-container">
         <div class="profile login border hidden">
             <div class="profile-photo cursor-pointer">
@@ -69,8 +91,10 @@
             </a>
         </div>
     </div>
+
     <div class="content">
     </div>
+
     <div class="pagination">
     </div>
 </div>
@@ -102,7 +126,8 @@
         <div class="profile-title">프로필 변경</div>
         <div class="close-button link">✖</div>
         <div class="current-profile flex">
-            <img class="current-profile-img" src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="">
+            <img class="current-profile-img"
+                 src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0" alt="">
             <div>
                 <div class="profile-image-name p-2">블루 슬라임</div>
                 <div class="achieved-status pl-2"></div>

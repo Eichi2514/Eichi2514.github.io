@@ -39,6 +39,13 @@ const boardFullName = ['내가 작성한 글', '공지사항', '자유 게시판
 const urlParams = new URLSearchParams(window.location.search);
 let page = parseInt(urlParams.get('page')) || 1;
 let boardId = parseInt(urlParams.get('boardId')) || '';
+let category = urlParams.get('category') || 'title';
+let word = urlParams.get('word') || '';
+
+$(document).ready(function () {
+    if (category) $('.search-category').val(category);
+    if (word) $('.search-input').val(word);
+});
 
 if (boardId === 10) $('.board-title').text(boardFullName[0]);
 else if (boardId >= 0) $('.board-title').text(boardFullName[boardId]);
@@ -175,7 +182,7 @@ async function getWeaponCount() {
     }
 }
 
-async function getplayCount() {
+async function getPlayCount() {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`)));
     try {
         // Firebase에서 데이터를 비동기적으로 가져오기
@@ -234,7 +241,7 @@ async function achievedStatusText(profileImageId) {
                 statusText = `무기 컬렉션 : ${weaponCount} / 70종 획득`;
             }
         } else if (profileImageId === 11) {
-            let playCount = await getplayCount();
+            let playCount = await getPlayCount();
             if (playCount < 100) {
                 statusText = `게임 플레이 : ${playCount} / 100회`;
             }
@@ -367,57 +374,55 @@ window.loadPosts = async function (boardId) {
 
     try {
         const queryRef = await getLogsQuery(page, boardId);
-
         if (!queryRef) return;
 
         const snapshot = await get(queryRef);
-
         if (!snapshot.exists()) {
-            contentDiv.innerHTML = "<p class='text-gray-500 text-center border p-10'>게시글이 없습니다.</p>";
-            page = 1;
-            lastPage = 1;
-            await updatePagination(); // 페이지네이션 업데이트 함수 호출
+            await showEmptyMessage(contentDiv);
             return;
         }
 
-        const articlesArray = Object.entries(snapshot.val());
+        const rawArticles = Object.entries(snapshot.val()).map(([key, article]) => ({
+            key,
+            ...article
+        }));
 
-        if (boardId !== '') {
-            lastPage = Math.ceil(articlesArray.length / 10.0);
-
-            // 페이지 값 조정
-            if (page < 1) page = 1;
-            else if (page > lastPage) page = lastPage;
-
-            // 페이지네이션 업데이트
-            const paginationElement = document.querySelector('.pagination');
-            if (paginationElement) {
-                await updatePagination(); // 페이지네이션 업데이트 함수 호출
-            }
+        // 검색 필터 처리
+        let filteredArticles = [...rawArticles];
+        if (word && category) {
+            filteredArticles = filteredArticles.filter(article => {
+                if (category === "title") return article.title.includes(word);
+                if (category === "author") return article.author.includes(word);
+                if (category === "body") return article.body.includes(word);
+                return true;
+            });
         }
 
-        // 최신 글 순서로 정렬
-        const sortedArticles = articlesArray
-            .map(([key, article]) => ({
-                key,
-                ...article
-            }))
-            .sort((a, b) => {
-                // 날짜 문자열을 "년-월-일 시:분:초" 형식으로 변환
-                const parseDate = (dateStr) => {
-                    const regex = /(\d{4})년 (\d{2})월 (\d{2})일 (\d{2})시 (\d{2})분 (\d{2})초/;
-                    const match = dateStr.match(regex);
-                    if (match) {
-                        return new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}`);
-                    }
-                    return new Date(0);  // 잘못된 형식일 경우 기본 날짜로 처리
-                };
+        if (filteredArticles.length === 0) {
+            await showEmptyMessage(contentDiv);
+            return;
+        }
 
-                const dateA = parseDate(a.createdAt);
-                const dateB = parseDate(b.createdAt);
+        // 페이지네이션 계산
+        if (boardId !== "") {
+            lastPage = Math.ceil(filteredArticles.length / 10);
+            page = Math.max(1, Math.min(page, lastPage));
+            const paginationElement = document.querySelector('.pagination');
+            if (paginationElement) await updatePagination();
+        }
 
-                return dateB - dateA;  // 내림차순 (최신 날짜가 먼저)
-            })
+        // 정렬 + 페이지 슬라이싱
+        const parseDate = (dateStr) => {
+            const regex = /(\d{4})년 (\d{2})월 (\d{2})일 (\d{2})시 (\d{2})분 (\d{2})초/;
+            const match = dateStr.match(regex);
+            if (match) {
+                return new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}`);
+            }
+            return new Date(0);
+        };
+
+        const sortedArticles = filteredArticles
+            .sort((a, b) => parseDate(b.createdAt) - parseDate(a.createdAt))
             .slice((page - 1) * 10, page * 10);
 
         const now = new Date();
@@ -426,65 +431,70 @@ window.loadPosts = async function (boardId) {
         for (const article of sortedArticles) {
             const profileImageId = (await profileImageIdGet(article.author)) || 1;
 
-            // 좋아요 개수 확인
-            const likeCountRef = ref(database, `articleLike/${article.id}`);
-            const likeSnapshot = await get(likeCountRef);
+            const likeSnapshot = await get(ref(database, `articleLike/${article.id}`));
             const likeCount = likeSnapshot.exists() ? Object.keys(likeSnapshot.val()).length : 0;
 
-            // 댓글 개수 확인
-            const snapshot = await get(query(repliesRef, orderByChild("articleNum"), equalTo(article.id)));
-            const replyCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+            const replySnapshot = await get(query(repliesRef, orderByChild("articleNum"), equalTo(article.id)));
+            const replyCount = replySnapshot.exists() ? Object.keys(replySnapshot.val()).length : 0;
+
+            const dateOnly = article.createdAt
+                .split(" ")
+                .slice(0, 3)
+                .map(e => e.replace(/[^\d]/g, ''))
+                .join("-");
+
+            const isNew = dateOnly >= formattedTime;
+            const newIcon = isNew ? `
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 30 30" style="display: inline-block;">
+                    <circle cx="15" cy="15" r="12" fill="#AE001B"/>
+                    <text x="15" y="16" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" dominant-baseline="middle"> N </text>
+                </svg>` : '';
 
             const postElement = document.createElement("a");
             postElement.classList.add("post-item", "border");
             postElement.href = `../community/detail.html?${article.id}`;
 
-            const dateOnly = article.createdAt.split(" ").slice(0, 3).map((e) => e.replace(/[^\d]/g, '')).join("-");
-
-            const NewIcon = dateOnly >= formattedTime ? `
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 30 30" style="display: inline-block;">
-                <circle cx="15" cy="15" r="12" fill="#AE001B"/>
-                <text x="15" y="16" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" dominant-baseline="middle"> N </text>
-            </svg>` : '';
-
             postElement.innerHTML = `
-            <div class="post-thumbnail">
-                <img src="${profileImages[profileImageId]}" alt="대표 이미지">
-            </div>
-            <div class="post-details">
-                <div class="post-header">
-                    <div class="flex gap-2 items-center">
-                        <div class="border boardName">${boardName[article.boardId]}</div>
-                        <div class="post-title">${article.id}) ${article.title}</div>
-                    </div>
-                    <div class="post-title-side flex gap-10">
-                        <div class="comment">
-                            <img src="https://github.com/user-attachments/assets/0d4c9144-13e5-4daa-8799-bd5c6de1ded8" alt="댓글 이미지">
-                            <div class="comment-count">${replyCount || 0}</div>
+                <div class="post-thumbnail">
+                    <img src="${profileImages[profileImageId]}" alt="대표 이미지">
+                </div>
+                <div class="post-details">
+                    <div class="post-header">
+                        <div class="flex gap-2 items-center">
+                            <div class="border boardName">${boardName[article.boardId]}</div>
+                            <div class="post-title">${article.id}) ${article.title}</div>
                         </div>
-                        ${NewIcon}
+                        <div class="post-title-side flex gap-10">
+                            <div class="comment">
+                                <img src="https://github.com/user-attachments/assets/0d4c9144-13e5-4daa-8799-bd5c6de1ded8" alt="댓글 이미지">
+                                <div class="comment-count">${replyCount}</div>
+                            </div>
+                            ${newIcon}
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        <div class="post-title">
+                            ${article.body ? article.body.substring(0, 35) + (article.body.length > 35 ? '...' : '') : ''}
+                        </div>
+                    </div>
+                    <div class="post-meta">
+                        <div class="author">${article.author}</div>
+                        <div class="view-count">
+                            <img src="https://github.com/user-attachments/assets/f172ce36-3488-48a9-ab40-a4d1a02f2cf2" alt="조회수" width="30" height="30">
+                            <span class="pl-5">${article.viewCount}</span>
+                        </div>
+                        <div class="like-count">
+                            <img src="https://github.com/user-attachments/assets/94d75263-e1b4-4d0e-8bc7-a8315a3322b2" alt="좋아요" width="30" height="30">
+                            <span class="pl-5">${likeCount}</span>
+                        </div>
+                        <div class="post-time">
+                            <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
+                            <span class="pl-5">${dateOnly}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="post-body">
-                    <div class="post-title">${article.body ? article.body.substring(0, 35) + (article.body.length > 35 ? '...' : '') : ''}</div>
-                </div>
-                <div class="post-meta">
-                    <div class="author">${article.author}</div>
-                    <div class="view-count">
-                        <img src="https://github.com/user-attachments/assets/f172ce36-3488-48a9-ab40-a4d1a02f2cf2" alt="조회수" width="30" height="30">
-                        <span class="pl-5">${article.viewCount}</span>
-                    </div>
-                    <div class="like-count">
-                        <img src="https://github.com/user-attachments/assets/94d75263-e1b4-4d0e-8bc7-a8315a3322b2" alt="좋아요" width="30" height="30">
-                        <span class="pl-5">${likeCount || 0}</span>
-                    </div>
-                    <div class="post-time">
-                        <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
-                        <span class="pl-5">${dateOnly}</span>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
+
             contentDiv.appendChild(postElement);
         }
     } catch (error) {
@@ -492,6 +502,13 @@ window.loadPosts = async function (boardId) {
         contentDiv.innerHTML = "<p class='text-center text-red-500'>게시글을 불러오는 중 오류가 발생했습니다.</p>";
     }
 };
+
+async function showEmptyMessage(contentDiv) {
+    contentDiv.innerHTML = "<p class='text-gray-500 text-center border p-10'>게시글이 없습니다.</p>";
+    page = 1;
+    lastPage = 1;
+    await updatePagination();
+}
 
 // 페이지네이션 동적 링크 계산
 async function updatePagination() {
@@ -525,29 +542,6 @@ async function updatePagination() {
         </div>
     `);
 }
-
-window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
-
-    if (!loginKeyCheckByIdKey) return;
-
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(loginKeyCheckByIdKey));
-    try {
-        const snapshot = await get(queryRef);
-        if (!snapshot.exists()) {
-            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
-            return null;
-        }
-
-        const memberData = snapshot.val();
-
-        const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].id;
-    } catch (error) {
-        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
-        return null;
-    }
-};
 
 window.weaponFindUpdate = async function (memberKey, weaponNum) {
     const memberId = await loginKeyCheckById();
@@ -726,3 +720,24 @@ window.saveLocalDataToDB = async function (memberKey) {
     localStorage.setItem(localStorageKey, `1`);
 }
 */
+
+$('.search-button').click(async function () {
+    const category = $('.search-category').val();
+    const keyword = $('.search-input').val().trim();
+
+    if (!keyword) {
+        return;
+    }
+
+    const currentUrl = window.location.href.split('?')[0];
+    const separator = boardId ? `?boardId=${boardId}&` : '?';
+    const searchUrl = `${currentUrl}${separator}category=${encodeURIComponent(category)}&word=${encodeURIComponent(keyword)}`;
+    window.location.href = searchUrl;
+});
+
+$(document).on('keydown', '.search-input', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        $('.search-button').click();
+    }
+});

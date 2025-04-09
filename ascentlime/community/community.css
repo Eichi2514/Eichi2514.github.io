@@ -127,6 +127,19 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     color: black;
 }
 
+.search-box, .search-label {
+    display: flex;
+    background: #FFFFFF;
+    padding: 2px;
+    border-radius: 10px;
+}
+
+.search-category, .search-input, .search-button {
+    color: #666 !important;
+    outline: none;
+    box-shadow: none;
+}
+
 /* 메인 */
 .profile-container {
     display: flex;
