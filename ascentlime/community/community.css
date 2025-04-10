@@ -140,6 +140,10 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     box-shadow: none;
 }
 
+.search-input {
+    width: 435px;
+}
+
 /* 메인 */
 .profile-container {
     display: flex;

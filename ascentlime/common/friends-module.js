@@ -83,7 +83,7 @@ $(document).on('click', '.search-btn', async function () {
                         <div class="user-info">
                             <span class="friend-name">${user.nickname}</span>
                             <button type="button" class="btn friend-request-btn" data-id="${user.id}">친구요청</button>
-                            <a class="btn visit-garden-btn" href="https://eichi2514.github.io/ascentlime/garden/friendGarden.html?${user.id}">방문하기</a>
+                            <a class="btn visit-garden-btn" href="../garden/friendGarden.html?${user.id}">방문하기</a>
                         </div>
                     </div>
                 `);
@@ -212,7 +212,7 @@ async function friendsList() {
                                         <button type="button" class="friend-delete-btn" data-id="${user.id}">X</button>
                                     </div>
                                     <button type="button" class="btn friend-chat-btn" data-id="${user.id}">1:1 채팅</button>
-                                    <a class="btn visit-garden-btn" href="https://eichi2514.github.io/ascentlime/garden/friendGarden.html?${user.id}">방문하기</a>
+                                    <a class="btn visit-garden-btn" href="../garden/friendGarden.html?${user.id}">방문하기</a>
                                 </div>
                             </div>
                         `);

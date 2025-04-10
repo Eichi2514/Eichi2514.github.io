@@ -200,7 +200,6 @@ window.checkDuplicate = async function (field, value) {
 
 window.error = function () {
     window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
-    return true;
 };
 
 function generateUUID() {

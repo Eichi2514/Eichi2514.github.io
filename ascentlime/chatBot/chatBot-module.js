@@ -68,22 +68,11 @@ if (localStorage.getItem('nickname')) {
 }
 
 $(document).on('keydown', 'textarea[name="chatBot-question"]', function (event) {
-    const $textarea = $(this);
     const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-    if (event.key === 'Enter') {
-        if (event.ctrlKey) {
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            const text = $textarea.val();
-            const newText = text.substring(0, start) + "\n" + text.substring(end);
-            $textarea.val(newText);
-
-            this.selectionStart = this.selectionEnd = start + 1;
-        } else if (!isMobile) {
-            event.preventDefault();
-            $('.chatBot-sand').click();
-        }
+    if (event.key === 'Enter' && !event.shiftKey && !isMobile) {
+        event.preventDefault();
+        $('.chatBot-sand').click();
     }
 });
 
@@ -128,11 +117,33 @@ function appendChat(text, isUser = false) {
 
 function parseQuestion(question) {
     const patterns = [
-        /(.+?)이라고 말하면 (.+?)이라고/,
-        /(.+?)라고 말하면 (.+?)이라고/,
-        /(.+?)이라고 말하면 (.+?)라고/,
-        /(.+?)라고 말하면 (.+?)라고/,
-        /([\s\S]+?)\s*:\s*([\s\S]+?)\s*Eichi(\d{4})/i
+        // 일반적인 설명형 문장 패턴
+        // 안녕 하세요 감사해요라고 말하면 잘 있어요 다시 만나요라고 대답해
+        /(.+?)\s*(?:이라고|라고|이라|라)?\s*(?:말하면|하면|했을 때|할 때|들으면|입력하면|입력했을 때|묻는다면|라고 할 경우|라고 말할 경우|라고 입력하면|라고 쳤을 때|라고 질문하면)\s*(.+?)\s*(?:라고\s*(?:해줘|말해|대답해|답해|해야 해|말하면 돼)|다|야)?\s*$/i,
+
+        // 간단한 화살표 형태
+        // 안녕 하세요 감사해요 -> 잘 있어요 다시 만나요
+        /(.+?)\s*(?:->|=>)\s*(.+)/,
+
+        // "~는 ~이다" 형태
+        // 안녕 하세요 감사해요는 잘 있어요 다시 만나요다
+        /^(.+?)\s*(?:은|는|이|가)\s+(.+?)\s*(야|이다|다|라고 해|라고|라는 의미야|라는 뜻이야)\s*$/,
+
+
+        // "~에 대한 대답은 ~야" 형태
+        // 안녕 하세요 감사해요에 대한 대답은 잘 있어요 다시 만나요야
+        /(.+?)\s*(?:에 대한|에 관한)?\s*(?:답변|대답|응답)?은\s*(.+?)\s*(?:이다|야|라고 해|라고|다)/,
+
+        // 만약 ~라고 물으면 ~라고 말해
+        // 만약 안녕 하세요 감사해요라고 물으면 잘 있어요 다시 만나요라고 말해
+        /만약\s*(.+?)\s*(?:라고)?\s*(?:묻는다면|물으면|질문하면|말하면|입력하면|쳤을\s*때)\s*(.+?)\s*(?:라고\s*(?:대답|말해|응답|답변))/,
+
+        // ~을 ~로
+        // 안녕 하세요 감사해요를 잘 있어요 다시 만나요로 받아들여
+        /(.+)\s*(?:을|를)\s*(.+?)\s*로\s*(?:인식|응답|답변|처리|대답|받아|반응)/,
+
+        // 특수 포맷
+        /(.+?)\s*:\s*(.+?)\s*Eichi(\d{4})/i,
     ];
 
     for (const pattern of patterns) {
@@ -140,8 +151,8 @@ function parseQuestion(question) {
         if (match) {
             return {
                 qText: match[1].trim().replace(/^<br>|<br>$/g, ''),
-                aText: match[2].trim().replace(/^<br>|<br>$/g, ''),
-                editable: match[3]
+                aText: match[2]?.trim().replace(/^<br>|<br>$/g, ''),
+                editable: match[3] || undefined
             };
         }
     }
@@ -770,6 +781,7 @@ async function getIntentAnswer(text) {
         ]);
     }
 
+    // ...
     if (/﹒﹒﹒/.test(text)) {
         console.log(`text : ${text}`);
         return getRandomAnswer([
@@ -781,15 +793,7 @@ async function getIntentAnswer(text) {
         ]);
     }
 
-    // "질문"
-    if (/질문|뭐\s*라\s*고/i.test(text)) {
-        const directAnswer = await fetchAnswer(`?`);
-
-        return getRandomAnswer([
-            `${directAnswer.answer}`
-        ]);
-    }
-
+    // 사이트 관련 기본 질문
     for (const intent of intentList) {
         if (intent.pattern.test(text)) {
             const directAnswer = await fetchAnswer(intent.key);
@@ -801,6 +805,8 @@ async function getIntentAnswer(text) {
 }
 
 const intentList = [
+    { pattern: /질문/i, key: "?" },
+    { pattern: /뭐\s*라고/i, key: "?" },
     { pattern: /회원가입/i, key: "회원가입" },
     { pattern: /공격/i, key: "공격" },
     { pattern: /이동/i, key: "이동" },
@@ -816,5 +822,5 @@ const intentList = [
     { pattern: /정원/i, key: "정원" },
     { pattern: /친구/i, key: "친구" },
     { pattern: /서리/i, key: "서리" },
-    { pattern: /도움/i, key: "도움" },
+    { pattern: /도움/i, key: "도움" }
 ];
