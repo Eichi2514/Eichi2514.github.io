@@ -1,5 +1,5 @@
 window.onerror = function () {
-    window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
+    // window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
 };
 
 
@@ -399,6 +399,14 @@ async function updateCharacterData(nickname) {
             $('.location').text((charac.floor - 1) + '층 보스방');
         }
 
+        if (10 < characFloor && characFloor <= 20) {
+            for (let mobNum = 2; mobNum <= 6; mobNum++) {
+                $(`.mob${mobNum}`).append(`
+                <img class="meleeAttack meleeAttack${mobNum} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${mobNum}"/>
+                `);
+            }
+        }
+
         $hp_count.text(front_hp);
         $power_count.text(front_power);
         $speed_count.text(50 - front_speed);
@@ -527,15 +535,15 @@ async function updateCharacterData(nickname) {
         $mob6.css("left", LR6 + "vh");
 
         let moveInterval; // 캐릭터 이동을 위한 interval
-        let moveActionChack = null; // 현재 움직이고 있는 방향 추적
+        let moveActionCheck = null; // 현재 움직이고 있는 방향 추적
 
         function startMoving(moveAction) {
             // 이미 해당 방향으로 움직이고 있으면 중복 방지
-            if (moveActionChack === moveAction) return;
+            if (moveActionCheck === moveAction) return;
 
             // 새로운 방향으로 이동 시작
             stopMoving(); // 이전 움직임을 중지하고 새로운 움직임 시작
-            moveActionChack = moveAction;
+            moveActionCheck = moveAction;
 
             moveInterval = setInterval(function () {
                 moveCharacter(moveAction, 1)
@@ -547,7 +555,7 @@ async function updateCharacterData(nickname) {
                 clearInterval(moveInterval); // 이전 움직임 중지
                 moveInterval = null; // interval 초기화
             }
-            moveActionChack = null; // 현재 방향 초기화
+            moveActionCheck = null; // 현재 방향 초기화
         }
 
         let lastKeyDirection = null; // 마지막으로 처리된 키 방향
@@ -557,7 +565,7 @@ async function updateCharacterData(nickname) {
             const chatInputFocused = $('input[name="body"]').is(':focus');  // 채팅 입력창에 포커스가 있는지 확인
 
             // 채팅창이 포커스 상태일 때는 키보드 이벤트를 무시
-            if (chatInputFocused || !windowChack) {
+            if (chatInputFocused || !windowCheck) {
                 return;  // 채팅창에 포커스가 있으면 함수 종료 (키 이벤트 무시)
             }
 
@@ -569,7 +577,7 @@ async function updateCharacterData(nickname) {
             };
 
             const keyAction = keyMap[e.keyCode];
-            if (keyAction && moveActionChack !== keyAction.direction) {
+            if (keyAction && moveActionCheck !== keyAction.direction) {
                 // 중복된 키 입력 방지
                 if (lastKeyDirection === keyAction.direction) return;
                 lastKeyDirection = keyAction.direction;
@@ -627,10 +635,10 @@ async function updateCharacterData(nickname) {
             }
 
             // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
-            if ((e.keyCode === 37 && moveActionChack === 'left') ||
-                (e.keyCode === 38 && moveActionChack === 'up') ||
-                (e.keyCode === 39 && moveActionChack === 'right') ||
-                (e.keyCode === 40 && moveActionChack === 'down')) {
+            if ((e.keyCode === 37 && moveActionCheck === 'left') ||
+                (e.keyCode === 38 && moveActionCheck === 'up') ||
+                (e.keyCode === 39 && moveActionCheck === 'right') ||
+                (e.keyCode === 40 && moveActionCheck === 'down')) {
                 lastKeyDirection = null; // 키 입력 상태 초기화
                 $characImg.css('animation', 'none');
                 stopMoving();
@@ -658,7 +666,7 @@ async function updateCharacterData(nickname) {
         const $characImg = $('.front_charac_img');
 
         const handleTouchStart = (direction, scale) => {
-            if (moveActionChack === direction) return;
+            if (moveActionCheck === direction) return;
             lastKeyDirection = direction;
 
             if (scale !== undefined) {
@@ -669,7 +677,7 @@ async function updateCharacterData(nickname) {
         };
 
         const handleTouchEnd = (direction) => {
-            if (moveActionChack === direction) {
+            if (moveActionCheck === direction) {
                 lastKeyDirection = null;
                 $characImg.css('animation', 'none');
                 stopMoving();
@@ -738,19 +746,19 @@ async function updateCharacterData(nickname) {
         function moveCharacter(moveAction, something) {
             // console.log("moveAction :" + moveAction + ", mob : " + "mob" + something);
 
-            if (!windowChack) return;
+            if (!windowCheck) return;
 
-            let data = moveChack(moveAction, something);
+            let data = moveCheck(moveAction, something);
 
 
             // console.log('moveAction : ' + moveAction + ' / something : ' + something + ' / data : ' + data);
 
             if (something !== 1 && data === 1) {
                 hpDown(mobDamage);
-                damage__motion('1', mobDamage);
+                damage__motion(data, mobDamage);
             } else if (something === 1 && data > 1) {
                 hpDown(mobDamage);
-                damage__motion('1', mobDamage);
+                damage__motion(something, mobDamage);
             }
 
             if (something === 1) {
@@ -848,7 +856,7 @@ async function updateCharacterData(nickname) {
 
         function attack(direction, something) {
 
-            if (!windowChack) return;
+            if (!windowCheck) return;
 
             // 먼저 attack_motion 을 즉시 실행
             attack_motion(something, direction);
@@ -863,15 +871,15 @@ async function updateCharacterData(nickname) {
 
             // 나머지 로직은 0.5초 뒤에 실행
             // setTimeout(() => {
-            let data = attackChack(something, direction);
+            let data = attackCheck(something, direction);
             // console.log(data);
             if (something !== 1 && data === 1) {
                 if (something < 6) {
                     hpDown(mobDamage);
-                    damage__motion('1', mobDamage);
+                    damage__motion(data, mobDamage);
                 } else {
                     hpDown(mobDamage * 2);
-                    damage__motion('1', mobDamage * 2);
+                    damage__motion(data, mobDamage * 2);
                 }
             } else if (something === 1 && data === 2) {
                 mob2_hp -= newDamage;
@@ -921,6 +929,31 @@ async function updateCharacterData(nickname) {
                 showRandomItem();
             }
             // }, 400);
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "z" || e.key === "Z") {
+                melee_Attack_motion("2");
+            }
+        });
+
+        function mobMeleeAttack(something) {
+            if (!windowCheck) return;
+            
+            // 먼저 melee_Attack_motion 을 즉시 실행
+            melee_Attack_motion(something);
+
+            let data = meleeAttackCheck(something);
+
+            if (something !== 1 && data === 1) {
+                if (something < 6) {
+                    hpDown(mobDamage);
+                    damage__motion(data, mobDamage);
+                } else {
+                    hpDown(mobDamage * 2);
+                    damage__motion(data, mobDamage * 2);
+                }
+            }
         }
 
         let saveCooldown = false; // 저장 쿨타임 변수
@@ -1012,14 +1045,14 @@ async function updateCharacterData(nickname) {
             });
         }
 
-        function moveChack(moveAction, something) {
+        function moveCheck(moveAction, something) {
             let Xcode = somethingXcode(something) - 5;
             let Ycode = somethingYcode(something) - 5;
             let height = something > 5 ? 10 : 5;
             let width = something > 5 ? 10 : 5;
 
             // 맵 생성
-            const map2 = mapChack(something);
+            const map2 = mapCheck(something);
 
             // for (i = 0; i < 40; i++) {
             //    let log = '';
@@ -1060,7 +1093,7 @@ async function updateCharacterData(nickname) {
         }
 
         // 공격 대상 확인 함수
-        function attackChack(something, direction) {
+        function attackCheck(something, direction) {
             let Xcode = somethingXcode(something) - 5;
             let Ycode = somethingYcode(something) - 5;
             let height = something > 5 ? 8 : 4;
@@ -1074,7 +1107,7 @@ async function updateCharacterData(nickname) {
             // console.log('something : ' + something);
 
             // 맵 생성
-            const map3 = mapChack(something);
+            const map3 = mapCheck(something);
 
             if (direction === 'A') {
                 let x = Xcode + (height / 2);
@@ -1124,11 +1157,31 @@ async function updateCharacterData(nickname) {
             return 0;
         }
 
+        function meleeAttackCheck(something) {
+            let Xcode = somethingXcode(something) - 5;
+            let Ycode = somethingYcode(something) - 5;
+            let height = something > 5 ? 8 : 4;
+            let width = something > 5 ? 8 : 4;
+
+            const map4 = mapCheck(something);
+
+            let x = Xcode;
+            let y = Ycode - 1;
+
+            for (let i = 0; i < height; i++) {
+                x++;
+                y--;
+                if (map4[x][y] !== 0) {
+                    return map4[x][y];
+                }
+            }
+        }
+
         // 아이템 안내창 공개
         function showItem_text() {
-            let itemChack = $item.hasClass('hidden');
-            // console.log("아이템 공개 여부"+itemChack);
-            if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemChack && characFloor > 1 && characRoom === 0) {
+            let itemCheck = $item.hasClass('hidden');
+            // console.log("아이템 공개 여부"+itemCheck);
+            if (LR > 64 && LR < 76 && UD < 56 && UD > 34 && !itemCheck && characFloor > 1 && characRoom === 0) {
                 $item_text.fadeIn(1000).removeClass('hidden');
             }
         }
@@ -1140,9 +1193,9 @@ async function updateCharacterData(nickname) {
 
         // 랜덤아이템 안내창 공개
         function showRandomItem_text() {
-            let randomItemChack = $random_item.hasClass('hidden');
-            // console.log("아이템 공개 여부"+itemChack);
-            if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemChack) {
+            let randomItemCheck = $random_item.hasClass('hidden');
+            // console.log("아이템 공개 여부"+itemCheck);
+            if (UD > 64 && UD < 76 && LR < 56 && LR > 34 && !randomItemCheck) {
                 $random_item_text.fadeIn(1000).removeClass('hidden');
             }
         }
@@ -1181,7 +1234,7 @@ async function updateCharacterData(nickname) {
             return 0;
         }
 
-        function mapChack(something) {
+        function mapCheck(something) {
             let characXCode = (UD / 2) - 5;
             let characYCode = (LR / 2) - 5;
             let mob2XCode = (UD2 / 2) - 5;
@@ -1316,7 +1369,7 @@ async function updateCharacterData(nickname) {
                     Distance = 10;
                 }
             } else {
-                Distance = characFloor - 3;
+                Distance = characFloor % 10 == 0 ? 10 : characFloor % 10;
                 if (Distance > 10) {
                     Distance = 10;
                 }
@@ -1359,12 +1412,29 @@ async function updateCharacterData(nickname) {
             }, 500);  // 애니메이션 시간 500ms 이후
         }
 
+        function melee_Attack_motion(something) {
+            const $meleeAttackElement = $(".meleeAttack" + something);
+
+            $meleeAttackElement.css({
+                "transform-origin": "bottom center", // ⬅️ 아래를 중심으로 회전
+                transform: "rotate(-90deg)",
+                transition: "transform 0.2s ease"
+            });
+
+            setTimeout(() => {
+                $meleeAttackElement.css({
+                    transform: "rotate(0deg)",
+                    transition: "transform 0.2s ease"
+                });
+            }, 500);
+        }
+
         let isConfirm = true; // 알림창 중복 방지 플래그
 
         // 스테이지 이동
         async function stageUp(callback) {
-            let doorChack = $(".door").hasClass("hidden");
-            if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorChack) {
+            let doorCheck = $(".door").hasClass("hidden");
+            if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorCheck) {
                 stopMoving();
                 const isItemHidden = $item.hasClass('hidden');
                 if (!isItemHidden && isConfirm && characFloor <= 5) {
@@ -1528,14 +1598,14 @@ async function updateCharacterData(nickname) {
         function move(something) {
             let random;
             // 1에서 5까지의 랜덤 숫자 생성
-            if (characFloor < 4) {
+            if (characFloor <= 10) {
                 random = getRandom(1, 4);
             } else {
                 random = getRandom(1, 5);
             }
 
             // console.log('random : ' + random);
-            // console.log('windowChack : ' + windowChack);
+            // console.log('windowCheck : ' + windowCheck);
             // console.log('something : ' + something);
 
             if (random === 1) {
@@ -1546,7 +1616,9 @@ async function updateCharacterData(nickname) {
                 moveCharacter('right', something)
             } else if (random === 4) {
                 moveCharacter('down', something)
-            } else if (random === 5) {
+            } else if (random === 5 && characFloor <= 20) {
+                mobMeleeAttack(something);
+            } else if (random === 5 && characFloor > 20) {
                 mobAttack(something);
             }
         }
@@ -1623,7 +1695,7 @@ const interval = setInterval(function () {
 }, 100); // 100ms 마다 로딩 바 업데이트
 
 // 윈도우 로딩 체크
-let windowChack = false;
+let windowCheck = false;
 
 // window.onload 이벤트 감지
 window.onload = function () {
@@ -1645,7 +1717,7 @@ window.onload = function () {
     }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
 
     setTimeout(function () {
-        windowChack = true;
+        windowCheck = true;
     }, 1000);
 }
 

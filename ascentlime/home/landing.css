@@ -1292,6 +1292,18 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     transition: top 0.5s ease;
 }
 
+.meleeAttack2, .meleeAttack3, .meleeAttack4, .meleeAttack5 {
+    left: -2vh;
+    top: 0;
+    height: 10vh;
+}
+
+.meleeAttack6 {
+    left: -4vh;
+    top: 0;
+    height: 20vh;
+}
+
 .front_mob_img {
     width: 10vh;
     height: 10vh;
