@@ -1304,6 +1304,81 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 20vh;
 }
 
+.hidden-weapon-attack-bg {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vh;
+    height: 100vh;
+}
+
+.hidden-weapon-attack-bg img {
+    width: 12.4vh;
+    height: 12.4vh;
+    opacity: 0.8;
+}
+
+.hidden-attack1 {
+    animation: swing1 1s ease-in-out infinite, fadeInOut1 2s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+.hidden-attack2 {
+    animation: swing2 1s ease-in-out infinite, fadeInOut1 2s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+.hidden-attack3 {
+    animation: swing1 1s ease-in-out infinite, fadeInOut2 2s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+.hidden-attack4 {
+    animation: swing2 1s ease-in-out infinite, fadeInOut2 2s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+@keyframes swing1 {
+    0% { transform: rotate(0deg); }
+    30% { transform: rotate(5deg); }
+    70% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes swing2 {
+    0% { transform: rotate(0deg); }
+    30% { transform: rotate(-5deg); }
+    70% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes fadeInOut1 {
+    0% { opacity: 0.3; }
+    30% { opacity: 0.8; }
+    50% { opacity: 0.8; }
+    70% { opacity: 0.8; }
+    100% { opacity: 0.3; }
+}
+
+@keyframes fadeInOut2 {
+    0% { opacity: 0.8; }
+    30% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+    70% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1625/1000) {
+    .hidden-weapon-attack-bg {
+        left: 50%;
+        transform: translateX(-50vh);
+    }
+}
+
 .front_mob_img {
     width: 10vh;
     height: 10vh;

@@ -4,7 +4,7 @@ window.onerror = function () {
 
 
 const weapon = [
-    'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e',
+    'https://github.com/user-attachments/assets/38ac0543-fd8f-47cd-9563-2a8c9a86a849',
 
     'https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6',
     'https://github.com/user-attachments/assets/ca527de8-3ca6-44bb-9845-625e9f30ab89',
@@ -605,6 +605,89 @@ async function updateCharacterData(nickname) {
             }
         });
 
+        function hiddenAttack() {
+            let newDamage = damage;
+
+            if (getRandom(1, 5) === 3) {
+                newDamage = Math.floor(damage * 1.5);
+            }
+
+            mob2_hp -= newDamage;
+            mob3_hp -= newDamage;
+            mob4_hp -= newDamage;
+            mob5_hp -= newDamage;
+            mob6_hp -= newDamage;
+
+            for (let i = 2; i <= 6; i++) {
+                damage__motion(i, newDamage);
+            }
+
+            if (mob2_hp <= 0 && characRoom > 0) {
+                getMoney(2);
+                mobHidden(2);
+                clearInterval(stop2);
+            }
+
+            if (mob3_hp <= 0 && characRoom > 1) {
+                getMoney(3);
+                mobHidden(3);
+                clearInterval(stop3);
+            }
+
+            if (mob4_hp <= 0 && characRoom > 2) {
+                getMoney(4);
+                mobHidden(4);
+                clearInterval(stop4);
+            }
+
+            if (mob5_hp <= 0 && characRoom > 3) {
+                getMoney(5);
+                mobHidden(5);
+                clearInterval(stop5);
+            }
+
+            if (characRoom === 0) {
+                if (mob6_hp <= 0) {
+                    getMoney(6);
+                    mobHidden(6);
+                    clearInterval(stop6);
+                    showItem();
+                }
+                BossHpDown();
+            }
+
+            showDoor();
+            showRandomItem();
+        }
+
+        function hiddenAttackMotion() {
+            // 이미 추가된 이펙트가 있다면 중복 방지
+            if ($('.hidden-weapon-attack-bg').length > 0) return;
+
+            let hiddenAttackImg = '';
+
+            for (let i = 0; i < 64; i++) {
+                let randomNum = Math.floor(Math.random() * 4) + 1;
+                let className = "hidden-attack" + randomNum;
+
+                hiddenAttackImg += `<img class="${className}" src="https://github.com/user-attachments/assets/4ee56238-45f4-45ef-80b8-40421b7e57e6" alt="히든무기 공격 이펙트">`;
+            }
+
+            // 공격 이펙트 추가
+            const $effect = $(`
+                <div class="hidden-weapon-attack-bg">
+                    ${hiddenAttackImg}
+                </div>
+            `);
+
+            $('.mapBody').append($effect);
+
+            // 2초 뒤 이펙트 제거
+            setTimeout(() => {
+                $effect.remove();
+            }, 2000);
+        }
+
         function processItemAction() {
             // 랜덤 아이템 안내창이 보여지는중인지 확인
             const isRandomItemHidden = $random_item_text.hasClass('hidden');
@@ -654,6 +737,9 @@ async function updateCharacterData(nickname) {
                 attack('D', 1);
             } else if (e.keyCode === 83) {
                 attack('S', 1);
+            } else if (e.keyCode === 90 && characWeaponId === 0) {
+                hiddenAttack();
+                hiddenAttackMotion()
             }
         });
 
@@ -931,12 +1017,6 @@ async function updateCharacterData(nickname) {
             // }, 400);
         }
 
-        document.addEventListener("keydown", function (e) {
-            if (e.key === "z" || e.key === "Z") {
-                melee_Attack_motion("2");
-            }
-        });
-
         function mobMeleeAttack(something) {
             if (!windowCheck) return;
             
@@ -1008,8 +1088,16 @@ async function updateCharacterData(nickname) {
             $(".characHP_bar_text").text('x' + (characHp_number + 1));
         }
 
+        const getMoneyCheck = {};
+
         // 돈 획득시 증가 함수
         function getMoney(data) {
+            // 이미 돈을 획득한적이 있는지 체크
+            if (getMoneyCheck[data]) return;
+
+            // 획득 완료 처리
+            getMoneyCheck[data] = true;
+
             if (data < 6) {
                 front_money++;
             } else if (data === 6) {
@@ -1018,8 +1106,16 @@ async function updateCharacterData(nickname) {
             $money_count.text(front_money);
         }
 
+        const mobHiddenCheck = {};
+
         //몬스터 사라지게하는 함수
         function mobHidden(num) {
+            // 이미 행동한적 있는지 체크
+            if (mobHiddenCheck[num]) return;
+
+            // 완료 처리
+            mobHiddenCheck[num] = true;
+
             let $mob = $(".mob" + num);
             if (num < 6) {
                 let goldDropNum = getRandom(1, 4);
@@ -1623,7 +1719,6 @@ async function updateCharacterData(nickname) {
             }
         }
 
-
         // 몬스터의 공격
         function mobAttack(something) {
             let randomAttack = getRandom(1, 4);
@@ -1772,9 +1867,17 @@ function weapon_img(img) {
 //아이템 안내창 교체 버튼 눌렀을 떄
 function Item_change() {
     // localStorage.setItem(nickname + 'weaponFind' + $randomWeapon, true);
-    weaponFindUpdate(nickname, $randomWeapon);
-    let changeImg = weapon[$randomWeapon];
-    front_weaponId = $randomWeapon;
+    let changeImg = 0;
+
+    if(characWeaponId === 1 && $randomWeapon === 1) {
+        changeImg = weapon[0];
+        front_weaponId = 0;
+    } else {
+        weaponFindUpdate(nickname, $randomWeapon);
+        changeImg = weapon[$randomWeapon];
+        front_weaponId = $randomWeapon;
+    }
+
     // console.log('교체' + front_weaponId);
     weapon_img(changeImg);
     $item.fadeOut(1000).addClass('hidden');
