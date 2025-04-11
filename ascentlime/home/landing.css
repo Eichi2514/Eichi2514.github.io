@@ -1304,6 +1304,58 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 20vh;
 }
 
+.bombAttack2, .bombAttack3, .bombAttack4, .bombAttack5 {
+    left: 2vh;
+    bottom: 0.5vh;
+    height: 6vh;
+}
+
+.bombAttack6 {
+    left: 4vh;
+    bottom: 1vh;
+    height: 12vh;
+}
+
+.boom-attack-bg2, .boom-attack-bg3, .boom-attack-bg4, .boom-attack-bg5 {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    left: -10vh;
+    top: -10vh;
+    height: 30vh;
+    width: 30vh;
+}
+
+.boom-attack-bg6 {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    left: -20vh;
+    top: -20vh;
+    height: 60vh;
+    width: 60vh;
+}
+
+.boom-attack2-1, .boom-attack3-1, .boom-attack4-1, .boom-attack5-1 {
+    height: 6vh;
+    opacity: 0.8;
+}
+
+.boom-attack6-1 {
+    height: 12vh;
+    opacity: 0.8;
+}
+
+.boom-attack2-2, .boom-attack3-2, .boom-attack4-2, .boom-attack5-2 {
+    height: 6vh;
+    opacity: 0.1;
+}
+
+.boom-attack6-2 {
+    height: 12vh;
+    opacity: 0.1;
+}
+
 .hidden-weapon-attack-bg {
     display: flex;
     flex-wrap: wrap;

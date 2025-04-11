@@ -1036,6 +1036,35 @@ async function updateCharacterData(nickname) {
             }
         }
 
+        let mobBombAttackCheck = {};
+
+        function mobBombAttack(something) {
+            if (!windowCheck) return;
+
+            if (mobBombAttackCheck[something]) return;
+            mobBombAttackCheck[something] = true;
+
+            // 먼저 bomb_Attack_motion 을 즉시 실행
+            bomb_Attack_motion(something);
+
+            // 2초뒤에 실행
+            setTimeout(() => {
+                let data = bombAttackCheck(something);
+
+                if (something !== 1 && data === 1) {
+                    if (something < 6) {
+                        hpDown(mobDamage);
+                        damage__motion(data, mobDamage);
+                    } else {
+                        hpDown(mobDamage * 2);
+                        damage__motion(data, mobDamage * 2);
+                    }
+                }
+
+                mobBombAttackCheck[something] = false;
+            }, 2000);
+        }
+
         let saveCooldown = false; // 저장 쿨타임 변수
 
         async function saveLog() {
@@ -1273,6 +1302,29 @@ async function updateCharacterData(nickname) {
             }
         }
 
+        function bombAttackCheck(something) {
+            let Xcode = somethingXcode(something) - 5;
+            let Ycode = somethingYcode(something) - 5;
+            let height = something > 5 ? 10 : 5;
+            let width = something > 5 ? 10 : 5;
+
+            const map5 = mapCheck(something);
+
+            let x = Xcode - width;
+            let y = Ycode - height;
+
+            for (let i = 0; i < height * 3; i++) {
+                for (let j = 0; j < width * 3; j++) {
+                    const xi = x + i;
+                    const yj = y + j;
+                    if (xi >= 0 && xi < 40 && yj >= 0 && yj < 40 && map5[xi][yj] !== 0) {
+                        console.log(`map5[${xi}][${yj}] =`, map5[xi][yj]);
+                        return map5[xi][yj];
+                    }
+                }
+            }
+        }
+
         // 아이템 안내창 공개
         function showItem_text() {
             let itemCheck = $item.hasClass('hidden');
@@ -1428,23 +1480,23 @@ async function updateCharacterData(nickname) {
                     return 13;
                 }
             } else {
-                if (floor <= 4) {
+                if (floor % 10 == 1) {
                     return 3;
-                } else if (floor <= 5) {
+                } else if (floor % 10 == 2) {
                     return 4;
-                } else if (floor <= 6) {
+                } else if (floor % 10 == 3) {
                     return 5;
-                } else if (floor <= 7) {
+                } else if (floor % 10 == 4) {
                     return 6;
-                } else if (floor <= 8) {
+                } else if (floor % 10 == 5) {
                     return 7;
-                } else if (floor <= 9) {
+                } else if (floor % 10 == 6) {
                     return 8;
-                } else if (floor <= 10) {
+                } else if (floor % 10 == 7) {
                     return 9;
-                } else if (floor <= 11) {
+                } else if (floor % 10 == 8) {
                     return 10;
-                } else if (floor <= 12) {
+                } else if (floor % 10 == 9) {
                     return 11;
                 } else {
                     return 12;
@@ -1512,7 +1564,7 @@ async function updateCharacterData(nickname) {
             const $meleeAttackElement = $(".meleeAttack" + something);
 
             $meleeAttackElement.css({
-                "transform-origin": "bottom center", // ⬅️ 아래를 중심으로 회전
+                "transform-origin": "bottom center", // 아래를 중심으로 회전
                 transform: "rotate(-90deg)",
                 transition: "transform 0.2s ease"
             });
@@ -1523,6 +1575,41 @@ async function updateCharacterData(nickname) {
                     transition: "transform 0.2s ease"
                 });
             }, 500);
+        }
+
+        function bomb_Attack_motion(something) {
+            const $target = $(`.mob${something}`);
+
+            $target.append(`
+                <img class="bombAttack${something} absolute" src="https://github.com/user-attachments/assets/88577ab9-8cf6-4bde-9aa9-cf0b73104ae2" alt="">
+            `);
+
+            // 3초 뒤 폭탄 이미지를 터지는 이미지로 변경
+            setTimeout(() => {
+                $target.find(`.bombAttack${something}`).remove();
+                let boomAttackImg = "";
+
+                for (let i = 0; i < 25; i++) {
+                    let randomNum = Math.floor(Math.random() * 2) + 1;
+                    let className = "boom-attack" + something + "-" + randomNum;
+
+                    boomAttackImg += `<img class="${className}" src="https://github.com/user-attachments/assets/f9136a53-b517-45dd-a049-b821b1663361" alt="폭발(불꽃) 이미지">`;
+                }
+
+                const $effect = $(`
+                    <div class="boom-attack-bg${something} absolute">
+                        ${boomAttackImg}
+                    </div>
+                `);
+
+                $target.append($effect);
+
+                // 추가한 이펙트는 1초 뒤 제거
+                setTimeout(() => {
+                    $effect.remove();
+                }, 1000);
+
+            }, 2000);
         }
 
         let isConfirm = true; // 알림창 중복 방지 플래그
@@ -1655,38 +1742,21 @@ async function updateCharacterData(nickname) {
             setTimeout(() => mobHpDown(5), 1000);
             $('body').css('cursor', 'none');
 
-            if (characFloor <= 10) {
-                if (characRoom > 0 && characRoom < 5) {
-                    stop2 = setInterval(() => move(2), 1000);
-                }
-                if (characRoom > 1 && characRoom < 5) {
-                    stop3 = setInterval(() => move(3), 800);
-                }
-                if (characRoom > 2 && characRoom < 5) {
-                    stop4 = setInterval(() => move(4), 500);
-                }
-                if (characRoom > 3 && characRoom < 5) {
-                    stop5 = setInterval(() => move(5), 200);
-                }
-                if (characFloor > 1 && characRoom === 0) {
-                    stop6 = setInterval(() => move(6), 200);
-                }
-            } else {
-                if (characRoom > 0 && characRoom < 5) {
-                    stop2 = setInterval(() => move(2), 500);
-                }
-                if (characRoom > 1 && characRoom < 5) {
-                    stop3 = setInterval(() => move(3), 400);
-                }
-                if (characRoom > 2 && characRoom < 5) {
-                    stop4 = setInterval(() => move(4), 250);
-                }
-                if (characRoom > 3 && characRoom < 5) {
-                    stop5 = setInterval(() => move(5), 100);
-                }
-                if (characFloor > 1 && characRoom === 0) {
-                    stop6 = setInterval(() => move(6), 100);
-                }
+
+            if (characRoom > 0 && characRoom < 5) {
+                stop2 = setInterval(() => move(2), 1000);
+            }
+            if (characRoom > 1 && characRoom < 5) {
+                stop3 = setInterval(() => move(3), 800);
+            }
+            if (characRoom > 2 && characRoom < 5) {
+                stop4 = setInterval(() => move(4), 500);
+            }
+            if (characRoom > 3 && characRoom < 5) {
+                stop5 = setInterval(() => move(5), 200);
+            }
+            if (characFloor > 1 && characRoom === 0) {
+                stop6 = setInterval(() => move(6), 200);
             }
         }
 
@@ -1714,7 +1784,9 @@ async function updateCharacterData(nickname) {
                 moveCharacter('down', something)
             } else if (random === 5 && characFloor <= 20) {
                 mobMeleeAttack(something);
-            } else if (random === 5 && characFloor > 20) {
+            } else if (random === 5 && characFloor <= 30) {
+                mobBombAttack(something);
+            } else if (random === 5 && characFloor > 30) {
                 mobAttack(something);
             }
         }
