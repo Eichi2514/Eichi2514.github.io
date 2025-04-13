@@ -1235,7 +1235,7 @@ async function updateCharacterData(nickname) {
             // console.log('Xcode : ' + Xcode);
             // console.log('Ycode : ' + Ycode);
 
-            let distance = somethingDistance(something, front_weaponId, characFloor);
+            let distance = somethingDistance(something, front_weaponId, characFloor, characRoom);
 
             // console.log('something : ' + something);
 
@@ -1464,7 +1464,7 @@ async function updateCharacterData(nickname) {
             return map;
         }
 
-        function somethingDistance(something, weaponId, floor) {
+        function somethingDistance(something, weaponId, floor, room) {
             if (something === 1) {
                 if (weaponId % 10 === 1) {
                     return 4;
@@ -1488,29 +1488,30 @@ async function updateCharacterData(nickname) {
                     return 13;
                 }
             } else {
-                if (floor % 10 == 1) {
-                    return 3;
-                } else if (floor % 10 == 2) {
+                if (room === 0) {
+                    return 13;
+                } else if (floor % 10 == 1) {
                     return 4;
-                } else if (floor % 10 == 3) {
+                } else if (floor % 10 == 2) {
                     return 5;
-                } else if (floor % 10 == 4) {
+                } else if (floor % 10 == 3) {
                     return 6;
-                } else if (floor % 10 == 5) {
+                } else if (floor % 10 == 4) {
                     return 7;
-                } else if (floor % 10 == 6) {
+                } else if (floor % 10 == 5) {
                     return 8;
-                } else if (floor % 10 == 7) {
+                } else if (floor % 10 == 6) {
                     return 9;
-                } else if (floor % 10 == 8) {
+                } else if (floor % 10 == 7) {
                     return 10;
-                } else if (floor % 10 == 9) {
+                } else if (floor % 10 == 8) {
                     return 11;
-                } else {
+                } else if (floor % 10 == 9) {
                     return 12;
+                } else {
+                    return 13;
                 }
             }
-            return 3;
         }
 
         // 공격 모션 실행 함수
@@ -1526,22 +1527,35 @@ async function updateCharacterData(nickname) {
                 }
             } else {
                 Distance = characFloor % 10 == 0 ? 10 : characFloor % 10;
-                if (Distance > 10) {
+                if (Distance > 10 || characRoom === 0) {
                     Distance = 10;
                 }
             }
 
-            const $attackElement = $("." + motion + "attack" + something);
+            const weaponImg = something === 1
+              ? weapon[front_weaponId]
+              : "https://github.com/user-attachments/assets/49ac96a1-55f9-4b50-a4fe-c2107f21c2a1";
 
-            // hidden 클래스를 제거해서 모습을 드러냄
-            $attackElement.removeClass('hidden');
+            let $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt=""/>`);
+
+            if (something === 1) {
+                $('.front_charac').append($attackElement);
+            } else {
+                $(`.mob${something}`).append($attackElement);
+            }
 
             // 약간의 딜레이 후에 css 를 변경해 이동하는 모습을 표현
             setTimeout(function () {
                 if (motion === 'A') {
-                    $attackElement.css('left', (-4 - (Distance * 2)) + "vh");
+                    $attackElement.css({
+                        left: (-4 - (Distance * 2)) + "vh",
+                        transform: "scaleX(-1)"
+                    });
                 } else if (motion === 'W') {
-                    $attackElement.css('top', (-4 - (Distance * 2)) + "vh");
+                    $attackElement.css({
+                        top: (-4 - (Distance * 2)) + "vh",
+                        transform: "rotate(270deg)"
+                    });
                 } else if (motion === 'D') {
                     if (something < 6) {
                         $attackElement.css('left', (12 + (Distance * 2)) + "vh");
@@ -1550,21 +1564,22 @@ async function updateCharacterData(nickname) {
                     }
                 } else if (motion === 'S') {
                     if (something < 6) {
-                        $attackElement.css('top', (12 + (Distance * 2)) + "vh");
+                        $attackElement.css({
+                            top: (12 + (Distance * 2)) + "vh",
+                            transform: "rotate(90deg)"
+                        });
                     } else if (something === 6) {
-                        $attackElement.css('top', (22 + (Distance * 2)) + "vh");
+                        $attackElement.css({
+                            top: (22 + (Distance * 2)) + "vh",
+                            transform: "rotate(90deg)"
+                        });
                     }
                 }
             }, 10);  // 10ms 정도의 짧은 딜레이를 줘서 CSS 변경을 애니메이션으로 적용
 
-            // 0.5초 뒤에 애니메이션이 끝나고, 모습을 없애고 원래 자리로
+            // 0.5초 뒤에 애니메이션이 끝나고 제거
             setTimeout(function () {
-                $attackElement.addClass('hidden'); // 다시 hidden 추가
-                if (something < 6) {
-                    $attackElement.css({top: "4vh", left: "4vh"}); // 원래 위치로 복귀
-                } else if (something === 6) {
-                    $attackElement.css({top: "9vh", left: "9vh"}); // 원래 위치로 복귀
-                }
+                $attackElement.remove();
             }, 500);  // 애니메이션 시간 500ms 이후
         }
 

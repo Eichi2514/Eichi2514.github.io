@@ -10,7 +10,8 @@ import {
     orderByChild,
     get,
     query,
-    child
+    child,
+    update
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -224,3 +225,22 @@ async function profileUpdate() {
 }
 
 profileUpdate();
+
+window.mobFindUpdate = function (key, floor) {
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+
+    get(queryRef)
+        .then((snapshot) => {
+            if (!snapshot.exists()) return;
+
+            const memberData = snapshot.val();
+            const memberKey = Object.keys(memberData)[0];
+            const currentMobFind = memberData[memberKey].mobFind || 0;
+
+            if (currentMobFind < floor) {
+                update(ref(database, `members/${memberKey}`), { mobFind: floor })
+                    .catch((error) => console.error("mobFind 업데이트 중 오류 발생:", error));
+            }
+        })
+        .catch((error) => console.error("로그인 아이디 확인 중 오류 발생:", error));
+};

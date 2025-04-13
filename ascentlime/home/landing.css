@@ -965,7 +965,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: -2vh;
     left: 1vh;
     height: 1vh;
-    width: 8vh;
+    width: 0;
     transition: width 0.5s ease;
 }
 
@@ -1198,109 +1198,26 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     }
 }
 
-/* [class^='Aattack'] {
-	left: -6vh;
-	top: 4vh;
-	transform: scaleX(-1);
+/* [class^='attack'] {
+    left: 4vh;
+    top: 4vh;
+    transition: top 0.5s ease, left 0.5s ease, right 0.5s ease, bottom 0.5s ease;
 } */
 .attackSize {
     width: 2vh;
     height: 2vh;
 }
 
-.Aattack1 {
+.attack1, .attack2, .attack3, .attack4, .attack5 {
     left: 4vh;
     top: 4vh;
-    transform: scaleX(-1);
-    transition: left 0.5s ease;
+    transition: top 0.5s ease, left 0.5s ease, right 0.5s ease, bottom 0.5s ease;
 }
 
-.Wattack1 {
-    left: 4vh;
-    top: 4vh;
-    transform: rotate(270deg);
-    transition: top 0.5s ease;
-}
-
-.Dattack1 {
-    left: 4vh;
-    top: 4vh;
-    transition: left 0.5s ease;
-}
-
-.Sattack1 {
-    left: 4vh;
-    top: 4vh;
-    transform: rotate(90deg);
-    transition: top 0.5s ease;
-}
-
-.Aattack2, .Aattack3, .Aattack4, .Aattack5 {
-    left: 4vh;
-    top: 4vh;
-    transform: scaleX(-1);
-    transition: left 0.5s ease;
-}
-
-.Aattack6 {
+.attack6 {
     left: 9vh;
     top: 9vh;
-    transform: scaleX(-1);
-    transition: left 0.5s ease;
-}
-
-/* [class^="Wattack"] {
-	left: 4vh;
-	top: -6vh;
-	transform: rotate(270deg);
-} */
-.Wattack2, .Wattack3, .Wattack4, .Wattack5 {
-    left: 4vh;
-    top: 4vh;
-    transform: rotate(270deg);
-    transition: top 0.5s ease;
-}
-
-.Wattack6 {
-    left: 4vh;
-    top: 4vh;
-    transform: rotate(270deg);
-    transition: top 0.5s ease;
-}
-
-/* [class^="Dattack"] {
-	left: 14vh;
-	top: 4vh;
-} */
-.Dattack2, .Dattack3, .Dattack4, .Dattack5 {
-    left: 4vh;
-    top: 4vh;
-    transition: left 0.5s ease;
-}
-
-.Dattack6 {
-    left: 9vh;
-    top: 9vh;
-    transition: left 0.5s ease;
-}
-
-/* [class^="Sattack"] {
-	left: 4vh;
-	top: 14vh;
-	transform: rotate(90deg);
-} */
-.Sattack2, .Sattack3, .Sattack4, .Sattack5 {
-    left: 4vh;
-    top: 4vh;
-    transform: rotate(90deg);
-    transition: top 0.5s ease;
-}
-
-.Sattack6 {
-    left: 9vh;
-    top: 9vh;
-    transform: rotate(90deg);
-    transition: top 0.5s ease;
+    transition: top 0.5s ease, left 0.5s ease, right 0.5s ease, bottom 0.5s ease;
 }
 
 .meleeAttack2, .meleeAttack3, .meleeAttack4, .meleeAttack5 {
