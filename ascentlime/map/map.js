@@ -1947,7 +1947,7 @@ function getRandom(min, max) {
 function weapon_img(img) {
     $weapon_img.attr('src', img != null ? img : weapon[front_weaponId]);
 
-    if (front_weaponUpgrade != null) {
+    if (front_weaponUpgrade != 0) {
         $('.weaponUpgrade_count').text(`+${front_weaponUpgrade/10}`);
     }
 
@@ -2155,25 +2155,28 @@ $(document).ready(function () {
 });
 
 // let mobFind = localStorage.getItem(nickname + 'MobFind') || 1;
-let mobFind = null;
 (async () => {
-    mobFind = await getMobFind(nickname) || 0;
-
-    if (mobFind > mobs.length - 1) mobFind = mobs.length - 1;
+    const mobFind = Math.min(await getMobFind(nickname) || 0, mobs.length - 1);
 
     for (let i = 1; i <= mobFind; i++) {
-        $('.mobImage' + i).attr('src', mobs[i]).addClass('cursor-help');
+        $(`.mobImage${i}`).attr('src', mobs[i]).addClass('cursor-help');
 
-        // 현재 순서에 해당하는 mob__dictionary_card2 선택
+        let attackRange = '';
+        if (i <= 10) attackRange = '없음';
+        else if (i <= 20) attackRange = '몽둥이';
+        else if (i <= 30) attackRange = '폭탄';
+        else if (i <= 40) attackRange = '점액';
+        else if (i <= 50) attackRange = '브레스';
+        else attackRange = '랜덤';
+
         const currentCard = $('.mob__dictionary_card2').eq(i - 1);
 
-        // 카드 요소에 새로운 div 추가
         currentCard.append(`
-        <div class="dictionary_body_text absolute">
-            <div>${mobNames[i]}</div>
-            데미지 ${i} <br> 체력 ${i * 10} <br> 사거리 ${i < 4 ? 0 : i - 1 > 12 ? 12 : i - 1}
-        </div>
-    `);
+            <div class="dictionary_body_text absolute">
+                <div>${mobNames[i]}</div>
+                데미지 ${i} <br> 체력 ${i * 10} <br> 무기 ${attackRange}
+            </div>
+        `);
     }
 })();
 
