@@ -808,6 +808,7 @@ async function updateCharacterData(nickname) {
 
         const $touch_Aattack = $('.key-Aattack');
         const $touch_Wattack = $('.key-Wattack');
+        const $touch_Zattack = $('.key-Zattack');
         const $touch_Dattack = $('.key-Dattack');
         const $touch_Sattack = $('.key-Sattack');
 
@@ -818,6 +819,13 @@ async function updateCharacterData(nickname) {
 
         $touch_Wattack.on("touchstart", () => {
             attack('W', 1)
+        });
+
+        $touch_Zattack.on("touchstart", () => {
+            if (characWeaponId === 0) {
+                hiddenAttack();
+                hiddenAttackMotion()
+            }
         });
 
         $touch_Dattack.on("touchstart", () => {

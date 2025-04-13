@@ -101,7 +101,7 @@ $(document).on('click', '.logout_bt', function () {
 });
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 
@@ -124,7 +124,7 @@ window.loginKeyCheckById = async function () {
 };
 
 window.notifyCheck = async function () {
-    if (!localStorage.getItem('nickname')) return;
+    if (!localStorage.getItem('nickname') && !sessionStorage.getItem('nickname')) return;
 
     const memberId = await loginKeyCheckById();
 

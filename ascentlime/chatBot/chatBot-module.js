@@ -807,7 +807,7 @@ async function getIntentAnswer(text) {
 const intentList = [
     { pattern: /질문/i, key: "?" },
     { pattern: /뭐\s*라고/i, key: "?" },
-    { pattern: /회원가입/i, key: "회원가입" },
+    { pattern: /회원/i, key: "회원가입" },
     { pattern: /공격/i, key: "공격" },
     { pattern: /이동/i, key: "이동" },
     { pattern: /도감/i, key: "도감" },
