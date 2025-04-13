@@ -76,6 +76,11 @@
     <!-- 로그아웃 상태일 경우 -->
     <div class="logout">
         <form class="login-form" method="POST">
+            <a class="join_bt button absolute" href="../member/join.html">회원가입</a>
+            <div>
+                <button class="login_bt button login_out_bt absolute" type="submit">로그인</button>
+            </div>
+
             <label>
                 <input class="id absolute text-center" type="text" placeholder="아이디를 입력해주세요" name="loginId"/>
             </label>
@@ -83,10 +88,10 @@
                 <input class="pw absolute text-center" type="password" placeholder="비밀번호를 입력해주세요" name="loginPw"/>
             </label>
 
-            <a class="join_bt button absolute" href="../member/join.html">회원가입</a>
-            <div>
-                <button class="login_bt button login_out_bt absolute" type="submit">로그인</button>
-            </div>
+            <label for="confirm-checkbox" class="login-checkbox absolute">
+                <input type="checkbox" id="confirm-checkbox" class="confirm-checkbox">
+                <span>자동 로그인</span>
+            </label>
         </form>
     </div>
     <!-- 로그인 상태일 경우 -->

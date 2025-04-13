@@ -123,7 +123,7 @@ window.profileImageIdGet = async function (author) {
 const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자', '운영자'];
 
 // 로그인된 사용자 확인
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let nickname = null;
 let memberId = null;
 let profileImageId = null;
@@ -587,7 +587,7 @@ window.replyDelete = async function (replyId) {
 }
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 

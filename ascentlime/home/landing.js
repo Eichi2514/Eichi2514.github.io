@@ -10,6 +10,7 @@ $('.login-form').submit(async function (event) {
 
     const loginId = $('input[name="loginId"]').val().trim();
     const loginPw = $('input[name="loginPw"]').val().trim();
+    const isChecked = $('#confirm-checkbox').prop('checked');
 
     if (!loginId) {
         alert('아이디를 입력해주세요.');
@@ -29,7 +30,13 @@ $('.login-form').submit(async function (event) {
             const hashedPassword = await hashPassword(loginPw, salt);
 
             if (memberData.loginPw === hashedPassword) {
-                localStorage.setItem('nickname', memberData.key);
+
+                if (isChecked) {
+                    localStorage.setItem('nickname', memberData.key);
+                } else {
+                    sessionStorage.setItem('nickname', memberData.key);
+                }
+
                 alert(memberData.nickname + '님 환영합니다');
                 await characCheck(memberData.key);
                 location.reload();
@@ -80,11 +87,12 @@ $login = $('.login');
 
 $('.logout_bt').on('click', function () {
     localStorage.removeItem('nickname');
+    sessionStorage.removeItem('nickname')
     location.reload();
 });
 
 async function login_check() {
-    const nickname = localStorage.getItem('nickname');
+    const nickname = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (nickname) {
         const data = await loginKeyCheck(nickname);

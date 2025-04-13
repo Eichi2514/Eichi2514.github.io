@@ -115,7 +115,7 @@ window.profileImageIdGet = async function (author) {
 }
 
 // 로그인된 사용자 확인
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let info = null;
 let nickname = null;
 if (key) {
@@ -131,7 +131,7 @@ if (key) {
 }
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 
@@ -167,7 +167,7 @@ function getWeaponCount() {
 */
 
 async function getWeaponCount() {
-    const memberId = await loginKeyCheckById(localStorage.getItem('nickname'));
+    const memberId = await loginKeyCheckById(localStorage.getItem('nickname') || sessionStorage.getItem('nickname'));
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
 
@@ -183,7 +183,7 @@ async function getWeaponCount() {
 }
 
 async function getPlayCount() {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`)));
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`) || sessionStorage.getItem(`nickname`)));
     try {
         // Firebase에서 데이터를 비동기적으로 가져오기
         const snapshot = await get(queryRef);
@@ -201,7 +201,7 @@ async function getPlayCount() {
 }
 
 async function getClearStatusText(profileImageId) {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`)));
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem(`nickname`) || sessionStorage.getItem(`nickname`)));
     try {
         // Firebase에서 데이터를 비동기적으로 가져오기
         const snapshot = await get(queryRef);
@@ -618,6 +618,7 @@ window.characCheck = async function (memberKey) {
     } catch (error) {
         alert(`오류 발생:, ${error}`);
         localStorage.removeItem('nickname');
+        sessionStorage.removeItem('nickname')
         console.error("오류 발생:", error);
     }
 };

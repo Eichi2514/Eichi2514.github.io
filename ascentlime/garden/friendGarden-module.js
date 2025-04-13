@@ -104,7 +104,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 const urls = window.location.search;
 const safeId = urls ? parseInt(urls.substring(1)) : 0;
 
@@ -114,7 +114,7 @@ if (!key || !safeId) {
 }
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 

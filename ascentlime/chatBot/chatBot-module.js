@@ -34,7 +34,7 @@ const membersRef = ref(database, 'members');
 const chatBotRef = ref(database, 'chatBots');
 
 window.profileImageIdGet = async function () {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem('nickname')));
+    const queryRef = query(membersRef, orderByChild("key"), equalTo(localStorage.getItem('nickname') || sessionStorage.getItem('nickname')));
     try {
         const snapshot = await get(queryRef);
 
@@ -55,7 +55,7 @@ window.profileImageIdGet = async function () {
 
 let profileImage = profileImages[Math.floor(Math.random() * 3) + 1];
 
-if (localStorage.getItem('nickname')) {
+if (localStorage.getItem('nickname') || sessionStorage.getItem('nickname')) {
     profileImageIdGet().then(function(id) {
         if (id !== null) {
             profileImage = profileImages[id];

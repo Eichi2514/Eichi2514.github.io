@@ -453,7 +453,7 @@ const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 const weaponFindRef = ref(database, 'weaponFind');
 
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 if (!key) {
     alert('로그인이 필요한 서비스 입니다');
     window.location.href = '../../ascentlime.html';
@@ -515,7 +515,7 @@ const page = urls ? parseInt(new URLSearchParams(urls).get('page'), 10) || 1 : 1
 $(`.tab-${shopTap}`).css('z-index', 1);
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 

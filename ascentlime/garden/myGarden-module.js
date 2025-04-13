@@ -104,7 +104,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
 if (!key) {
     alert('로그인이 필요한 서비스 입니다');
@@ -135,7 +135,7 @@ function formatNumber(number) {
 }
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 

@@ -46,7 +46,7 @@ async function getUserInfo(key) {
 }
 
 // 로그인된 사용자 확인
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let authenticationStep1 = null;
 let authenticationStep2 = null;
 if (key) {

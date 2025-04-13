@@ -107,7 +107,7 @@ window.loginKeyCheck = async function (key) {
 };
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 
@@ -132,15 +132,17 @@ window.loginKeyCheckById = async function () {
 updateTop3Table();
 
 function logoutAndClearData() {
-    const localStorageKey = `update__2025-03-09`;
+    const localStorageKey = `update__2025-04-13`;
 
     if (localStorage.getItem(localStorageKey)) {
         return;
     }
 
     localStorage.removeItem('nickname');
+    sessionStorage.removeItem('nickname');
+    localStorage.removeItem(`update__2025-03-09`);
 
-    localStorage.setItem(localStorageKey, `1`);
+    localStorage.setItem(localStorageKey, true);
 }
 
 logoutAndClearData();

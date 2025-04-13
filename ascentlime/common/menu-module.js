@@ -37,7 +37,7 @@ $(document).ready(async function () {
 
     let logoutLi = ``;
 
-    if (localStorage.getItem('nickname')) {
+    if (localStorage.getItem('nickname') || sessionStorage.getItem('nickname')) {
         logoutLi = `
                     <li>
                         <div class="button submenu-item logout_bt">로그아웃</div>
@@ -96,6 +96,7 @@ $(document).ready(async function () {
 
 $(document).on('click', '.logout_bt', function () {
     localStorage.removeItem('nickname');
+    sessionStorage.removeItem('nickname');
     location.reload();
 });
 

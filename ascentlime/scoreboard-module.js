@@ -29,7 +29,7 @@ const database = getDatabase(app);
 const logsRef = ref(database, 'logs');
 const membersRef = ref(database, 'members');
 
-const nickname = localStorage.getItem('nickname');
+const nickname = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 const urlParams = new URLSearchParams(window.location.search);
 let page = parseInt(urlParams.get('page')) || 1; // 기본값은 1 페이지
 

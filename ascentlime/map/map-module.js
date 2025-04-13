@@ -73,7 +73,7 @@ window.userProfileImage = function (key) {
 };
 
 window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname');
+    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 
     if (!loginKeyCheckByIdKey) return;
 
@@ -98,7 +98,7 @@ window.loginKeyCheckById = async function () {
 // 채팅 전송 함수 (전역 함수로 만들어야 함)
 window.Chat__Write = async function (form) {
 
-    const chatName = await userName(localStorage.getItem('nickname'));
+    const chatName = await userName(localStorage.getItem('nickname') || sessionStorage.getItem('nickname'));
 
     const now = new Date();
     const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
@@ -130,7 +130,7 @@ window.Chat__Write = async function (form) {
 };
 
 onChildAdded(chatRef, async (data) => {
-    const chatName = await userName(localStorage.getItem('nickname'));
+    const chatName = await userName(localStorage.getItem('nickname') || sessionStorage.getItem('nickname'));
 
     const chatLog = data.val();
     const chatClass = chatLog.name === chatName ? 'my_chat' : 'who_chat'; // 채팅 발신자에 따라 클래스 설정
@@ -149,7 +149,7 @@ onChildAdded(chatRef, async (data) => {
 window.saveFirebaseLogs = async function (charac, seconds) {
     const now = new Date();
     const formattedTime = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일 ${String(now.getHours()).padStart(2, '0')}시 ${String(now.getMinutes()).padStart(2, '0')}분 ${String(now.getSeconds()).padStart(2, '0')}초`;
-    const logName = await userName(localStorage.getItem('nickname'));
+    const logName = await userName(localStorage.getItem('nickname') || sessionStorage.getItem('nickname'));
 
     // 새 기록 생성
     const newLog = {
@@ -412,8 +412,8 @@ window.getWeaponFind = async function (memberKey) {
 };
 
 async function profileUpdate() {
-    const profileImageId = await userProfileImage(localStorage.getItem('nickname') || 1);
-    const nickname = await userName(localStorage.getItem('nickname'));
+    const profileImageId = await userProfileImage(localStorage.getItem('nickname') || sessionStorage.getItem('nickname') || 1);
+    const nickname = await userName(localStorage.getItem('nickname') || sessionStorage.getItem('nickname'));
     $('.profile-img').attr('src', profileImages[profileImageId]);
     $('.profile-nickname').text(nickname);
 }

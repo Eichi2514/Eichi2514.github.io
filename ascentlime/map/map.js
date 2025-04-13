@@ -286,12 +286,12 @@ const mobNames = [
     '초보 등반자 (여)'
 ];
 
-if (!localStorage.getItem('nickname')) {
+if (!localStorage.getItem('nickname') && !sessionStorage.getItem('nickname')) {
     alert('잘못된 접근 방식입니다.');
     history.back();
 }
 
-const nickname = localStorage.getItem('nickname')
+const nickname = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let charac = null;
 let front_hp = null;
 let front_power = null;

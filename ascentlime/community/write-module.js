@@ -50,7 +50,7 @@ async function loginKeyCheck(key) {
 
 const adminNicknames = ['chi', 'Eichi', '에이치', '빨간이치', 'admin', '관리자', '운영자'];
 
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let author = null;
 
 if (key) {

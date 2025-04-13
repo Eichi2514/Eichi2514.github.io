@@ -35,7 +35,7 @@ const database = getDatabase(app);
 const membersRef = ref(database, 'members');
 const friendsRef = ref(database, 'friends');
 
-const key = localStorage.getItem('nickname');
+const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let memberId = null;
 let safeId = null;
 
