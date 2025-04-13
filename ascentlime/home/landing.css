@@ -757,6 +757,11 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 10vh;
 }
 
+.weaponUpgrade_count {
+    left: 12vh;
+    bottom: 0.5vh;
+}
+
 .weapon_img_text {
     position: absolute;
     display: none;

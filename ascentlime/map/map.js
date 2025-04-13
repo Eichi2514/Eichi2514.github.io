@@ -487,7 +487,7 @@ async function updateCharacterData(nickname) {
         $('.weapon').append(`
         <div class="weapon_img_text">            
             <div>${weaponNames[front_weaponId]}</div>
-            데미지 ${Math.ceil(front_weaponId / 10) * 10} <br>
+            데미지 ${(Math.ceil(front_weaponId / 10) * 10) + (front_weaponUpgrade)} <br>
             사거리 ${front_weaponId % 10 === 0 ? 12 : (front_weaponId % 10) + 2}
         </div>
         `);
@@ -688,13 +688,20 @@ async function updateCharacterData(nickname) {
             }, 2000);
         }
 
+        const $itemText1 = $('.item_text1');
+        const $itemText2 = $('.item_text2');
+
         function processItemAction() {
             // 랜덤 아이템 안내창이 보여지는중인지 확인
             const isRandomItemHidden = $random_item_text.hasClass('hidden');
-            const isItemHidden1 = $('.item_text1').hasClass('hidden');
-            const isItemHidden2 = $('.item_text2').hasClass('hidden');
+            const isItemHidden1 = $itemText1.hasClass('hidden');
+            const isItemHidden2 = $itemText2.hasClass('hidden');
 
-            console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + characFloor + ', ' + characRoom + ', ' + characWeaponId);
+            // console.log(isItemHidden1 + ', ' + isItemHidden2 + ', ' + characFloor + ', ' + characRoom + ', ' + characWeaponId);
+            $alert.addClass('hidden');
+            $random_item_text.addClass('hidden');
+            $itemText1.addClass('hidden');
+            $itemText2.addClass('hidden');
 
             if (!isRandomItemHidden && randomItem === 3) {
                 Item_get();
@@ -705,6 +712,7 @@ async function updateCharacterData(nickname) {
             } else {
                 hide_alert();
             }
+
         }
 
         // 키에서 손을 뗄 때 움직임 멈춤
@@ -1938,20 +1946,25 @@ function getRandom(min, max) {
 
 function weapon_img(img) {
     $weapon_img.attr('src', img != null ? img : weapon[front_weaponId]);
+
+    if (front_weaponUpgrade != null) {
+        $('.weaponUpgrade_count').text(`+${front_weaponUpgrade/10}`);
+    }
+
     // 색상 값을 변수로 선언
     let shadowColor = 'rgba(255, 255, 255, 0.7)';
 
-    if (upgradeNum <= 10) shadowColor = 'rgba(255, 255, 255, 0.7)';
-    else if (upgradeNum <= 20) shadowColor = 'rgba(150, 150, 150, 0.7)';
-    else if (upgradeNum <= 30) shadowColor = 'rgba(163, 73, 164, 0.7)';
-    else if (upgradeNum <= 40) shadowColor = 'rgba(63, 72, 204, 0.7)';
-    else if (upgradeNum <= 50) shadowColor = 'rgba(0, 162, 232, 0.7)';
-    else if (upgradeNum <= 60) shadowColor = 'rgba(34, 177, 76, 0.7)';
-    else if (upgradeNum <= 70) shadowColor = 'rgba(224, 224, 64, 0.7)';
-    else if (upgradeNum <= 80) shadowColor = 'rgba(255, 127, 39, 0.7)';
-    else if (upgradeNum <= 90) shadowColor = 'rgba(224, 0, 64, 0.7)';
+    if (front_weaponUpgrade <= 10) shadowColor = 'rgba(255, 255, 255, 0.7)';
+    else if (front_weaponUpgrade <= 20) shadowColor = 'rgba(150, 150, 150, 0.7)';
+    else if (front_weaponUpgrade <= 30) shadowColor = 'rgba(163, 73, 164, 0.7)';
+    else if (front_weaponUpgrade <= 40) shadowColor = 'rgba(63, 72, 204, 0.7)';
+    else if (front_weaponUpgrade <= 50) shadowColor = 'rgba(0, 162, 232, 0.7)';
+    else if (front_weaponUpgrade <= 60) shadowColor = 'rgba(34, 177, 76, 0.7)';
+    else if (front_weaponUpgrade <= 70) shadowColor = 'rgba(224, 224, 64, 0.7)';
+    else if (front_weaponUpgrade <= 80) shadowColor = 'rgba(255, 127, 39, 0.7)';
+    else if (front_weaponUpgrade <= 90) shadowColor = 'rgba(224, 0, 64, 0.7)';
 
-    if (upgradeNum > 0) {
+    if (front_weaponUpgrade > 0) {
         $weapon_img.css({
             'box-shadow': `0 0 1.5vh 0.5vh ${shadowColor}, inset 0 0 1.5vh 0.5vh ${shadowColor}`,
             'border-radius': '10vh 0 10vh 0'
@@ -2000,10 +2013,12 @@ function Item_upgrade() {
     if (rate < 100 - upgradeNum) {
         front_weaponUpgrade += 10;
         upgradeNum += 10;
+        $('.weaponUpgrade_count').text(`+${front_weaponUpgrade/10}`);
         show_alert("강화 성공! 무기가 한 단계 강화되었습니다. (" + rate + ")");
     } else if (rate < 100 - upgradeNum + 10) {
         front_weaponUpgrade -= 10;
         upgradeNum -= 10;
+        $('.weaponUpgrade_count').text(`+${front_weaponUpgrade/10}`);
         show_alert("강화 실패! 무기가 한 단계 하락했습니다. (" + rate + ")");
     } else {
         show_alert("아무일도 일어나지 않았습니다. (" + rate + ")");
@@ -2021,11 +2036,11 @@ function Item_exit() {
 
 function show_alert(message) {
     $alert_title.html(message);
-    $alert.removeClass('hidden');
+    $alert.fadeIn(1000).removeClass('hidden');
 }
 
 function hide_alert() {
-    $alert.addClass('hidden');
+    $alert.fadeOut(1000).addClass('hidden');
 }
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
