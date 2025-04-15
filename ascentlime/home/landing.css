@@ -1289,6 +1289,44 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     opacity: 0.1;
 }
 
+.beamAttack2, .beamAttack3, .beamAttack4, .beamAttack5 {
+    position: absolute;
+    width: 0;
+    height: 6vh;
+    opacity: 0.7;
+}
+
+.beamAttack6 {
+    position: absolute;
+    width: 0;
+    height: 12vh;
+    opacity: 0.8;
+}
+
+@keyframes rotate3dSpinLeft {
+    0% {
+        transform: rotate3d(1, 0, 0, 0deg);
+    }
+    50% {
+        transform: rotate3d(1, 0, 0, 360deg);
+    }
+    100% {
+        transform: rotate3d(1, 0, 0, 0deg);
+    }
+}
+
+@keyframes rotate3dSpinRight {
+    0% {
+        transform: scaleX(-1) rotate3d(1, 0, 0, 0deg);
+    }
+    50% {
+        transform: scaleX(-1) rotate3d(1, 0, 0, 360deg);
+    }
+    100% {
+        transform: scaleX(-1) rotate3d(1, 0, 0, 0deg);
+    }
+}
+
 .hidden-weapon-attack-bg {
     display: flex;
     flex-wrap: wrap;
@@ -1362,6 +1400,11 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
         left: 50%;
         transform: translateX(-50vh);
     }
+}
+
+.front_mob {
+    position: absolute;
+    overflow: visible;
 }
 
 .front_mob_img {

@@ -751,7 +751,6 @@ async function updateCharacterData(nickname) {
             }
         });
 
-
         const $touch_left = $('.key-left');
         const $touch_up = $('.key-up');
         const $touch_center = $('.key-center');
@@ -1081,6 +1080,30 @@ async function updateCharacterData(nickname) {
             }, 2000);
         }
 
+        function beamAttack(direction, something) {
+            if (!windowCheck) return;
+
+            // 먼저 attack_motion 을 즉시 실행
+            beamAttack_motion(something, direction);
+
+            // 0.5초뒤에 실행
+            setTimeout(() => {
+                let data = beamAttackCheck(something, direction);
+
+                if (something !== 1 && data === 1) {
+                    if (something < 6) {
+                        hpDown(mobDamage);
+                        damage__motion(data, mobDamage);
+                    } else {
+                        hpDown(mobDamage * 2);
+                        damage__motion(data, mobDamage * 2);
+                    }
+                }
+
+                mobBombAttackCheck[something] = false;
+            }, 500);
+        }
+
         let saveCooldown = false; // 저장 쿨타임 변수
 
         async function saveLog() {
@@ -1336,6 +1359,50 @@ async function updateCharacterData(nickname) {
                     if (xi >= 0 && xi < 40 && yj >= 0 && yj < 40 && map5[xi][yj] !== 0) {
                         console.log(`map5[${xi}][${yj}] =`, map5[xi][yj]);
                         return map5[xi][yj];
+                    }
+                }
+            }
+        }
+
+        function beamAttackCheck(something, direction) {
+            let Xcode = somethingXcode(something) - 5;
+            let Ycode = somethingYcode(something) - 5;
+            let offset = something > 5 ? 7 : 4;
+
+            const map6 = mapCheck(something);
+
+            // console.log(`${Xcode}, ${Ycode}`);
+
+            if (direction === 'A') {
+                for (let i = Ycode; i >= 0; i--) {
+                    for (let j = 1; j < offset; j++) {
+                        if (map6[Xcode + j][i] === 1) {
+                            return 1;
+                        }
+                    }
+                }
+            } else if (direction === 'D') {
+                for (let i = Ycode; i < 40; i++) {
+                    for (let j = 1; j < offset; j++) {
+                        if (map6[Xcode + j][i] === 1) {
+                            return 1;
+                        }
+                    }
+                }
+            } else if (direction === 'W') {
+                for (let i = Xcode; i >= 0; i--) {
+                    for (let j = 1; j < offset; j++) {
+                        if (map6[i][Ycode + j] === 1) {
+                            return 1;
+                        }
+                    }
+                }
+            } else if (direction === 'S') {
+                for (let i = Xcode; i < 40; i++) {
+                    for (let j = 1; j < offset; j++) {
+                        if (map6[i][Ycode + j] === 1) {
+                            return 1;
+                        }
                     }
                 }
             }
@@ -1643,6 +1710,72 @@ async function updateCharacterData(nickname) {
             }, 2000);
         }
 
+        $(window).keyup(function (e) {
+            if (e.keyCode === 88) {
+
+            }
+            if (e.keyCode === 67) {
+
+            }
+            if (e.keyCode === 86) {
+
+            }
+            if (e.keyCode === 66) {
+
+            }
+        });
+
+        function beamAttack_motion(something, motion) {
+            const UDMap = { 2: UD2, 3: UD3, 4: UD4, 5: UD5, 6: UD6 };
+            const LRMap = { 2: LR2, 3: LR3, 4: LR4, 5: LR5, 6: LR6 };
+            const UDOffset = UDMap[something];
+            const LROffset = LRMap[something];
+
+            const xOffset = something === 6 ? 4 : 2;
+            const yOffset = something === 6 ? 8 : 4;
+
+            let $attackElement = $(`<img class="beamAttack${something}" src="https://github.com/user-attachments/assets/204705f9-7cf4-4334-a01e-6bd4cca50835" alt=""/>`);
+            $(".mapBody").append($attackElement);
+
+            const topValue = `${UDOffset + xOffset}vh`;
+            const rightValue = `${100 - (LROffset + yOffset)}vh`;
+            const leftValue = `${LROffset + yOffset}vh`;
+
+            let styles = {
+                top: topValue,
+                'object-fit': 'cover',
+                'object-position': 'left'
+            };
+            let animationWidth;
+
+            if (motion === 'A') {
+                styles.right = rightValue;
+                animationWidth = `${LROffset}vh`;
+            } else if (motion === 'D') {
+                styles.left = leftValue;
+                styles.transform = 'scaleX(-1)';
+                animationWidth = `${100 - LROffset - (yOffset * 2)}vh`;
+            } else if (motion === 'S') {
+                styles.right = rightValue;
+                styles.transform = 'rotate(270deg)';
+                styles['transform-origin'] = 'right center';
+                animationWidth = `${100 - UDOffset - (yOffset * 2)}vh`;
+            } else if (motion === 'W') {
+                styles.right = rightValue;
+                styles.transform = 'rotate(90deg)';
+                styles['transform-origin'] = 'right center';
+                animationWidth = `${UDOffset}vh`;
+            }
+
+            $attackElement.css(styles).animate({
+                width: animationWidth
+            }, 500, () => {
+                setTimeout(() => {
+                    $attackElement.remove();
+                });
+            });
+        }
+
         let isConfirm = true; // 알림창 중복 방지 플래그
 
         // 스테이지 이동
@@ -1797,8 +1930,10 @@ async function updateCharacterData(nickname) {
             // 1에서 5까지의 랜덤 숫자 생성
             if (characFloor <= 10) {
                 random = getRandom(1, 4);
-            } else {
+            } else if (characFloor <= 50) {
                 random = getRandom(1, 5);
+            } else {
+                random = getRandom(1, 8);
             }
 
             // console.log('random : ' + random);
@@ -1817,8 +1952,18 @@ async function updateCharacterData(nickname) {
                 mobMeleeAttack(something);
             } else if (random === 5 && characFloor <= 30) {
                 mobBombAttack(something);
-            } else if (random === 5 && characFloor > 30) {
+            } else if (random === 5 && characFloor <= 40) {
                 mobAttack(something);
+            } else if (random === 5 && characFloor <= 50) {
+                mobBeamAttack(something);
+            } else if (random === 5 && characFloor > 50) {
+                mobMeleeAttack(something);
+            } else if (random === 6 && characFloor > 50) {
+                mobBombAttack(something);
+            } else if (random === 7 && characFloor > 50) {
+                mobAttack(something);
+            } else if (random === 8 && characFloor > 50) {
+                mobBeamAttack(something);
             }
         }
 
@@ -1833,6 +1978,20 @@ async function updateCharacterData(nickname) {
                 attack('D', something);
             } else if (randomAttack === 4) {
                 attack('S', something);
+            }
+        }
+
+        // 몬스터의 공격
+        function mobBeamAttack(something) {
+            let randomAttack = getRandom(1, 4);
+            if (randomAttack === 1) {
+                beamAttack('A', something);
+            } else if (randomAttack === 2) {
+                beamAttack('W', something);
+            } else if (randomAttack === 3) {
+                beamAttack('D', something);
+            } else if (randomAttack === 4) {
+                beamAttack('S', something);
             }
         }
 
@@ -2154,9 +2313,11 @@ $(document).ready(function () {
     updateCharacterData(nickname);
 });
 
+let mobFind = 0;
+
 // let mobFind = localStorage.getItem(nickname + 'MobFind') || 1;
 (async () => {
-    const mobFind = Math.min(await getMobFind(nickname) || 0, mobs.length - 1);
+    mobFind = Math.min(await getMobFind(nickname) || 0, mobs.length - 1);
 
     for (let i = 1; i <= mobFind; i++) {
         $(`.mobImage${i}`).attr('src', mobs[i]).addClass('cursor-help');
@@ -2167,6 +2328,7 @@ $(document).ready(function () {
         else if (i <= 30) attackRange = '폭탄';
         else if (i <= 40) attackRange = '점액';
         else if (i <= 50) attackRange = '브레스';
+        else if (i <= 54) attackRange = '분신';
         else attackRange = '랜덤';
 
         const currentCard = $('.mob__dictionary_card2').eq(i - 1);

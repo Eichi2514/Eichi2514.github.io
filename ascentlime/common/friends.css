@@ -14,7 +14,7 @@
     padding-top: 1vh;
     overflow: auto;
     flex-direction: column;
-    flex-wrap: nowrap;;
+    flex-wrap: nowrap;
 }
 
 .friend-input, .friendChat-input {
@@ -135,7 +135,7 @@
 .friendChat-form-container {
     overflow: auto;
     flex-direction: column;
-    flex-wrap: nowrap;;
+    flex-wrap: nowrap;
     width: 57vh;
     height: 43.5vh;
     border: 0.3vh solid rgb(174, 0, 27);

@@ -4,6 +4,14 @@ window.onerror = function () {
 
 // window.location.href = 'https://eichi2514.github.io/ascentlime/restricted/restricted';
 
+// 엔터 키를 누르면 폼 제출
+$('.login-form input, .login-form #confirm-checkbox').on('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // 기본 동작을 막음
+        $('.login-form').submit(); // 폼 수동 제출
+    }
+});
+
 // 로그인 기능 구현
 $('.login-form').submit(async function (event) {
     event.preventDefault(); // 폼의 기본 제출 동작을 막음
