@@ -402,8 +402,65 @@ async function updateCharacterData(nickname) {
         if (10 < characFloor && characFloor <= 20) {
             for (let mobNum = 2; mobNum <= 6; mobNum++) {
                 $(`.mob${mobNum}`).append(`
-                <img class="meleeAttack meleeAttack${mobNum} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${mobNum}"/>
+                    <img class="meleeAttack meleeAttack${mobNum} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${mobNum}"/>
                 `);
+            }
+        }
+
+        if (50 < characFloor) {
+            const spawnCount = (characRoom === 1 ? 10 : characRoom === 2 ? 13 : characRoom === 3 ? 15 : characRoom === 4 ? 17 : 10) + (characFloor - 50);
+
+            const UDs = {};
+            const LRs = {};
+
+            for (let i = 7; i < spawnCount; i++) {
+                if (characRoom != 0) {
+                    const mobHP_bar = `mob${getRandom(2, characRoom + 1)}HP_bar`;
+                    $('.mapBody').prepend(`
+                        <div class="front_mob mob${i} fake_mob">
+                            <div class="${mobHP_bar} absolute bg-red-500"></div>
+                            <img class="front_mob_img mob_img"/>
+                        </div>
+                    `);
+                } else {
+                    $('.mapBody').prepend(`
+                        <div class="front_bossMob mob${i} fake_mob">
+                            <img class="front_bossMob_img mob_img"/>
+                        </div>
+                    `);
+                }
+
+
+                UDs[i] = getRandom(10, 70);
+                LRs[i] = getRandom(30, 70);
+
+                $(`.mob${i}`).css("top", UDs[i] + "vh");
+                $(`.mob${i}`).css("left", LRs[i] + "vh");
+
+                (function(index) {
+                    const intervalId = setInterval(() => {
+                        if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
+                            clearInterval(intervalId);
+                            $('.fake_mob').fadeOut(2000, function () {
+                                $(this).addClass('hidden');
+                            });
+                        }
+
+                        const random = getRandom(1, 4);
+                        if (random === 1 && UDs[index] > 11) {
+                            UDs[index] -= 2;
+                        } else if (random === 2 && UDs[index] < 69) {
+                            UDs[index] += 2;
+                        } else if (random === 3 && LRs[index] > 11) {
+                            LRs[index] -= 2;
+                        } else if (random === 4 && LRs[index] < 69) {
+                            LRs[index] += 2;
+                        }
+
+                        $(`.mob${index}`).css("top", UDs[index] + "vh");
+                        $(`.mob${index}`).css("left", LRs[index] + "vh");
+                    }, getRandom(400, 600));
+                })(i);
             }
         }
 

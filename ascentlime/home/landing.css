@@ -1402,7 +1402,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     }
 }
 
-.front_mob {
+.front_mob, .front_bossMob {
     position: absolute;
     overflow: visible;
 }
