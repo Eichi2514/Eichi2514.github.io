@@ -1957,7 +1957,16 @@ async function updateCharacterData(nickname) {
             } else if (random === 5 && characFloor <= 50) {
                 mobBeamAttack(something);
             } else if (random === 5 && characFloor > 50) {
-                mobMeleeAttack(something);
+                $(`.meleeAttack${something}`).remove();
+                $(`.mob${something}`).append(`
+                    <img class="meleeAttack meleeAttack${something} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${something}"/>
+                `);
+                setTimeout(() => {
+                    mobMeleeAttack(something);
+                }, 500);
+                setTimeout(() => {
+                    $(`.meleeAttack${something}`).remove();
+                }, 1000);
             } else if (random === 6 && characFloor > 50) {
                 mobBombAttack(something);
             } else if (random === 7 && characFloor > 50) {

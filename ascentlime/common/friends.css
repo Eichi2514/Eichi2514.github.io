@@ -11,7 +11,7 @@
 }
 
 .friend-form-container {
-    padding-top: 1vh;
+    padding-top: 10px;
     overflow: auto;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -22,26 +22,26 @@
 }
 
 .search-btn, .send-btn {
-    padding: 0 1vh
+    padding: 0 10px
 }
 
 .user-card img {
-    width: 20vh;
-    height: 20vh;
-    padding: 3vh;
-    border-radius: 3vh;
+    width: 200px;
+    height: 200px;
+    padding: 30px;
+    border-radius: 30px;
     background: #FFFFFF;
 }
 
 .friend-name {
-    width: 20vh;
+    width: 200px;
 }
 
 .user-info {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 2vh 0;
+    padding: 20px 0;
 }
 
 .friend-bg {
@@ -59,32 +59,33 @@
 }
 
 .friend-box {
-    width: 64vh;
-    height: 70vh;
+    width: 640px;
+    height: 700px;
     position: relative;
     display: flex;
     flex-direction: column;
     background: rgb(0, 0, 30);
-    gap: 1vh;
-    padding: 2vh;
-    border-top-left-radius: 3vh;
-    border-bottom-left-radius: 3vh;
+    gap: 10px;
+    padding: 20px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
 }
 
 .friend-tabs {
     display: flex;
     position: absolute;
-    top: 19vh;
-    left: 1vh;
+    top: 190px;
+    left: 10px;
 }
 
 .friend-tab {
-    border-top: 0.3vh solid rgb(174, 0, 27);
-    border-right: 0.3vh solid rgb(174, 0, 27);
-    border-left: 0.3vh solid rgb(174, 0, 27);
-    border-top-left-radius: 1vh;
-    border-top-right-radius: 1vh;
-    padding: 1vh 3vh;
+    border-top: 3px solid rgb(174, 0, 27);
+    border-right: 3px solid rgb(174, 0, 27);
+    border-left: 3px solid rgb(174, 0, 27);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width: 120px;
+    height: 65px;
     color: #ffffff;
     cursor: pointer;
     background: rgb(0, 0, 30);
@@ -94,8 +95,8 @@
 .close-btn {
     position: absolute;
     color: #ffffff;
-    top: 1.5vh;
-    right: 2.5vh;
+    top: 15px;
+    right: 25px;
     cursor: pointer;
 }
 
@@ -109,14 +110,14 @@
     flex-direction: column;
     position: absolute;
     align-content: start;
-    top: 8.2vh;
-    left: 2vh;
-    width: 60vh;
-    height: 59vh;
-    padding: 1vh;
-    gap: 1vh;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-bottom-left-radius: 3vh;
+    top: 82px;
+    left: 20px;
+    width: 600px;
+    height: 590px;
+    padding: 10px;
+    gap: 10px;
+    border: 3px solid rgb(174, 0, 27);
+    border-bottom-left-radius: 30px;
     flex-wrap: wrap;
     background: inherit;
     overflow: auto;
@@ -125,35 +126,35 @@
 
 .btn {
     text-align: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    padding: 0.2vh 1vh;
-    border-radius: 1vh;
+    border: 3px solid rgb(174, 0, 27);
+    padding: 2px 10px;
+    border-radius: 10px;
     cursor: pointer;
-    width: 20vh;
+    width: 200px;
 }
 
 .friendChat-form-container {
     overflow: auto;
     flex-direction: column;
     flex-wrap: nowrap;
-    width: 57vh;
-    height: 43.5vh;
-    border: 0.3vh solid rgb(174, 0, 27);
-    padding: 1vh;
+    width: 570px;
+    height: 435px;
+    border: 3px solid rgb(174, 0, 27);
+    padding: 10px;
 }
 
 .friendChat, .myChat {
-    padding: 0.5vh 1vh;
-    border-radius: 1vh;
+    padding: 5px 10px;
+    border-radius: 10px;
     height: max-content;
     width: max-content;
-    max-width: 80%;
+        max-width: 80%;
     text-shadow: 1px 1px 3px rgba(255,255,255,0.3)
     white-space: pre-line;
     word-break: keep-all;
     overflow-wrap: break-word;
     animation: fadeIn 0.2s ease-in-out;
-    font-size: 2vh;
+    font-size: 20px;
 }
 
 .friendChat {
