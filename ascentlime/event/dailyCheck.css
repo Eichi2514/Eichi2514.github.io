@@ -1,0 +1,220 @@
+/* 공용 */
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
+}
+
+html > body, button {
+    color: white;
+}
+
+input, select, option, textarea {
+    color: black !important;
+}
+
+option {
+    text-align: center;
+}
+
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
+body {
+    background: rgb(0, 0, 30);
+}
+
+.head {
+    position: absolute;
+    width: 100%;
+    min-width: 900px;
+    padding: 10px;
+    z-index: 2;
+}
+
+.head-line {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1440px;
+    position: relative;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 120px;
+    width: 100%;
+    height: calc(100% - 120px);
+    max-width: 1440px;
+    gap: 10px;
+    padding: 0 30px;
+}
+
+@media (min-width: 1440px) {
+    .head-line, .body {
+        left: 50%;
+        transform: translateX(-720px);
+    }
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+input {
+    padding-left: 10px !important;
+    /* background-color: transparent; */
+}
+
+input::placeholder, textarea::placeholder {
+    color: #666 !important;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+    color: #666;
+}
+
+input:-ms-input-placeholder, textarea::-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+    color: #666;
+}
+
+input::-ms-input-placeholder, textarea::-ms-input-placeholder { /* 엣지 */
+    color: #666;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder { /* 파이어폭스 19+ */
+    color: #666;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
+    color: #666;
+}
+
+.border {
+    border: 3px solid rgb(174, 0, 27) !important;
+    border-radius: 10px !important;
+}
+
+.logo {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+}
+
+.title {
+    font-size: 50px;
+}
+
+.menu-notify {
+    align-self: flex-start;
+}
+
+.menu-notify img {
+    height: 70px;
+}
+
+.button {
+    display: inline-block;
+    text-align: center;
+    width: 180px;
+    border: 3px solid;
+    padding: 7px;
+    background: rgb(255, 71, 48);
+    border-radius: 10px;
+    color: black;
+}
+
+.search-box, .search-label {
+    display: flex;
+    background: #FFFFFF;
+    padding: 2px;
+    border-radius: 10px;
+}
+
+.search-category, .search-input, .search-button {
+    color: #666 !important;
+    outline: none;
+    box-shadow: none;
+}
+
+.search-input {
+    width: 435px;
+}
+
+/* 달력 */
+.calendar {
+    width: 60%;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgb(174, 0, 27);
+    border-radius: 30px;
+    padding: 30px;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    .calendar {
+        width: 100%;
+    }
+}
+
+.dayNames, .days {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar .day,
+.calendar .day-name {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.day {
+    position: relative;
+    background: rgb(0, 0, 30);
+    border: 3px solid rgb(174, 0, 27);
+}
+
+.day img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.day-number {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.double-reward {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 20px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.day-name {
+    height: 70%;
+    width: 100%;
+    background: rgb(174, 0, 27);
+    color: rgb(0, 0, 30);
+}
+
+.today {
+    background: rgb(174, 0, 27);
+}
