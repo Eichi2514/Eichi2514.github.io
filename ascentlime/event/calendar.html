@@ -6,7 +6,7 @@
     <link rel="icon" href="../../favicon/AscentLime.png" type="image/png">
     <title>AscentLime | 출석체크</title>
 
-    <link rel="stylesheet" href="../event/dailyCheck.css"/>
+    <link rel="stylesheet" href="calendar.css"/>
     <!-- 제이쿼리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -30,10 +30,14 @@
 <div class="body">
     <div class="calendar">
         <div class="dayNames"></div>
-        <div class="days"></div>
+        <div class="days">
+            <div class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+        </div>
     </div>
 </div>
-<script src="../event/dailyCheck.js" defer type="module"></script>
+<script src="calendar-module.js" defer type="module"></script>
 <script src="../common/menu-module.js" defer type="module"></script>
 </body>
 </html>

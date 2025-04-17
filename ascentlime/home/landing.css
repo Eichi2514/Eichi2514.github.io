@@ -1695,6 +1695,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 6.7vh;
 }
 
+/* 달력 */
+.daily-check-image {
+    position: absolute;
+    top: 31vh;
+    right: 8vh;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.daily-check-image img {
+    height: 4.5vh;
+    transition: transform 0.3s ease;
+}
+
+.daily-check-image:hover img {
+    transform: scale(1.2) rotate(10deg);
+}
+
 /* 배경 */
 .menu-bg {
     position: absolute;

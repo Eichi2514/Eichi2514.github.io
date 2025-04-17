@@ -108,7 +108,8 @@ async function login_check() {
             $logout.addClass("hidden");
             $login.removeClass("hidden");
             $(".member_name1").text(`${data}님`);
-            notifyCheck(nickname);
+            notifyCheck();
+            checkDailyReward();
         }
     } else {
         $login.addClass("hidden");

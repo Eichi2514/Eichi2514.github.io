@@ -57,7 +57,7 @@ if (key) {
     author = await loginKeyCheck(key);
 } else {
     alert('로그인이 필요한 서비스 입니다');
-    window.location.href = 'ascentlime.html';
+    window.location.href = '/ascentlime.html';
 }
 
 async function articleIdCheck(num) {

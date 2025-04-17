@@ -325,7 +325,7 @@ window.playCountUpdate = async function (memberKey) {
     }
 }
 
-window.notifyCheck = async function (memberKey) {
+window.notifyCheck = async function () {
     const memberId = await loginKeyCheckById();
 
     try {
@@ -346,6 +346,40 @@ window.notifyCheck = async function (memberKey) {
                     <img class="off" src="https://github.com/user-attachments/assets/dcf0de3f-321d-4889-b2af-14d285d7a8f5" alt="알림 이미지"/>
                 </div>
             `)
+        }
+    } catch (error) {
+        console.error("데이터 조회 중 오류 발생:", error);
+    }
+}
+
+window.checkDailyReward = async function () {
+    const memberId = await loginKeyCheckById();
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+
+    try {
+        const dailyCheckRef = ref(database, `dailyCheck/${memberId}/${formattedDate}`);
+        const snapshot = await get(dailyCheckRef);
+
+        if (snapshot.exists()) {
+            $('.body').append(`
+                //<a href="../event/calendar.html" class="daily-check-image">
+                <a href="" class="daily-check-image">
+                    <img src="https://github.com/user-attachments/assets/4579e24c-5e02-4384-b483-1f0bb85b648d" alt="달력 이미지"/>
+                </a>
+            `);
+        } else {
+            $('.body').append(`
+                //<a href="../event/calendar.html" class="daily-check-image">
+                <a href="" class="daily-check-image">
+                    <img src="https://github.com/user-attachments/assets/f82cc834-18fb-4a06-b829-fc485e64bc7a" alt="달력 이미지"/>
+                </a>
+            `);
         }
     } catch (error) {
         console.error("데이터 조회 중 오류 발생:", error);
