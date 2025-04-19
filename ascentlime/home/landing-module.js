@@ -368,15 +368,13 @@ window.checkDailyReward = async function () {
 
         if (snapshot.exists()) {
             $('.body').append(`
-                //<a href="../event/calendar.html" class="daily-check-image">
-                <a href="" class="daily-check-image">
+                <a href="../event/calendar.html" class="daily-check-image">
                     <img src="https://github.com/user-attachments/assets/4579e24c-5e02-4384-b483-1f0bb85b648d" alt="달력 이미지"/>
                 </a>
             `);
         } else {
             $('.body').append(`
-                //<a href="../event/calendar.html" class="daily-check-image">
-                <a href="" class="daily-check-image">
+                <a href="../event/calendar.html" class="daily-check-image">
                     <img src="https://github.com/user-attachments/assets/f82cc834-18fb-4a06-b829-fc485e64bc7a" alt="달력 이미지"/>
                 </a>
             `);

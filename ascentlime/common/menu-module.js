@@ -61,6 +61,11 @@ $(document).ready(async function () {
                         </div>
                         <ul class="submenu">
                             <li>
+                                <a href="../event/calendar.html">
+                                    <div class="button submenu-item">출석체크</div>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="../member/myPage.html">
                                     <div class="button submenu-item">내정보</div>
                                 </a>

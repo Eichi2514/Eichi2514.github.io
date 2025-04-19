@@ -51,3 +51,7 @@ li button, li a, li a div {
 .menu-item:focus, .submenu-item:focus {
     outline: none;
 }
+
+.logout_bt {
+    cursor: pointer;
+}

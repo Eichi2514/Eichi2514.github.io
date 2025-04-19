@@ -459,7 +459,7 @@ if (!key) {
     window.location.href = '../../ascentlime.html';
 }
 
-window.getUserMoney = function (key) {
+window.getUserAssets = function (key) {
     const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
     return get(queryRef)
         .then((snapshot) => {
@@ -470,10 +470,15 @@ window.getUserMoney = function (key) {
 
             const memberData = snapshot.val();
             const memberKey = Object.keys(memberData)[0];
-            return memberData[memberKey].money;
+            const data = memberData[memberKey];
+
+            return {
+                money: data.money || 0,
+                cash: data.cash || 0,
+            };
         })
         .catch((error) => {
-            console.error("로그인 아이디 확인 중 오류 발생:", error);
+            console.error("유저 재화 확인 중 오류 발생:", error);
             return null;
         });
 };
@@ -562,17 +567,26 @@ window.getWeaponFind = async function (memberKey) {
 };
 
 let userMoney = 0;
+let userCash = 0;
 const unknownItems = 'https://github.com/user-attachments/assets/34628dee-0e58-4d89-a510-13ebb9a2dcae';
 
 async function displayShopItems() {
     let itemsToDisplay = [];
 
     try {
-        userMoney = await getUserMoney(key) || 0;
-        let userMoneyString = formatNumber(userMoney);
+        const userAssets = await getUserAssets(key);
+        userMoney = userAssets.money;
+        userCash = userAssets.cash;
+
+        let userCashString = formatNumber(userAssets.cash);
+        let userMoneyString = formatNumber(userAssets.money);
+
+        $('.cash_count').text(userCashString);
         $('.money_count').text(userMoneyString);
+
     } catch (error) {
         console.error('돈 불러오는 중 오류 발생:', error);
+        $('.cash_count').text('불러오기 실패');
         $('.money_count').text('불러오기 실패');
     }
 

@@ -4,7 +4,11 @@ import {
     getDatabase,
     ref,
     get,
-    set
+    set,
+    query,
+    orderByChild,
+    equalTo,
+    update
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase 설정
@@ -22,6 +26,7 @@ const firebaseConfig = {
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const membersRef = ref(database, 'members');
 
 const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 let author = null;
@@ -131,8 +136,11 @@ window.dailyCheck = async function () {
     }
 };
 
-window.showDailyCheckResult = async function () {
+window.showDailyCheckResult = function () {
     const $calendar = $('.calendar');
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const newCash = (dayOfWeek === 0 || dayOfWeek === 6) ? 200 : 100;
 
     $calendar.append(`
         <div class="fireworks-wrapper">
@@ -144,11 +152,37 @@ window.showDailyCheckResult = async function () {
                 }).join('')}
             </div>
             <button class="fireworks-close close-button">✖</button>
-            <div class="reward-message">출석 보상을 획득했습니다!</div>
+            <div class="reward-message">출석 보상 ${newCash}원을 획득했습니다!</div>
         </div>
     `);
+
+    getDailyCheckReward(newCash);
 };
 
 $(document).on('click', '.close-button', function () {
     $('.fireworks-wrapper').remove();
 });
+
+window.getDailyCheckReward = async function (newCash) {
+    try {
+        const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
+        const snapshot = await get(queryRef);
+
+        if (snapshot.exists()) {
+            const memberKey = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[memberKey];
+
+
+            if (data) {
+                const updatedData = {
+                    ...data,
+                    cash: (data.cash || 0) + newCash,
+                };
+
+                await update(ref(database, `members/${memberKey}`), updatedData);
+            }
+        }
+    } catch (error) {
+        console.error("보상 획득 실패 : ", error);
+    }
+};
