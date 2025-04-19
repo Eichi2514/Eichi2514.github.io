@@ -2081,39 +2081,32 @@ async function updateCharacterData(nickname) {
         function showDoor() {
             if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
                 const doorsToShow = [];
+                const floorMod = characFloor % 6;
 
                 if (characFloor === 1 && characRoom === 0) {
                     doorsToShow.push('.door_right');
                 } else if (characRoom === 1) {
                     doorsToShow.push('.door_top', '.door_right', '.door_bottom');
                 } else if (characRoom === 2) {
-                    if (characFloor % 60 <= 10) {
-                        doorsToShow.push('.door_top', '.door_right');
-                    } else if (characFloor % 60 <= 20) {
-                        doorsToShow.push('.door_top', '.door_bottom');
-                    } else if (characFloor % 60 <= 30) {
-                        doorsToShow.push('.door_right', '.door_bottom');
-                    } else if (characFloor % 60 <= 40) {
-                        doorsToShow.push('.door_top', '.door_right');
-                    } else if (characFloor % 60 <= 50) {
-                        doorsToShow.push('.door_right', '.door_bottom');
-                    } else {
-                        doorsToShow.push('.door_top', '.door_bottom');
-                    }
+                    const room2Map = [
+                        ['.door_top', '.door_right'],
+                        ['.door_top', '.door_bottom'],
+                        ['.door_right', '.door_bottom'],
+                        ['.door_top', '.door_right'],
+                        ['.door_right', '.door_bottom'],
+                        ['.door_top', '.door_bottom'],
+                    ];
+                    doorsToShow.push(...room2Map[floorMod]);
                 } else {
-                    if (characFloor % 60 <= 10) {
-                        doorsToShow.push('.door_right');
-                    } else if (characFloor % 60 <= 20) {
-                        doorsToShow.push('.door_bottom');
-                    } else if (characFloor % 60 <= 30) {
-                        doorsToShow.push('.door_bottom');
-                    } else if (characFloor % 60 <= 40) {
-                        doorsToShow.push('.door_top');
-                    } else if (characFloor % 60 <= 50) {
-                        doorsToShow.push('.door_right');
-                    } else {
-                        doorsToShow.push('.door_top');
-                    }
+                    const otherMap = [
+                        ['.door_right'],
+                        ['.door_bottom'],
+                        ['.door_bottom'],
+                        ['.door_top'],
+                        ['.door_right'],
+                        ['.door_top'],
+                    ];
+                    doorsToShow.push(...otherMap[floorMod]);
                 }
 
                 doorsToShow.forEach(selector => {

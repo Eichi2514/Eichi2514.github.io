@@ -285,25 +285,19 @@ window.stageSave = async function (callback, nickname, floor, room, front_hp, fr
     } else {
         // 각 구간별 이동값 설정
         const moveSets = [
-            [1, 2, 3], // 1~10층
-            [3, 2, 1], // 11~20층
-            [2, 3, 1], // 21~30층
-            [2, 1, 3], // 31~40층
-            [1, 3, 2], // 41~50층
-            [3, 1, 2]  // 51~60층
+            [1, 2, 3],
+            [3, 2, 1],
+            [2, 3, 1],
+            [2, 1, 3],
+            [1, 3, 2],
+            [3, 1, 2]
         ];
 
-        let setIndex;
-        if (floor % 60 <= 10) setIndex = 0;
-        else if (floor % 60 <= 20) setIndex = 1;
-        else if (floor % 60 <= 30) setIndex = 2;
-        else if (floor % 60 <= 40) setIndex = 3;
-        else if (floor % 60 <= 50) setIndex = 4;
-        else setIndex = 5;
+        const setIndex = floor % 6;
 
         let [rightVal, topVal, bottomVal] = moveSets[setIndex];
 
-        // doorCheck에 따라 room 이동
+        // doorCheck(문 방향)에 따라 room 이동
         if (doorCheck === 'right') {
             room += rightVal;
         } else if (doorCheck === 'top') {
