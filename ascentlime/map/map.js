@@ -1837,35 +1837,51 @@ async function updateCharacterData(nickname) {
 
         // 스테이지 이동
         async function stageUp(callback) {
-            let doorCheck = $(".door").hasClass("hidden");
-            if ((callback || (LR > 79 && 38 < UD && UD < 52)) && !doorCheck) {
-                stopMoving();
-                const isItemHidden = $item.hasClass('hidden');
-                if (!isItemHidden && isConfirm && characFloor <= 5) {
-                    console.log('2단계 진입' + isConfirm);
-                    // isConfirm이 true일 때만 confirm() 실행
-                    if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
-                        console.log('3단계 진입' + isConfirm);
-                        isConfirm = false; // 취소한 경우, 이동하지 않음
-                        return;
-                    } else {
-                        console.log('4단계 진입' + isConfirm);
-                        await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
-                    }
-                } else if (!isConfirm && characFloor <= 5) {
-                    console.log('5단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
-                } else if (characFloor > 5) {
-                    console.log('6단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
-                } else if (isItemHidden) {
-                    console.log('7단계 진입' + isConfirm);
-                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
+
+            const doorRightCheck = $(".door_right").hasClass("hidden");
+            const doorTopCheck = $(".door_top").hasClass("hidden");
+            const doorBottomCheck = $(".door_bottom").hasClass("hidden");
+
+            let doorCheck = 'right';
+
+            // console.log(`LR : ${LR}, UD : ${UD}`);
+
+            if ((LR > 79 && 38 < UD && UD < 52) && !doorRightCheck) {
+                doorCheck = 'right';
+            } else if ((UD <= 10 && 38 < LR && LR < 52) && !doorTopCheck) {
+                doorCheck = 'top';
+            } else if ((UD > 79 && 38 < LR && LR < 52) && !doorBottomCheck) {
+                doorCheck = 'bottom';
+            } else if (callback)  {
+                console.log('확인');
+            } else return;
+
+            stopMoving();
+            const isItemHidden = $item.hasClass('hidden');
+            if (!isItemHidden && isConfirm && characFloor <= 5) {
+                console.log('2단계 진입' + isConfirm);
+                // isConfirm이 true일 때만 confirm() 실행
+                if (!confirm('무기를 획득하지 않았습니다. 그래도 이동하시겠습니까?')) {
+                    console.log('3단계 진입' + isConfirm);
+                    isConfirm = false; // 취소한 경우, 이동하지 않음
+                    return;
+                } else {
+                    console.log('4단계 진입' + isConfirm);
+                    await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck);
                 }
-                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds);
-            } else {
-                if (callback) callback(); // 조건이 안 맞아도 실행
+            } else if (!isConfirm && characFloor <= 5) {
+                console.log('5단계 진입' + isConfirm);
+                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck);
+            } else if (characFloor > 5) {
+                console.log('6단계 진입' + isConfirm);
+                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck);
+            } else if (isItemHidden) {
+                console.log('7단계 진입' + isConfirm);
+                await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck);
             }
+            await stageSave(callback, nickname, characFloor, characRoom, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck);
+
+            if (callback) callback(); // 조건이 안 맞아도 실행
         }
 
         // 버튼 클릭 시 스테이지 업 후 페이지 이동
@@ -2064,7 +2080,45 @@ async function updateCharacterData(nickname) {
         // 문 개방
         function showDoor() {
             if (mob2_hp <= 0 && mob3_hp <= 0 && mob4_hp <= 0 && mob5_hp <= 0 && mob6_hp <= 0) {
-                $(".door").fadeIn(1000).removeClass('hidden');
+                const doorsToShow = [];
+
+                if (characFloor === 1 && characRoom === 0) {
+                    doorsToShow.push('.door_right');
+                } else if (characRoom === 1) {
+                    doorsToShow.push('.door_top', '.door_right', '.door_bottom');
+                } else if (characRoom === 2) {
+                    if (characFloor % 60 <= 10) {
+                        doorsToShow.push('.door_top', '.door_right');
+                    } else if (characFloor % 60 <= 20) {
+                        doorsToShow.push('.door_top', '.door_bottom');
+                    } else if (characFloor % 60 <= 30) {
+                        doorsToShow.push('.door_right', '.door_bottom');
+                    } else if (characFloor % 60 <= 40) {
+                        doorsToShow.push('.door_top', '.door_right');
+                    } else if (characFloor % 60 <= 50) {
+                        doorsToShow.push('.door_right', '.door_bottom');
+                    } else {
+                        doorsToShow.push('.door_top', '.door_bottom');
+                    }
+                } else {
+                    if (characFloor % 60 <= 10) {
+                        doorsToShow.push('.door_right');
+                    } else if (characFloor % 60 <= 20) {
+                        doorsToShow.push('.door_bottom');
+                    } else if (characFloor % 60 <= 30) {
+                        doorsToShow.push('.door_bottom');
+                    } else if (characFloor % 60 <= 40) {
+                        doorsToShow.push('.door_top');
+                    } else if (characFloor % 60 <= 50) {
+                        doorsToShow.push('.door_right');
+                    } else {
+                        doorsToShow.push('.door_top');
+                    }
+                }
+
+                doorsToShow.forEach(selector => {
+                    $(selector).fadeIn(1000).removeClass('hidden');
+                });
             }
         }
 

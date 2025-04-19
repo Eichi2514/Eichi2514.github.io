@@ -275,16 +275,47 @@ window.characReset = async function (memberKey) {
     }
 }
 
-window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds) {
+window.stageSave = async function (callback, nickname, floor, room, front_hp, front_power, front_speed, front_money, front_weaponId, front_weaponUpgrade, seconds, doorCheck) {
     const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
 
-    if (room + 1 < 5) {
-        room++;
+    if (room === 0) {
+        room = 1;
     } else {
-        room = 0;
-        floor++;
+        // 각 구간별 이동값 설정
+        const moveSets = [
+            [1, 2, 3], // 1~10층
+            [3, 2, 1], // 11~20층
+            [2, 3, 1], // 21~30층
+            [2, 1, 3], // 31~40층
+            [1, 3, 2], // 41~50층
+            [3, 1, 2]  // 51~60층
+        ];
+
+        let setIndex;
+        if (floor % 60 <= 10) setIndex = 0;
+        else if (floor % 60 <= 20) setIndex = 1;
+        else if (floor % 60 <= 30) setIndex = 2;
+        else if (floor % 60 <= 40) setIndex = 3;
+        else if (floor % 60 <= 50) setIndex = 4;
+        else setIndex = 5;
+
+        let [rightVal, topVal, bottomVal] = moveSets[setIndex];
+
+        // doorCheck에 따라 room 이동
+        if (doorCheck === 'right') {
+            room += rightVal;
+        } else if (doorCheck === 'top') {
+            room += topVal;
+        } else if (doorCheck === 'bottom') {
+            room += bottomVal;
+        }
+
+        if (room >= 5) {
+            room = 0;
+            floor++;
+        }
     }
 
     setTimeout(async function () {
