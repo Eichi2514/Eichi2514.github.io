@@ -1,0 +1,680 @@
+@charset "UTF-8";
+
+/* 공용 */
+html > body, button, input, select {
+    font-family: Galmuri11, serif;
+    font-weight: 800;
+    font-size: 3vh;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+}
+
+input:focus {
+    -webkit-user-modify: read-write-plaintext-only;
+    user-modify: read-write-plaintext-only;
+}
+
+.mapBody {
+    width: 100vh;
+    left: 21vh;
+    position: relative;
+}
+
+/* 가로(width)가 세로(height) 이상일 때 */
+@media (min-aspect-ratio: 1625/1000) {
+    .mapBody {
+        left: 50%;
+        transform: translateX(-60vh);
+    }
+}
+
+img {
+    /* mix-blend-mode: multiply; */
+    /* opacity: 0.9; */
+
+}
+
+body {
+    background: rgb(0, 0, 30);
+}
+
+input {
+    padding-left: 1vh !important;
+    /* background-color: transparent; */
+}
+
+input::placeholder {
+    color: black !important;
+}
+
+input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
+    color: black;
+}
+
+input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
+    color: black;
+}
+
+input::-ms-input-placeholder { /* 엣지 */
+    color: black;
+}
+
+input::-moz-placeholder { /* 파이어폭스 19+ */
+    color: black;
+}
+
+input:-moz-placeholder { /* 파이어폭스 4-18 */
+    color: black;
+}
+
+.bo {
+    border: 1vh solid red;
+}
+
+/* 메인 키보드 */
+/* 화면 조작키 영역 */
+.keyboard_box {
+    position: absolute;
+    width: 162.5vh;
+    border-radius: 1vh;
+    padding: 1vh 5vh;
+    pointer-events: none;
+}
+
+.keyboard_box > * {
+    pointer-events: auto;
+}
+
+/* 세로(height)가 가로(width)의 배수 이상일 때 */
+@media (max-aspect-ratio: 25/9) and (min-aspect-ratio: 1625/1000) {
+    .keyboard_box {
+        top: 101vh;
+        border: 0.3vh solid rgb(174, 0, 27);
+        left: 50%;
+        transform: translateX(-81vh);
+    }
+}
+
+@media (max-aspect-ratio: 25/9) and (max-aspect-ratio: 1625/1000) {
+    .keyboard_box {
+        top: 101vh;
+        border: 0.3vh solid rgb(174, 0, 27);
+        left: 0;
+    }
+}
+
+/* 가로(width)가 세로(height)의 배수 이상일 때 */
+@media (min-aspect-ratio: 25/9) or (aspect-ratio: 25/9) {
+    .keyboard_box {
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+    }
+}
+
+/* 화면 조작키 버튼 이미지 */
+.key-img {
+    border: 1vh solid rgb(174, 0, 27);
+    border-radius: 13vh;
+    font-size: 7vh;
+    width: 13vh;
+    height: 13vh;
+    text-align: center;
+    color: rgb(156, 163, 175);
+}
+
+/* 화면 조작키 배경 */
+.keyboard {
+    width: 50vh;
+    height: 50vh;
+    right: 0;
+    position: relative;
+}
+
+/* 위쪽 버튼 위치 */
+.key-Wattack, .key-up {
+    left: 18.5vh;
+    width: 13vh;
+    height: 13vh;
+}
+
+/* 오른쪽 버튼 위치 */
+.key-Dattack, .key-right {
+    display: flex;
+    justify-content: right;
+    top: 18.5vh;
+    left: 37vh;
+    width: 13vh;
+    height: 13vh;
+}
+
+/* 가운데 버튼 위치 */
+.key-Zattack, .key-center {
+    display: flex;
+    justify-content: right;
+    top: 18.5vh;
+    left: 18.5vh;
+    width: 13vh;
+    height: 13vh;
+}
+
+/* 아래쪽 버튼 위치 */
+.key-Sattack, .key-down {
+    display: flex;
+    align-items: end;
+    left: 18.5vh;
+    top: 37vh;
+    width: 13vh;
+    height: 13vh;
+}
+
+/* 왼쪽 버튼 위치 */
+.key-Aattack, .key-left {
+    top: 18.5vh;
+    width: 13vh;
+    height: 13vh;
+}
+
+.play::after {
+    padding-left: 1vh;
+    padding-right: 1vh;
+    content: "켜기";
+}
+
+.pause::after {
+    padding-left: 1vh;
+    padding-right: 1vh;
+    content: "끄기";
+}
+
+/* 인게임 헤드 */
+.loding_img {
+    width: 100vh;
+    height: 100vh;
+}
+
+.loding {
+    left: 0;
+    top: 0;
+}
+
+.loding_text {
+    top: 36vh;
+    left: 27vh;
+    font-size: 15vh;
+    -webkit-text-stroke: 0.1vh white;
+}
+
+.loding_bar {
+    height: 5vh;
+    left: 10vh;
+    bottom: 10vh;
+    background: red;
+    border-radius: 0.3vh;
+    transition: transform 1000s;
+}
+
+.ingame_logo {
+    left: -18vh;
+    top: 1vh;
+    width: 16vh;
+    height: 16vh;
+}
+
+.bar {
+    width: 20vh;
+    height: 100vh;
+    top: 0;
+    left: -20.5vh;
+}
+
+.door_right {
+    left: 90vh;
+    top: 45vh;
+    width: 10vh;
+    height: 10vh;
+    transform: rotate(90deg);
+}
+
+.floor_room {
+    left: 0;
+    top: 18vh;
+    width: 20vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.hp {
+    left: 0;
+    top: 26vh;
+    width: 20vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.power {
+    left: 0;
+    top: 34vh;
+    width: 20vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.speed {
+    left: 0;
+    top: 42vh;
+    width: 20vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.money {
+    left: 0;
+    top: 50vh;
+    width: 20vh;
+    height: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.mob__dictionary_bt {
+    left: 0;
+    top: 58vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.weapon__dictionary_bt {
+    left: 0;
+    top: 68vh;
+    width: 20vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.weapon {
+    left: 0;
+    top: 78vh;
+    width: 20vh;
+    height: 20vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+    position: relative;
+}
+
+.weapon_img {
+    left: 5vh;
+    top: 7vh;
+    width: 10vh;
+    height: 10vh;
+}
+
+.profile {
+    top: 0.5vh;
+    left: 101vh;
+    gap: 1vh;
+    position: absolute;
+}
+
+.profile-container {
+    display: flex;
+    width: 25vh;
+    height: 9vh;
+    background: rgb(0, 0, 30);
+    color: rgb(156, 163, 175);
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    z-index: 50;
+}
+
+.profile-img {
+    height: 7.5vh;
+    margin: 0.5vh;
+    border-radius: 0.5vh;
+    background: #FFFFFF;
+}
+
+.profile-nickname {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+    font-size: 2vh;
+    margin: 0.5vh;
+}
+
+.timer {
+    top: 1vh;
+    left: 127vh;
+    width: 15vh;
+    height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    /* background: rgb(255, 71, 48); */
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+    font-size: 2.5vh;
+}
+
+.front_charac {
+    left: 10vh;
+    top: 44vh; /* 44.1 */
+    width: 10vh;
+    height: 10vh;
+}
+
+.front_charac_img {
+    width: 10vh;
+    height: 10vh;
+}
+
+@keyframes move_action1 {
+    0% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-1vh, 1vh);
+    }
+    40% {
+        transform: translate(-1vh, -1vh);
+    }
+    60% {
+        transform: translate(1vh, 1vh);
+    }
+    80% {
+        transform: translate(1vh, -1vh);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
+@keyframes move_action-1 {
+    0% {
+        transform: translate(0) scaleX(-1);
+    }
+    20% {
+        transform: translate(-1vh, 1vh) scaleX(-1);
+    }
+    40% {
+        transform: translate(-1vh, -1vh) scaleX(-1);
+    }
+    60% {
+        transform: translate(1vh, 1vh) scaleX(-1);
+    }
+    80% {
+        transform: translate(1vh, -1vh) scaleX(-1);
+    }
+    100% {
+        transform: translate(0) scaleX(-1);
+    }
+}
+.attackSize {
+    width: 2vh;
+    height: 2vh;
+}
+
+.attack1 {
+    left: 4vh;
+    top: 4vh;
+    transition: top 0.5s ease, left 0.5s ease, right 0.5s ease, bottom 0.5s ease;
+}
+
+.front_mob, .front_bossMob {
+    position: absolute;
+    overflow: visible;
+}
+
+.front_mob_img {
+    width: 10vh;
+    height: 10vh;
+}
+
+.front_bossMob_img {
+    width: 20vh;
+    height: 20vh;
+}
+
+.item {
+    top: 45vh;
+    left: 75vh;
+    width: 10vh;
+    height: 10vh;
+}
+
+.random_item {
+    top: 75vh;
+    left: 45vh;
+    width: 10vh;
+    height: 10vh;
+}
+
+.item_text, .random_item_text, .alert {
+    top: 40vh;
+    left: 25vh;
+    height: 20vh;
+    width: 50vh;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+    background: rgb(0, 0, 30);
+    color: rgb(156, 163, 175);
+    -webkit-text-stroke: 0.1vh black;
+}
+
+.item_img {
+    height: 20vh;
+    width: 50vh;
+    transform: scaleY(-1);
+}
+
+.item_text > div, .item_text > button {
+    z-index: 20;
+}
+
+.item_title {
+    top: 5vh;
+    left: 3vh;
+}
+
+.item_subtitle {
+    top: 10.5vh;
+    width: 100%;
+    text-align: center;
+    font-size: 2vh;
+}
+
+.item_change {
+    top: 14vh;
+    left: 4vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+}
+
+.item_get {
+    top: 14vh;
+    left: 4vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+}
+
+.item_mix {
+    top: 14vh;
+    left: 19vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+}
+
+.alert_title {
+    padding: 1vh;
+    width: 49.5vh;
+    height: 14vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item_exit, .alert_exit {
+    top: 14vh;
+    left: 35vh;
+    width: 10vh;
+    text-align: center;
+    border: 0.3vh solid rgb(174, 0, 27);
+    border-radius: 1vh;
+}
+
+.bossHP {
+    top: 0.5vh;
+    left: 15vh;
+}
+
+.bossHP_title {
+    font-size: 5vh;
+    display: inline-block;
+    -webkit-text-stroke: 0.05vh white;
+}
+
+.bossHP_bar {
+    height: 5vh;
+    width: 50vh;
+    background: red;
+    display: inline-block;
+}
+
+.dialogue-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vh;
+    height: 100vh;
+    background: rgb(255, 255, 255, 0.1);
+}
+
+.character-image {
+    position: absolute;
+    left: 5vh;
+    bottom: 35vh;
+    width: 30vh;
+    transform: scaleX(-1);
+}
+
+.eichi-image {
+    position: absolute;
+    right: 5vh;
+    bottom: 35vh;
+    width: 30vh;
+}
+
+.speech-tail {
+    position: absolute;
+    left: 20vh;
+    bottom: 30vh;
+    width: 0;
+    height: 0;
+    border-left: 2vh solid transparent;
+    border-right: 2vh solid transparent;
+    border-bottom: 4vh solid rgba(255, 255, 255, 0.9);
+}
+
+.dialogue-box {
+    position: absolute;
+    left: 1vh;
+    bottom: 1vh;
+    width: 98vh;
+    height: 29vh;
+    background: rgb(255, 255, 255, 0.9);
+    border-radius: 5vh;
+    padding: 2vh 4vh;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.speaker-name {
+    border-bottom: 0.5vh solid;
+    padding: 0 1vh;
+}
+
+.dialogue-text {
+    padding: 1vh;
+}
+
+@keyframes moveRightLeft {
+    0% {
+        right: 5vh;
+    }
+    50% {
+        right: 6vh;
+    }
+    100% {
+        right: 5vh;
+    }
+}
+
+.dialogue-next {
+    position: absolute;
+    right: 5vh;
+    bottom: 2vh;
+    cursor: pointer;
+    animation: moveRightLeft 1s infinite ease-in-out;
+}

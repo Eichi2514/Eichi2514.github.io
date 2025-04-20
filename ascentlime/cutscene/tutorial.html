@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../favicon/AscentLime.png" type="image/png">
+    <title>AscentLime | 인게임</title>
+
+    <link rel="stylesheet" href="../cutscene/tutorial.css"/>
+    <!-- 제이쿼리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- 테일윈드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+
+    <!-- 폰트어썸 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        @import url("https://fastly.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css");
+    </style>
+
+    <script src="https://unpkg.com/type-hangul@0.2.3"></script>
+</head>
+<body>
+<div class="mapBody">
+    <!-- p2 맵 배경 -->
+    <img class="bg_img"
+         src="https://github.com/user-attachments/assets/e92471f8-4b53-4df2-9b42-e4fe0abe9d5e"
+         alt=""/>
+
+    <!-- p2 문 -->
+    <img class="door_right door hidden absolute"
+         src="https://github.com/user-attachments/assets/5234ea4f-b28d-4528-87d7-44ead643cc33"
+         alt=""/>
+
+    <!-- 첫번째 몬스터 -->
+    <div class="front_mob mob2 hidden">
+        <!-- 몬스터 체력 -->
+        <div class="mob2HP_bar absolute bg-red-500"></div>
+        <img class="front_mob_img mob_img"
+             src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
+             alt=""/>
+        <!-- 몬스터 데미지 -->
+        <div class="damage2 absolute z-20"></div>
+    </div>
+
+    <!-- 랜덤 무기 -->
+    <img class="item item1 hidden absolute"
+         src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
+
+    <!-- 캐릭터 -->
+    <div class="front_charac charac absolute hidden">
+        <!-- 캐릭터 이미지 -->
+        <img class="front_charac_img"
+             src="https://github.com/user-attachments/assets/309ac7b2-ae9c-4850-b0f5-c84b001a5c24"
+             alt=""/>
+        <!-- 캐릭터 데미지 -->
+        <div class="damage1 absolute z-20"></div>
+    </div>
+
+    <div class="item_text item_text1 absolute z-20 hidden">
+        <div class="item_title absolute">새로운 무기를 발견하였습니다.</div>
+        <button class="item_change absolute" onclick="Item_change()">교체</button>
+        <button class="item_mix absolute" onclick="Item_mix()">합성</button>
+        <button class="item_exit absolute" onclick="Item_exit()">취소</button>
+    </div>
+
+    <div class="random_item_text absolute z-20 hidden">
+        <div class="item_title absolute z-20">수상한 알약을 발견하였습니다.</div>
+        <button class="item_get absolute z-20" onclick="Item_get()">먹는다</button>
+        <button class="item_exit absolute z-20" onclick="Item_exit()">취소</button>
+    </div>
+
+    <div class="alert absolute z-20 hidden">
+        <div class="alert_title z-20"></div>
+        <button class="alert_exit absolute z-20" onclick="hide_alert()">확인</button>
+    </div>
+
+    <!-- 랜덤 아이템 (알약) -->
+    <img class="random_item hidden absolute"
+         src="https://github.com/user-attachments/assets/64a8dc0c-b9bc-41a7-a500-8a9466c0dd04"
+         alt=""/>
+
+    <!-- 대화창 -->
+    <div class="dialogue-container">
+        <img class="character-image" src="../image/character.png" alt="사용자">
+        <img class="eichi-image hidden" src="../image/eichi.png" alt="에이치">
+        <div class="speech-tail"></div>
+        <div class="dialogue-box">
+            <div class="speaker-name speaker-right">
+            </div>
+            <div class="dialogue-text" id="typingTarget">
+                <!-- 대사 텍스트가 들어갈 부분 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 -->
+    <div class="loding absolute z-50">
+        <img class="loding_img"
+             src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
+             alt=""/>
+
+        <div class="loding_text absolute">로딩중</div>
+        <div class="loding_bar absolute"></div>
+    </div>
+
+    <a class="ingame_logo rounded-full absolute cursor-pointer" href="../../ascentlime.html">
+        <img class="ingame_logo"
+             src="https://github.com/user-attachments/assets/8c7de13c-87f7-470f-a64e-17291ead7104"
+             alt=""/>
+    </a>
+</div>
+<!-- 화면 조작키 영역 -->
+<div class="keyboard_box flex justify-between absolute">
+    <div>
+        <!-- 공격키 배경 -->
+        <div class="keyboard rounded-full">
+            <!-- 공격키 위쪽 버튼 영역 -->
+            <div class="key-Wattack absolute cursor-pointer">
+                <!-- 공격키 위쪽 버튼 이미지 -->
+                <div class="absolute key-img">W</div>
+            </div>
+            <!-- 공격키 오른쪽 버튼 영역 -->
+            <div class="key-Dattack absolute cursor-pointer">
+                <!-- 공격키 오른쪽 버튼 이미지 -->
+                <div class="absolute key-img">D</div>
+            </div>
+            <!-- 공격키 가운데 버튼 영역 -->
+            <div class="key-Zattack absolute cursor-pointer">
+                <!-- 공격키 가운데 버튼 이미지 -->
+                <div class="absolute key-img">Z</div>
+            </div>
+            <!-- 공격키 아래쪽 버튼 영역 -->
+            <div class="key-Sattack absolute cursor-pointer">
+                <!-- 공격키 아래쪽 버튼 이미지 -->
+                <div class="absolute key-img">S</div>
+            </div>
+            <!-- 공격키 왼쪽 버튼 영역 -->
+            <div class="key-Aattack absolute cursor-pointer">
+                <!-- 공격키 왼쪽 버튼 이미지 -->
+                <div class="absolute key-img">A</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <!-- 이동키 배경 -->
+        <div class="keyboard rounded-full">
+            <!-- 이동키 위쪽 버튼 영역 -->
+            <div class="key-up absolute cursor-pointer">
+                <!-- 이동키 위쪽 버튼 이미지 -->
+                <div class="absolute key-img"><i class="fa-solid fa-arrow-up"></i></div>
+            </div>
+            <!-- 이동키 오른쪽 버튼 영역 -->
+            <div class="key-right absolute cursor-pointer">
+                <!-- 이동키 오른쪽 버튼 이미지 -->
+                <div class="absolute key-img"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            <!-- 이동키 가운데 버튼 영역 -->
+            <div class="key-center absolute cursor-pointer">
+                <!-- 이동키 아래쪽 버튼 이미지 -->
+                <div class="absolute key-img">E</div>
+            </div>
+            <!-- 이동키 아래쪽 버튼 영역 -->
+            <div class="key-down absolute cursor-pointer">
+                <!-- 이동키 아래쪽 버튼 이미지 -->
+                <div class="absolute key-img"><i class="fa-solid fa-arrow-down"></i></div>
+            </div>
+            <!-- 이동키 왼쪽 버튼 영역 -->
+            <div class="key-left absolute cursor-pointer">
+                <!-- 이동키 왼쪽 버튼 이미지 -->
+                <div class="absolute key-img"><i class="fa-solid fa-arrow-left"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../cutscene/tutorial.js" defer></script>
+<script src="../common/profileImages.js" defer></script>
+</body>
+</html>

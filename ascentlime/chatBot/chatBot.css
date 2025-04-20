@@ -179,15 +179,12 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .chatBot-img, .my-img {
     height: 100px;
+    background: #FFFFFF;
+    border-radius: 10px;
 }
 
 .chatBot-img {
     transform: scaleX(-1);
-}
-
-.my-img {
-    background: #FFFFFF;
-    border-radius: 10px;
 }
 
 .botChat, .userChat {
