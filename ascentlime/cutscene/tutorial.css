@@ -479,6 +479,8 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .front_mob, .front_bossMob {
     position: absolute;
     overflow: visible;
+    left: 70vh;
+    top: 46vh;
 }
 
 .front_mob_img {
@@ -669,6 +671,23 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     100% {
         right: 5vh;
     }
+}
+
+.dialogue-choices {
+    display: flex;
+    gap: 5vh;
+    position: absolute;
+    bottom: 5vh;
+    cursor: pointer;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dialogue-positive, .dialogue-negative {
+    cursor: pointer;
+    padding: 1vh 2vh;
+    border: 0.3vh solid;
+    border-radius: 1vh;
 }
 
 .dialogue-next {
