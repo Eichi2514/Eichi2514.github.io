@@ -786,3 +786,4 @@ window.saveLocalDataToDB = async function (memberKey) {
     localStorage.setItem(localStorageKey, `1`);
 }
 */
+window.checkDailyReward = async function () {};

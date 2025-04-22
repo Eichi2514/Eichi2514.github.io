@@ -742,3 +742,5 @@ $(document).on('keydown', '.search-input', function (event) {
         $('.search-button').click();
     }
 });
+
+window.checkDailyReward = async function () {};

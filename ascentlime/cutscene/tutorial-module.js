@@ -61,7 +61,7 @@ let UD = 44;
 
 // 페이지가 시작될 때 시간 기록
 const startTime = new Date().getTime();
-let estimatedLoadTime = 1500; // 예상 로드 시간
+let estimatedLoadTime = 3000; // 예상 로드 시간
 
 // 페이지 로딩 중에 로딩 바가 점진적으로 증가하도록 설정
 const interval = setInterval(function () {
@@ -70,7 +70,7 @@ const interval = setInterval(function () {
 
     // 경과된 시간에 비례해 로딩 바 너비 설정 (최대 80vh)
     const width = Math.min((elapsedTime / estimatedLoadTime) * 80, 80);
-    $(".loding_bar").css("width", width + "vh");
+    $(".loading_bar").css("width", width + "vh");
 
     // 페이지가 로드되기 전에 80vh에 도달하지 않도록 안전하게 제한
     if (width >= 80) {
@@ -81,34 +81,48 @@ const interval = setInterval(function () {
 // 윈도우 로딩 체크
 let windowCheck = false;
 
-// window.onload 이벤트 감지
-window.onload = function () {
-    // console.clear();
+// 로딩이 완료된 후 로딩 화면 제거 및 추가 작업 시작
+const removeLoadingScreen = () => {
     const loadTime = new Date().getTime() - startTime;
 
     // 실제 로드 시간이 예상 시간을 초과하지 않으면, 비율로 로딩 바 채우기
     const finalWidth = Math.min((loadTime / estimatedLoadTime) * 80, 80);
-    $(".loding_bar").css("width", finalWidth + "vh");
+    $(".loading_bar").css("width", finalWidth + "vh");
+
+    console.log("로드 완료");
 
     // 로딩 바가 완료된 후 로딩 화면 서서히 제거
     setTimeout(function () {
-        $(".loding").fadeOut(500);
+        $(".loading").fadeOut(500);
     }, 500);  // 로드가 완료되면 잠시 후 로딩 화면 제거
 
     setTimeout(function () {
         windowCheck = true;
         startTypingAnimation(dialogueStep);
     }, 1000);
-}
+};
+
+// 로딩이 끝날 때까지 계속 체크
+const checkLoadingCompletion = () => {
+    const loadTime = new Date().getTime() - startTime;
+    if (loadTime >= estimatedLoadTime) {
+        removeLoadingScreen();
+    } else {
+        setTimeout(checkLoadingCompletion, 100); // 100ms마다 계속 체크
+    }
+};
+
+// 페이지 로드가 시작되면 로딩 체크 시작
+checkLoadingCompletion();
 
 let moveInterval; // 캐릭터 이동을 위한 interval
 let moveActionCheck = null; // 현재 움직이고 있는 방향 추적
 let lastKeyDirection = null; // 마지막으로 처리된 키 방향
 let isCharControl = true;
 
-$(window).keydown(function (e) {
-    const $characImg = $('.front_charac_img');
+const $characImg = $('.front_charac_img');
 
+$(window).keydown(function (e) {
     if (isCharControl) return;
 
     const keyMap = {
@@ -137,7 +151,13 @@ $(window).keydown(function (e) {
     }
 
     if (e.keyCode === 13) {
-        processItemAction();
+        const isRandomItemHidden = $random_item_text.hasClass('hidden');
+
+        if (!isRandomItemHidden) {
+            $('.item_get').click();
+        } else {
+            hide_alert();
+        }
     }
 });
 
@@ -166,8 +186,6 @@ function stopMoving() {
 $(window).keyup(function (e) {
 
     if (isCharControl) return;
-
-    const $characImg = $('.front_charac_img');
 
     // 눌렀던 방향키에서 손을 뗐을 때 이동 중지
     if ((e.keyCode === 37 && moveActionCheck === 'left') ||
@@ -261,16 +279,16 @@ function attack_motion(something, motion) {
     }, 500);  // 애니메이션 시간 500ms 이후
 }
 
-let dialogueStep = 31;
+let dialogueStep = 0;
 let typingInProgress = false;
 
 const dialogues = [
     { speakerName: `${name}`, dialogue: "??? 여긴... 어디지?" }, // 0
     { speakerName: `???`, dialogue: "안녕! 드디어 왔구나. 이곳에 온 걸 환영해!" }, // 1
-    { speakerName: `${name}`, dialogue: "너... 누구야?" }, // 2
+    { speakerName: `${name}`, dialogue: "넌... 누구야?" }, // 2
     { speakerName: `???`, dialogue: "내 이름은 에이치야!" }, // 3
     { speakerName: `에이치`, dialogue: "지금부터 네가 이 탑을 공략하는 걸 도와주러 왔어!" }, // 4
-    { speakerName: `${name}`, dialogue: "탑? 공략...? 여긴 대체 뭐야?" }, // 5
+    { speakerName: `${name}`, dialogue: "탑? 공략..? 여긴 대체 뭐야?" }, // 5
     { speakerName: `에이치`, dialogue: "지금 너는 내 몸 안에 들어와 있는 상태야." }, // 6
     { speakerName: `에이치`, dialogue: "원래 이 탑은 우리 정령들이 평화롭게 살던 곳이었는데..." }, // 7
     { speakerName: `에이치`, dialogue: "어느 날 갑자기 슬라임들이 쳐들어와서 지금은 완전히 점령당했어." }, // 8
@@ -285,7 +303,7 @@ const dialogues = [
 
     { speakerName: `에이치`, dialogue: "좋아! 그럼 먼저 → 키를 눌러서 앞으로 가볼래?" }, // 16
     { speakerName: `에이치`, dialogue: "오른쪽으로 이동" }, // 17
-    { speakerName: `에이치`, dialogue: "잘했어! ←↑→↓ 키로 상하좌우로 자유롭게 움직일 수 있어" }, // 18
+    { speakerName: `에이치`, dialogue: "잘했어! ↑ ↓ ← → 키로 상하좌우로 자유롭게 움직일 수 있어" }, // 18
 
     { speakerName: `에이치`, dialogue: "이제 D키를 눌러서 공격해봐!" }, // 19
     { speakerName: `에이치`, dialogue: "오른쪽 공격" }, // 20
@@ -344,7 +362,7 @@ function startTypingAnimation(step) {
 
     TypeHangul.type(targetSelector, {
         text: currentDialogue.dialogue,
-        intervalType: 50
+        intervalType: 30
     });
 
     setTimeout(() => {
@@ -362,10 +380,12 @@ function startTypingAnimation(step) {
             $('.dialogue-box').append(`<div class="dialogue-next">>>></div>`);
             dialogueStep = step + 1;
         }
-    }, currentDialogue.dialogue.length * 150);
+    }, currentDialogue.dialogue.length * 120);
 }
 
 $(window).keydown(function (e) {
+    if (!windowCheck) return;
+
     if (e.keyCode === 32) {
         $('.dialogue-next').click();
     }
@@ -457,16 +477,16 @@ function showRandomItem_text() {
 }
 
 //랜덤아이템 안내창 먹는다 버튼 눌렀을 떄
-function Item_get() {
+$(document).on('click', '.item_get', function () {
     show_alert('힘+1');
     $random_item.fadeOut(1000).addClass('hidden');
     $random_item_text.fadeOut(1000).addClass('hidden');
-}
+});
 
 //아이템 안내창 취소 버튼 눌렀을 떄
-function Item_exit() {
+$(document).on('click', '.item_exit', function () {
     $random_item_text.fadeOut(1000).addClass('hidden');
-}
+});
 
 const $alert = $('.alert');
 
@@ -475,7 +495,114 @@ function show_alert(message) {
     $alert.fadeIn(1000).removeClass('hidden');
 }
 
-function hide_alert() {
+$(document).on('click', '.alert_exit', function () {
     $alert.fadeOut(1000).addClass('hidden');
     tutorialCheck();
-}
+});
+
+const $touch_left = $('.key-left');
+const $touch_up = $('.key-up');
+const $touch_center = $('.key-center');
+const $touch_right = $('.key-right');
+const $touch_down = $('.key-down');
+
+const handleTouchStart = (direction, scale) => {
+    if (moveActionCheck === direction) return;
+    lastKeyDirection = direction;
+
+    if (scale !== undefined) {
+        $characImg.css('transform', `scaleX(${scale})`);
+    }
+
+    $characImg.css('animation', 'move_action' + scale + ' 1s linear infinite');
+    startMoving(direction);
+};
+
+const handleTouchEnd = (direction) => {
+    if (moveActionCheck === direction) {
+        lastKeyDirection = null;
+        $characImg.css('animation', 'none');
+        stopMoving();
+    }
+};
+
+$touch_left.on("touchstart", () => {
+    handleTouchStart('left', -1)
+});
+
+$touch_up.on("touchstart", () => {
+    handleTouchStart('up')
+});
+
+$touch_center.on("touchstart", () => {
+    if (dialogueStep === 27) {
+        const isRandomItemHidden = $random_item_text.hasClass('hidden');
+
+        if (!isRandomItemHidden) {
+            $('.item_get').click();
+        } else {
+            hide_alert();
+        }
+    } else {
+        $('.dialogue-next').click();
+    }
+});
+
+$touch_right.on("touchstart", () => {
+    handleTouchStart('right', 1)
+});
+
+$touch_down.on("touchstart", () => {
+    handleTouchStart('down')
+});
+
+$touch_left.on("touchend", () => {
+    handleTouchEnd('left')
+});
+
+$touch_up.on("touchend", () => {
+    handleTouchEnd('up')
+});
+
+$touch_right.on("touchend", () => {
+    handleTouchEnd('right')
+});
+
+$touch_down.on("touchend", () => {
+    handleTouchEnd('down')
+});
+
+const $touch_Aattack = $('.key-Aattack');
+const $touch_Wattack = $('.key-Wattack');
+const $touch_Zattack = $('.key-Zattack');
+const $touch_Dattack = $('.key-Dattack');
+const $touch_Sattack = $('.key-Sattack');
+
+$touch_Aattack.on("touchstart", () => {
+    $characImg.css("transform", "scaleX(-1)");
+    attack_motion(1, 'A');
+});
+
+$touch_Wattack.on("touchstart", () => {
+    attack_motion(1, 'W');
+});
+
+$touch_Zattack.on("touchstart", () => {
+    $('.dialogue-next').click();
+});
+
+$touch_Dattack.on("touchstart", () => {
+    $characImg.css("transform", "scaleX(1)");
+    attack_motion(1, 'D');
+    if (dialogueStep === 20) {
+        tutorialCheck();
+    } else if (dialogueStep === 26 && 26 < LR && LR <= 70 && 40 < UD && UD <= 50) {
+        //console.log(`LR ${LR}, UD ${UD}`);
+        $('.front_mob').fadeOut(2000).addClass('hidden');
+        tutorialCheck();
+    }
+});
+
+$touch_Sattack.on("touchstart", () => {
+    attack_motion(1, 'S');
+});

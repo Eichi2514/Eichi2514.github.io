@@ -35,13 +35,25 @@ $('head').append('<link rel="stylesheet" href="../common/menu.css" type="text/cs
 $(document).ready(async function () {
     let notifyHtml = await notifyCheck() || '';
 
-    let logoutLi = ``;
+    let accountLi = ``;
 
     if (localStorage.getItem('nickname') || sessionStorage.getItem('nickname')) {
-        logoutLi = `
-                    <li>
-                        <div class="button submenu-item logout_bt">로그아웃</div>
-                    </li>
+        accountLi = `
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">계정관리</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../member/myPage.html">
+                                            <div class="detailmenu-button detailmenu-item">내 정보</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="detailmenu-button detailmenu-item logout_bt">로그아웃</div>
+                                    </li>
+                                </ul>
+                            </li>
                     `
     }
     $('.head-line').prepend(`
@@ -60,43 +72,108 @@ $(document).ready(async function () {
                             <div class="button">메 뉴</div>
                         </div>
                         <ul class="submenu">
-                            <li>
-                                <a href="../event/calendar.html">
-                                    <div class="button submenu-item">출석체크</div>
-                                </a>
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">홈</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../map/map.html">
+                                            <div class="detailmenu-button detailmenu-item">게임시작</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li>
-                                <a href="../member/myPage.html">
-                                    <div class="button submenu-item">내정보</div>
-                                </a>
+                            ${accountLi}
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">이벤트</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../event/calendar.html">
+                                            <div class="detailmenu-button detailmenu-item">출석체크</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li>
-                                <a href="../chatBot/chatBot.html">
-                                    <div class="button submenu-item">채팅봇</div>
-                                </a>
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">커뮤니티</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../community/main.html">
+                                            <div class="detailmenu-button detailmenu-item">전체게시판</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../community/main.html?boardId=1">
+                                            <div class="detailmenu-button detailmenu-item">공지사항</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../community/main.html?boardId=2">
+                                            <div class="detailmenu-button detailmenu-item">자유게시판</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../community/main.html?boardId=3">
+                                            <div class="detailmenu-button detailmenu-item">Q & A</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li>
-                                <a href="../shop/shop.html">
-                                    <div class="button submenu-item">상 점</div>
-                                </a>
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">다시보기</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../cutscene/tutorial.html">
+                                            <div class="detailmenu-button detailmenu-item">처음 만남</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li>
-                                <a href="../garden/myGarden.html">
-                                    <div class="button submenu-item">정 원</div>
-                                </a>
+                            <li class="detailmenu-container">
+                                <div>
+                                    <div class="button">서비스</div>
+                                </div>
+                                <ul class="detailmenu">
+                                    <li>
+                                        <a href="../shop/shop.html">
+                                            <div class="detailmenu-button detailmenu-item">상점</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../garden/myGarden.html">
+                                            <div class="detailmenu-button detailmenu-item">정원</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../dictionary/mob.html">
+                                            <div class="detailmenu-button detailmenu-item">도감</div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="../chatBot/chatBot.html">
+                                            <div class="detailmenu-button detailmenu-item">에이치</div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li>
-                                <a href="../community/main.html">
-                                    <div class="button submenu-item">전체게시판</div>
-                                </a>
-                            </li>
-                            ${logoutLi}
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     `)
+});
+
+$(document).on('click', '.submenu-container', function () {
+    const submenu = $(this).find('.submenu');
+    submenu.css('display', submenu.css('display') === 'flex' ? 'none' : 'flex');
 });
 
 $(document).on('click', '.logout_bt', function () {

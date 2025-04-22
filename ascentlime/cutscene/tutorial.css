@@ -10,15 +10,15 @@ html > body, button, input, select {
     overflow-y: hidden;
 }
 
-input:focus {
-    -webkit-user-modify: read-write-plaintext-only;
-    user-modify: read-write-plaintext-only;
-}
-
 .mapBody {
     width: 100vh;
     left: 21vh;
     position: relative;
+}
+
+.bg_img {
+    width: 100vh;
+    height: 100vh;
 }
 
 /* 가로(width)가 세로(height) 이상일 때 */
@@ -29,43 +29,8 @@ input:focus {
     }
 }
 
-img {
-    /* mix-blend-mode: multiply; */
-    /* opacity: 0.9; */
-
-}
-
 body {
     background: rgb(0, 0, 30);
-}
-
-input {
-    padding-left: 1vh !important;
-    /* background-color: transparent; */
-}
-
-input::placeholder {
-    color: black !important;
-}
-
-input::-webkit-input-placeholder { /* 크롬, 사파리, 오페라 */
-    color: black;
-}
-
-input:-ms-input-placeholder { /* 인터넷 익스플로러 10-11 */
-    color: black;
-}
-
-input::-ms-input-placeholder { /* 엣지 */
-    color: black;
-}
-
-input::-moz-placeholder { /* 파이어폭스 19+ */
-    color: black;
-}
-
-input:-moz-placeholder { /* 파이어폭스 4-18 */
-    color: black;
 }
 
 .bo {
@@ -176,37 +141,25 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 13vh;
 }
 
-.play::after {
-    padding-left: 1vh;
-    padding-right: 1vh;
-    content: "켜기";
-}
-
-.pause::after {
-    padding-left: 1vh;
-    padding-right: 1vh;
-    content: "끄기";
-}
-
 /* 인게임 헤드 */
-.loding_img {
+.loading_img {
     width: 100vh;
     height: 100vh;
 }
 
-.loding {
+.loading {
     left: 0;
     top: 0;
 }
 
-.loding_text {
+.loading_text {
     top: 36vh;
     left: 27vh;
     font-size: 15vh;
     -webkit-text-stroke: 0.1vh white;
 }
 
-.loding_bar {
+.loading_bar {
     height: 5vh;
     left: 10vh;
     bottom: 10vh;
@@ -235,181 +188,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     width: 10vh;
     height: 10vh;
     transform: rotate(90deg);
-}
-
-.floor_room {
-    left: 0;
-    top: 18vh;
-    width: 20vh;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.hp {
-    left: 0;
-    top: 26vh;
-    width: 20vh;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.power {
-    left: 0;
-    top: 34vh;
-    width: 20vh;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.speed {
-    left: 0;
-    top: 42vh;
-    width: 20vh;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.money {
-    left: 0;
-    top: 50vh;
-    width: 20vh;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.mob__dictionary_bt {
-    left: 0;
-    top: 58vh;
-    width: 20vh;
-    height: 9vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.weapon__dictionary_bt {
-    left: 0;
-    top: 68vh;
-    width: 20vh;
-    height: 9vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-}
-
-.weapon {
-    left: 0;
-    top: 78vh;
-    width: 20vh;
-    height: 20vh;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-    position: relative;
-}
-
-.weapon_img {
-    left: 5vh;
-    top: 7vh;
-    width: 10vh;
-    height: 10vh;
-}
-
-.profile {
-    top: 0.5vh;
-    left: 101vh;
-    gap: 1vh;
-    position: absolute;
-}
-
-.profile-container {
-    display: flex;
-    width: 25vh;
-    height: 9vh;
-    background: rgb(0, 0, 30);
-    color: rgb(156, 163, 175);
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    z-index: 50;
-}
-
-.profile-img {
-    height: 7.5vh;
-    margin: 0.5vh;
-    border-radius: 0.5vh;
-    background: #FFFFFF;
-}
-
-.profile-nickname {
-    display: flex;
-    justify-content: center;
-    flex-grow: 1;
-    align-items: center;
-    font-size: 2vh;
-    margin: 0.5vh;
-}
-
-.timer {
-    top: 1vh;
-    left: 127vh;
-    width: 15vh;
-    height: 9vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-    /* background: rgb(255, 71, 48); */
-    color: rgb(156, 163, 175);
-    -webkit-text-stroke: 0.1vh black;
-    font-size: 2.5vh;
 }
 
 .front_charac {
@@ -476,7 +254,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     transition: top 0.5s ease, left 0.5s ease, right 0.5s ease, bottom 0.5s ease;
 }
 
-.front_mob, .front_bossMob {
+.front_mob {
     position: absolute;
     overflow: visible;
     left: 70vh;
@@ -488,18 +266,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 10vh;
 }
 
-.front_bossMob_img {
-    width: 20vh;
-    height: 20vh;
-}
-
-.item {
-    top: 45vh;
-    left: 75vh;
-    width: 10vh;
-    height: 10vh;
-}
-
 .random_item {
     top: 75vh;
     left: 45vh;
@@ -507,7 +273,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     height: 10vh;
 }
 
-.item_text, .random_item_text, .alert {
+.random_item_text, .alert {
     top: 40vh;
     left: 25vh;
     height: 20vh;
@@ -517,12 +283,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: rgb(0, 0, 30);
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
-}
-
-.item_img {
-    height: 20vh;
-    width: 50vh;
-    transform: scaleY(-1);
 }
 
 .item_text > div, .item_text > button {
@@ -541,27 +301,9 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     font-size: 2vh;
 }
 
-.item_change {
-    top: 14vh;
-    left: 4vh;
-    width: 10vh;
-    text-align: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-}
-
 .item_get {
     top: 14vh;
     left: 4vh;
-    width: 10vh;
-    text-align: center;
-    border: 0.3vh solid rgb(174, 0, 27);
-    border-radius: 1vh;
-}
-
-.item_mix {
-    top: 14vh;
-    left: 19vh;
     width: 10vh;
     text-align: center;
     border: 0.3vh solid rgb(174, 0, 27);
@@ -586,24 +328,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 1vh;
 }
 
-.bossHP {
-    top: 0.5vh;
-    left: 15vh;
-}
-
-.bossHP_title {
-    font-size: 5vh;
-    display: inline-block;
-    -webkit-text-stroke: 0.05vh white;
-}
-
-.bossHP_bar {
-    height: 5vh;
-    width: 50vh;
-    background: red;
-    display: inline-block;
-}
-
+/* 대화창 */
 .dialogue-container {
     position: absolute;
     top: 0;
@@ -661,18 +386,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 1vh;
 }
 
-@keyframes moveRightLeft {
-    0% {
-        right: 5vh;
-    }
-    50% {
-        right: 6vh;
-    }
-    100% {
-        right: 5vh;
-    }
-}
-
 .dialogue-choices {
     display: flex;
     gap: 5vh;
@@ -690,10 +403,56 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     border-radius: 1vh;
 }
 
+.skip-bt {
+    position: absolute;
+    top: 2vh;
+    right: 2vh;
+    border: 0.3vh solid;
+    border-radius: 5vh;
+    background: gray;
+    padding: 1vh 3vh;
+    display: inline-block;
+}
+
+.skip-text {
+    margin-right: 5vh;
+}
+
+.skip-icon {
+    position: absolute;
+    top: 1vh;
+    right: 0;
+    animation: moveRightLeftSmall 1s infinite ease-in-out;
+}
+
+@keyframes moveRightLeftSmall {
+    0% {
+        right: 1vh;
+    }
+    50% {
+        right: 2vh;
+    }
+    100% {
+        right: 1vh;
+    }
+}
+
 .dialogue-next {
     position: absolute;
     right: 5vh;
     bottom: 2vh;
     cursor: pointer;
     animation: moveRightLeft 1s infinite ease-in-out;
+}
+
+@keyframes moveRightLeft {
+    0% {
+        right: 5vh;
+    }
+    50% {
+        right: 6vh;
+    }
+    100% {
+        right: 5vh;
+    }
 }

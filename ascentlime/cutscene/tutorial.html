@@ -44,13 +44,7 @@
         <img class="front_mob_img mob_img"
              src="https://github.com/user-attachments/assets/2ab0ec46-1847-4c87-9b6c-b485ffd5bcc0"
              alt=""/>
-        <!-- 몬스터 데미지 -->
-        <div class="damage2 absolute z-20"></div>
     </div>
-
-    <!-- 랜덤 무기 -->
-    <img class="item item1 hidden absolute"
-         src="https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38" alt=""/>
 
     <!-- 캐릭터 -->
     <div class="front_charac charac absolute hidden">
@@ -58,26 +52,17 @@
         <img class="front_charac_img"
              src="https://github.com/user-attachments/assets/309ac7b2-ae9c-4850-b0f5-c84b001a5c24"
              alt=""/>
-        <!-- 캐릭터 데미지 -->
-        <div class="damage1 absolute z-20"></div>
-    </div>
-
-    <div class="item_text item_text1 absolute z-20 hidden">
-        <div class="item_title absolute">새로운 무기를 발견하였습니다.</div>
-        <button class="item_change absolute" onclick="Item_change()">교체</button>
-        <button class="item_mix absolute" onclick="Item_mix()">합성</button>
-        <button class="item_exit absolute" onclick="Item_exit()">취소</button>
     </div>
 
     <div class="random_item_text absolute z-20 hidden">
         <div class="item_title absolute z-20">수상한 알약을 발견하였습니다.</div>
-        <button class="item_get absolute z-20" onclick="Item_get()">먹는다</button>
-        <button class="item_exit absolute z-20" onclick="Item_exit()">취소</button>
+        <button class="item_get absolute z-20">먹는다</button>
+        <button class="item_exit absolute z-20">취소</button>
     </div>
 
     <div class="alert absolute z-20 hidden">
         <div class="alert_title z-20"></div>
-        <button class="alert_exit absolute z-20" onclick="hide_alert()">확인</button>
+        <button class="alert_exit absolute z-20">확인</button>
     </div>
 
     <!-- 랜덤 아이템 (알약) -->
@@ -100,15 +85,21 @@
     </div>
 
     <!-- 로딩 -->
-    <div class="loding absolute z-50">
-        <img class="loding_img"
+    <div class="loading absolute z-50">
+        <img class="loading_img"
              src="https://github.com/user-attachments/assets/57d5f274-24c1-486b-9679-7aa7b6fa9017"
              alt=""/>
 
-        <div class="loding_text absolute">로딩중</div>
-        <div class="loding_bar absolute"></div>
+        <div class="loading_text absolute">로딩중</div>
+        <div class="loading_bar absolute"></div>
     </div>
 
+    <a href="../map/map.html"  class="skip-bt">
+        <span class="skip-text">Skip</span>
+        <span class="skip-icon">>>></span>
+    </a>
+
+    <!-- 로고 -->
     <a class="ingame_logo rounded-full absolute cursor-pointer" href="../../ascentlime.html">
         <img class="ingame_logo"
              src="https://github.com/user-attachments/assets/8c7de13c-87f7-470f-a64e-17291ead7104"
@@ -178,7 +169,7 @@
         </div>
     </div>
 </div>
-<script src="tutorial-module.js" defer type="module"></script>
 <script src="../common/profileImages.js" defer></script>
+<script src="tutorial-module.js" defer type="module"></script>
 </body>
 </html>

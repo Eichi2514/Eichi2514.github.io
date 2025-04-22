@@ -302,6 +302,16 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: rgb(255, 71, 48);
 }
 
+.submenu-button {
+    display: inline-block;
+    text-align: center;
+    width: 18vh;
+    border: 0.3vh solid;
+    padding: 0.7vh;
+    border-radius: 1vh;
+    background: rgb(255, 140, 0);
+}
+
 .join_bt {
     cursor: pointer;
     left: 30vh;
@@ -421,24 +431,24 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 /* 인게임 헤드 */
-.loding_img {
+.loading_img {
     width: 100vh;
     height: 100vh;
 }
 
-.loding {
+.loading {
     left: 0;
     top: 0;
 }
 
-.loding_text {
+.loading_text {
     top: 36vh;
     left: 27vh;
     font-size: 15vh;
     -webkit-text-stroke: 0.1vh white;
 }
 
-.loding_bar {
+.loading_bar {
     height: 5vh;
     left: 10vh;
     bottom: 10vh;
@@ -1464,12 +1474,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     background: rgb(0, 0, 30);
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
-}
-
-.item_img {
-    height: 20vh;
-    width: 50vh;
-    transform: scaleY(-1);
 }
 
 .item_text > div, .item_text > button {
