@@ -541,7 +541,7 @@ $touch_center.on("touchstart", () => {
         if (!isRandomItemHidden) {
             $('.item_get').click();
         } else {
-            hide_alert();
+            $('.alert_exit').click();
         }
     } else {
         $('.dialogue-next').click();
