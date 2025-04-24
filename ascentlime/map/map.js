@@ -382,6 +382,54 @@ if (!localStorage.getItem('cutscene1')) {
     window.location.href = '../cutscene/tutorial.html';
 }
 
+function mob__dictionary2() {
+    for (let i = 1; i <= 80; i++) {
+        const mobName = i < mobs.length ? `${i}층 몬스터` : `출시예정`;
+
+        $('.mob__dictionary_inner2').append(`
+            <div class="mob__dictionary_card2">
+                <img src="" alt="../image/map/mystery.png" class="mob__dictionary_title2 mobImage${i}" onerror="this.src=this.alt;">
+                <div class="mob__dictionary_body2 mobName${i}">${mobName}</div>
+            </div>
+        `)
+    }
+}
+
+mob__dictionary2();
+
+function mob__dictionary() {
+    for (let i = 1; i < mobs.length; i++) {
+        $('.mob__dictionary_inner').append(`
+            <div class="mob__dictionary_card inline-block">
+                <img src="../image/map/mystery.png" alt="mobImage" class="mob__dictionary_title mobImage${i}">
+                <div class="mob__dictionary_body mobName${i}">${i}층 몬스터</div>
+            </div>
+        `)
+    }
+}
+
+mob__dictionary();
+
+function weapon__dictionary() {
+    for (let i = 1; i < weapon.length; i++) {
+        $('.weapon__dictionary_inner').append(`
+            <div class="weapon__dictionary_card inline-block">
+                <img src="../image/map/mystery.png" alt="weaponImage" class="weapon__dictionary_title weaponImage${i}">
+                <div class="weapon__dictionary_body weaponName${i}">${i}번 무기</div>
+            </div>
+        `)
+
+        $('.weapon__dictionary_inner2').append(`
+            <div class="weapon__dictionary_card2 inline-block">
+                <img src="../image/map/mystery.png" alt="weaponImage" class="weapon__dictionary_title2 weaponImage${i}">
+                <div class="weapon__dictionary_body2 weaponName${i}">${i}번 무기</div>
+            </div>
+        `)
+    }
+}
+
+weapon__dictionary();
+
 async function updateCharacterData(nickname) {
     if (nickname) {
         charac = await characCheckMap(nickname);
@@ -2446,6 +2494,7 @@ let mobFind = 0;
 
     for (let i = 1; i <= mobFind; i++) {
         $(`.mobImage${i}`).attr('src', mobs[i]).addClass('cursor-help');
+        $(`.mobName${i}`).text(mobNames[i]);
 
         let attackRange = '';
         if (i <= 10) attackRange = '없음';
