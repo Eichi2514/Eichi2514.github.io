@@ -3,87 +3,6 @@ window.onerror = function () {
 };
 
 const weapon = [
-    'https://github.com/user-attachments/assets/38ac0543-fd8f-47cd-9563-2a8c9a86a849',
-
-    'https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6',
-    'https://github.com/user-attachments/assets/ca527de8-3ca6-44bb-9845-625e9f30ab89',
-    'https://github.com/user-attachments/assets/91200c6c-bd4d-44eb-98df-96a7af967552',
-    'https://github.com/user-attachments/assets/7403b724-19d1-49bf-9781-f97ac6936d68',
-    'https://github.com/user-attachments/assets/eafa86a5-ff3c-4a3d-86e9-8f485c4905e1',
-    'https://github.com/user-attachments/assets/fd1692a4-c906-4f24-b47d-1e2ac54fed56',
-    'https://github.com/user-attachments/assets/f4621a93-e6db-4003-9e49-02fe7543491f',
-    'https://github.com/user-attachments/assets/027a11ed-96fa-4587-9b7f-c3efde0e40b1',
-    'https://github.com/user-attachments/assets/f531f906-2147-45b5-8af9-e0877201552c',
-    'https://github.com/user-attachments/assets/dcc3fdaa-fa09-42a9-a929-3e7904925b41',
-
-    'https://github.com/user-attachments/assets/330ad6aa-ead1-485b-900e-dea99d69abbc',
-    'https://github.com/user-attachments/assets/4ba220d2-1c7f-4f84-bb1e-bc5eb8b4f531',
-    'https://github.com/user-attachments/assets/791c3025-5ee3-4528-8cc2-8bbe8daf4bc0',
-    'https://github.com/user-attachments/assets/1dd703a6-d7be-48ad-8eec-11960337c59c',
-    'https://github.com/user-attachments/assets/87660691-5b05-427a-9471-94af0105d66d',
-    'https://github.com/user-attachments/assets/c1776b21-dae8-4890-a91c-c93198a28d2a',
-    'https://github.com/user-attachments/assets/03def50a-b4a8-4ccc-80de-e9f570d03dc5',
-    'https://github.com/user-attachments/assets/2ac29faa-dba5-46b1-9a15-665ce62596ba',
-    'https://github.com/user-attachments/assets/3e3ebf0f-e700-4a6f-91f5-ffbf9f16d69f',
-    'https://github.com/user-attachments/assets/383a1c05-7a15-4974-8842-a4f0d3f3b747',
-
-    'https://github.com/user-attachments/assets/34b8096b-643c-4323-adb9-384198f35a05',
-    'https://github.com/user-attachments/assets/e745c414-919e-45a0-8ee8-b6708c677c97',
-    'https://github.com/user-attachments/assets/98c2a891-0148-4b10-8ce8-1509fecdb511',
-    'https://github.com/user-attachments/assets/417ceca3-7c5a-4b46-b7ba-597320a7280b',
-    'https://github.com/user-attachments/assets/076ae1bc-5a66-4db3-be82-6f22e0b52155',
-    'https://github.com/user-attachments/assets/c5b27034-7754-4a7c-b212-67bb919e60c1',
-    'https://github.com/user-attachments/assets/6e8c1158-10dd-4769-8d3f-27d0df7e1ac6',
-    'https://github.com/user-attachments/assets/7cd68d64-55c6-4da3-98d6-ec641e4d139b',
-    'https://github.com/user-attachments/assets/7b8523d2-e443-44fc-9f79-dbebcf385b29',
-    'https://github.com/user-attachments/assets/2ea0d667-6c8b-42c2-9eac-435e19422256',
-
-    'https://github.com/user-attachments/assets/a114d57e-9995-4036-93be-e73087b93dee',
-    'https://github.com/user-attachments/assets/fefa8e4d-6ce4-4258-9988-c6bee58defa6',
-    'https://github.com/user-attachments/assets/44fc98a6-87f8-4444-b6af-6fb31c513ed9',
-    'https://github.com/user-attachments/assets/2de1f608-83ba-42ad-b0b1-8ac51dea567a',
-    'https://github.com/user-attachments/assets/a8369e91-a67f-44f0-9c4a-ef8fbb8cfe2a',
-    'https://github.com/user-attachments/assets/388af076-05e8-452f-a501-a56f64c992c9',
-    'https://github.com/user-attachments/assets/96270c25-7a7b-4086-ac06-5634555b70ef',
-    'https://github.com/user-attachments/assets/89cf8667-6f45-440e-aa48-de352197809f',
-    'https://github.com/user-attachments/assets/87a96719-bbac-410c-8a33-d7f67d39a2a2',
-    'https://github.com/user-attachments/assets/4c81b6d8-1ab6-41e3-99e8-e289eb7510de',
-
-    'https://github.com/user-attachments/assets/a08e3986-994d-4449-adb1-10e575714188',
-    'https://github.com/user-attachments/assets/e8f0f8ed-0d14-4bed-8f14-d58a6ce6c537',
-    'https://github.com/user-attachments/assets/5f99f1a8-cce0-43f4-9bd0-b01aff7ed337',
-    'https://github.com/user-attachments/assets/b007b848-66f2-404f-9452-e4ca17e4ebf2',
-    'https://github.com/user-attachments/assets/c6d3d271-dc7c-4cc1-908b-1960ece2ed80',
-    'https://github.com/user-attachments/assets/157e3ef6-ca2b-47f8-96ba-4a4451534fec',
-    'https://github.com/user-attachments/assets/40a08051-7223-4472-ab42-42bdbfeca35c',
-    'https://github.com/user-attachments/assets/62dedd0e-9806-4fca-a7fb-d06fea28d1c4',
-    'https://github.com/user-attachments/assets/d3e44839-8d46-4c0f-9e26-169bab080fdd',
-    'https://github.com/user-attachments/assets/1afae587-dff3-42dd-a663-6730f5766187',
-
-    'https://github.com/user-attachments/assets/2e6e4dc2-3b84-4521-b9c1-7eb469d8d861',
-    'https://github.com/user-attachments/assets/44dc4242-4cc1-4bd9-bf1d-501625f79981',
-    'https://github.com/user-attachments/assets/e0cd5573-f9ae-4a94-98b8-933b0317f6cd',
-    'https://github.com/user-attachments/assets/221e2115-c9fe-4777-90de-b690b272268b',
-    'https://github.com/user-attachments/assets/90731980-1fc7-49cb-8a99-f103082727ac',
-    'https://github.com/user-attachments/assets/74c267ea-fa2f-494b-923e-fd8728e7346c',
-    'https://github.com/user-attachments/assets/e3ac88c9-4c23-4f76-8a66-4780e32afcf7',
-    'https://github.com/user-attachments/assets/47452f52-d6f9-4561-b984-59bf1abc6b0a',
-    'https://github.com/user-attachments/assets/6435b887-2b87-4367-a088-28e13d0a9b59',
-    'https://github.com/user-attachments/assets/fceed0f8-5b68-4263-b9f2-63d9dcb9eaa8',
-
-    'https://github.com/user-attachments/assets/d3b5fb90-b21e-42a3-8964-a866132ace38',
-    'https://github.com/user-attachments/assets/a75eb20d-7588-42c0-b517-c5cfa38293a1',
-    'https://github.com/user-attachments/assets/bab07e9b-6bcc-4cc6-9782-d2e5491ed42e',
-    'https://github.com/user-attachments/assets/351cb011-e0d8-4b97-ade0-e591aecd63f2',
-    'https://github.com/user-attachments/assets/df28a7ef-027e-4b9c-9dfe-5333945f79b4',
-    'https://github.com/user-attachments/assets/402dde9c-aeba-4543-a5a2-77d95ec25bba',
-    'https://github.com/user-attachments/assets/c9258612-c30a-4e6b-8f43-d63518485e72',
-    'https://github.com/user-attachments/assets/33899c93-1223-4e71-9113-7d7702c20b03',
-    'https://github.com/user-attachments/assets/ead726f4-fa9f-4fd8-935a-0c665b173069',
-    'https://github.com/user-attachments/assets/a6dcabfb-34c7-41bc-ad0e-94228de15519'
-];
-/*
-const weapon = [
     '../image/weapon/weapon0.png',
 
     '../image/weapon/weapon1.png',
@@ -163,7 +82,7 @@ const weapon = [
     '../image/weapon/weapon69.png',
     '../image/weapon/weapon70.png'
 ];
-*/
+
 const weaponNames = [
     '???',
 
