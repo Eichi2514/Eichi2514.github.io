@@ -1723,7 +1723,7 @@ async function updateCharacterData(nickname) {
               ? weapon[front_weaponId]
               : "../image/mobAttack/attack.png";
 
-            let $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="무기"/>`);
+            let $attackElement = $(`<img class="upgrade-${front_weaponUpgrade < 90 ? front_weaponUpgrade : 90} weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="무기"/>`);
 
             if (something === 1) {
                 $('.front_charac').append($attackElement);

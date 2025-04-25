@@ -267,6 +267,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 80vh;
     left: 1vh;
     width: 92vh;
+    white-space: nowrap;
 }
 
 .page {
