@@ -836,7 +836,7 @@ async function updatePagination(totalLogsCount) {
             <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 2, 1)}" style="${page <= 2 ? 'display: none;' : ''}">${Math.max(page - 2, 1)}</a>
             <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.max(page - 1, 1)}" style="${page === 1 ? 'display: none;' : ''}">${Math.max(page - 1, 1)}</a>
             <!-- 현재 페이지 -->
-            <a class="page active" href="../scoreboard.html?tap=${shopTap}&page=${page}">${page}</a>
+            <div class="page active">${page}</a>
             <!-- 다음 페이지 버튼들 -->
             <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 1, lastPage)}" style="${page >= lastPage ? 'display: none;' : ''}">${Math.min(page + 1, lastPage)}</a>
             <a class="page" href="../shop/shop.html?tap=${shopTap}&page=${Math.min(page + 2, lastPage)}" style="${page + 1 >= lastPage ? 'display: none;' : ''}">${Math.min(page + 2, lastPage)}</a>

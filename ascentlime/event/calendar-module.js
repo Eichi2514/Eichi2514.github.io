@@ -101,7 +101,7 @@ $(document).ready(async function () {
         daysHTML += `
             <div class="${dayClass}">
                 <div class="day-number">${paddedDate}</div>
-                <img src="https://github.com/user-attachments/assets/ef864edf-f6ef-47f6-a824-538088dcb693" alt=""/>
+                <img src="https://github.com/user-attachments/assets/ef864edf-f6ef-47f6-a824-538088dcb693" alt="캐시"/>
                 <div class="check-mark">${checkMark}</div>
                 <div class="double-reward">${rewardLabel}</div>
             </div>

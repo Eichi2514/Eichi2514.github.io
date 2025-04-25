@@ -248,7 +248,7 @@ function moveCharacter(moveAction, something) {
 function attack_motion(something, motion) {
     const Distance = 10;
     const weaponImg = "https://github.com/user-attachments/assets/98a45b38-4cb3-4ee4-b8f7-28205ff39cb6";
-    const $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt=""/>`);
+    const $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="공격 이미지"/>`);
 
     $('.front_charac').append($attackElement);
 

@@ -256,6 +256,16 @@ async function achievedStatusText(profileImageId) {
     return '획득 완료';
 }
 
+function profileImageContainer() {
+    for (let i = 1; i < profileImages.length - 1; i++) {
+        $('.profile-image-container').append(`
+            <img class="profile-image${i}" src="${profileImages[i]}" alt="프로필 이미지">
+        `);
+    }
+}
+
+profileImageContainer();
+
 const $profileBg = $(".profile-bg");
 
 $(".profile-photo").click(async function () {

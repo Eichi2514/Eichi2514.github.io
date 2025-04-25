@@ -462,7 +462,7 @@ async function updateCharacterData(nickname) {
         if (10 < characFloor && characFloor <= 20) {
             for (let mobNum = 2; mobNum <= 6; mobNum++) {
                 $(`.mob${mobNum}`).append(`
-                    <img class="meleeAttack meleeAttack${mobNum} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${mobNum}"/>
+                    <img class="meleeAttack meleeAttack${mobNum} absolute" src="../image/mobAttack/meleeAttack.png" alt="몬스터 무기${mobNum}"/>
                 `);
             }
         }
@@ -787,7 +787,7 @@ async function updateCharacterData(nickname) {
                 let randomNum = Math.floor(Math.random() * 4) + 1;
                 let className = "hidden-attack" + randomNum;
 
-                hiddenAttackImg += `<img class="${className}" src="https://github.com/user-attachments/assets/4ee56238-45f4-45ef-80b8-40421b7e57e6" alt="히든무기 공격 이펙트">`;
+                hiddenAttackImg += `<img class="${className}" src="../image/mobAttack/hiddenAttack.png" alt="히든무기 공격 이펙트">`;
             }
 
             // 공격 이펙트 추가
@@ -1305,19 +1305,14 @@ async function updateCharacterData(nickname) {
             if (num < 6) {
                 let goldDropNum = getRandom(1, 4);
                 $mob.append(`
-                    <img class="gold goldDrop-${goldDropNum}" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
-                         alt=""/>
+                    <img class="gold goldDrop-${goldDropNum}" src="../image/map/gold.png" alt="골드"/>
                 `)
             } else if (num === 6) {
                 $mob.append(`
-                    <img class="gold goldDrop-1" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
-                         alt=""/>
-                    <img class="gold goldDrop-2" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
-                         alt=""/>
-                    <img class="gold goldDrop-3" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
-                         alt=""/>
-                    <img class="gold goldDrop-4" src="https://github.com/user-attachments/assets/6acb19ee-b422-47bd-ba63-7ceb0b7610f5"
-                         alt=""/>
+                    <img class="gold goldDrop-1" src="../image/map/gold.png" alt="골드"/>
+                    <img class="gold goldDrop-2" src="../image/map/gold.png" alt="골드"/>
+                    <img class="gold goldDrop-3" src="../image/map/gold.png" alt="골드"/>
+                    <img class="gold goldDrop-4" src="../image/map/gold.png" alt="골드"/>
                 `)
             }
 
@@ -1726,9 +1721,9 @@ async function updateCharacterData(nickname) {
 
             const weaponImg = something === 1
               ? weapon[front_weaponId]
-              : "https://github.com/user-attachments/assets/49ac96a1-55f9-4b50-a4fe-c2107f21c2a1";
+              : "../image/mobAttack/attack.png";
 
-            let $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt=""/>`);
+            let $attackElement = $(`<img class="weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="무기"/>`);
 
             if (something === 1) {
                 $('.front_charac').append($attackElement);
@@ -1796,7 +1791,7 @@ async function updateCharacterData(nickname) {
             const $target = $(`.mob${something}`);
 
             $target.append(`
-                <img class="bombAttack${something} absolute" src="https://github.com/user-attachments/assets/88577ab9-8cf6-4bde-9aa9-cf0b73104ae2" alt="">
+                <img class="bombAttack${something} absolute" src="../image/mobAttack/bombAttack.png" alt="폭탄 무기">
             `);
 
             // 3초 뒤 폭탄 이미지를 터지는 이미지로 변경
@@ -1808,7 +1803,7 @@ async function updateCharacterData(nickname) {
                     let randomNum = Math.floor(Math.random() * 2) + 1;
                     let className = "boom-attack" + something + "-" + randomNum;
 
-                    boomAttackImg += `<img class="${className}" src="https://github.com/user-attachments/assets/f9136a53-b517-45dd-a049-b821b1663361" alt="폭발(불꽃) 이미지">`;
+                    boomAttackImg += `<img class="${className}" src="../image/mobAttack/boomAttack.png" alt="폭발(불꽃) 이미지">`;
                 }
 
                 const $effect = $(`
@@ -1851,7 +1846,7 @@ async function updateCharacterData(nickname) {
             const xOffset = something === 6 ? 4 : 2;
             const yOffset = something === 6 ? 8 : 4;
 
-            let $attackElement = $(`<img class="beamAttack${something}" src="https://github.com/user-attachments/assets/204705f9-7cf4-4334-a01e-6bd4cca50835" alt=""/>`);
+            let $attackElement = $(`<img class="beamAttack${something}" src="../image/mobAttack/beamAttack.png" alt="빔 무기"/>`);
             $(".mapBody").append($attackElement);
 
             const topValue = `${UDOffset + xOffset}vh`;
@@ -2092,7 +2087,7 @@ async function updateCharacterData(nickname) {
             } else if (random === 5 && characFloor > 50) {
                 $(`.meleeAttack${something}`).remove();
                 $(`.mob${something}`).append(`
-                    <img class="meleeAttack meleeAttack${something} absolute" src="https://github.com/user-attachments/assets/77b4280b-1541-43d0-9659-c6ef81c1cea0" alt="몬스터 무기${something}"/>
+                    <img class="meleeAttack meleeAttack${something} absolute" src="../image/mobAttack/meleeAttack.png" alt="몬스터 무기${something}"/>
                 `);
                 setTimeout(() => {
                     mobMeleeAttack(something);
