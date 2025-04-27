@@ -787,7 +787,7 @@ async function updateCharacterData(nickname) {
                 let randomNum = Math.floor(Math.random() * 4) + 1;
                 let className = "hidden-attack" + randomNum;
 
-                hiddenAttackImg += `<img class="${className}" src="../image/mobAttack/hiddenAttack.png" alt="히든무기 공격 이펙트">`;
+                hiddenAttackImg += `<img class="${className}" src="../image/weapon/hiddenAttack.png" alt="히든무기 공격 이펙트">`;
             }
 
             // 공격 이펙트 추가
@@ -1721,9 +1721,9 @@ async function updateCharacterData(nickname) {
 
             const weaponImg = something === 1
               ? weapon[front_weaponId]
-              : "../image/mobAttack/attack.png";
+              : "../image/mobAttack/attack2.png";
 
-            let $attackElement = $(`<img class="upgrade-${front_weaponUpgrade < 90 ? front_weaponUpgrade : 90} weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="무기"/>`);
+            let $attackElement = $(`<img class="upgrade-${something != 1 ? 0 : front_weaponUpgrade < 90 ? front_weaponUpgrade : 90} weapon_img attackSize attack${something} absolute" src="${weaponImg}" alt="무기"/>`);
 
             if (something === 1) {
                 $('.front_charac').append($attackElement);
