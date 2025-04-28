@@ -61,7 +61,7 @@ body {
 
 .link:hover {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 input {
@@ -110,6 +110,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .menu-notify {
     align-self: flex-start;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .menu-notify img {
@@ -138,6 +139,14 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     color: #666 !important;
     outline: none;
     box-shadow: none;
+}
+
+.search-category {
+    cursor: url('../image/cursor/default.png'), auto;
+}
+
+.search-button {
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .search-input {
@@ -173,7 +182,11 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .logout_bt {
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+}
+
+.profile-photo {
+    cursor: url('../image/cursor/pointer.png'), pointer;
 }
 
 .profile-photo img, .post-thumbnail img, .profile-image-container img, .current-profile img {
@@ -438,7 +451,7 @@ textarea.article-body {
     border: 3px solid rgb(174, 0, 27);
     border-radius: 10px;
     padding: 10px;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
     margin: 10px;
 }
 
@@ -449,7 +462,7 @@ textarea.article-body {
 }
 
 .login-bt {
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
     text-decoration: underline;
     color: #1e3a8a;
 }
@@ -479,4 +492,25 @@ textarea.article-body {
     display: flex;
     align-self: end;
     padding: 28px 10px;
+}
+
+/* 마우스 이펙트 */
+html, body {
+  cursor: url('../image/cursor/default.png'), auto;
+}
+
+body > * {
+  cursor: inherit;
+}
+
+a, button {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+button:active {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+input, textarea {
+  cursor: url('../image/cursor/text.png'), text;
 }

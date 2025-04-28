@@ -2488,7 +2488,9 @@ let mobFind = 0;
     mobFind = Math.min(await getMobFind(nickname) || 0, mobs.length - 1);
 
     for (let i = 1; i <= mobFind; i++) {
-        $(`.mobImage${i}`).attr('src', mobs[i]).addClass('cursor-help');
+        const mobImage = $(`.mobImage${i}`);
+        mobImage.attr('src', mobs[i]);
+        mobImage.css('cursor', 'url(../image/cursor/help.png) 92 92, auto');
         $(`.mobName${i}`).text(mobNames[i]);
 
         let attackRange = '';

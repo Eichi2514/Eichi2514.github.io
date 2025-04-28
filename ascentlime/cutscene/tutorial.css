@@ -391,7 +391,7 @@ body {
     gap: 5vh;
     position: absolute;
     bottom: 5vh;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -455,4 +455,25 @@ body {
     100% {
         right: 5vh;
     }
+}
+
+/* 마우스 이펙트 */
+html, body {
+  cursor: url('../image/cursor/default.png'), auto;
+}
+
+body > * {
+  cursor: inherit;
+}
+
+a, button {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+button:active {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+input, textarea {
+  cursor: url('../image/cursor/text.png'), text;
 }

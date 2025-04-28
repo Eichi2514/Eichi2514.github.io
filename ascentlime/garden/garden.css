@@ -91,11 +91,12 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.2vh 1vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .menu-notify {
     align-self: flex-start;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .menu-notify img {
@@ -109,12 +110,12 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.7vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .link:hover {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .bg_img {
@@ -150,7 +151,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.5vh 1vh;
     background: rgb(255, 71, 48);
     border-radius: 1vh;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
 }
 
 .fertilizer {
@@ -227,7 +228,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .plant-name, .plant-time {
-    cursor: default;
+    cursor: url('../image/cursor/default.png'), auto;
     word-break: keep-all;
 }
 
@@ -412,7 +413,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     position: absolute;
     top: 1.5vh;
     right: 2.5vh;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
 }
 
 .popup-form-container {
@@ -463,4 +464,25 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     100% {
         transform: rotate(0deg);
     }
+}
+
+/* 마우스 이펙트 */
+html, body {
+  cursor: url('../image/cursor/default.png'), auto;
+}
+
+body > * {
+  cursor: inherit;
+}
+
+a, button {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+button:active {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+input, textarea {
+  cursor: url('../image/cursor/text.png'), text;
 }

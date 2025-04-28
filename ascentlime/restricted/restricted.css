@@ -123,3 +123,24 @@ html > body, button {
         border-radius: calc(var(--vw) * 3);
     }
 }
+
+/* 마우스 이펙트 */
+html, body {
+  cursor: url('../image/cursor/default.png'), auto;
+}
+
+body > * {
+  cursor: inherit;
+}
+
+a, button {
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+}
+
+button:active {
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+}
+
+input, textarea {
+  cursor: url('../image/cursor/text.png'), text;
+}

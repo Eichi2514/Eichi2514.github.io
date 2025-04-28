@@ -65,7 +65,7 @@ body {
 
 .link:hover {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 input {
@@ -114,6 +114,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .menu-notify {
     align-self: flex-start;
+    cursor: url('../image/cursor/pointer.png'), pointer;
 }
 
 .menu-notify img {
@@ -275,7 +276,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     border: none;
     padding: 8px 14px;
     font-size: 30px;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
     pointer-events: auto;
     z-index: 1000;
 }
@@ -347,4 +348,25 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* 마우스 이펙트 */
+html, body {
+  cursor: url('../image/cursor/default.png'), auto;
+}
+
+body > * {
+  cursor: inherit;
+}
+
+a, button {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+button:active {
+  cursor: url('../image/cursor/pointer.png'), pointer;
+}
+
+input, textarea {
+  cursor: url('../image/cursor/text.png'), text;
 }

@@ -531,7 +531,7 @@ a:hover svg {
     left: 10px;
     border-radius: 25px;
     background: #4c51bf;
-    cursor: default;
+    cursor: auto;
     padding: 0 5px;
 }
 
@@ -601,7 +601,7 @@ li button, li a div {
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease;
-    cursor: pointer;
+    cursor: url('../image/cursor/pointer.png'), pointer;
     font-weight: 600;
 }
 
