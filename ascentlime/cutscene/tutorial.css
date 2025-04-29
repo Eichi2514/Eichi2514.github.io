@@ -173,6 +173,7 @@ body {
     top: 1vh;
     width: 16vh;
     height: 16vh;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .bar {
@@ -308,6 +309,7 @@ body {
     text-align: center;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .alert_title {
@@ -326,6 +328,7 @@ body {
     text-align: center;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 /* 대화창 */
@@ -391,7 +394,7 @@ body {
     gap: 5vh;
     position: absolute;
     bottom: 5vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -443,6 +446,7 @@ body {
     bottom: 2vh;
     cursor: pointer;
     animation: moveRightLeft 1s infinite ease-in-out;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 @keyframes moveRightLeft {
@@ -467,11 +471,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 input, textarea {

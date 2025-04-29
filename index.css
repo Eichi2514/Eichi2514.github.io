@@ -601,7 +601,7 @@ li button, li a div {
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: pointer;
     font-weight: 600;
 }
 

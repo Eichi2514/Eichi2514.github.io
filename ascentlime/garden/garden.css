@@ -91,12 +91,12 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.2vh 1vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .menu-notify {
     align-self: flex-start;
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .menu-notify img {
@@ -110,12 +110,12 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.7vh;
     border-radius: 1vh;
     background: rgb(255, 71, 48);
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .link:hover {
     text-decoration: underline;
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .bg_img {
@@ -151,7 +151,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     padding: 0.5vh 1vh;
     background: rgb(255, 71, 48);
     border-radius: 1vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .fertilizer {
@@ -413,7 +413,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     position: absolute;
     top: 1.5vh;
     right: 2.5vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .popup-form-container {
@@ -425,6 +425,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .plant-buy-button {
     position: relative;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .plant-buy-button:hover .none {
@@ -476,11 +477,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 input, textarea {

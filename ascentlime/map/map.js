@@ -2175,7 +2175,7 @@ async function updateCharacterData(nickname) {
         // 마우스가 움직이면 호출되는 함수
         function resetCursorTimer() {
             // 커서를 다시 보이도록 설정
-            $('body').css('cursor', 'default');
+            $('body').css('cursor', `url('../image/cursor/default.png'), auto`);
 
             // 이전 타이머가 있다면 취소
             clearTimeout(timeoutId);

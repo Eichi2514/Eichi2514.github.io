@@ -61,7 +61,7 @@ body {
 
 .link:hover {
     text-decoration: underline;
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 input {
@@ -110,7 +110,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .menu-notify {
     align-self: flex-start;
-    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 .menu-notify img {
@@ -254,11 +254,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 input, textarea {
