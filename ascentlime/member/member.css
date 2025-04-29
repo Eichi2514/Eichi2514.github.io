@@ -117,7 +117,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 
 .link:hover {
     text-decoration: underline;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .bg {
@@ -364,11 +364,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 input, textarea {

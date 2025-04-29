@@ -204,7 +204,7 @@ window.getWeaponFind = async function (memberKey) {
             // 현재 순서에 해당하는 weapon__dictionary_card2 선택
             const indexNumber = parseInt(key, 10);
             const currentCard = $('.weapon__dictionary_card2').eq(indexNumber - 1);
-            currentCard.css('cursor', 'url(../image/cursor/help.png) 92 92, auto');
+            currentCard.css('cursor', 'url(../image/cursor/help.png) 0 30, auto');
 
             currentCard.append(`
                 <div class="dictionary_body_text absolute">            

@@ -142,7 +142,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .search-category {
-    cursor: url('../image/cursor/default.png'), auto;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .search-button {
@@ -186,7 +186,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .profile-photo {
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .profile-photo img, .post-thumbnail img, .profile-image-container img, .current-profile img {
@@ -451,7 +451,7 @@ textarea.article-body {
     border: 3px solid rgb(174, 0, 27);
     border-radius: 10px;
     padding: 10px;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
     margin: 10px;
 }
 
@@ -462,7 +462,7 @@ textarea.article-body {
 }
 
 .login-bt {
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
     text-decoration: underline;
     color: #1e3a8a;
 }
@@ -492,6 +492,7 @@ textarea.article-body {
     display: flex;
     align-self: end;
     padding: 28px 10px;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 /* 마우스 이펙트 */
@@ -504,13 +505,13 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
-input, textarea {
+input, textarea, input:focus, textarea:focus, input:active, textarea:active {
   cursor: url('../image/cursor/text.png'), text;
 }

@@ -322,6 +322,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .login_out_bt {
     left: 51.5vh;
     top: 36vh;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .start, .start-1, .start-2, .start-text {
@@ -592,6 +593,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     /* background: rgb(255, 71, 48); */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .mob__dictionary {
@@ -679,6 +681,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     /* background: rgb(255, 71, 48); */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .weapon__dictionary {
@@ -903,7 +906,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     /* background: rgb(255, 71, 48); */
     color: rgb(156, 163, 175);
     -webkit-text-stroke: 0.1vh black;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 /* 인게임 맵 */
@@ -1591,6 +1594,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     text-align: center;
     border: 0.3vh solid rgb(174, 0, 27);
     border-radius: 1vh;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .bossHP {
@@ -1763,7 +1767,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     position: absolute;
     top: 28.8vh;
     right: 1vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .main-notify img {
@@ -1775,7 +1779,7 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     position: absolute;
     top: 31vh;
     right: 8vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
     transition: transform 0.3s ease;
 }
 
@@ -1823,7 +1827,7 @@ li button, li a, li a div, li div {
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 /* 메뉴 항목 hover 시 테두리 효과 */
@@ -1880,7 +1884,7 @@ li button, li a, li a div, li div {
     left: 0;
     bottom: 1vh;
     height: 15vh;
-    cursor: url('../image/cursor/pointer.png'), pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
     transform: scaleX(-1);
 }
 
@@ -1894,11 +1898,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png'), pointer;
+  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 input, textarea {
