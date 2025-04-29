@@ -17,7 +17,7 @@ ul li:first-child {
     display: flex;
     flex-direction: row;
     gap: 5px;
-    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .submenu, .detailmenu {
@@ -39,7 +39,7 @@ li button, li a, li a div {
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
 
 .detailmenu-button {
@@ -72,5 +72,5 @@ li button, li a, li a div {
 }
 
 .logout_bt {
-    cursor: url('../image/cursor/pointer.png') 30 0, pointer;
+    cursor: url('../image/cursor/pointer.png') 10 0, pointer;
 }
