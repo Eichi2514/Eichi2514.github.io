@@ -134,11 +134,11 @@ body > * {
 }
 
 a, button {
-  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 button:active {
-  cursor: url('../image/cursor/pointer.png') 10 0, pointer;
+  cursor: url('../image/cursor/pointer.png') 30 0, pointer;
 }
 
 input, textarea {
