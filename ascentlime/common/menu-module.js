@@ -234,5 +234,5 @@ window.notifyCheck = async function () {
     }
 }
 
-$('body').append('<script src="../common/profileImages.js"></script>');
+$('body').prepend('<script src="../common/profileImages.js"></script>');
 $('body').append('<script type="module" defer src="../common/friends-module.js"></script>');

@@ -128,6 +128,7 @@ if (key) {
     $('.profile-image' + profileImageId).addClass('border');
     $('.achieved-status').text(await achievedStatusText(profileImageId));
     $('.nickname').text(nickname);
+    profileImageContainer();
 }
 
 window.loginKeyCheckById = async function () {
@@ -263,8 +264,6 @@ function profileImageContainer() {
         `);
     }
 }
-
-profileImageContainer();
 
 const $profileBg = $(".profile-bg");
 
