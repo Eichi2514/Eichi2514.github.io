@@ -153,6 +153,29 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     width: 435px;
 }
 
+/* 로딩 스핀 스타일 */
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+.spinner {
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid rgb(174, 0, 27);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* 메인 */
 .profile-container {
     display: flex;
@@ -261,9 +284,11 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
 }
 
 .content {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 200px;
 }
 
 .post-time {

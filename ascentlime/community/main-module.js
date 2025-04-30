@@ -372,14 +372,12 @@ get(articlesRef).then((snapshot) => {
     console.error("전체 로그 개수 가져오기 오류: ", error);
 });
 
-// 게시글 목록을 불러오는 함수
 window.loadPosts = async function (boardId) {
-    const contentDiv = document.querySelector(".content");
-    if (!contentDiv) {
+    const $contentDiv = $(".content");
+    if ($contentDiv.length === 0) {
         console.error("게시글을 표시할 요소가 존재하지 않습니다.");
         return;
     }
-    contentDiv.innerHTML = "";
 
     try {
         const queryRef = await getLogsQuery(page, boardId);
@@ -387,7 +385,7 @@ window.loadPosts = async function (boardId) {
 
         const snapshot = await get(queryRef);
         if (!snapshot.exists()) {
-            await showEmptyMessage(contentDiv);
+            await showEmptyMessage($contentDiv[0]);
             return;
         }
 
@@ -408,7 +406,7 @@ window.loadPosts = async function (boardId) {
         }
 
         if (filteredArticles.length === 0) {
-            await showEmptyMessage(contentDiv);
+            await showEmptyMessage($contentDiv[0]);
             return;
         }
 
@@ -416,8 +414,8 @@ window.loadPosts = async function (boardId) {
         if (boardId !== "") {
             lastPage = Math.ceil(filteredArticles.length / 10);
             page = Math.max(1, Math.min(page, lastPage));
-            const paginationElement = document.querySelector('.pagination');
-            if (paginationElement) await updatePagination();
+            const $paginationElement = $('.pagination');
+            if ($paginationElement.length) await updatePagination();
         }
 
         // 정렬 + 페이지 슬라이싱
@@ -436,6 +434,8 @@ window.loadPosts = async function (boardId) {
 
         const now = new Date();
         const formattedTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        const $tempContainer = $("<div></div>"); // 임시 컨테이너
 
         for (const article of sortedArticles) {
             const profileImageId = (await profileImageIdGet(article.author)) || 1;
@@ -459,56 +459,62 @@ window.loadPosts = async function (boardId) {
                     <text x="15" y="16" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" dominant-baseline="middle"> N </text>
                 </svg>` : '';
 
-            const postElement = document.createElement("a");
-            postElement.classList.add("post-item", "border");
-            postElement.href = `../community/detail.html?${article.id}`;
-
-            postElement.innerHTML = `
-                <div class="post-thumbnail">
-                    <img src="${profileImages[profileImageId]}" alt="대표 이미지">
-                </div>
-                <div class="post-details">
-                    <div class="post-header">
-                        <div class="flex gap-2 items-center">
-                            <div class="border boardName">${boardName[article.boardId]}</div>
-                            <div class="post-title">${article.id}) ${article.title}</div>
-                        </div>
-                        <div class="post-title-side flex gap-10">
-                            <div class="comment">
-                                <img src="https://github.com/user-attachments/assets/0d4c9144-13e5-4daa-8799-bd5c6de1ded8" alt="댓글 이미지">
-                                <div class="comment-count">${replyCount}</div>
+            const $postElement = $(`
+                <a class="post-item border" href="../community/detail.html?${article.id}">
+                    <div class="post-thumbnail">
+                        <img src="${profileImages[profileImageId]}" alt="대표 이미지">
+                    </div>
+                    <div class="post-details">
+                        <div class="post-header">
+                            <div class="flex gap-2 items-center">
+                                <div class="border boardName">${boardName[article.boardId]}</div>
+                                <div class="post-title">${article.id}) ${article.title}</div>
                             </div>
-                            ${newIcon}
+                            <div class="post-title-side flex gap-10">
+                                <div class="comment">
+                                    <img src="https://github.com/user-attachments/assets/0d4c9144-13e5-4daa-8799-bd5c6de1ded8" alt="댓글 이미지">
+                                    <div class="comment-count">${replyCount}</div>
+                                </div>
+                                ${newIcon}
+                            </div>
+                        </div>
+                        <div class="post-body">
+                            <div class="post-title">
+                                ${article.body ? article.body.substring(0, 35) + (article.body.length > 35 ? '...' : '') : ''}
+                            </div>
+                        </div>
+                        <div class="post-meta">
+                            <div class="author">${article.author}</div>
+                            <div class="view-count">
+                                <img src="https://github.com/user-attachments/assets/f172ce36-3488-48a9-ab40-a4d1a02f2cf2" alt="조회수" width="30" height="30">
+                                <span class="pl-5">${article.viewCount}</span>
+                            </div>
+                            <div class="like-count">
+                                <img src="https://github.com/user-attachments/assets/94d75263-e1b4-4d0e-8bc7-a8315a3322b2" alt="좋아요" width="30" height="30">
+                                <span class="pl-5">${likeCount}</span>
+                            </div>
+                            <div class="post-time">
+                                <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
+                                <span class="pl-5">${dateOnly}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="post-body">
-                        <div class="post-title">
-                            ${article.body ? article.body.substring(0, 35) + (article.body.length > 35 ? '...' : '') : ''}
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <div class="author">${article.author}</div>
-                        <div class="view-count">
-                            <img src="https://github.com/user-attachments/assets/f172ce36-3488-48a9-ab40-a4d1a02f2cf2" alt="조회수" width="30" height="30">
-                            <span class="pl-5">${article.viewCount}</span>
-                        </div>
-                        <div class="like-count">
-                            <img src="https://github.com/user-attachments/assets/94d75263-e1b4-4d0e-8bc7-a8315a3322b2" alt="좋아요" width="30" height="30">
-                            <span class="pl-5">${likeCount}</span>
-                        </div>
-                        <div class="post-time">
-                            <img src="https://github.com/user-attachments/assets/6e0e9738-1a6a-453e-91c6-c35e851ccedf" alt="시간" width="30" height="30">
-                            <span class="pl-5">${dateOnly}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+                </a>
+            `);
 
-            contentDiv.appendChild(postElement);
+            $tempContainer.append($postElement);
         }
+
+        $contentDiv.empty();
+
+        // 모두 모은 뒤 한 번에 추가
+        $contentDiv.append($tempContainer.children());
+
+
+
     } catch (error) {
         console.error("게시글 로드 오류:", error);
-        contentDiv.innerHTML = "<p class='text-center text-red-500'>게시글을 불러오는 중 오류가 발생했습니다.</p>";
+        $contentDiv.html("<p class='text-center text-red-500'>게시글을 불러오는 중 오류가 발생했습니다.</p>");
     }
 };
 

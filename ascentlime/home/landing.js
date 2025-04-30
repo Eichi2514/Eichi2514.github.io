@@ -29,6 +29,12 @@ $('.login-form').submit(async function (event) {
         return;
     }
 
+    $(this).append(`
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    `);
+
     try {
         const memberData = await loginIdCheck(loginId);
         if (memberData) {
