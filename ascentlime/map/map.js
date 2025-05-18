@@ -229,7 +229,7 @@ const mobs = [
     '../image/mob/mob55.png',
     '../image/mob/mob56.png',
     '../image/mob/mob57.png',
-    '../image/mob/mob59.png',
+    '../image/mob/mob58.png',
     '../image/mob/mob59.png',
     '../image/mob/mob60.png'
 ];
@@ -295,6 +295,12 @@ const mobNames = [
     '블루 슬라임킹',
     '그린 슬라임킹',
     '레드 슬라임킹',
+    '베놈 슬라임킹',
+    '다크 슬라임킹',
+    '체리 슬라임킹',
+    '아이언 슬라임킹',
+    '골드 슬라임킹',
+    '버닝 슬라임킹',
     '초보 등반자 (여)'
 ];
 
@@ -618,7 +624,7 @@ async function updateCharacterData(nickname) {
         weapon_img();
 
         if ($mob_index > 60) {
-            $mob_index = getRandom(1, 53);
+            $mob_index = getRandom(1, mobs.length - 1);
         }
 
         $(".rate").text(100 - upgradeNum);
