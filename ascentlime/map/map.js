@@ -225,7 +225,13 @@ const mobs = [
     '../image/mob/mob51.png',
     '../image/mob/mob52.png',
     '../image/mob/mob53.png',
-    '../image/mob/mobLast.png'
+    '../image/mob/mob54.png',
+    '../image/mob/mob55.png',
+    '../image/mob/mob56.png',
+    '../image/mob/mob57.png',
+    '../image/mob/mob59.png',
+    '../image/mob/mob59.png',
+    '../image/mob/mob60.png'
 ];
 
 const mobNames = [
@@ -611,7 +617,7 @@ async function updateCharacterData(nickname) {
 
         weapon_img();
 
-        if ($mob_index > 53) {
+        if ($mob_index > 60) {
             $mob_index = getRandom(1, 53);
         }
 

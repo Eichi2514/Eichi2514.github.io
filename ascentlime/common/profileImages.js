@@ -11,7 +11,7 @@ const profileImages = [
     '../image/mob/mob51.png',
     '../image/mob/mob53.png',
     '../image/map/character.png',
-    '../image/mob/mobLast.png',
+    '../image/mob/mob60.png',
     'https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e'
 ];
 
