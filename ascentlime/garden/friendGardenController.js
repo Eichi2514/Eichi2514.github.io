@@ -1,3 +1,7 @@
+import * as gardenService from './gardenService.js';
+import * as memberService from '../member/memberService.js';
+import * as utils from '../common/utils.js';
+
 const growthStages = [
     'https://github.com/user-attachments/assets/96f61b3a-6413-434c-b756-668eb1d53617',
     'https://github.com/user-attachments/assets/68170f34-d4bf-40f7-abcd-97a6fb5cc4dc',
@@ -113,64 +117,18 @@ if (!key || !safeId) {
     window.location.href = '../../ascentlime.html';
 }
 
-window.loginKeyCheckById = async function () {
-    const loginKeyCheckByIdKey = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
-
-    if (!loginKeyCheckByIdKey) return;
-
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(loginKeyCheckByIdKey));
-    try {
-        const snapshot = await get(queryRef);
-        if (!snapshot.exists()) {
-            console.log('loginKeyCheckById) 해당 키가 존재하지 않습니다.');
-            return null;
-        }
-
-        const memberData = snapshot.val();
-
-        const memberKey = Object.keys(memberData)[0];
-        return memberData[memberKey].id;
-    } catch (error) {
-        console.error("loginKeyCheckById) 해당 키 확인 중 오류 발생:", error);
-        return null;
-    }
-};
-
-let memberId = await loginKeyCheckById();
+let memberId = await memberService.loginKeyCheckById(key);
 
 if (memberId === safeId) {
     window.location.href = 'myGarden.html';
-}
-
-window.getUserMoney = function (key) {
-    const queryRef = query(membersRef, orderByChild("key"), equalTo(key));
-    return get(queryRef)
-        .then((snapshot) => {
-            if (!snapshot.exists()) {
-                console.log('해당 아이디를 찾을 수 없습니다.');
-                return null;
-            }
-
-            const memberData = snapshot.val();
-            const memberKey = Object.keys(memberData)[0];
-            return memberData[memberKey].money;
-        })
-        .catch((error) => {
-            console.error("로그인 아이디 확인 중 오류 발생:", error);
-            return null;
-        });
-};
-
-function formatNumber(number) {
-    return number.toLocaleString();
 }
 
 let userMoney = 0;
 
 async function loadUserData() {
     try {
-        userMoney = await getUserMoney(key) || 0;
-        let userMoneyString = formatNumber(userMoney);
+        userMoney = await memberService.getUserMoney(key) || 0;
+        let userMoneyString = await utils.formatNumber(userMoney);
         $('.money_count').text(userMoneyString);
 
         setInterval(updateTime, 1000);
@@ -185,26 +143,11 @@ async function loadUserData() {
 
 loadUserData();
 
-function formatTime(now) {
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-
-    return { year, month, day, hours, minutes, seconds };
-}
-
-function displayTime($element, hours, minutes, seconds) {
-    $element.text(`${hours}:${minutes}:${seconds}`);
-}
-
-function updateTime() {
+async function updateTime() {
     const now = new Date();
-    const { hours, minutes, seconds } = formatTime(now);
+    const { hours, minutes, seconds } = await utils.formatTime(now);
 
-    displayTime($('.current-time'), hours, minutes, seconds)
+    gardenService.displayTime($('.current-time'), hours, minutes, seconds)
 
     const hourAngle = (now.getHours() % 12) * 30 + (now.getMinutes() / 60) * 30;
     const minuteAngle = now.getMinutes() * 6 + (now.getSeconds() / 60) * 6;
@@ -218,14 +161,6 @@ function updateTime() {
 $(document).on('click', '.close-button', function () {
     $('.popup-bg').remove();
 });
-
-function calculateTime(plantedAt, growthTime) {
-    const now = new Date();
-    const completionTime = plantedAt.getTime() + growthTime;
-    const timeRemaining = completionTime - now.getTime();
-
-    return timeRemaining;
-}
 
 const $friendInfo = $('.friend-info');
 
@@ -293,15 +228,15 @@ async function loadPlantDate() {
         }
 }
 
-function updatePlant(plantSlot, index, plantData) {
+async function updatePlant(plantSlot, index, plantData) {
     const plantedAt = new Date(plantData.plantedAt);
     const growthTime = plantItems[plantData.plantId].growthTime * 1000;
 
-    const timeRemaining = calculateTime(plantedAt, growthTime);
+    const timeRemaining = await gardenService.calculateTime(plantedAt, growthTime);
 
     if (timeRemaining > 0) {
         const elapsedTime = new Date().getTime() - plantedAt.getTime();
-        const growthStagesId = updateGrowthStage(elapsedTime);
+        const growthStagesId = await gardenService.updateGrowthStage(elapsedTime);
 
         $(plantSlot).html(`
             <img class="plant-img item${index}" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
@@ -400,14 +335,6 @@ $(document).on('click', '.steal-button', async function (event) {
         console.error("데이터 가져오기 실패", error);
     }
 });
-
-function updateGrowthStage(elapsedTime) {
-    const elapsedSeconds = Math.floor(elapsedTime / 1000);
-    const growthStagesDurations = [300, 600, 1800, 3600, 10800, 21600, 43200, 86400, 259200];
-    return growthStagesDurations.findIndex(time => elapsedSeconds < time) !== -1
-        ? growthStagesDurations.findIndex(time => elapsedSeconds < time)
-        : growthStagesDurations.length;
-}
 
 const $fertilizerCount = $('.fertilizer-count');
 

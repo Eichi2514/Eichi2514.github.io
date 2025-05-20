@@ -5,6 +5,7 @@ import {
     ref,
     get,
     set,
+    remove,
     query,
     orderByChild,
     equalTo,
@@ -21,6 +22,9 @@ const firebaseConfig = {
     appId: ".env/appId",
     measurementId: ".env/measurementId"
 };
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 const articlesRef = ref(database, 'articles');
 const chatBotRef = ref(database, 'chatBots');
@@ -44,6 +48,7 @@ export {
     ref,
     get,
     set,
+    remove,
     query,
     orderByChild,
     equalTo,

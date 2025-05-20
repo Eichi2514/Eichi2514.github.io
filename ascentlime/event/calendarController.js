@@ -1,4 +1,6 @@
-import { handleDailyCheck, getDailyCheckData, rewardCash } from '../event/calendarService.js';
+import * as calendarService from '../event/calendarService.js';
+
+{ handleDailyCheck, getDailyCheckData, rewardCash }
 
 const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 if (!key) {
@@ -38,7 +40,7 @@ $(document).ready(async function () {
         const paddedMonth = (month + 1).toString().padStart(2, '0');
         const fullDate = `${year}-${paddedMonth}-${paddedDate}`;
 
-        const snapshot = await getDailyCheckData(memberId, fullDate);
+        const snapshot = await calendarService.getDailyCheckData(memberId, fullDate);
 
         let checkMark = '';
         if (snapshot.exists() || isToday) {
@@ -63,7 +65,7 @@ $(document).ready(async function () {
     $('.days').append(daysHTML);
 
     const todayStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${today.toString().padStart(2, '0')}`;
-    const didCheck = await handleDailyCheck(memberId, todayStr);
+    const didCheck = await calendarService.handleDailyCheck(memberId, todayStr);
     if (didCheck) showDailyCheckResult();
 
     $('.loading-spinner').hide();
@@ -88,7 +90,7 @@ export function showDailyCheckResult() {
         </div>
     `);
 
-    rewardCash(key, newCash);
+    calendarService.rewardCash(key, newCash);
 }
 
 $(document).on('click', '.close-button', function () {

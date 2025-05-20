@@ -1,12 +1,8 @@
-import {
-    getDailyCheckData as repoGetDailyCheckData,
-    setDailyCheckData,
-    getMemberByKey,
-    updateMemberCash
-} from '../event/calendarRepository.js';
+import * as calendarRepository from '../event/calendarRepository.js';
+import * as memberRepository from '../member/memberRepository.js';
 
 export async function handleDailyCheck(memberId, date) {
-    const snapshot = await getDailyCheckData(memberId, date);
+    const snapshot = await calendarRepository.getDailyCheckData(memberId, date);
     if (!snapshot.exists()) {
         await setDailyCheckData(memberId, date);
         return true;
@@ -15,12 +11,12 @@ export async function handleDailyCheck(memberId, date) {
 }
 
 export async function getDailyCheckData(memberId, fullDate) {
-    const snapshot = await repoGetDailyCheckData(memberId, fullDate);
+    const snapshot = await calendarRepository.getDailyCheckData(memberId, fullDate);
     return snapshot;
 }
 
 export async function rewardCash(key, newCash) {
-    const snapshot = await getMemberByKey(key);
+    const snapshot = await memberRepository.getMemberByKey(key);
     if (snapshot.exists()) {
         const memberKey = Object.keys(snapshot.val())[0];
         const data = snapshot.val()[memberKey];
@@ -28,6 +24,6 @@ export async function rewardCash(key, newCash) {
             ...data,
             cash: (data.cash || 0) + newCash,
         };
-        await updateMemberCash(memberKey, updatedData);
+        await memberRepository.updateMemberCash(memberKey, updatedData);
     }
 }
