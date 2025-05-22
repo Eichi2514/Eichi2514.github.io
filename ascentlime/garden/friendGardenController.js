@@ -1,80 +1,9 @@
+import * as friendGardenService from './friendGardenService.js';
 import * as gardenService from './gardenService.js';
 import * as memberService from '../member/memberService.js';
+
 import * as utils from '../common/utils.js';
-
-const growthStages = [
-    'https://github.com/user-attachments/assets/96f61b3a-6413-434c-b756-668eb1d53617',
-    'https://github.com/user-attachments/assets/68170f34-d4bf-40f7-abcd-97a6fb5cc4dc',
-    'https://github.com/user-attachments/assets/7cbac15a-1b76-4fa8-92b2-fbe33dba9fe2',
-    'https://github.com/user-attachments/assets/3e11e472-a3e5-4ff7-aa8d-6ac53f8e8aec',
-    'https://github.com/user-attachments/assets/215a354a-b3f9-45be-b1d4-81665445898a',
-    'https://github.com/user-attachments/assets/7aa4ac5a-5219-4831-8c99-050e65647261',
-    'https://github.com/user-attachments/assets/f007d51f-f7be-4707-b459-25c5bc5f651e',
-    'https://github.com/user-attachments/assets/8f2dfff2-2a94-4da8-890e-f33c23b8d374',
-    'https://github.com/user-attachments/assets/d7d40f1f-3a62-4af2-abbf-fb7eba85696c',
-    'https://github.com/user-attachments/assets/513b7bf0-0aab-4a15-be8e-30de1472514d'
-];
-
-const fullyGrown = [
-    'https://github.com/user-attachments/assets/9361cc45-f251-4f92-99c2-c4fdd69a2970',
-    'https://github.com/user-attachments/assets/fac93404-41d6-4d9e-bfaa-8cfe788d7149',
-    'https://github.com/user-attachments/assets/50aa82dc-099a-47e5-8089-8df3af968ad2',
-    'https://github.com/user-attachments/assets/4b01953e-81a2-4a8d-8606-a75e5eef8919',
-    'https://github.com/user-attachments/assets/09be19ad-3fd4-4179-b575-f34000965c54',
-    'https://github.com/user-attachments/assets/c70737bb-ad9a-4edf-9f9c-fe8b7b1bae33',
-    'https://github.com/user-attachments/assets/21e3d1bb-e03d-4780-b0b7-4ef9d5354109',
-    'https://github.com/user-attachments/assets/e78bd9d2-cc77-4e97-abce-7bf33d5fba81',
-    'https://github.com/user-attachments/assets/973f70d5-ebab-4f8b-94d7-55e826035e1a',
-    'https://github.com/user-attachments/assets/bc64edff-7900-471b-9f03-31076e666053'
-];
-
-const plantItems = {
-    "1": {
-        "name": "씨앗 (5분)",
-        "price": 5,
-        "growthTime": 300
-    },
-    "2": {
-        "name": "꽃망울 (10분)",
-        "price": 10,
-        "growthTime": 600
-    },
-    "3": {
-        "name": "플라워 (30분)",
-        "price": 30,
-        "growthTime": 1800
-    },
-    "4": {
-        "name": "새싹 (1시간)",
-        "price": 50,
-        "growthTime": 3600
-    },
-    "5": {
-        "name": "풍성한 새싹 (3시간)",
-        "price": 150,
-        "growthTime": 10800
-    },
-    "6": {
-        "name": "묘목 (6시간)",
-        "price": 300,
-        "growthTime": 21600
-    },
-    "7": {
-        "name": "가지나무 (12시간)",
-        "price": 800,
-        "growthTime": 43200
-    },
-    "8": {
-        "name": "돈나무 (1일)",
-        "price": 1600,
-        "growthTime": 86400
-    },
-    "9": {
-        "name": "풍성한 돈나무 (3일)",
-        "price": 4500,
-        "growthTime": 259200
-    }
-};
+import { plantItems, growthStages, fullyGrown } from './gardenConstants.js';
 
 // Firebase SDK 불러오기
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -165,146 +94,27 @@ $(document).on('click', '.close-button', function () {
 const $friendInfo = $('.friend-info');
 
 async function loadPlantDate() {
-    let completionTime = 0;
-    let plantExists = 0;
-
-    $('.plant-section .plant-slot').each(function(index) {
-        const gardenRef = ref(database, `gardens/${safeId}/${index+1}`);
-
-        const promise = get(gardenRef).then(snapshot => {
-            if (snapshot.exists()) {
-                plantExists = 1;
-                const plantData = snapshot.val();
-                const plantedAt = new Date(plantData.plantedAt);
-                const growthTime = plantItems[plantData.plantId].growthTime * 1000;
-                const newCompletionTime = plantedAt.getTime() + growthTime;
-
-                if (completionTime < newCompletionTime) {
-                    completionTime = newCompletionTime;
-                }
-
-                updatePlant(this, index + 1, snapshot.val());
-
-            }
-        }).catch(error => {
-            console.error('Error fetching data:', error);
-        });
-    });
-
-        try {
-            const snapshot = await get(membersRef);
-            if (snapshot.exists()) {
-                let foundUsers = [];
-
-                snapshot.forEach(childSnapshot => {
-                    const memberId = childSnapshot.val().id;
-                    if (memberId && memberId === safeId) {
-                        foundUsers.push({
-                            profileImageId: childSnapshot.val().profileImageId,
-                            nickname: childSnapshot.val().nickname,
-                            id: childSnapshot.val().id
-                        });
-                    }
-                });
-
-                if (foundUsers.length > 0) {
-                    let resultMessage = foundUsers.map(user => `
-                        <div class="profile-container flex gap-2">
-                            <img src="${profileImages[user.profileImageId]}" alt="프로필 이미지">
-                            <div class="profile-info">
-                                <div class="profile-nickname">${user.nickname}</div>
-                                <div class="garden-label">정원</div>
-                            </div>
-                        </div>
-                    `);
-
-                    $friendInfo.html(resultMessage);
-                } else {
-                    $friendInfo.html("검색 결과가 없습니다.");
-                }
-            }
-        } catch (error) {
-            console.error("데이터 검색 오류:", error);
-        }
-}
-
-async function updatePlant(plantSlot, index, plantData) {
-    const plantedAt = new Date(plantData.plantedAt);
-    const growthTime = plantItems[plantData.plantId].growthTime * 1000;
-
-    const timeRemaining = await gardenService.calculateTime(plantedAt, growthTime);
-
-    if (timeRemaining > 0) {
-        const elapsedTime = new Date().getTime() - plantedAt.getTime();
-        const growthStagesId = await gardenService.updateGrowthStage(elapsedTime);
-
-        $(plantSlot).html(`
-            <img class="plant-img item${index}" src="${growthStages[growthStagesId]}" alt="Plant Stage ${index}">
-            <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
-            <button class="s-button none assist-button" data-id="${index}">도움</button>
-        `);
-    } else {
-        updateFullyGrown(plantSlot, timeRemaining, plantData, index);
-    }
-}
-
-async function updateFullyGrown(plantSlot, timeRemaining, plantData, index) {
-    if (-86400000 < timeRemaining && timeRemaining <= 0) {
-        const gardenRef = ref(database, `gardens/${safeId}/${index}`);
-
-        try {
-            const snapshot = await get(gardenRef);
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const reward = data.reward;
-
-                if (reward % 3 === 0) {
-                    $(plantSlot).html(`
-                        <img class="plant-img item${index}" src="${fullyGrown[plantData.plantId]}" alt="Plant Stage ${index}">
-                        <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
-                        <button class="s-button none steal-button" data-id="${index}">서리</button>
-                    `);
-                } else {
-                    $(plantSlot).html(`
-                        <img class="plant-img item${index}" src="${fullyGrown[plantData.plantId]}" alt="Plant Stage ${index}">
-                        <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
-                    `);
-                }
-            }
-        } catch (error) {
-            console.error("데이터 가져오기 실패", error);
-        }
-    } else if (timeRemaining <= -86400000) {
-        $(plantSlot).html(`
-            <img class="plant-img item${index}" src="${fullyGrown[0]}" alt="Plant Stage ${index}">
-            <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
-        `);
-    }
-}
-
-window.updateUserMoney = async function (memberKey, newMoney) {
     try {
-        const queryRef = query(membersRef, orderByChild("key"), equalTo(memberKey));
-        const snapshot = await get(queryRef);
+        const { completionTime, foundUsers } = await friendGardenService.loadPlantDate(safeId, plantItems);
 
-        if (snapshot.exists()) {
-            const key = Object.keys(snapshot.val())[0];
-            const data = snapshot.val()[key];
-
-            if (data) {
-                const updatedData = {
-                    ...data,
-                    money: newMoney,
-                };
-
-                await update(ref(database, `members/${key}`), updatedData);
-            }
+        if (foundUsers.length > 0) {
+            const resultMessage = foundUsers.map(user => `
+                <div class="profile-container flex gap-2">
+                    <img src="${profileImages[user.profileImageId]}" alt="프로필 이미지">
+                    <div class="profile-info">
+                        <div class="profile-nickname">${user.nickname}</div>
+                        <div class="garden-label">정원</div>
+                    </div>
+                </div>
+            `);
+            $friendInfo.html(resultMessage);
+        } else {
+            $friendInfo.html("검색 결과가 없습니다.");
         }
     } catch (error) {
-        console.error("금액 업데이트 실패:", error);
-        throw error;
+        console.error("컨트롤러 오류:", error);
     }
-};
+}
 
 $(document).on('click', '.steal-button', async function (event) {
     event.preventDefault();
@@ -323,7 +133,7 @@ $(document).on('click', '.steal-button', async function (event) {
                 const newReward = (reward * 2) / 3;
 
                 await update(gardenRef, { reward: newReward });
-                await updateUserMoney(key, userMoney + reward - newReward);
+                await memberService.updateUserMoney(key, userMoney + reward - newReward);
 
                 alert(`$${reward - newReward}을(를) 획득하였습니다!`);
                 location.reload();

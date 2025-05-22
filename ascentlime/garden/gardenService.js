@@ -1,3 +1,5 @@
+import * as utils from '../common/utils.js';
+
 export async function displayTime($element, hours, minutes, seconds) {
     $element.text(`${hours}:${minutes}:${seconds}`);
 }

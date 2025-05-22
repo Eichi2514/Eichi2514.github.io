@@ -19,3 +19,7 @@ export async function getMemberByKey(key) {
 export async function updateMemberCash(memberKey, updatedData) {
     return await update(ref(database, `members/${memberKey}`), updatedData);
 }
+
+export function getAllMembers() {
+    return get(membersRef);
+}

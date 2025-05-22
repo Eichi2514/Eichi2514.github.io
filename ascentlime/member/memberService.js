@@ -35,3 +35,26 @@ export async function getUserMoney(key) {
         return null;
     }
 }
+
+export async function updateUserMoney(memberKey, newMoney) {
+    try {
+        const snapshot = await memberRepository.getMemberByKey(memberKey);
+
+        if (snapshot.exists()) {
+            const key = Object.keys(snapshot.val())[0];
+            const data = snapshot.val()[key];
+
+            if (data) {
+                const updatedData = {
+                    ...data,
+                    money: newMoney,
+                };
+
+                await memberRepository.updateMemberCash(key, updatedData);
+            }
+        }
+    } catch (error) {
+        console.error("금액 업데이트 실패:", error);
+        throw error;
+    }
+};
