@@ -1,6 +1,6 @@
 import * as calendarService from '../event/calendarService.js';
 
-{ handleDailyCheck, getDailyCheckData, rewardCash }
+// { handleDailyCheck, getDailyCheckData, rewardCash }
 
 const key = localStorage.getItem('nickname') || sessionStorage.getItem('nickname');
 if (!key) {
