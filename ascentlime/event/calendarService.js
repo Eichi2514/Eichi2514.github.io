@@ -4,7 +4,7 @@ import * as memberRepository from '../member/memberRepository.js';
 export async function handleDailyCheck(memberId, date) {
     const snapshot = await calendarRepository.getDailyCheckData(memberId, date);
     if (!snapshot.exists()) {
-        await setDailyCheckData(memberId, date);
+        await calendarRepository.setDailyCheckData(memberId, date);
         return true;
     }
     return false;
