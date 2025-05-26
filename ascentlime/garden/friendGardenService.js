@@ -1,4 +1,5 @@
 import * as gardenService from './gardenService.js';
+import * as memberService from '../member/memberService.js';
 import * as gardenRepository from './gardenRepository.js';
 import * as memberRepository from '../member/memberRepository.js';
 import { plantItems, growthStages, fullyGrown } from './gardenConstants.js';
@@ -95,5 +96,29 @@ async function updateFullyGrown(plantSlot, timeRemaining, plantData, index, safe
             <img class="plant-img item${index}" src="${fullyGrown[0]}" alt="Plant Stage ${index}">
             <span class="plant-name none">${plantItems[plantData.plantId].name}</span>
         `);
+    }
+}
+
+export async function stealPlantReward(key, userMoney, safeId, slotIndex) {
+    try {
+        const snapshot = await gardenRepository.getGardenSlot(safeId, slotIndex);
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const reward = data.reward;
+
+            if (reward % 3 === 0) {
+                const newReward = (reward * 2) / 3;
+
+                await gardenRepository.updateGardenSlotReward(safeId, slotIndex, newReward);
+                await memberService.updateUserMoney(key, userMoney + reward - newReward);
+
+                alert(`$${reward - newReward}을(를) 획득하였습니다!`);
+                location.reload();
+            } else {
+                alert(`아쉽지만, 이미 다른 사람이 서리해 갔어요! 다음 기회를 노려보세요.`);
+            }
+        }
+    } catch (error) {
+        console.error("데이터 가져오기 실패", error);
     }
 }

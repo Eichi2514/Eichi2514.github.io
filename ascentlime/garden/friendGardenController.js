@@ -120,30 +120,7 @@ $(document).on('click', '.steal-button', async function (event) {
     event.preventDefault();
     const button = $(this);
     const id = button.data('id');
-
-    const gardenRef = ref(database, `gardens/${safeId}/${id}`);
-
-    try {
-        const snapshot = await get(gardenRef);
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const reward = data.reward;
-
-            if (reward % 3 === 0) {
-                const newReward = (reward * 2) / 3;
-
-                await update(gardenRef, { reward: newReward });
-                await memberService.updateUserMoney(key, userMoney + reward - newReward);
-
-                alert(`$${reward - newReward}을(를) 획득하였습니다!`);
-                location.reload();
-            } else {
-                alert(`아쉽지만, 이미 다른 사람이 서리해 갔어요! 다음 기회를 노려보세요.`);
-            }
-        }
-    } catch (error) {
-        console.error("데이터 가져오기 실패", error);
-    }
+    await friendGardenService.stealPlantReward(key, userMoney, safeId, id);
 });
 
 const $fertilizerCount = $('.fertilizer-count');
