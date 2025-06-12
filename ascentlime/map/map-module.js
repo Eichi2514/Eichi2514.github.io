@@ -209,7 +209,7 @@ window.saveFirebaseLogs = async function (charac, seconds) {
     }
 };
 
-window.characCheckMap = async function (memberKey) {
+window.characCheckMap = async function () {
     const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
@@ -238,7 +238,7 @@ window.playStatsUpdate = async function (memberKey, front_money) {
             const updatedData = {
                 ...data,
                 playCount: (data.playCount || 0) + 1,
-                money: (data.playCount || 0) + front_money,
+                money: (data.money || 0) + front_money,
             };
 
             await update(ref(database, `members/${key}`), updatedData);
@@ -248,7 +248,7 @@ window.playStatsUpdate = async function (memberKey, front_money) {
     }
 }
 
-window.characReset = async function (memberKey) {
+window.characReset = async function () {
     const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const characRef = ref(database, `characs/${safeId}`);
@@ -403,7 +403,7 @@ window.mobFindUpdate = function (key, floor) {
         .catch((error) => console.error("로그인 아이디 확인 중 오류 발생:", error));
 };
 
-window.getWeaponFind = async function (memberKey) {
+window.getWeaponFind = async function () {
     const memberId = await loginKeyCheckById();
     const safeId = memberId.toString();
     const newWeaponFindRef = child(weaponFindRef, safeId);
