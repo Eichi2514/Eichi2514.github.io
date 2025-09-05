@@ -620,19 +620,14 @@ li button, li a div {
     outline: none;
 }
 
-/*
-@media (min-aspect-ratio: 1/1) {
-    .menu-bg {
-        height: 100%;
-        width: 130px;
-    }
-
-    .menu {
-        flex-direction: column;
-    }
-
-    .menu-container {
-        padding-left: 0;
-    }
+.github-calendar-container {
+    background-color: #1e3a8a;  /* 원하는 배경색 */
+    padding: 20px;
+    border-radius: 12px;
+    display: inline-block;
 }
-*/
+
+.github-calendar-container img {
+    width: 100%;
+    height: auto;
+}

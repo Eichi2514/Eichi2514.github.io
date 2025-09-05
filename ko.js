@@ -281,19 +281,3 @@ $right_btn.on('click', function () {
     moveSlide('right');
     currentSpeedIndex++;
 });
-
-<!-- Vanta.js 설정 스크립트 -->
-
-<!-- VANTA.NET({ -->
-<!-- el: "#body1", -->
-<!-- mouseControls: true, -->
-<!-- touchControls: true, -->
-<!-- gyroControls: false, -->
-<!-- minHeight: 200.00, -->
-<!-- minWidth: 200.00, -->
-<!-- scale: 1.00, -->
-<!-- scaleMobile: 1.00, -->
-<!-- color: 0x4a6b9c, -->
-<!-- points: 20.00, -->
-<!-- backgroundColor: 0x1e3a8a -->
-<!-- }); -->
