@@ -106,7 +106,6 @@ html, body {
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
     justify-content: center;
     align-items: center;
     scroll-snap-align: start;
