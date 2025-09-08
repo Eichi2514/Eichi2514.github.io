@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>작업일지</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div class="container">
+    <div class="flex items-center justify-between mb-3">
+        <h1 class="text-2xl flex items-center gap-2">작업일지</h1>
+        <div class="flex gap-2">
+            <a href="#" class="btn btn-outline no-wrap">일정 요약</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- 왼쪽 -->
+        <div class="left-panel">
+            <!-- 입력 폼 -->
+            <div class="card">
+                <form id="schedule-form" class="grid grid-cols-1 gap-3">
+                    <label class="block">
+                        <input type="text" id="entry-desc" placeholder="제목" required/>
+                    </label>
+                    <label class="block">
+                        <textarea id="entry-memo" rows="3" placeholder="메모"></textarea>
+                    </label>
+
+                    <div class="form-inline">
+                        <label class="field start">
+                            <input type="text" id="start-time" required pattern="\d{4}" placeholder="시작 시간 (예: 0930)"/>
+                        </label>
+
+                        <label class="field select">
+                            <span class="block text-sm text-gray-500">종류</span>
+                            <select id="entry-type" required>
+                                <option value="work">작업</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </label>
+
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">시작</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 24시간 원형 그래프 -->
+            <div class="card chart-card">
+                <div class="relative flex items-center justify-between mb-2">
+                    <div class="absolute top-0 right-0 text-sm text-gray-500" id="summary-text"></div>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="chart"></canvas>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    조각(호)을 클릭하면 해당 일정의 메모가 우측 하단에 표시됩니다. 24시간 기준(상단 0시, 시계방향).
+                </p>
+            </div>
+        </div>
+
+        <!-- 오른쪽: 표 -->
+        <div class="right-panel">
+            <!-- 날짜 이동 -->
+            <div class="card">
+                <div class="date-bar">
+                    <div class="font-semibold">현재 날짜: <span id="current-date-label"></span></div>
+                    <div class="cluster">
+                        <button class="btn btn-ghost" data-delta="-1">◀ 이전</button>
+                        <input type="date" id="date-picker"/>
+                        <button class="btn btn-ghost" data-delta="1">다음 ▶</button>
+                        <button class="btn btn-outline" id="btn-today">오늘</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <table class="table-wide">
+                    <thead>
+                    <tr>
+                        <th style="width:180px">시간</th>
+                        <th>제목</th>
+                        <th style="width:100px">구분</th>
+                        <th style="width:260px">관리</th>
+                    </tr>
+                    </thead>
+                    <tbody id="data-table-body"></tbody>
+                </table>
+                <p class="text-xs text-gray-500 mt-2">행을 클릭시 메모가 표시됩니다. 종료 후 그래프에 반영됩니다.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 메모 토스트 -->
+<div id="memo-toast">
+    <button class="close">✕</button>
+    <div class="title font-bold mb-1" id="memo-title">제목</div>
+    <div class="body text-sm" id="memo-body">메모 내용</div>
+</div>
+
+<!-- 수정 모달 -->
+<div class="modal-backdrop" id="edit-backdrop">
+    <div class="modal">
+        <h3 class="text-lg font-bold mb-2">일정 수정</h3>
+        <form id="edit-form" class="grid grid-cols-1 gap-3">
+            <input type="hidden" id="edit-id"/>
+            <label class="block">
+                <span class="block text-sm text-gray-500 mb-1">제목</span>
+                <input type="text" id="edit-desc" required/>
+            </label>
+            <label class="block">
+                <span class="block text-sm text-gray-500 mb-1">메모</span>
+                <textarea id="edit-memo" rows="3"></textarea>
+            </label>
+            <div class="grid grid-cols-3 gap-3">
+                <label class="block">
+                    <span class="block text-sm text-gray-500 mb-1">시작 (HHMM)</span>
+                    <input type="text" id="edit-start" required pattern="\d{4}"/>
+                </label>
+                <label class="block">
+                    <span class="block text-sm text-gray-500 mb-1">종료 (HHMM)</span>
+                    <input type="text" id="edit-end" pattern="\d{4}"/>
+                </label>
+                <label class="block">
+                    <span class="block text-sm text-gray-500 mb-1">종류</span>
+                    <select id="edit-type" required>
+                        <option value="work">작업</option>
+                        <option value="other">기타</option>
+                    </select>
+                </label>
+            </div>
+            <div class="flex items-center justify-end gap-2 no-wrap">
+                <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
+                <button class="btn btn-primary" type="submit">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="main.js" defer></script>
+</body>
+</html>

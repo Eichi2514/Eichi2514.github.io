@@ -1,0 +1,357 @@
+/* =========================================
+   0) 테마 변수 & 기본 글꼴/배경
+========================================= */
+:root {
+    --primary: #5a4398;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f7f7f7;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 20px;
+    color: #111827;
+}
+
+/* =========================================
+   1) 페이지 레이아웃 (컨테이너/좌우 패널)
+========================================= */
+.container {
+    min-width: max-content;
+    width: 100%;
+    margin: auto;
+}
+
+.main-content {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.left-panel {
+    flex: 0 0 560px; /* 왼쪽은 고정폭 느낌 */
+    min-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.right-panel {
+    flex: 1 1 0; /* 남는 넓이 전부 차지 */
+    min-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* 넓은 화면에서 좌/우 패널 비율 확대 (줄바꿈 예방) */
+@media (min-width: 1280px) {
+    .left-panel {
+        flex: 1.5;
+        min-width: 680px;
+    }
+
+    /* 기존 520→680 */
+    .right-panel {
+        min-width: 720px;
+        flex: 2;
+    }
+}
+
+/* =========================================
+   2) 공통 컴포넌트 (타이포/카드/버튼/인풋)
+========================================= */
+h1 {
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    min-width: max-content;
+    max-width: 100%;
+}
+
+/* 입력류 공통 */
+input[type="text"], input[type="date"], select, textarea {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    outline: none;
+    transition: .15s;
+    background: #fff;
+    width: 100%; /* 입력칸 최대넓이 */
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(90, 67, 152, .15);
+}
+
+/* 버튼 */
+.btn {
+    padding: 8px 10px; /* 폭 절약 버전(중복 정의 제거) */
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap; /* 줄바꿈 방지(날짜바와 일관) */
+}
+
+.btn-primary {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-ghost {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #374151;
+}
+
+.btn-outline {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-danger {
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+/* 버튼 수평 그룹(폭 절약) */
+.btn-group-nowrap {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+/* 구분 Pill */
+.pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pill-work {
+    background: rgba(34, 197, 94, .1);
+    color: #16a34a;
+}
+
+.pill-other {
+    background: rgba(107, 114, 128, .12);
+    color: #4b5563;
+}
+
+/* =========================================
+   3) 테이블 (목록)
+========================================= */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    table-layout: auto; /* 남는넓이 자연 배분 */
+}
+
+thead th {
+    background: #fafafa;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 8px;
+    color: #374151;
+    text-align: center;
+}
+
+tbody td {
+    border-top: 1px solid var(--border);
+    padding: 10px 12px;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background: #fafafa;
+}
+
+/* 너무 좁아지지 않도록 최소폭 보장 */
+.table-wide {
+    min-width: 880px;
+}
+
+/* 줄바꿈 금지 컬럼 */
+td.time, td.type, td.actions, td.actions * {
+    white-space: nowrap;
+}
+
+/* 제목 말줄임 영역 */
+.title-clip {
+    max-width: 360px;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================
+   4) 날짜 바(현재 날짜/이동/입력)
+========================================= */
+.date-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.date-bar .cluster {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+#date-picker {
+    width: 180px;
+    min-width: 160px;
+}
+
+/* =========================================
+   5) 토스트 & 모달 (메모/수정)
+========================================= */
+#memo-toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    min-width: 360px;
+    background: #111827;
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+    display: none;
+    z-index: 50;
+}
+
+#memo-toast .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: 0;
+    color: #fff;
+    opacity: .7;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* \n → 줄바꿈으로 렌더 */
+#memo-body {
+    white-space: pre-line;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+}
+
+.modal {
+    width: 560px;
+    max-width: calc(100% - 32px);
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid var(--border);
+}
+
+/* =========================================
+   6) 그래프(24h 원형)
+========================================= */
+/* 그래프 카드만 min-width 해제해 반응형 수용 */
+.card.chart-card {
+    min-width: 0;
+}
+
+.chart-wrap {
+    position: relative;
+    width: 100%;
+    max-height: 390px;
+}
+
+#chart {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* =========================================
+   7) 유틸리티 / 폼 / 기타
+========================================= */
+.cell-nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.form-inline {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.form-inline .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-inline .field.start {
+    flex: 1 1 auto;
+    min-width: 260px;
+}
+
+/* 시작시간: 남는 공간 채우기 */
+.form-inline .field.start input {
+    width: 100%;
+}
+
+.form-inline .field.select {
+    flex: 0 0 140px;
+}
+
+.form-inline .actions .btn {
+    height: 42px;
+    padding: 0 14px;
+    white-space: nowrap;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #000000;
+}
