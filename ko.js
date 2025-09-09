@@ -281,3 +281,9 @@ $right_btn.on('click', function () {
     moveSlide('right');
     currentSpeedIndex++;
 });
+
+// 깃허브 잔디 자동 업데이트
+$(function () {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    $('#github-object').attr('data', `https://ghchart.rshah.org/4C51BF/Eichi2514?v=${today}`);
+});

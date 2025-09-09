@@ -173,12 +173,14 @@ html, body {
 }
 
 img,
-svg {
+svg,
+object {
     transition: transform 0.3s ease;
 }
 
 a:hover img,
-a:hover svg {
+a:hover svg,
+a:hover object {
     transform: scale(1.1);
 }
 
@@ -620,7 +622,7 @@ li button, li a div {
 }
 
 .github-calendar-container {
-    background-color: #1e3a8a;  /* 원하는 배경색 */
+    background-color: #1e3a8a; /* 원하는 배경색 */
     padding: 20px;
     border-radius: 12px;
     display: inline-block;
