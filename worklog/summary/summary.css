@@ -1,0 +1,174 @@
+
+:root {
+    --primary: #5a4398;
+    --border: #e5e7eb;
+    --muted: #6b7280;
+    --bg: #f7f7f7;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: #111827;
+}
+
+.container {
+    width: 100%;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+/* 좌측 필터 / 우측 결과 */
+.layout {
+    display: grid;
+    grid-template-columns:minmax(260px, 300px) 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns:1fr;
+    }
+}
+
+.left-sticky {
+    position: sticky;
+    top: 16px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, .03);
+}
+
+.btn {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.btn-ghost {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #374151;
+}
+
+.btn-outline {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.pill {
+    background: #f3f4f6;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    width: 100%;
+}
+
+.divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+}
+
+.hint {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* 타일 그리드 */
+.day-grid {
+    display: grid;
+    grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.day-tile {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    background: #fff;
+    min-height: 94px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.day-date {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+}
+
+.badge-work {
+    background: rgba(90, 67, 152, .08);
+    color: #4c3a86;
+    border-color: rgba(90, 67, 152, .25);
+}
+
+.badge-other {
+    background: #f9fafb;
+    color: #374151;
+}
+
+/* 3분할 게이지바 */
+.day-bar {
+    display: flex;
+    height: 6px;
+    background: #eef2f7;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.day-bar .bar-seg {
+    height: 6px;
+}
+
+.day-bar .bar-work {
+    background: var(--primary);
+}
+
+/* 작업 */
+.day-bar .bar-other {
+    background: #9ca3af;
+}
+
+/* 기타 */
+.day-bar .bar-empty {
+    background: #e5e7eb;
+}
+
+/* 미기록 */
+
+/* 우측 하단 총합 */
+.sticky-total {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 30;
+    background: #111827;
+    color: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .15);
+    min-width: 240px;
+}
+
+.sticky-total .label {
+    color: #cbd5e1;
+    font-size: 12px;
+}

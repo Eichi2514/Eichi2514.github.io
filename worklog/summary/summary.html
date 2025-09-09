@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>일정 요약</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.1.4/tailwind.min.css">
+    <link rel="stylesheet" href="summary.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- 헤더 -->
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-semibold flex items-center gap-2">일정 요약</h1>
+        <div class="flex gap-2">
+            <a href="../main/main.html" class="btn btn-outline no-wrap">작업일지</a>
+        </div>
+    </div>
+
+    <!-- 2열 레이아웃 -->
+    <div class="layout">
+        <!-- 왼쪽: 검색 -->
+        <aside class="left-sticky">
+            <div class="card">
+                <div class="text-sm text-gray-500 mb-1">시작 날짜</div>
+                <input id="date-from" type="date" class="pill">
+                <div class="text-sm text-gray-500 mb-1 mt-3">종료 날짜</div>
+                <input id="date-to" type="date" class="pill">
+                <div class="flex items-center gap-2 mt-3">
+                    <button id="btn-today" class="btn btn-outline w-full">오늘</button>
+                    <button id="btn-search" class="btn btn-ghost w-full">검색</button>
+                </div>
+                <div class="divider"></div>
+                <div class="hint">
+                    • 종료일은 포함입니다.<br>
+                    • 종료 시간이 없는 항목은 집계에서 제외됩니다.
+                </div>
+            </div>
+        </aside>
+
+        <!-- 오른쪽: 결과 -->
+        <main class="min-w-0">
+            <div class="card">
+                <div class="flex items-center justify-between mb-3">
+                    <div id="result-range" class="text-sm text-gray-500"></div>
+                </div>
+                <div id="result-grid" class="day-grid"></div>
+                <div id="empty" class="text-center text-gray-500 py-10 hidden">
+                    검색 범위에 집계할 데이터가 없습니다.
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- 우측 하단 총합 -->
+<div class="sticky-total" id="sticky-total">
+    <div class="label mb-1">범위 총합</div>
+    <div class="flex items-center justify-between">
+        <div>작업</div>
+        <div id="sum-work" class="font-semibold">00:00</div>
+    </div>
+    <div class="flex items-center justify-between mt-1">
+        <div>기타</div>
+        <div id="sum-other" class="font-semibold">00:00</div>
+    </div>
+</div>
+
+<script src="summary.js" defer></script>
+<script src="../../utils/getLocalStorageSize.js" defer></script>
+</body>
+</html>

@@ -51,25 +51,76 @@ function normalizeMemo(s) {
     return (s || '').replace(/\r?\n/g, '\n').replace(/^\s+/, '').replace(/\s+$/, '').replace(/\n[ \t]+/g, '\n');
 }
 
+// 저장할 때
+function saveCompressed(key, obj) {
+    const json = JSON.stringify(obj);
+    const compressed = LZString.compressToUTF16(json);
+    localStorage.setItem(key, "__LZUTF16__" + compressed); // ← 프리픽스
+}
+
+// 불러올 때
+const LZ_PREFIX = "__LZUTF16__";
+
+function loadAnyAndMigrateToCompressed(key) {
+    const v = localStorage.getItem(key);
+    if (v == null) return { obj: null, migrated: false, fmt: "missing" };
+
+    // 1) 새 포맷: 프리픽스 있는 압축
+    if (v.startsWith(LZ_PREFIX)) {
+        try {
+            const json = LZString.decompressFromUTF16(v.slice(LZ_PREFIX.length));
+            return { obj: json ? JSON.parse(json) : null, migrated: false, fmt: "compressed" };
+        } catch {
+            return { obj: null, migrated: false, fmt: "compressed_bad" };
+        }
+    }
+
+    // 2) 비압축 JSON → 즉시 압축으로 재저장
+    try {
+        const obj = JSON.parse(v);
+        saveCompressed(key, obj); // ★ 재저장(마이그레이션)
+        return { obj, migrated: true, fmt: "json" };
+    } catch {
+        // 3) 프리픽스 없는 압축 → 즉시 압축+프리픽스로 재저장
+        try {
+            const json = LZString.decompressFromUTF16(v);
+            if (json) {
+                const obj = JSON.parse(json);
+                saveCompressed(key, obj); // ★ 재저장(마이그레이션)
+                return { obj, migrated: true, fmt: "compressed_legacy" };
+            }
+        } catch {}
+    }
+
+    return { obj: null, migrated: false, fmt: "unknown" };
+}
+
 // ====== 저장소 ======
 const STORAGE_KEY = 'scheduleByDate';
 
 function getMap() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-    const old = JSON.parse(localStorage.getItem('scheduleData') || '[]');
-    const map = {};
-    old.forEach(e => {
-        if (!map[e.date]) map[e.date] = [];
-        map[e.date].push(e);
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
-    localStorage.removeItem('scheduleData');
-    return map;
+    // ① 어떤 상태든 읽고, 비압축/무프리픽스면 즉시 압축으로 재저장
+    const { obj } = loadAnyAndMigrateToCompressed(STORAGE_KEY);
+    if (obj && typeof obj === 'object') return obj;
+
+    // ② 구버전('scheduleData' 배열) → 맵으로 변환 후 압축 저장
+    const legacyArr = JSON.parse(localStorage.getItem('scheduleData') || '[]');
+    if (Array.isArray(legacyArr) && legacyArr.length) {
+        const map = {};
+        legacyArr.forEach(e => { (map[e.date] ||= []).push(e); });
+        saveCompressed(STORAGE_KEY, map);
+        localStorage.removeItem('scheduleData');
+        return map;
+    }
+
+    // ③ 아무것도 없으면 빈 맵을 압축 포맷으로 생성
+    const empty = {};
+    saveCompressed(STORAGE_KEY, empty);
+    return empty;
 }
 
 function setMap(map) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+    saveCompressed(STORAGE_KEY, map);
 }
 
 function getData(date) {
@@ -308,16 +359,30 @@ function draw24hPie(entries) {
                     const rx = cx + Math.cos(mid) * R * 0.68, ry = cy + Math.sin(mid) * R * 0.68;
                     const approxChars = Math.max(4, Math.floor(span / (Math.PI * 2) * 24));
                     const label = truncateForArc(e.desc, approxChars);
-                    const pad = 6;
+                    const padX = 6, padY = 4;
                     ctx.font = '12px Segoe UI, system-ui, -apple-system, sans-serif';
-                    const textW = ctx.measureText(label).width;
-                    const textH = 14;
+
+                    // 텍스트 실제 높이(미지원 브라우저 대비 기본값 12)
+                    const m = ctx.measureText(label);
+                    const textW = m.width;
+                    const textH = (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) || 12;
+
+                    // 박스를 (rx, ry) 기준 정중앙 배치
+                    const boxW = textW + padX * 2;
+                    const boxH = textH + padY * 2;
+                    const boxX = rx - boxW / 2;
+                    const boxY = ry - boxH / 2;
+
                     ctx.fillStyle = 'rgba(0,0,0,0.35)';
-                    roundRect(ctx, rx - textW / 2 - pad, ry - textH, textW + pad * 2, textH + 6, 6);
+                    roundRect(ctx, boxX, boxY, boxW, boxH, 6);
                     ctx.fill();
+
+                    // 텍스트도 정확히 중앙 정렬
                     ctx.fillStyle = '#fff';
                     ctx.textAlign = 'center';
-                    ctx.fillText(label, rx, ry + 4);
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(label, rx, ry);
+
                 });
                 ctx.restore();
                 // 클릭판정 메타
