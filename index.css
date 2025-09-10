@@ -299,6 +299,11 @@ a:hover object {
     color: #333333;
 }
 
+.project6 {
+    background: #5a4398;
+    color: #F4F6F9;
+}
+
 .skills {
     width: 400px;
     display: flex;
