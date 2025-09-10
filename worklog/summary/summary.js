@@ -137,7 +137,7 @@ function renderGrid(from, to) {
     const {rows, sumWork, sumOther} = aggregateRange(from, to);
     const $grid = $('#result-grid').empty();
 
-    const DAY_MIN = 24 * 60;
+    const DAY_MIN = 8 * 60;
     let hasAnyDuration = false;
 
     rows.forEach(r => {
@@ -163,10 +163,6 @@ function renderGrid(from, to) {
             <div class="flex items-center justify-between">
               <span>작업 ${wPct}%</span>
               <span class="badge badge-work">${minutesToHM(r.work)}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span>기타 ${oPct}%</span>
-              <span class="badge badge-other">${minutesToHM(r.other)}</span>
             </div>
           </div>
           <div class="day-bar" aria-hidden="true">

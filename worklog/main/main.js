@@ -63,15 +63,15 @@ const LZ_PREFIX = "__LZUTF16__";
 
 function loadAnyAndMigrateToCompressed(key) {
     const v = localStorage.getItem(key);
-    if (v == null) return { obj: null, migrated: false, fmt: "missing" };
+    if (v == null) return {obj: null, migrated: false, fmt: "missing"};
 
     // 1) 새 포맷: 프리픽스 있는 압축
     if (v.startsWith(LZ_PREFIX)) {
         try {
             const json = LZString.decompressFromUTF16(v.slice(LZ_PREFIX.length));
-            return { obj: json ? JSON.parse(json) : null, migrated: false, fmt: "compressed" };
+            return {obj: json ? JSON.parse(json) : null, migrated: false, fmt: "compressed"};
         } catch {
-            return { obj: null, migrated: false, fmt: "compressed_bad" };
+            return {obj: null, migrated: false, fmt: "compressed_bad"};
         }
     }
 
@@ -79,7 +79,7 @@ function loadAnyAndMigrateToCompressed(key) {
     try {
         const obj = JSON.parse(v);
         saveCompressed(key, obj); // ★ 재저장(마이그레이션)
-        return { obj, migrated: true, fmt: "json" };
+        return {obj, migrated: true, fmt: "json"};
     } catch {
         // 3) 프리픽스 없는 압축 → 즉시 압축+프리픽스로 재저장
         try {
@@ -87,12 +87,13 @@ function loadAnyAndMigrateToCompressed(key) {
             if (json) {
                 const obj = JSON.parse(json);
                 saveCompressed(key, obj); // ★ 재저장(마이그레이션)
-                return { obj, migrated: true, fmt: "compressed_legacy" };
+                return {obj, migrated: true, fmt: "compressed_legacy"};
             }
-        } catch {}
+        } catch {
+        }
     }
 
-    return { obj: null, migrated: false, fmt: "unknown" };
+    return {obj: null, migrated: false, fmt: "unknown"};
 }
 
 // ====== 저장소 ======
@@ -100,14 +101,16 @@ const STORAGE_KEY = 'scheduleByDate';
 
 function getMap() {
     // ① 어떤 상태든 읽고, 비압축/무프리픽스면 즉시 압축으로 재저장
-    const { obj } = loadAnyAndMigrateToCompressed(STORAGE_KEY);
+    const {obj} = loadAnyAndMigrateToCompressed(STORAGE_KEY);
     if (obj && typeof obj === 'object') return obj;
 
     // ② 구버전('scheduleData' 배열) → 맵으로 변환 후 압축 저장
     const legacyArr = JSON.parse(localStorage.getItem('scheduleData') || '[]');
     if (Array.isArray(legacyArr) && legacyArr.length) {
         const map = {};
-        legacyArr.forEach(e => { (map[e.date] ||= []).push(e); });
+        legacyArr.forEach(e => {
+            (map[e.date] ||= []).push(e);
+        });
         saveCompressed(STORAGE_KEY, map);
         localStorage.removeItem('scheduleData');
         return map;
@@ -206,10 +209,12 @@ function render() {
                 : `${formatHHMM(entry.start)} <span class="text-xs text-gray-400">(진행중)</span>`;
             const typeLabel = labelForType(entry.type);
             const titleHtml = `<div class="ellipsis title-clip">${escapeHtml(entry.desc)}</div>`;
+            const dur = entry.duration ? minutesToHM(entry.duration) : (entry.end ? '0분' : '진행중');
             const $tr = $('<tr/>').addClass('data-row').append(
                 $('<td/>').addClass('time cell-nowrap').html(timeCell),
                 $('<td/>').addClass('text-left font-semibold cell-nowrap').html(titleHtml),
                 $('<td/>').addClass('type cell-nowrap').html(typeLabel),
+                $('<td/>').addClass('type cell-nowrap').html(dur),
                 $('<td/>').addClass('actions cell-nowrap').append(
                     $('<div/>').addClass('btn-group-nowrap')
                         .append(
@@ -231,10 +236,28 @@ function render() {
                         )
                 )
             );
+
+            const memo = entry.memo;
+            const $tr2 = $('<tr/>').addClass('data-row').append(
+                $('<td/>')
+                    .attr('colspan', 5)
+                    .addClass('text-left px-5')
+                    .css({
+                        'max-width': '50vw',
+                        'white-space': 'pre-wrap',
+                        'word-break': 'keep-all',
+                        'overflow-wrap': 'break-word'
+                    })
+                    .text(memo)
+            );
+
             $tr.on('click', function () {
                 showEntryDetail(entry);
             });
             $tbody.append($tr);
+            if (memo !== '') {
+                $tbody.append($tr2);
+            }
         });
     }
 
@@ -259,10 +282,7 @@ function renderSummary(viewData) {
     });
     const recorded = totalWork + totalOther;
     $summaryText.html(`
-        작업 : ${minutesToHM(totalWork)}<br>
-        기타 : ${minutesToHM(totalOther)}<br>
-        <hr>
-        합계 : ${minutesToHM(recorded)}
+        작업 : ${minutesToHM(totalWork)}
     `);
 }
 

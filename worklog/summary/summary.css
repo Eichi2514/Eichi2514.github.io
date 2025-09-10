@@ -152,23 +152,13 @@ body {
     background: #e5e7eb;
 }
 
-/* 미기록 */
-
-/* 우측 하단 총합 */
+/* 총합 */
 .sticky-total {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 30;
-    background: #111827;
+    background: var(--primary);
     color: #fff;
     border-radius: 16px;
     padding: 14px 16px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, .15);
     min-width: 240px;
-}
-
-.sticky-total .label {
-    color: #cbd5e1;
-    font-size: 12px;
+    margin-top: 16px;
 }
