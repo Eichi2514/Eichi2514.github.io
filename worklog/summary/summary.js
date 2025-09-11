@@ -137,7 +137,7 @@ function renderGrid(from, to) {
     const {rows, sumWork, sumOther} = aggregateRange(from, to);
     const $grid = $('#result-grid').empty();
 
-    const DAY_MIN = 8 * 60;
+    const DAY_MIN = 4 * 60;
     let hasAnyDuration = false;
 
     rows.forEach(r => {
@@ -172,6 +172,12 @@ function renderGrid(from, to) {
           </div>
         </div>
       `);
+
+        // ✅ 날짜 클릭 시 작업일지로 이동
+        $tile.on('click', () => {
+            window.location.href = `../main/main.html?date=${r.date}`;
+        });
+
         $grid.append($tile);
     });
 

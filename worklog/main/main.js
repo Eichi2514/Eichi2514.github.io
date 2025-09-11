@@ -138,31 +138,32 @@ function setData(date, arr) {
 }
 
 // ====== 날짜 제어 ======
+function getDateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('date');
+}
+
+function updateUrlDate(dateStr) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('date', dateStr);
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    history.replaceState({}, '', newUrl);
+}
+
 function setCurrentDate(dateStr) {
     if (!dateStr) return;
     currentDate = dateStr;
     $datePicker.val(currentDate);
     $currentDateLabel.text(currentDate);
+    updateUrlDate(currentDate); // ✅ URL 반영
     render();
 }
 
 function changeDate(delta) {
     const d = toDate(currentDate);
     d.setDate(d.getDate() + delta);
-    setCurrentDate(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`);
-}
-
-// ====== 토스트 ======
-function showMemoToast(title, memo) {
-    $('#memo-title').text(title || '메모');
-    $('#memo-body').text(memo || '메모가 없습니다.');
-    $memoToast.show();
-    clearTimeout(showMemoToast._t);
-    showMemoToast._t = setTimeout(hideMemoToast, 5000);
-}
-
-function hideMemoToast() {
-    $memoToast.hide();
+    const nextDate = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    setCurrentDate(nextDate);
 }
 
 // ====== 겹침 검사 ======
@@ -250,10 +251,6 @@ function render() {
                     })
                     .text(memo)
             );
-
-            $tr.on('click', function () {
-                showEntryDetail(entry);
-            });
             $tbody.append($tr);
             if (memo !== '') {
                 $tbody.append($tr2);
@@ -284,24 +281,6 @@ function renderSummary(viewData) {
     $summaryText.html(`
         작업 : ${minutesToHM(totalWork)}
     `);
-}
-
-// ====== 상세표시 ======
-function entryDetailText(entry) {
-    const dur = entry.duration ? minutesToHM(entry.duration) : (entry.end ? '0분' : '진행중');
-    const lines = [
-        `• 시간: ${formatHHMM(entry.start)}${entry.end ? ` ~ ${formatHHMM(entry.end)}` : ' (진행중)'}`,
-        `• 구분: ${entry.type === 'work' ? '작업' : '기타'}`,
-        `• 제목: ${entry.desc || '-'}`,
-        `• 소요: ${dur}`,
-        `• 메모:`,
-        `${normalizeMemo(entry.memo) || '메모가 없습니다.'}`,
-    ];
-    return lines.join('\n');
-}
-
-function showEntryDetail(entry) {
-    showMemoToast('일정 상세', entryDetailText(entry));
 }
 
 // ====== 원형 그래프 ======
@@ -432,7 +411,6 @@ function draw24hPie(entries) {
             if (a < s) a += Math.PI * 2;
             return s <= a && a <= e;
         });
-        if (hit) showEntryDetail(hit.entry);
     });
 }
 
@@ -484,7 +462,15 @@ function onDelete(id) {
 
 // ====== 이벤트 바인딩 ======
 $(function () {
-    // 초기화
+    // 초기화: URL → 없으면 오늘 날짜
+    const urlDate = getDateFromUrl();
+    if (urlDate) {
+        currentDate = urlDate;
+    } else {
+        currentDate = todayStr();
+        updateUrlDate(currentDate); // ✅ 기본값도 URL 반영
+    }
+
     $datePicker.val(currentDate);
     $currentDateLabel.text(currentDate);
 
@@ -564,7 +550,6 @@ $(function () {
 
     // 편의 버튼들
     $('#btn-edit-cancel').on('click', closeEdit);
-    $('#memo-toast .close').on('click', hideMemoToast);
 
     // 렌더 시작
     render();

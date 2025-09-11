@@ -51,18 +51,29 @@ body {
     cursor: pointer;
     font-weight: 600;
     white-space: nowrap;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
+/* 고스트 버튼 */
 .btn-ghost {
     background: #fff;
     color: #374151;
     border: 1px solid #374151;
 }
+.btn-ghost:hover {
+    background: #374151;
+    color: #fff;
+}
 
+/* 아웃라인 버튼 */
 .btn-outline {
     background: #fff;
     color: var(--primary);
     border: 1px solid var(--primary);
+}
+.btn-outline:hover {
+    background: var(--primary);
+    color: #fff;
 }
 
 .pill {
@@ -100,6 +111,12 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.day-tile:hover {
+    background: #f9fafb; /* hover 색상 */
 }
 
 .day-date {
