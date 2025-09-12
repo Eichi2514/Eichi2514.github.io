@@ -140,6 +140,14 @@ function renderGrid(from, to) {
     const DAY_MIN = 4 * 60;
     let hasAnyDuration = false;
 
+    // ✅ 첫날 요일 구해서 앞에 빈칸 넣기
+    const firstDay = toDate(from).getDay();
+    // 0=일요일, 1=월요일... → 월요일부터 시작하려면 보정
+    const offset = (firstDay === 0 ? 6 : firstDay - 1);
+    for (let i = 0; i < offset; i++) {
+        $grid.append(`<div class="empty-tile"></div>`);
+    }
+
     rows.forEach(r => {
         let wMin = Math.max(0, r.work | 0);
         let oMin = Math.max(0, r.other | 0);
@@ -156,8 +164,14 @@ function renderGrid(from, to) {
         let nPct = 100 - wPct - oPct;
         if (nPct < 0) nPct = 0;
 
+        // ✅ 일정이 있으면 삭제 버튼 포함, 없으면 제외
+        const deleteBtnHtml = (r.work + r.other > 0)
+            ? `<button class="day-delete" title="하루 삭제">×</button>`
+            : '';
+
         const $tile = $(`
         <div class="day-tile">
+           ${deleteBtnHtml}
           <div class="day-date">${r.date} (${dayOfWeek(r.date)})</div>
           <div class="flex flex-col gap-1 text-[12px]">
             <div class="flex items-center justify-between">
@@ -172,6 +186,20 @@ function renderGrid(from, to) {
           </div>
         </div>
       `);
+
+        // ✅ 삭제 버튼 이벤트
+        $tile.find('.day-delete').on('click', (e) => {
+            e.stopPropagation(); // 날짜 클릭 이벤트 막기
+            if (!window.confirm(`${r.date}의 모든 일정을 삭제하시겠습니까?`)) return;
+
+            // 스토리지에서 해당 날짜 제거
+            refreshScheduleCache();
+            delete scheduleMap[r.date];
+            saveCompressed(STORAGE_KEY, scheduleMap);
+
+            // 다시 렌더링
+            renderGrid(from, to);
+        });
 
         // ✅ 날짜 클릭 시 작업일지로 이동
         $tile.on('click', () => {

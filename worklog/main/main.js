@@ -8,7 +8,6 @@ const $tbody = $('#data-table-body');
 const $datePicker = $('#date-picker');
 const $currentDateLabel = $('#current-date-label');
 const $summaryText = $('#summary-text');
-const $memoToast = $('#memo-toast');
 
 // ====== 유틸 ======
 function todayStr() {
@@ -224,17 +223,17 @@ function render() {
                                 e.stopPropagation();
                                 onEdit(entry.id);
                             }),
-                            $('<button/>', {class: 'btn btn-danger', text: '삭제'}).on('click', function (e) {
-                                e.stopPropagation();
-                                onDelete(entry.id);
-                            }),
                             !entry.end ? $('<button/>', {
                                 class: 'btn btn-outline',
                                 text: '종료'
                             }).on('click', function (e) {
                                 e.stopPropagation();
                                 onEnd(entry.id);
-                            }) : null
+                            }) : null,
+                            $('<button/>', {class: 'btn btn-danger', text: '삭제'}).on('click', function (e) {
+                                e.stopPropagation();
+                                onDelete(entry.id);
+                            })
                         )
                 )
             );
@@ -455,7 +454,7 @@ function onEdit(id) {
 }
 
 function onDelete(id) {
-    if (!window.confirm('정말 삭제할까요?')) return;
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
     const arr = getData(currentDate).filter(e => e.id !== id);
     setData(currentDate, arr);
     render();
@@ -484,6 +483,13 @@ $(function () {
     });
     $('#btn-today').on('click', function () {
         setCurrentDate(todayStr());
+    });
+
+    // 하루 전체 삭제
+    $('#btn-clear-day').on('click', function () {
+        if (!window.confirm(`${currentDate}의 모든 일정을 삭제하시겠습니까?`)) return;
+        setData(currentDate, []);   // ✅ 해당 날짜 배열을 빈 값으로 저장
+        render();
     });
 
     // 신규 일정 시작
