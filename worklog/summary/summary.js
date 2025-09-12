@@ -1,4 +1,4 @@
-
+// 파일 경로 : worklog/summary/summary.js
 // ========= 유틸 =========
 const pad2 = n => String(n).padStart(2, '0');
 const todayStr = () => {
@@ -188,19 +188,28 @@ function renderGrid(from, to) {
 }
 
 // ========= 초기화 =========
-function setToday() {
-    const t = todayStr();
-    $('#date-from').val(t);
-    $('#date-to').val(t);
+function setThisMonth() {
+    const d = new Date();
+
+    // 이번 달 1일
+    const first = new Date(d.getFullYear(), d.getMonth(), 1);
+    const firstStr = `${first.getFullYear()}-${pad2(first.getMonth() + 1)}-${pad2(first.getDate())}`;
+
+    // 이번 달 마지막 날
+    const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    const lastStr = `${last.getFullYear()}-${pad2(last.getMonth() + 1)}-${pad2(last.getDate())}`;
+
+    $('#date-from').val(firstStr);
+    $('#date-to').val(lastStr);
 }
 
 $(function () {
     refreshScheduleCache();     // 압축 데이터 1회 로드/마이그레이션
-    setToday();
+    setThisMonth();
     renderGrid($('#date-from').val(), $('#date-to').val());
 
     $('#btn-today').on('click', function () {
-        setToday();
+        setThisMonth();
         renderGrid($('#date-from').val(), $('#date-to').val());
     });
 

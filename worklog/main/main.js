@@ -1,3 +1,4 @@
+// 파일 경로 : worklog/main/main.js
 // ====== 상태 & 캐시 ======
 let chart = null;
 let currentDate = todayStr();
