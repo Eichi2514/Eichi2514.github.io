@@ -77,6 +77,19 @@ function refreshScheduleCache() {
     scheduleMap = obj || {};
 }
 
+// 게이지 색상 계산 함수
+function getWorkColor(minutes) {
+    const maxMin = 8 * 60; // 8시간 기준
+    const ratio = Math.min(minutes / maxMin, 1); // 0~1
+    // 연한 보라 → 진한 보라 보간 (#c9bde5 → #5a4398)
+    const start = {r: 201, g: 189, b: 229}; // #c9bde5
+    const end   = {r:  90, g:  67, b: 152}; // #5a4398
+    const r = Math.round(start.r + (end.r - start.r) * ratio);
+    const g = Math.round(start.g + (end.g - start.g) * ratio);
+    const b = Math.round(start.b + (end.b - start.b) * ratio);
+    return `rgb(${r},${g},${b})`;
+}
+
 // ========= 데이터 로드 =========
 function getEntriesForDate(dateStr) {
     // 1) 메인 포맷
@@ -174,22 +187,22 @@ function renderGrid(from, to) {
             : '';
 
         const $tile = $(`
-        <div class="day-tile${weekendClass}">
-           ${deleteBtnHtml}
-          <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
-          <div class="flex flex-col gap-1 text-[12px]">
-            <div class="flex items-center justify-between">
-              <span>작업 ${wPct}%</span>
-              <span class="badge badge-work">${minutesToHM(r.work)}</span>
+            <div class="day-tile${weekendClass}">
+                ${deleteBtnHtml}
+            <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
+            <div class="flex flex-col gap-1 text-[12px]">
+                <div class="flex items-center justify-between">
+                    <span>작업</span>
+                    <span class="badge badge-work">${minutesToHM(r.work)}</span>
+                </div>
             </div>
-          </div>
-          <div class="day-bar" aria-hidden="true">
-            <div class="bar-seg bar-work"  style="width:${wPct}%"></div>
-            <div class="bar-seg bar-other" style="width:${oPct}%"></div>
-            <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
-          </div>
-        </div>
-      `);
+            <div class="day-bar" aria-hidden="true">
+                <div class="bar-seg bar-work" style="width:${wPct}%; background-color:${getWorkColor(r.work)}"></div>
+                    <div class="bar-seg bar-other" style="width:${oPct}%"></div>
+                    <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
+                </div>
+            </div>
+        `);
 
         // ✅ 삭제 버튼 이벤트
         $tile.find('.day-delete').on('click', (e) => {

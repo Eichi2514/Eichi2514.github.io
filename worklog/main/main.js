@@ -210,7 +210,20 @@ function render() {
                 : `${formatHHMM(entry.start)} <span class="text-xs text-gray-400">(진행중)</span>`;
             const typeLabel = labelForType(entry.type);
             const titleHtml = `<div class="ellipsis title-clip">${escapeHtml(entry.desc)}</div>`;
-            const dur = entry.duration ? minutesToHM(entry.duration) : (entry.end ? '0분' : '진행중');
+
+            let dur;
+            if (entry.end) {
+                // 종료된 일정
+                dur = entry.duration ? minutesToHM(entry.duration) : '0분';
+            } else {
+                // 진행 중 일정 → 현재 시각과 start 차이 계산
+                const now = new Date();
+                const nowMin = now.getHours() * 60 + now.getMinutes();
+                const startMin = parseHHMM(entry.start);
+                const diff = Math.max(0, nowMin - startMin);
+                dur = `(${minutesToHM(diff)} 경과)`;
+            }
+
             const $tr = $('<tr/>').addClass('data-row').append(
                 $('<td/>').addClass('time cell-nowrap').html(timeCell),
                 $('<td/>').addClass('text-left font-semibold cell-nowrap').html(titleHtml),
@@ -558,6 +571,18 @@ $(function () {
     // 편의 버튼들
     $('#btn-edit-cancel').on('click', closeEdit);
 
-    // 렌더 시작
-    render();
+    function scheduleRenderEveryMinute() {
+        render(); // 처음 즉시 실행
+
+        // 다음 분 정각까지 남은 ms 계산
+        const now = new Date();
+        const delay = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+        setTimeout(function tick() {
+            render();
+            setTimeout(tick, 60000); // 이후는 정확히 1분 간격
+        }, delay);
+    }
+
+    scheduleRenderEveryMinute();
 });
