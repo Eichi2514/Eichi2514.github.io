@@ -153,7 +153,7 @@ function renderGrid(from, to) {
         let oMin = Math.max(0, r.other | 0);
         if (wMin + oMin > 0) hasAnyDuration = true;
 
-        // 하루 초과시 24시간에 맞춰 스케일링
+        // 시간 초과시 일정에 맞춰 스케일링
         if (wMin + oMin > DAY_MIN) {
             const scale = DAY_MIN / (wMin + oMin);
             wMin = Math.round(wMin * scale);
@@ -164,15 +164,19 @@ function renderGrid(from, to) {
         let nPct = 100 - wPct - oPct;
         if (nPct < 0) nPct = 0;
 
+        // ✅ 주말 체크
+        const weekday = toDate(r.date).getDay(); // 0=일, 6=토
+        const weekendClass = (weekday === 0 || weekday === 6) ? " weekend" : "";
+
         // ✅ 일정이 있으면 삭제 버튼 포함, 없으면 제외
         const deleteBtnHtml = (r.work + r.other > 0)
             ? `<button class="day-delete" title="하루 삭제">×</button>`
             : '';
 
         const $tile = $(`
-        <div class="day-tile">
+        <div class="day-tile${weekendClass}">
            ${deleteBtnHtml}
-          <div class="day-date">${r.date} (${dayOfWeek(r.date)})</div>
+          <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
           <div class="flex flex-col gap-1 text-[12px]">
             <div class="flex items-center justify-between">
               <span>작업 ${wPct}%</span>

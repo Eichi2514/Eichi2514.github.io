@@ -127,6 +127,10 @@ body {
     font-size: 14px;
 }
 
+.day-date.weekend {
+    color: #dc2626;
+}
+
 .badge {
     font-size: 11px;
     padding: 3px 7px;
