@@ -36,14 +36,6 @@
                         <label class="field start">
                             <input type="text" id="start-time" required pattern="\d{4}" placeholder="시작 시간 (예: 0930)"/>
                         </label>
-
-                        <label class="field select">
-                            <select id="entry-type" required>
-                                <option value="work">작업</option>
-                                <option value="other">기타</option>
-                            </select>
-                        </label>
-
                         <div class="actions">
                             <button type="submit" class="btn btn-primary">시작</button>
                         </div>
@@ -87,7 +79,6 @@
                     <tr>
                         <th style="width:120px">시간</th>
                         <th>제목</th>
-                        <th style="width:100px">구분</th>
                         <th style="width:120px">소요시간</th>
                         <th style="width:200px">관리</th>
                     </tr>
@@ -122,13 +113,6 @@
                 <label class="block">
                     <span class="block text-sm text-gray-500 mb-1">종료 (HHMM)</span>
                     <input type="text" id="edit-end" pattern="\d{4}"/>
-                </label>
-                <label class="block">
-                    <span class="block text-sm text-gray-500 mb-1">종류</span>
-                    <select id="edit-type" required>
-                        <option value="work">작업</option>
-                        <option value="other">기타</option>
-                    </select>
                 </label>
             </div>
             <div class="flex items-center justify-end gap-2 no-wrap">

@@ -42,10 +42,16 @@
 
             <!-- 총합 -->
             <div class="sticky-total" id="sticky-total">
-                <div class="flex items-center justify-between">
+                <!-- 총합 줄 -->
+                <div class="total-header flex items-center justify-between px-3 py-2 rounded-2xl">
                     <div>총합</div>
-                    <div id="sum-work" class="font-semibold">00:00</div>
+                    <div id="sum-total" class="font-semibold">00:00</div>
                 </div>
+            </div>
+
+            <!-- 작업별 합산 리스트가 들어갈 자리 -->
+            <div class="card">
+                <div id="sum-tasks"></div>
             </div>
         </aside>
 

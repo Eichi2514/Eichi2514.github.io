@@ -55,6 +55,7 @@ body {
     color: #374151;
     border: 1px solid #374151;
 }
+
 .btn-ghost:hover {
     background: #374151;
     color: #fff;
@@ -66,6 +67,7 @@ body {
     color: var(--primary);
     border: 1px solid var(--primary);
 }
+
 .btn-outline:hover {
     background: var(--primary);
     color: #fff;
@@ -184,27 +186,23 @@ body {
     height: 6px;
 }
 
-.day-bar .bar-work {
+.day-bar .bar-total {
     background: var(--primary);
 }
 
-/* 작업 */
-.day-bar .bar-other {
-    background: #9ca3af;
-}
-
-/* 기타 */
 .day-bar .bar-empty {
     background: #e5e7eb;
 }
 
 /* 총합 */
 .sticky-total {
-    background: var(--primary);
-    color: #fff;
-    border-radius: 16px;
-    padding: 14px 16px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, .15);
     min-width: 240px;
     margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.total-header {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .15);
 }

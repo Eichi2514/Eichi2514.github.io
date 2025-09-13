@@ -83,7 +83,7 @@ function getWorkColor(minutes) {
     const ratio = Math.min(minutes / maxMin, 1); // 0~1
     // 연한 보라 → 진한 보라 보간 (#c9bde5 → #5a4398)
     const start = {r: 201, g: 189, b: 229}; // #c9bde5
-    const end   = {r:  90, g:  67, b: 152}; // #5a4398
+    const end = {r: 90, g: 67, b: 152}; // #5a4398
     const r = Math.round(start.r + (end.r - start.r) * ratio);
     const g = Math.round(start.g + (end.g - start.g) * ratio);
     const b = Math.round(start.b + (end.b - start.b) * ratio);
@@ -117,37 +117,64 @@ function getEntriesForDate(dateStr) {
 
 function aggregateForDate(dateStr) {
     const entries = getEntriesForDate(dateStr);
-    let work = 0, other = 0;
+    let total = 0;
+    const taskMap = {}; // 제목별 합산용
+
     for (const e of entries) {
-        if (!e || !e.end) continue;                    // 진행중 제외
+        if (!e || !e.end) continue;
         let dur = (typeof e.duration === 'number') ? e.duration : null;
         if (dur == null) {
             const s = parseHHMM(e.start), t = parseHHMM(e.end);
             if (s == null || t == null) continue;
             dur = Math.max(0, t - s);
         }
-        if (e.type === 'work') work += dur; else other += dur;
+        total += dur;
+
+        // 제목별 누적
+        const title = e.desc || '(제목없음)';
+        taskMap[title] = (taskMap[title] || 0) + dur;
     }
-    return {work, other};
+
+    // taskMap → 배열 변환 + 내림차순 정렬
+    const tasks = Object.entries(taskMap)
+        .map(([title, minutes]) => ({title, minutes}))
+        .sort((a, b) => b.minutes - a.minutes);
+
+    return {total, tasks};
 }
 
 function aggregateRange(from, to) {
     const rows = [];
-    let sumWork = 0, sumOther = 0;
+    let sumTotal = 0;
+    const taskMap = {}; // ✅ 기간 전체 작업별 합산용
+
     for (let d = from, i = 0; ; d = addDays(d, 1), i++) {
         const agg = aggregateForDate(d);
         rows.push({date: d, ...agg});
-        sumWork += agg.work;
-        sumOther += agg.other;
+        sumTotal += agg.total;
+
+        // 기간 전체 task 합산
+        if (agg.tasks) {
+            for (const t of agg.tasks) {
+                taskMap[t.title] = (taskMap[t.title] || 0) + t.minutes;
+            }
+        }
+
         if (d === to) break;
-        if (i > 3700) break; // 안전장치
+        if (i > 3700) break;
     }
-    return {rows, sumWork, sumOther};
+
+    // taskMap → 정렬된 배열
+    const tasks = Object.entries(taskMap)
+        .map(([title, minutes]) => ({title, minutes}))
+        .sort((a, b) => b.minutes - a.minutes);
+
+    return {rows, sumTotal, tasks};
 }
 
 // ========= 렌더 =========
 function renderGrid(from, to) {
-    const {rows, sumWork, sumOther} = aggregateRange(from, to);
+    const {rows, sumTotal, tasks} = aggregateRange(from, to);
     const $grid = $('#result-grid').empty();
 
     const DAY_MIN = 4 * 60;
@@ -162,45 +189,42 @@ function renderGrid(from, to) {
     }
 
     rows.forEach(r => {
-        let wMin = Math.max(0, r.work | 0);
-        let oMin = Math.max(0, r.other | 0);
-        if (wMin + oMin > 0) hasAnyDuration = true;
+        let totalMin = Math.max(0, r.total | 0);
+        if (totalMin > 0) hasAnyDuration = true;
 
-        // 시간 초과시 일정에 맞춰 스케일링
-        if (wMin + oMin > DAY_MIN) {
-            const scale = DAY_MIN / (wMin + oMin);
-            wMin = Math.round(wMin * scale);
-            oMin = Math.round(oMin * scale);
+        // 게이지 길이는 4시간(DAY_MIN)까지만 스케일링
+        let gaugeMin = totalMin;
+        if (gaugeMin > DAY_MIN) {
+            gaugeMin = DAY_MIN;
         }
-        const wPct = Math.round((wMin / DAY_MIN) * 100);
-        const oPct = Math.round((oMin / DAY_MIN) * 100);
-        let nPct = 100 - wPct - oPct;
+
+        const tPct = Math.round((gaugeMin / DAY_MIN) * 100);
+        let nPct = 100 - tPct;
         if (nPct < 0) nPct = 0;
 
         // ✅ 주말 체크
         const weekday = toDate(r.date).getDay(); // 0=일, 6=토
         const weekendClass = (weekday === 0 || weekday === 6) ? " weekend" : "";
+        const color = getWorkColor(totalMin);
 
         // ✅ 일정이 있으면 삭제 버튼 포함, 없으면 제외
-        const deleteBtnHtml = (r.work + r.other > 0)
+        const deleteBtnHtml = (r.total > 0)
             ? `<button class="day-delete" title="하루 삭제">×</button>`
             : '';
 
         const $tile = $(`
             <div class="day-tile${weekendClass}">
                 ${deleteBtnHtml}
-            <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
-            <div class="flex flex-col gap-1 text-[12px]">
+                <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
+                <div class="flex flex-col gap-1 text-[12px]">
                 <div class="flex items-center justify-between">
-                    <span>작업</span>
-                    <span class="badge badge-work">${minutesToHM(r.work)}</span>
+                    <span>시간</span>
+                    <span class="badge">${minutesToHM(r.total)}</span>
                 </div>
             </div>
             <div class="day-bar" aria-hidden="true">
-                <div class="bar-seg bar-work" style="width:${wPct}%; background-color:${getWorkColor(r.work)}"></div>
-                    <div class="bar-seg bar-other" style="width:${oPct}%"></div>
-                    <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
-                </div>
+                <div class="bar-seg bar-total" style="width:${tPct}%; background-color:${color}"></div>
+                <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
             </div>
         `);
 
@@ -228,8 +252,27 @@ function renderGrid(from, to) {
 
     // “집계할 데이터 없음”은 총 소요가 0일 때만 표시
     $('#empty').toggleClass('hidden', hasAnyDuration);
-    $('#sum-work').text(minutesToHM(sumWork));
-    $('#sum-other').text(minutesToHM(sumOther));
+    $('#sum-total').text(minutesToHM(sumTotal));
+
+    // 목록용 HTML
+    let tasksHtml = '';
+    if (tasks.length > 0) {
+        tasksHtml = `
+            <div id="sum-tasks" class="mt-2 text-sm">
+                ${tasks.map(t => `
+                    <div class="flex justify-between">
+                        <span class="truncate">${t.title}</span>
+                        <span>${minutesToHM(t.minutes)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // 기존 총합 밑에 붙이기
+    const $sumTaske = $('#sum-tasks')
+    $sumTaske.find('#sum-tasks').remove(); // 이전거 제거
+    $sumTaske.append(tasksHtml);
 }
 
 // ========= 초기화 =========

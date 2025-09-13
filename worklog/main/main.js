@@ -208,7 +208,6 @@ function render() {
         $.each(viewData, function (_, entry) {
             const timeCell = entry.end ? `${formatHHMM(entry.start)} ~ ${formatHHMM(entry.end)}`
                 : `${formatHHMM(entry.start)} <span class="text-xs text-gray-400">(진행중)</span>`;
-            const typeLabel = labelForType(entry.type);
             const titleHtml = `<div class="ellipsis title-clip">${escapeHtml(entry.desc)}</div>`;
 
             let dur;
@@ -227,7 +226,6 @@ function render() {
             const $tr = $('<tr/>').addClass('data-row').append(
                 $('<td/>').addClass('time cell-nowrap').html(timeCell),
                 $('<td/>').addClass('text-left font-semibold cell-nowrap').html(titleHtml),
-                $('<td/>').addClass('type cell-nowrap').html(typeLabel),
                 $('<td/>').addClass('type cell-nowrap').html(dur),
                 $('<td/>').addClass('actions cell-nowrap').append(
                     $('<div/>').addClass('btn-group-nowrap')
@@ -285,15 +283,11 @@ function minutesToHM(mins) {
 
 // ====== 요약 부분 수정 ======
 function renderSummary(viewData) {
-    let totalWork = 0, totalOther = 0;
+    let total = 0;
     $.each(viewData, function (_, e) {
-        const d = e.duration || 0;
-        if (e.type === 'work') totalWork += d; else totalOther += d;
+        total += e.duration || 0;
     });
-    const recorded = totalWork + totalOther;
-    $summaryText.html(`
-        작업 : ${minutesToHM(totalWork)}
-    `);
+    $summaryText.html(`${minutesToHM(total)}`);
 }
 
 // ====== 원형 그래프 ======
@@ -326,7 +320,7 @@ function draw24hPie(entries) {
                 ctx.fill();
                 // 종료된 일정만 채우기
                 const finished = entries.filter(e => e.end && e.duration > 0);
-                const colorOf = t => t === 'work' ? 'rgba(90,67,152,0.95)' : 'rgba(107,114,128,0.95)';
+                const colorOf = () => 'rgba(90,67,152,0.95)';
                 $.each(finished, function (_, e) {
                     const sMin = parseHHMM(e.start), eMin = parseHHMM(e.end);
                     const sAng = -Math.PI / 2 + (sMin / 1440) * Math.PI * 2;
@@ -417,13 +411,6 @@ function draw24hPie(entries) {
         if (r > meta.R) return;
         let ang = Math.atan2(dy, dx);
         if (ang < -Math.PI / 2) ang += Math.PI * 2;
-        const hit = (chart._sectors || []).find(seg => {
-            let s = seg.start, e = seg.end;
-            if (e < s) e += Math.PI * 2;
-            let a = ang;
-            if (a < s) a += Math.PI * 2;
-            return s <= a && a <= e;
-        });
     });
 }
 
@@ -511,7 +498,6 @@ $(function () {
         const desc = $('#entry-desc').val().trim();
         const memo = $('#entry-memo').val().trim();
         const startRaw = $('#start-time').val().trim();
-        const type = $('#entry-type').val();
         if (!/^\d{4}$/.test(startRaw)) return window.alert('시작 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
 
         const arr = getData(currentDate);
@@ -525,7 +511,7 @@ $(function () {
         });
         if (overlaps) return window.alert('해당 시간대에 이미 일정이 있습니다.');
 
-        const entry = {id: Date.now(), date: currentDate, desc, memo, type, start: startRaw, end: null, duration: null};
+        const entry = {id: Date.now(), date: currentDate, desc, memo, start: startRaw, end: null, duration: null};
         arr.push(entry);
         setData(currentDate, arr);
         this.reset();
@@ -540,7 +526,6 @@ $(function () {
         const memo = $('#edit-memo').val().trim();
         const start = $('#edit-start').val().trim();
         const end = $('#edit-end').val().trim();
-        const type = $('#edit-type').val();
         if (!/^\d{4}$/.test(start)) return window.alert('시작 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
         if (end && !/^\d{4}$/.test(end)) return window.alert('종료 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
 
@@ -562,7 +547,6 @@ $(function () {
         entry.desc = desc;
         entry.memo = memo;
         entry.start = start;
-        entry.type = (type === 'work' ? 'work' : 'other');
         setData(currentDate, arr);
         closeEdit();
         render();
