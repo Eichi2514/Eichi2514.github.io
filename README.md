@@ -8,7 +8,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 방문자분들이 쉽게 저에게 연락할 수 있도록 구성했어요!
 
 ## 🔗 배포 주소
- - <a href="https://eichi2514.github.io/">
+ - <a href="https://eichi2514.github.io/en">
        <img 
            src="https://github.com/user-attachments/assets/3b0e2c34-227d-4135-91e3-b9cb0ff3207e"
            style="width: 3%;"
