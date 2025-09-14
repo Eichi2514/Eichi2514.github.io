@@ -25,11 +25,15 @@
             <!-- 입력 폼 -->
             <div class="card">
                 <form id="schedule-form" class="grid grid-cols-1 gap-3">
-                    <label class="block">
-                        <input type="text" id="entry-desc" placeholder="제목" required/>
+                    <label class="block relative">
+                        <input type="text" id="entry-desc" placeholder="카테고리" required autocomplete="off"/>
+                        <!-- 자동완성 목록 -->
+                        <div id="title-suggestions"
+                             class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm">
+                        </div>
                     </label>
                     <label class="block">
-                        <textarea id="entry-memo" rows="3" placeholder="메모"></textarea>
+                        <textarea id="entry-memo" rows="3" placeholder="내용"></textarea>
                     </label>
 
                     <div class="form-inline">
@@ -78,7 +82,7 @@
                     <thead>
                     <tr>
                         <th style="width:120px">시간</th>
-                        <th>제목</th>
+                        <th>카테고리</th>
                         <th style="width:120px">소요시간</th>
                         <th style="width:200px">관리</th>
                     </tr>

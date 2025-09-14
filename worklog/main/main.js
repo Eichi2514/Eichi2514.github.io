@@ -569,4 +569,61 @@ $(function () {
     }
 
     scheduleRenderEveryMinute();
+
+    // ====== 자동완성 (최근 7일 제목) ======
+    const $descInput = $('#entry-desc');
+    const $suggestions = $('#title-suggestions');
+
+    // 최근 7일간 제목 모으기
+    function getRecentTitles(keyword) {
+        const titles = new Set();
+        const today = toDate(todayStr());
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const dateStr = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+            const arr = getData(dateStr);
+            arr.forEach(e => {
+                if (e.desc && e.desc.includes(keyword)) {
+                    titles.add(e.desc);
+                }
+            });
+        }
+        return Array.from(titles);
+    }
+
+    // 입력 이벤트
+    $descInput.on('input', function () {
+        const val = $(this).val().trim();
+        if (!val) {
+            $suggestions.hide();
+            return;
+        }
+
+        const matches = getRecentTitles(val);
+        if (matches.length === 0) {
+            $suggestions.hide();
+            return;
+        }
+
+        $suggestions.empty();
+        matches.forEach(title => {
+            $('<div/>')
+                .addClass('px-2 py-1 cursor-pointer hover:bg-gray-100')
+                .text(title)
+                .on('click', function () {
+                    $descInput.val(title);
+                    $suggestions.hide();
+                })
+                .appendTo($suggestions);
+        });
+        $suggestions.show();
+    });
+
+    // 입력창 밖 클릭하면 닫기
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#entry-desc, #title-suggestions').length) {
+            $suggestions.hide();
+        }
+    });
 });
