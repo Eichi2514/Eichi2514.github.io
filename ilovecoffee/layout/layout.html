@@ -19,8 +19,10 @@
 
         .page {
             width: calc(100vw - 48px);
-            height: 100vh;
+            height: calc(100vh - 48px);
             padding: 24px;
+            display: flex;
+            flex-direction: column; /* 세로 배치 */
         }
 
         .head-line {
@@ -51,9 +53,11 @@
         }
 
         .box {
+            flex: 1;
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
+            min-height: 0;
         }
 
         .wrap {
@@ -62,17 +66,20 @@
             border-radius: 12px;
             background: #fafafa;
             overflow: hidden;
-            max-width: 90vw;
-            max-height: 90vh;
             display: flex;
             align-items: center;
             justify-content: center;
+
+            max-width: 100%;
+            max-height: 100%;
         }
 
         svg {
             display: block;
             width: 100%;
-            height: auto;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .controls {
@@ -86,7 +93,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .ctrl label {
@@ -94,8 +101,18 @@
             text-align: right;
         }
 
-        .ctrl input {
+        /* 숫자 입력 전용 */
+        .ctrl input[type="number"] {
+            font-size: 16px;
             width: 70px;
+        }
+
+        /* 체크박스 전용 */
+        .ctrl input[type="checkbox"] {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         .start-btn {
@@ -162,6 +179,11 @@
             stroke: #111827;
         }
 
+        .tile.protected {
+            fill: #fef9c3; /* 연한 노란색 */
+            stroke: #facc15; /* 노란 계열 테두리 */
+        }
+
         .label {
             font-size: 10px;
             text-anchor: middle;
@@ -170,12 +192,40 @@
             font-weight: 600;
             pointer-events: none;
         }
+
+        /* 안내 문구 */
+        .orientation-alert {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #374151;
+            font-family: sans-serif;
+            gap: 12px;
+            height: 100vh;
+        }
+
+        .orientation-alert .icon {
+            font-size: 48px;
+            animation: rotatePhone 1.5s infinite ease-in-out;
+        }
+
+        @keyframes rotatePhone {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(90deg);
+            }
+        }
     </style>
 </head>
 <body>
-<div class="page">
+<div id="page" class="page">
     <div class="head-line">
         <div class="title">작업대 배치도</div>
+        <div id="coord-box" style="margin-left:8px;font-size:14px;color:#333;">좌표 : -</div>
         <div class="help" title="배치 규칙 도움말">?</div>
     </div>
     <div class="box">
@@ -194,8 +244,27 @@
     </div>
 </div>
 
+<div id="landscape" class="orientation-alert">
+    <div class="icon">📱</div>
+    <div class="text"><h3>화면을 가로로 돌려주세요</h3>
+        <p>배치도는 가로 모드에서만 확인할 수 있습니다</p></div>
+</div>
+
 <script>
     $(function () {
+        function checkOrientation() {
+            if ($(window).width() < $(window).height()) {
+                $("#landscape").show();
+                $("#page").hide();
+            } else {
+                $("#landscape").hide();
+                $("#page").show();
+            }
+        }
+
+        checkOrientation();
+        $(window).on("resize", checkOrientation);
+
         const ROWS = 16, COLS = 15, W = 42, H = 21, PAD = 24;
         const $svg = $("#board");
         const minX = (0 - (ROWS - 1)) * (W / 2), maxX = (COLS - 1) * (W / 2);
@@ -220,16 +289,11 @@
                 const {cx, cy} = toScreen(r, c);
                 const $poly = $(document.createElementNS("http://www.w3.org/2000/svg", "polygon"))
                     .attr("points", diamondPoints(cx, cy)).attr("data-rc", `${r},${c}`).addClass("tile")
-                    .data({rc: `${r},${c}`, occupied: false, protected: false});
+                    .data({rc: `${r},${c}`, occupied: false, protected: false}).attr("title", `(${r},${c})`);
                 const $text = $(document.createElementNS("http://www.w3.org/2000/svg", "text"))
                     .attr({x: cx, y: cy + 1}).addClass("label").hide();
                 $svg.append($poly).append($text);
             }
-        }
-
-        function parseRC(str) {
-            const [r, c] = str.split(",").map(Number);
-            return {r, c};
         }
 
         function getTile(r, c) {
@@ -246,56 +310,66 @@
             if ($t.length && !$t.data("occupied")) $t.data("protected", true);
         }
 
-        function addProtect(r, c) {
-            const down = getTile(r + 1, c), right = getTile(r, c + 1);
-            let choose = null;
-            if (down.length && down.data("protected")) choose = down;
-            else if (right.length && right.data("protected")) choose = right;
-            else if (down.length && !down.data("occupied")) choose = down;
-            else if (right.length && !right.data("occupied")) choose = right;
-            if (choose) choose.data("protected", true);
+        function addProtectL(r, c) {
+            const down = getTile(r + 1, c);
+
+            // 아래칸(down)을 항상 빈칸으로 초기화
+            down.attr("class", "tile protected")           // 기본 타일로 되돌림
+                .data({occupied: false, protected: true}); // 차지X, 보호칸O
+            down.next("text").text("").hide();      // 라벨 지우기
+        }
+
+        function addProtectR(r, c) {
+            const right = getTile(r, c + 1);
+
+            // 오른쪽은 기존 로직대로
+            right.attr("class", "tile protected")              // 기본 타일로 되돌림
+                .data({occupied: false, protected: true}); // 차지X, 보호칸O
+            right.next("text").text("").hide();      // 라벨 지우기
         }
 
         function addProtectCross(r, c) {
-            const up = getTile(r - 1, c), left = getTile(r, c - 1);
-            const down = getTile(r + 1, c), right = getTile(r, c + 1);
-            if ((up.length && up.data("protected")) || (left.length && left.data("protected"))) {
-                if (up.length && !up.data("occupied")) up.data("protected", true);
-                if (left.length && !left.data("occupied")) left.data("protected", true);
-                return;
+            const up = getTile(r - 1, c),
+                down = getTile(r + 1, c),
+                left = getTile(r, c - 1),
+                right = getTile(r, c + 1);
+
+            if (up.length && down.length) {
+                // 위/아래 보호칸 처리
+                up.attr("class", "tile protected")
+                    .data({occupied: false, protected: true});
+                up.next("text").text("").hide();
+                down.attr("class", "tile protected")
+                    .data({occupied: false, protected: true});
+                down.next("text").text("").hide();
+            } else {
+                // 왼쪽/오른쪽 보호칸 처리
+                left.attr("class", "tile protected")
+                    .data({occupied: false, protected: true});
+                left.next("text").text("").hide();
+
+                right.attr("class", "tile protected")
+                    .data({occupied: false, protected: true});
+                right.next("text").text("").hide();
             }
-            if ((down.length && down.data("protected")) || (right.length && right.data("protected"))) {
-                if (down.length && !down.data("occupied")) down.data("protected", true);
-                if (right.length && !right.data("occupied")) right.data("protected", true);
-                return;
-            }
-            if (down.length && !down.data("occupied")) down.data("protected", true);
-            if (right.length && !right.data("occupied")) right.data("protected", true);
         }
 
         // 고정 배치
         function placeFixed() {
             if ($("#judy").is(":checked")) {
-                mark(getTile(14, 0), "쥬디", "judy");
-                addProtect(14, 0);
-                mark(getTile(14, 1), "캐셔", "cashier");
-                addProtectCross(14, 1);
-                mark(getTile(14, 2), "픽업", "pickup");
-                addProtectCross(14, 2);
-                mark(getTile(14, 3), "휴지통", "trash");
-                mark(getTile(14, 4), "휴지통", "trash");
-                addProtect(14, 3);
-                addProtect(14, 4);
-            } else {
-                mark(getTile(14, 0), "캐셔", "cashier");
-                addProtectCross(14, 0);
-                mark(getTile(14, 1), "픽업", "pickup");
-                addProtectCross(14, 1);
-                mark(getTile(14, 2), "휴지통", "trash");
-                mark(getTile(14, 3), "휴지통", "trash");
-                addProtect(14, 2);
-                addProtect(14, 3);
+                mark(getTile(13, 12), "쥬디", "judy");
+                addProtectL(13, 12);
+
             }
+
+            mark(getTile(14, 13), "캐셔", "cashier");
+            addProtectCross(14, 13);
+            mark(getTile(14, 14), "픽업", "pickup");
+            addProtectCross(14, 14);
+            mark(getTile(15, 11), "휴지통", "trash");
+            mark(getTile(14, 11), "휴지통", "trash");
+            addProtectR(15, 11);
+            addProtectR(14, 11);
         }
 
         // 쇼케
@@ -326,27 +400,73 @@
             }
         }
 
-        // 작업대: 계단식으로 먼저 전부 배치
-        function placeWorkbenches(){
-            let count=0;
-            for(let r=0;r<ROWS;r++){
-                for(let c=0;c<COLS;c++){
-                    // 계단식 규칙: r와 c의 합이 짝수일 때 작업대
-                    if((r+c)%2===0){
-                        const $t=getTile(r,c);
-                        if($t.length && !$t.data("occupied")){
-                            mark($t,"작업대","workbench");
+        // 작업대: 계단식으로 전부 배치
+        function placeWorkbenches() {
+            let count = 0;
+
+            for (let c = 0; c < COLS; c++) {
+                for (let r = 0; r < ROWS; r++) {
+                    let place = false;
+
+                    if (c % 3 === 0) {
+                        if (r % 3 === 1 || r % 3 === 2) place = true;
+                    } else if (c % 3 === 1) {
+                        if (r % 3 === 2 || r % 3 === 0) place = true;
+                    } else if (c % 3 === 2) {
+                        if (r % 3 === 0 || r % 3 === 1) place = true;
+                    }
+
+                    if (place) {
+                        const $t = getTile(r, c);
+
+                        if ($t.length) {
+                            mark($t, "작업대", "workbench");
                             count++;
-                            // 보호칸: 오른쪽에 지정
-                            const $p=getTile(r,c+1);
-                            if($p.length && !$p.data("occupied")){
-                                $p.data("protected",true);
-                            }
                         }
                     }
                 }
             }
             $("#workbenchCount").val(count);
+        }
+
+        // 작업대 위치 검증
+        function validateWorkbenches() {
+            // 타일들을 역순으로 순회
+            $(".tile.workbench").get().reverse().forEach(function (el) {
+                const $t = $(el);
+                const [r, c] = $t.data("rc").split(",").map(Number);
+
+                const $down = getTile(r + 1, c);
+                const $right = getTile(r, c + 1);
+
+                // 아래/오른쪽이 "존재하면서 (비어있거나 보호칸)" 중 하나라도 있으면 valid
+                const downOk = $down.length && (!$down.data("occupied") || $down.data("protected"));
+                const rightOk = $right.length && (!$right.data("occupied") || $right.data("protected"));
+
+                const valid = downOk || rightOk;
+
+                if (!valid) {
+                    console.log(
+                        `${r},${c} : \n` +
+                        `아래: ${$down.length ? ($down.data("occupied") ? $down.next("text").text() : "empty") : "없음"}, ` +
+                        `오른쪽: ${$right.length ? ($right.data("occupied") ? $right.next("text").text() : "empty") : "없음"}`
+                    );
+
+                    // 잘못된 작업대 → 초기화 (빈칸으로 되돌림)
+                    $t.attr("class", "tile").data({occupied: false, protected: false});
+                    $t.next("text").text("").hide();
+                } else {
+                    // 보호칸 지정
+                    if (downOk && $down.length && !$down.data("occupied")) {
+                        $down.data("protected", true).addClass("protected");
+                    } else if (rightOk && $right.length && !$right.data("occupied")) {
+                        $right.data("protected", true).addClass("protected");
+                    }
+                }
+            });
+
+            // 카운트 갱신
+            $("#workbenchCount").val($(".tile.workbench").length);
         }
 
         // 필수 자리 배치 후 보호칸 걸린 작업대 제거
@@ -358,13 +478,6 @@
             placeFree("로머", "romer", romer);
             const kumer = parseInt($("#kumer").val(), 10) || 0;
             placeFree("쿠머", "kumer", kumer);
-            $(".tile.workbench").each(function () {
-                const $t = $(this);
-                if ($t.data("protected") || $t.next("text").text() === "기타") {
-                    $t.attr("class", "tile").data({occupied: false, protected: false});
-                    $t.next("text").hide();
-                }
-            });
             $("#workbenchCount").val($(".tile.workbench").length);
         }
 
@@ -376,6 +489,10 @@
                 $t.attr("class", "tile").data({occupied: false, protected: false});
                 $t.next("text").text("").hide();
                 $("#gita").val(Math.max(0, parseInt($("#gita").val() || 0) - 1));
+            } else if (label === "작업대") {
+                $t.attr("class", "tile").data({occupied: false, protected: false});
+                $t.next("text").text("").hide();
+                $("#workbenchCount").val(Math.max(0, parseInt($("#workbenchCount").val() || 0) - 1));
             } else if (!label) {
                 mark($t, "기타", "gita");
                 $("#gita").val(parseInt($("#gita").val() || 0) + 1);
@@ -385,14 +502,50 @@
             }
         });
 
-        $(".start-btn").on("click", function () {
-            $(".tile").attr("class", "tile").data({occupied: false, protected: false}).next("text").hide();
+        // 초기화
+        function resetBoard() {
+            // 모든 타일 초기화
+            $(".tile").each(function () {
+                $(this).attr("class", "tile")
+                    .data({occupied: false, protected: false});
+                $(this).next("text").text("").hide();
+            });
+
+            // 기타/작업대 카운트 0으로
             $("#gita").val(0);
             $("#workbenchCount").val(0);
-            placeWorkbenches();   // 기본 작업대 패턴
-            refineWorkbenches();  // 필수 자리 넣고 보호칸 정리
+
+            // 좌표 표시 초기화
+            $("#coord-box").text("좌표 : -");
+        }
+
+        // 배치 시작
+        $(".start-btn").on("click", function () {
+            const $btn = $(this);
+            if ($btn.text() === "배치 시작") {
+                console.clear();
+                placeWorkbenches();   // 기본 작업대 패턴
+                refineWorkbenches();  // 필수 자리 넣고 보호칸 정리
+                validateWorkbenches() // 작업대 위치 검증 함수
+
+                // 버튼 텍스트 변경
+                $btn.text("초기화");
+            } else {
+                // === 초기화 ===
+                resetBoard();
+                $btn.text("배치 시작");
+            }
         });
-    });
+
+        const $coordBox = $("#coord-box");
+        $(document).on("mouseenter", ".tile", function () {
+            const rc = $(this).data("rc");
+            $coordBox.text(`좌표 : ${rc}`);
+        }).on("mouseleave", ".tile", function () {
+            $coordBox.text("좌표 : -");
+        });
+    })
+    ;
 </script>
 </body>
 </html>
