@@ -290,6 +290,13 @@ function renderSummary(viewData) {
     $summaryText.html(`${minutesToHM(total)}`);
 }
 
+// 카테고리에서 제목만 추출
+function cleanDesc(desc) {
+    if (!desc) return '';
+    const idx = desc.indexOf(')');
+    return idx >= 0 ? desc.slice(idx + 1).trim() : desc;
+}
+
 // ====== 원형 그래프 ======
 function draw24hPie(entries) {
     if (chart) chart.destroy();
@@ -320,7 +327,7 @@ function draw24hPie(entries) {
                 ctx.fill();
                 // 종료된 일정만 채우기
                 const finished = entries.filter(e => e.end && e.duration > 0);
-                const colorOf = () => 'rgba(90,67,152,0.95)';
+                const colorOf = () => 'rgba(30,58,138,0.9)';
                 $.each(finished, function (_, e) {
                     const sMin = parseHHMM(e.start), eMin = parseHHMM(e.end);
                     const sAng = -Math.PI / 2 + (sMin / 1440) * Math.PI * 2;
@@ -364,7 +371,7 @@ function draw24hPie(entries) {
                     if (span < (15 / 1440) * Math.PI * 2) return;
                     const rx = cx + Math.cos(mid) * R * 0.68, ry = cy + Math.sin(mid) * R * 0.68;
                     const approxChars = Math.max(4, Math.floor(span / (Math.PI * 2) * 24));
-                    const label = truncateForArc(e.desc, approxChars);
+                    const label = truncateForArc(cleanDesc(e.desc), approxChars);
                     const padX = 6, padY = 4;
                     ctx.font = '12px Segoe UI, system-ui, -apple-system, sans-serif';
 

@@ -81,9 +81,9 @@ function refreshScheduleCache() {
 function getWorkColor(minutes) {
     const maxMin = 8 * 60; // 8시간 기준
     const ratio = Math.min(minutes / maxMin, 1); // 0~1
-    // 연한 보라 → 진한 보라 보간 (#c9bde5 → #5a4398)
-    const start = {r: 201, g: 189, b: 229}; // #c9bde5
-    const end = {r: 90, g: 67, b: 152}; // #5a4398
+    // 연한 파랑 (#b0c4f6) → 진한 남색 (#1e3a8a)
+    const start = { r: 176, g: 196, b: 246 }; // #b0c4f6
+    const end = { r: 30, g: 58, b: 138 }; // #1e3a8a
     const r = Math.round(start.r + (end.r - start.r) * ratio);
     const g = Math.round(start.g + (end.g - start.g) * ratio);
     const b = Math.round(start.b + (end.b - start.b) * ratio);
@@ -146,17 +146,19 @@ function aggregateForDate(dateStr) {
 function aggregateRange(from, to) {
     const rows = [];
     let sumTotal = 0;
-    const taskMap = {}; // ✅ 기간 전체 작업별 합산용
+    const taskMap = {}; // ✅ 기간 전체 작업별 합산 + 날짜별 기록
 
     for (let d = from, i = 0; ; d = addDays(d, 1), i++) {
         const agg = aggregateForDate(d);
         rows.push({date: d, ...agg});
         sumTotal += agg.total;
 
-        // 기간 전체 task 합산
+        // 기간 전체 task 합산 + 날짜별 기록
         if (agg.tasks) {
             for (const t of agg.tasks) {
-                taskMap[t.title] = (taskMap[t.title] || 0) + t.minutes;
+                if (!taskMap[t.title]) taskMap[t.title] = {minutes: 0, dates: []};
+                taskMap[t.title].minutes += t.minutes;
+                taskMap[t.title].dates.push({date: d, minutes: t.minutes});
             }
         }
 
@@ -166,7 +168,7 @@ function aggregateRange(from, to) {
 
     // taskMap → 정렬된 배열
     const tasks = Object.entries(taskMap)
-        .map(([title, minutes]) => ({title, minutes}))
+        .map(([title, data]) => ({title, minutes: data.minutes, dates: data.dates}))
         .sort((a, b) => b.minutes - a.minutes);
 
     return {rows, sumTotal, tasks};
@@ -259,20 +261,62 @@ function renderGrid(from, to) {
     if (tasks.length > 0) {
         tasksHtml = `
             <div id="sum-tasks" class="mt-2 text-sm">
-                ${tasks.map(t => `
-                    <div class="flex justify-between">
-                        <span class="truncate">${t.title}</span>
-                        <span>${minutesToHM(t.minutes)}</span>
+                ${tasks.map((t, idx) => `
+                    <div class="flex justify-between items-center gap-2 min-w-0 task-item cursor-pointer" 
+                         data-task-idx="${idx}">
+                        <div class="min-w-0 flex-1">
+                            <span 
+                            class="block truncate overflow-hidden whitespace-nowrap text-ellipsis w-full max-w-[120px]" 
+                            title="${t.title}">
+                                ${t.title}
+                            </span>
+                        </div>
+                        <span class="shrink-0">${minutesToHM(t.minutes)}</span>
                     </div>
                 `).join('')}
             </div>
         `;
     }
 
-    // 기존 총합 밑에 붙이기
     const $sumTaske = $('#sum-tasks')
     $sumTaske.find('#sum-tasks').remove(); // 이전거 제거
     $sumTaske.append(tasksHtml);
+
+    // ✅ 클릭 이벤트: task 상세 보기 → 모달 띄우기
+    $('#sum-tasks .task-item').on('click', function() {
+        const idx = $(this).data('task-idx');
+        const task = tasks[idx];
+        if (!task) return;
+
+        // 모달 HTML
+        const modalHtml = `
+            <div id="task-modal-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg shadow-lg p-4 relative" style="min-width:320px;">                    
+                    <button id="task-modal-close" class="absolute text-3xl top-2 right-2 text-gray-500 hover:text-black">&times;</button>                    
+                    <div class="font-semibold text-xl mb-2 mr-8">${task.title} 작업일</div>  
+                    <div class="max-h-60 overflow-y-auto text-lg pr-1">
+                        ${task.dates.map(d => `
+                            <a href="../main/main.html?date=${d.date}" class="modal-date-item flex justify-between py-1 border-b last:border-0 rounded transition-colors">
+                                <span>${d.date}</span>
+                                <span>${minutesToHM(d.minutes)}</span>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // 기존 모달 제거 후 새로 추가
+        $('#task-modal-overlay').remove();
+        $('body').append(modalHtml);
+
+        // 닫기 이벤트 (배경이나 × 버튼 클릭 시 닫기)
+        $('#task-modal-close, #task-modal-overlay').on('click', function(e) {
+            if (e.target.id === 'task-modal-overlay' || e.target.id === 'task-modal-close') {
+                $('#task-modal-overlay').remove();
+            }
+        });
+    });
 }
 
 // ========= 초기화 =========

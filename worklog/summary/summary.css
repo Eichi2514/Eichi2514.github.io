@@ -1,6 +1,7 @@
 /* 파일 경로 : worklog/summary/summary.css */
 :root {
-    --primary: #5a4398;
+    --primary: #1e3a8a;
+    --primary-hover: #b0c4f6;
     --border: #e5e7eb;
     --muted: #6b7280;
     --bg: #f7f7f7;
@@ -10,6 +11,10 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: #111827;
+}
+
+h1 {
+    color: var(--primary);
 }
 
 .container {
@@ -205,4 +210,8 @@ body {
     background: var(--primary);
     color: #fff;
     box-shadow: 0 12px 24px rgba(0, 0, 0, .15);
+}
+
+.modal-date-item:hover {
+    background: var(--primary-hover);
 }
