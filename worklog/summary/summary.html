@@ -25,13 +25,18 @@
         <!-- 왼쪽: 검색 -->
         <aside class="left-sticky">
             <div class="card">
+                <div class="flex items-center gap-2 mt-3">
+                    <button id="btn-prev-month" class="btn btn-ghost w-full">이전 달</button>
+                    <button id="btn-this-month" class="btn btn-outline w-full">이번 달</button>
+                    <button id="btn-next-month" class="btn btn-ghost w-full">다음 달</button>
+                </div>
+                <div class="divider"></div>
                 <div class="text-sm text-gray-500 mb-1">시작 날짜</div>
                 <input id="date-from" type="date" class="pill">
                 <div class="text-sm text-gray-500 mb-1 mt-3">종료 날짜</div>
                 <input id="date-to" type="date" class="pill">
                 <div class="flex items-center gap-2 mt-3">
-                    <button id="btn-today" class="btn btn-outline w-full">이번 달</button>
-                    <button id="btn-search" class="btn btn-ghost w-full">검색</button>
+                    <button id="btn-search" class="btn btn-outline w-full">검색</button>
                 </div>
                 <div class="divider"></div>
                 <div class="hint">

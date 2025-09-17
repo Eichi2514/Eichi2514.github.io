@@ -25,25 +25,19 @@
             <!-- 입력 폼 -->
             <div class="card">
                 <form id="schedule-form" class="grid grid-cols-1 gap-3">
-                    <label class="block relative">
-                        <input type="text" id="entry-desc" placeholder="카테고리" required autocomplete="off"/>
-                        <!-- 자동완성 목록 -->
-                        <div id="title-suggestions"
-                             class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm">
-                        </div>
-                    </label>
+                    <div class="form-inline">
+                        <label class="block relative w-full">
+                            <input type="text" id="entry-desc" placeholder="카테고리" required autocomplete="off"/>
+                            <!-- 자동완성 목록 -->
+                            <div id="title-suggestions"
+                                 class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm">
+                            </div>
+                        </label>
+                        <button type="submit" class="btn btn-primary">시작</button>
+                    </div>
                     <label class="block">
                         <textarea id="entry-memo" rows="3" placeholder="내용"></textarea>
                     </label>
-
-                    <div class="form-inline">
-                        <label class="field start">
-                            <input type="text" id="start-time" required pattern="\d{4}" placeholder="시작 시간 (예: 0930)"/>
-                        </label>
-                        <div class="actions">
-                            <button type="submit" class="btn btn-primary">시작</button>
-                        </div>
-                    </div>
                 </form>
             </div>
 

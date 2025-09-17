@@ -439,15 +439,18 @@ function roundRect(ctx, x, y, w, h, r) {
 
 // ====== 액션 ======
 function onEnd(id) {
-    const endRaw = window.prompt('종료 시간(HHMM)을 입력하세요. 예: 1130');
-    if (!endRaw) return;
-    if (!/^\d{4}$/.test(endRaw)) return window.alert('종료 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
+    // ✅ 현재 시각 HHMM 자동 입력
+    const now = new Date();
+    const endRaw = pad2(now.getHours()) + pad2(now.getMinutes());
+
     const arr = getData(currentDate);
     const entry = arr.find(e => e.id === id);
     if (!entry) return;
+
     const s = parseHHMM(entry.start), en = parseHHMM(endRaw);
     if (en <= s) return window.alert('종료 시간은 시작 시간보다 늦어야 합니다.');
     if (overlapsAny(arr, s, en, id)) return window.alert('다른 일정과 시간이 겹칩니다.');
+
     entry.end = endRaw;
     entry.duration = en - s;
     setData(currentDate, arr);
@@ -499,13 +502,20 @@ $(function () {
         render();
     });
 
+    // 현재 시각 HHMM 문자열
+    function nowHHMM() {
+        const d = new Date();
+        return pad2(d.getHours()) + pad2(d.getMinutes());
+    }
+
     // 신규 일정 시작
     $('#schedule-form').on('submit', function (e) {
         e.preventDefault();
         const desc = $('#entry-desc').val().trim();
         const memo = $('#entry-memo').val().trim();
-        const startRaw = $('#start-time').val().trim();
-        if (!/^\d{4}$/.test(startRaw)) return window.alert('시작 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
+
+        // ✅ 시작 시간 자동 세팅
+        const startRaw = nowHHMM();
 
         const arr = getData(currentDate);
         if (hasOngoing(arr)) return window.alert('이미 진행 중인 일정이 있습니다. 먼저 종료하세요.');

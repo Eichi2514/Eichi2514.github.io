@@ -220,8 +220,8 @@ function renderGrid(from, to) {
                 <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
                 <div class="flex flex-col gap-1 text-[12px]">
                 <div class="flex items-center justify-between">
-                    <span>시간</span>
-                    <span class="badge">${minutesToHM(r.total)}</span>
+                    <span>시간</span>                    
+                    ${r.total ? `<span class="badge">${minutesToHM(r.total)}</span>` : ''}
                 </div>
             </div>
             <div class="day-bar" aria-hidden="true">
@@ -319,16 +319,21 @@ function renderGrid(from, to) {
     });
 }
 
-// ========= 초기화 =========
-function setThisMonth() {
-    const d = new Date();
+let currentMonthOffset = 0; // 오늘 기준 offset (0=이번 달, -1=이전 달, +1=다음 달 ...)
 
-    // 이번 달 1일
-    const first = new Date(d.getFullYear(), d.getMonth(), 1);
+// ========= 초기화 =========
+function setMonth(offsetChange) {
+    const d = new Date();
+    currentMonthOffset += offsetChange; // 버튼 클릭 시마다 +1, -1 누적
+
+    const target = new Date(d.getFullYear(), d.getMonth() + currentMonthOffset, 1);
+
+    // 해당 달 1일
+    const first = new Date(target.getFullYear(), target.getMonth(), 1);
     const firstStr = `${first.getFullYear()}-${pad2(first.getMonth() + 1)}-${pad2(first.getDate())}`;
 
-    // 이번 달 마지막 날
-    const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    // 해당 달 마지막 날
+    const last = new Date(target.getFullYear(), target.getMonth() + 1, 0);
     const lastStr = `${last.getFullYear()}-${pad2(last.getMonth() + 1)}-${pad2(last.getDate())}`;
 
     $('#date-from').val(firstStr);
@@ -337,11 +342,22 @@ function setThisMonth() {
 
 $(function () {
     refreshScheduleCache();     // 압축 데이터 1회 로드/마이그레이션
-    setThisMonth();
+    setMonth(0);
     renderGrid($('#date-from').val(), $('#date-to').val());
 
-    $('#btn-today').on('click', function () {
-        setThisMonth();
+    $('#btn-this-month').on('click', function () {
+        currentMonthOffset = 0;  // 오늘 기준으로 리셋
+        setMonth(0); // 이번 달
+        renderGrid($('#date-from').val(), $('#date-to').val());
+    });
+
+    $('#btn-prev-month').on('click', function () {
+        setMonth(-1); // 이전 달
+        renderGrid($('#date-from').val(), $('#date-to').val());
+    });
+
+    $('#btn-next-month').on('click', function () {
+        setMonth(1); // 다음 달
         renderGrid($('#date-from').val(), $('#date-to').val());
     });
 
