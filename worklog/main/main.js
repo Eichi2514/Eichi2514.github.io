@@ -15,6 +15,11 @@ function todayStr() {
     return d.toISOString().split('T')[0];
 }
 
+const formatDateKorean = (s) => {
+    const [y, m, d] = s.split('-').map(Number);
+    return `${pad2(m)}월 ${pad2(d)}일`;
+};
+
 function toDate(s) {
     const [y, m, d] = s.split('-').map(Number);
     return new Date(y, m - 1, d);
@@ -154,7 +159,7 @@ function setCurrentDate(dateStr) {
     if (!dateStr) return;
     currentDate = dateStr;
     $datePicker.val(currentDate);
-    $currentDateLabel.text(currentDate);
+    $currentDateLabel.text(formatDateKorean(currentDate));
     updateUrlDate(currentDate); // ✅ URL 반영
     render();
 }
@@ -278,7 +283,7 @@ function minutesToHM(mins) {
     const m = Math.max(0, mins | 0);
     const h = Math.floor(m / 60);
     const mm = m % 60;
-    return (h ? `${h}시간 ` : '') + `${mm}분`;
+    return (h ? `${h}시간 ` : '') + `${pad2(mm)}분`;
 }
 
 // ====== 요약 부분 수정 ======
@@ -482,7 +487,7 @@ $(function () {
     }
 
     $datePicker.val(currentDate);
-    $currentDateLabel.text(currentDate);
+    $currentDateLabel.text(formatDateKorean(currentDate));
 
     // 날짜 변경
     $('.date-bar .btn.btn-ghost[data-delta]').on('click', function () {

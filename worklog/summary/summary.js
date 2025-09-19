@@ -1,9 +1,9 @@
 // 파일 경로 : worklog/summary/summary.js
 // ========= 유틸 =========
 const pad2 = n => String(n).padStart(2, '0');
-const todayStr = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const formatDateKorean = (s) => {
+    const [y, m, d] = s.split('-').map(Number);
+    return `${pad2(m)}월 ${pad2(d)}일`;
 };
 const toDate = s => {
     const [y, m, d] = s.split('-').map(Number);
@@ -16,8 +16,8 @@ const addDays = (s, k) => {
 };
 const minutesToHM = m => {
     m = Math.max(0, m | 0);
-    const hh = Math.floor(m / 60), mm = m % 60;
-    return hh ? `${pad2(hh)}시간 ${pad2(mm)}분` : (mm ? `${pad2(mm)}분` : '-');
+    const h = Math.floor(m / 60), mm = m % 60;
+    return (h ? `${h}시간 ` : '') + `${pad2(mm)}분`;
 };
 const parseHHMM = h => {
     if (!h || h.length < 4) return null;
@@ -217,7 +217,7 @@ function renderGrid(from, to) {
         const $tile = $(`
             <div class="day-tile${weekendClass}">
                 ${deleteBtnHtml}
-                <div class="day-date${weekendClass}">${r.date} (${dayOfWeek(r.date)})</div>
+                <div class="day-date${weekendClass}">${formatDateKorean(r.date)} (${dayOfWeek(r.date)})</div>
                 <div class="flex flex-col gap-1 text-[12px]">
                 <div class="flex items-center justify-between">
                     <span>시간</span>                    
@@ -233,7 +233,7 @@ function renderGrid(from, to) {
         // ✅ 삭제 버튼 이벤트
         $tile.find('.day-delete').on('click', (e) => {
             e.stopPropagation(); // 날짜 클릭 이벤트 막기
-            if (!window.confirm(`${r.date}의 모든 일정을 삭제하시겠습니까?`)) return;
+            if (!window.confirm(`${formatDateKorean(r.date)}의 모든 일정을 삭제하시겠습니까?`)) return;
 
             // 스토리지에서 해당 날짜 제거
             refreshScheduleCache();
