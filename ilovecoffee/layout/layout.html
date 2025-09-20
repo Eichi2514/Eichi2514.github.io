@@ -372,30 +372,66 @@
             addProtectR(14, 11);
         }
 
-        // 쇼케
-        function placeShowke(count) {
+        // 배치 가능 검증
+        function canPlace(r, c) {
+            const $self = getTile(r, c);
+            // 이미 차지된 칸은 못씀 (픽업, 캐셔, 휴지통, 쥬디 등 포함)
+            if ($self.data("occupied")) return false;
+
+            if ($self.data("protected")) return false;
+
+            const left     = getTile(r, c - 1);
+            const up       = getTile(r - 1, c);
+            const leftDown = getTile(r + 1, c - 1);
+            const upRight  = getTile(r - 1, c + 1);
+
+            const isWorkbench = $t => $t.length && $t.hasClass("workbench");
+
+            const hasLeft     = isWorkbench(left);
+            const hasUp       = isWorkbench(up);
+            const hasLeftDown = isWorkbench(leftDown);
+            const hasUpRight  = isWorkbench(upRight);
+
+            // 1) 왼쪽, 위 모두 작업대 없음
+            if (!hasLeft && !hasUp) return true;
+
+            // 2) 왼쪽만 작업대 → 좌하 확인
+            else if (hasLeft && !hasUp && !hasLeftDown) return true;
+
+            // 3) 위만 작업대 → 우상 확인
+            else if (hasUp && !hasLeft && !hasUpRight) return true;
+
+            // 4) 왼쪽, 위 모두 작업대 → 좌하, 우상 확인
+            else if (hasLeft && hasUp && !hasLeftDown && !hasUpRight) return true;
+
+            return false;
+        }
+
+        // 로머/쿠머 (빈자리 + 가까운 자리 우선)
+        function placeFree(name, cls, count) {
             let placed = 0;
-            for (let c = 6; c < COLS && placed < count; c++) {
-                const $t = getTile(15, c);
-                if ($t.length && !$t.data("occupied") && !$t.data("protected")) {
-                    mark($t, "쇼케", "showke");
-                    addProtectCross(15, c);
-                    placed++;
+            for (let c = COLS - 1; c >= 0 && placed < count; c--) {
+                for (let r = ROWS - 1; r >= 0 && placed < count; r--) {
+                    if (canPlace(r, c)) {
+                        const $t = getTile(r, c);
+                        mark($t, name, cls);
+                        console.log(`➡️ ${name} (${r},${c})`);
+                        placed++;
+                    }
                 }
             }
         }
 
-        // 로머/쿠머
-        function placeFree(name, cls, count) {
+        // 쇼케
+        function placeShowke(count) {
             let placed = 0;
-            for (let c = COLS - 1; c >= 0; c--) {
-                for (let r = ROWS - 1; r >= 0; r--) {
-                    if (placed >= count) return;
-                    const $t = getTile(r, c);
-                    if ($t.length && !$t.data("occupied") && !$t.data("protected")) {
-                        mark($t, name, cls);
-                        placed++;
-                    }
+            for (let c = 6; c < COLS && placed < count; c++) {
+                if (canPlace(15, c)) {
+                    const $t = getTile(15, c);
+                    mark($t, "쇼케", "showke");
+                    console.log(`➡️ ${name} (${r},${c})`);
+                    addProtectCross(15, c);
+                    placed++;
                 }
             }
         }
@@ -446,11 +482,13 @@
                 const valid = downOk || rightOk;
 
                 if (!valid) {
+                    /*
                     console.log(
                         `${r},${c} : \n` +
                         `아래: ${$down.length ? ($down.data("occupied") ? $down.next("text").text() : "empty") : "없음"}, ` +
                         `오른쪽: ${$right.length ? ($right.data("occupied") ? $right.next("text").text() : "empty") : "없음"}`
                     );
+                     */
 
                     // 잘못된 작업대 → 초기화 (빈칸으로 되돌림)
                     $t.attr("class", "tile").data({occupied: false, protected: false});
@@ -471,13 +509,12 @@
 
         // 필수 자리 배치 후 보호칸 걸린 작업대 제거
         function refineWorkbenches() {
-            placeFixed();
-            const showke = parseInt($("#showke").val(), 10) || 0;
-            placeShowke(showke);
             const romer = parseInt($("#romer").val(), 10) || 0;
             placeFree("로머", "romer", romer);
             const kumer = parseInt($("#kumer").val(), 10) || 0;
             placeFree("쿠머", "kumer", kumer);
+            const showke = parseInt($("#showke").val(), 10) || 0;
+            placeShowke(showke);
             $("#workbenchCount").val($(".tile.workbench").length);
         }
 
@@ -525,8 +562,9 @@
             if ($btn.text() === "배치 시작") {
                 console.clear();
                 placeWorkbenches();   // 기본 작업대 패턴
-                refineWorkbenches();  // 필수 자리 넣고 보호칸 정리
+                placeFixed();         // 필수 자리 넣고 보호칸 정리
                 validateWorkbenches() // 작업대 위치 검증 함수
+                refineWorkbenches();  // 머신 배치 함수
 
                 // 버튼 텍스트 변경
                 $btn.text("초기화");
