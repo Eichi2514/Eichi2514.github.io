@@ -219,6 +219,54 @@
                 transform: rotate(90deg);
             }
         }
+
+        /* 로딩 오버레이 */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            z-index: 9999;
+        }
+
+        /* 스피너 */
+        .spinner {
+            border: 6px solid #eee;
+            border-top: 6px solid var(--primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 게이지 바 */
+        .progress-bar {
+            width: 200px;
+            height: 12px;
+            border-radius: 6px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: var(--primary);
+            transition: width 0.2s ease;
+        }
+
+        /* 텍스트 */
+        .loading-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -250,340 +298,14 @@
         <p>배치도는 가로 모드에서만 확인할 수 있습니다</p></div>
 </div>
 
-<script>
-    $(function () {
-        function checkOrientation() {
-            if ($(window).width() < $(window).height()) {
-                $("#landscape").show();
-                $("#page").hide();
-            } else {
-                $("#landscape").hide();
-                $("#page").show();
-            }
-        }
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+    <div class="loading-text">시뮬레이션 실행 중...</div>
+</div>
 
-        checkOrientation();
-        $(window).on("resize", checkOrientation);
-
-        const ROWS = 16, COLS = 15, W = 42, H = 21, PAD = 24;
-        const $svg = $("#board");
-        const minX = (0 - (ROWS - 1)) * (W / 2), maxX = (COLS - 1) * (W / 2);
-        const minY = 0, maxY = (ROWS - 1 + (COLS - 1)) * (H / 2);
-        const boardW = (maxX - minX) + W, boardH = (maxY - minY) + H;
-        const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
-        const fullW = boardW + PAD * 2, fullH = boardH + PAD * 2;
-        const offsetX = centerX - boardW / 2 - PAD, offsetY = centerY - boardH / 2 - PAD;
-        $svg.attr("viewBox", `${offsetX} ${offsetY} ${fullW} ${fullH}`);
-
-        function toScreen(r, c) {
-            return {cx: (c - r) * (W / 2), cy: (c + r) * (H / 2)};
-        }
-
-        function diamondPoints(cx, cy) {
-            return `${cx},${cy - H / 2} ${cx + W / 2},${cy} ${cx},${cy + H / 2} ${cx - W / 2},${cy}`;
-        }
-
-        // 보드 생성
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-                const {cx, cy} = toScreen(r, c);
-                const $poly = $(document.createElementNS("http://www.w3.org/2000/svg", "polygon"))
-                    .attr("points", diamondPoints(cx, cy)).attr("data-rc", `${r},${c}`).addClass("tile")
-                    .data({rc: `${r},${c}`, occupied: false, protected: false}).attr("title", `(${r},${c})`);
-                const $text = $(document.createElementNS("http://www.w3.org/2000/svg", "text"))
-                    .attr({x: cx, y: cy + 1}).addClass("label").hide();
-                $svg.append($poly).append($text);
-            }
-        }
-
-        function getTile(r, c) {
-            return $(`.tile[data-rc='${r},${c}']`);
-        }
-
-        function mark($tile, name, cls) {
-            if (!$tile.length) return;
-            $tile.data("occupied", true).attr("class", "tile " + cls).next("text").text(name).show();
-        }
-
-        function protect(r, c) {
-            const $t = getTile(r, c);
-            if ($t.length && !$t.data("occupied")) $t.data("protected", true);
-        }
-
-        function addProtectL(r, c) {
-            const down = getTile(r + 1, c);
-
-            // 아래칸(down)을 항상 빈칸으로 초기화
-            down.attr("class", "tile protected")           // 기본 타일로 되돌림
-                .data({occupied: false, protected: true}); // 차지X, 보호칸O
-            down.next("text").text("").hide();      // 라벨 지우기
-        }
-
-        function addProtectR(r, c) {
-            const right = getTile(r, c + 1);
-
-            // 오른쪽은 기존 로직대로
-            right.attr("class", "tile protected")              // 기본 타일로 되돌림
-                .data({occupied: false, protected: true}); // 차지X, 보호칸O
-            right.next("text").text("").hide();      // 라벨 지우기
-        }
-
-        function addProtectCross(r, c) {
-            const up = getTile(r - 1, c),
-                down = getTile(r + 1, c),
-                left = getTile(r, c - 1),
-                right = getTile(r, c + 1);
-
-            if (up.length && down.length) {
-                // 위/아래 보호칸 처리
-                up.attr("class", "tile protected")
-                    .data({occupied: false, protected: true});
-                up.next("text").text("").hide();
-                down.attr("class", "tile protected")
-                    .data({occupied: false, protected: true});
-                down.next("text").text("").hide();
-            } else {
-                // 왼쪽/오른쪽 보호칸 처리
-                left.attr("class", "tile protected")
-                    .data({occupied: false, protected: true});
-                left.next("text").text("").hide();
-
-                right.attr("class", "tile protected")
-                    .data({occupied: false, protected: true});
-                right.next("text").text("").hide();
-            }
-        }
-
-        // 고정 배치
-        function placeFixed() {
-            if ($("#judy").is(":checked")) {
-                mark(getTile(13, 12), "쥬디", "judy");
-                addProtectL(13, 12);
-
-            }
-
-            mark(getTile(14, 13), "캐셔", "cashier");
-            addProtectCross(14, 13);
-            mark(getTile(14, 14), "픽업", "pickup");
-            addProtectCross(14, 14);
-            mark(getTile(15, 11), "휴지통", "trash");
-            mark(getTile(14, 11), "휴지통", "trash");
-            addProtectR(15, 11);
-            addProtectR(14, 11);
-        }
-
-        // 배치 가능 검증
-        function canPlace(r, c) {
-            const $self = getTile(r, c);
-            // 이미 차지된 칸은 못씀 (픽업, 캐셔, 휴지통, 쥬디 등 포함)
-            if ($self.data("occupied")) return false;
-
-            if ($self.data("protected")) return false;
-
-            const left     = getTile(r, c - 1);
-            const up       = getTile(r - 1, c);
-            const leftDown = getTile(r + 1, c - 1);
-            const upRight  = getTile(r - 1, c + 1);
-
-            const isWorkbench = $t => $t.length && $t.hasClass("workbench");
-
-            const hasLeft     = isWorkbench(left);
-            const hasUp       = isWorkbench(up);
-            const hasLeftDown = isWorkbench(leftDown);
-            const hasUpRight  = isWorkbench(upRight);
-
-            // 1) 왼쪽, 위 모두 작업대 없음
-            if (!hasLeft && !hasUp) return true;
-
-            // 2) 왼쪽만 작업대 → 좌하 확인
-            else if (hasLeft && !hasUp && !hasLeftDown) return true;
-
-            // 3) 위만 작업대 → 우상 확인
-            else if (hasUp && !hasLeft && !hasUpRight) return true;
-
-            // 4) 왼쪽, 위 모두 작업대 → 좌하, 우상 확인
-            else if (hasLeft && hasUp && !hasLeftDown && !hasUpRight) return true;
-
-            return false;
-        }
-
-        // 로머/쿠머 (빈자리 + 가까운 자리 우선)
-        function placeFree(name, cls, count) {
-            let placed = 0;
-            for (let c = COLS - 1; c >= 0 && placed < count; c--) {
-                for (let r = ROWS - 1; r >= 0 && placed < count; r--) {
-                    if (canPlace(r, c)) {
-                        const $t = getTile(r, c);
-                        mark($t, name, cls);
-                        console.log(`➡️ ${name} (${r},${c})`);
-                        placed++;
-                    }
-                }
-            }
-        }
-
-        // 쇼케
-        function placeShowke(count) {
-            let placed = 0;
-            for (let c = 6; c < COLS && placed < count; c++) {
-                if (canPlace(15, c)) {
-                    const $t = getTile(15, c);
-                    mark($t, "쇼케", "showke");
-                    console.log(`➡️ ${name} (${r},${c})`);
-                    addProtectCross(15, c);
-                    placed++;
-                }
-            }
-        }
-
-        // 작업대: 계단식으로 전부 배치
-        function placeWorkbenches() {
-            let count = 0;
-
-            for (let c = 0; c < COLS; c++) {
-                for (let r = 0; r < ROWS; r++) {
-                    let place = false;
-
-                    if (c % 3 === 0) {
-                        if (r % 3 === 1 || r % 3 === 2) place = true;
-                    } else if (c % 3 === 1) {
-                        if (r % 3 === 2 || r % 3 === 0) place = true;
-                    } else if (c % 3 === 2) {
-                        if (r % 3 === 0 || r % 3 === 1) place = true;
-                    }
-
-                    if (place) {
-                        const $t = getTile(r, c);
-
-                        if ($t.length) {
-                            mark($t, "작업대", "workbench");
-                            count++;
-                        }
-                    }
-                }
-            }
-            $("#workbenchCount").val(count);
-        }
-
-        // 작업대 위치 검증
-        function validateWorkbenches() {
-            // 타일들을 역순으로 순회
-            $(".tile.workbench").get().reverse().forEach(function (el) {
-                const $t = $(el);
-                const [r, c] = $t.data("rc").split(",").map(Number);
-
-                const $down = getTile(r + 1, c);
-                const $right = getTile(r, c + 1);
-
-                // 아래/오른쪽이 "존재하면서 (비어있거나 보호칸)" 중 하나라도 있으면 valid
-                const downOk = $down.length && (!$down.data("occupied") || $down.data("protected"));
-                const rightOk = $right.length && (!$right.data("occupied") || $right.data("protected"));
-
-                const valid = downOk || rightOk;
-
-                if (!valid) {
-                    /*
-                    console.log(
-                        `${r},${c} : \n` +
-                        `아래: ${$down.length ? ($down.data("occupied") ? $down.next("text").text() : "empty") : "없음"}, ` +
-                        `오른쪽: ${$right.length ? ($right.data("occupied") ? $right.next("text").text() : "empty") : "없음"}`
-                    );
-                     */
-
-                    // 잘못된 작업대 → 초기화 (빈칸으로 되돌림)
-                    $t.attr("class", "tile").data({occupied: false, protected: false});
-                    $t.next("text").text("").hide();
-                } else {
-                    // 보호칸 지정
-                    if (downOk && $down.length && !$down.data("occupied")) {
-                        $down.data("protected", true).addClass("protected");
-                    } else if (rightOk && $right.length && !$right.data("occupied")) {
-                        $right.data("protected", true).addClass("protected");
-                    }
-                }
-            });
-
-            // 카운트 갱신
-            $("#workbenchCount").val($(".tile.workbench").length);
-        }
-
-        // 필수 자리 배치 후 보호칸 걸린 작업대 제거
-        function refineWorkbenches() {
-            const romer = parseInt($("#romer").val(), 10) || 0;
-            placeFree("로머", "romer", romer);
-            const kumer = parseInt($("#kumer").val(), 10) || 0;
-            placeFree("쿠머", "kumer", kumer);
-            const showke = parseInt($("#showke").val(), 10) || 0;
-            placeShowke(showke);
-            $("#workbenchCount").val($(".tile.workbench").length);
-        }
-
-        // 기타/빈칸 토글
-        $(document).on("click", ".tile", function () {
-            const $t = $(this);
-            const label = $t.next("text").text();
-            if (label === "기타") {
-                $t.attr("class", "tile").data({occupied: false, protected: false});
-                $t.next("text").text("").hide();
-                $("#gita").val(Math.max(0, parseInt($("#gita").val() || 0) - 1));
-            } else if (label === "작업대") {
-                $t.attr("class", "tile").data({occupied: false, protected: false});
-                $t.next("text").text("").hide();
-                $("#workbenchCount").val(Math.max(0, parseInt($("#workbenchCount").val() || 0) - 1));
-            } else if (!label) {
-                mark($t, "기타", "gita");
-                $("#gita").val(parseInt($("#gita").val() || 0) + 1);
-            } else {
-                $t.attr("class", "tile").data({occupied: false, protected: false});
-                $t.next("text").text("").hide();
-            }
-        });
-
-        // 초기화
-        function resetBoard() {
-            // 모든 타일 초기화
-            $(".tile").each(function () {
-                $(this).attr("class", "tile")
-                    .data({occupied: false, protected: false});
-                $(this).next("text").text("").hide();
-            });
-
-            // 기타/작업대 카운트 0으로
-            $("#gita").val(0);
-            $("#workbenchCount").val(0);
-
-            // 좌표 표시 초기화
-            $("#coord-box").text("좌표 : -");
-        }
-
-        // 배치 시작
-        $(".start-btn").on("click", function () {
-            const $btn = $(this);
-            if ($btn.text() === "배치 시작") {
-                console.clear();
-                placeWorkbenches();   // 기본 작업대 패턴
-                placeFixed();         // 필수 자리 넣고 보호칸 정리
-                validateWorkbenches() // 작업대 위치 검증 함수
-                refineWorkbenches();  // 머신 배치 함수
-
-                // 버튼 텍스트 변경
-                $btn.text("초기화");
-            } else {
-                // === 초기화 ===
-                resetBoard();
-                $btn.text("배치 시작");
-            }
-        });
-
-        const $coordBox = $("#coord-box");
-        $(document).on("mouseenter", ".tile", function () {
-            const rc = $(this).data("rc");
-            $coordBox.text(`좌표 : ${rc}`);
-        }).on("mouseleave", ".tile", function () {
-            $coordBox.text("좌표 : -");
-        });
-    })
-    ;
-</script>
+<script src="layout.js" defer></script>
 </body>
 </html>
