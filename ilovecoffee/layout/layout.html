@@ -101,6 +101,40 @@
             text-align: right;
         }
 
+        .number-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .number-control button {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-sizing: border-box;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .num-display {
+            min-width: 24px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+
         /* 숫자 입력 전용 */
         .ctrl input[type="number"] {
             font-size: 16px;
@@ -224,7 +258,7 @@
         #loading-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -242,8 +276,11 @@
             height: 48px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* 게이지 바 */
@@ -254,6 +291,7 @@
             background: #e5e7eb;
             overflow: hidden;
         }
+
         .progress-fill {
             height: 100%;
             width: 0;
@@ -281,12 +319,42 @@
             <svg id="board" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="controls">
-            <div class="ctrl"><label for="judy">쥬디</label><input type="checkbox" id="judy"></div>
-            <div class="ctrl"><label for="romer">로머</label><input type="number" id="romer" value="0"></div>
-            <div class="ctrl"><label for="kumer">쿠머</label><input type="number" id="kumer" value="0"></div>
-            <div class="ctrl"><label for="showke">쇼케</label><input type="number" id="showke" value="0"></div>
-            <div class="ctrl"><label for="gita">기타</label><input type="number" id="gita" value="0" disabled></div>
-            <div class="ctrl"><label>작업대</label><input type="number" id="workbenchCount" value="0" disabled></div>
+            <div class="ctrl">
+                <label for="judy">쥬디</label>
+                <input type="checkbox" id="judy">
+            </div>
+            <div class="ctrl">
+                <label for="romer">로머</label>
+                <div class="number-control">
+                    <button type="button" class="btn-dec" data-target="romer">-</button>
+                    <span id="romer" class="num-display">0</span>
+                    <button type="button" class="btn-inc" data-target="romer">+</button>
+                </div>
+            </div>
+            <div class="ctrl">
+                <label for="kumer">쿠머</label>
+                <div class="number-control">
+                    <button type="button" class="btn-dec" data-target="kumer">-</button>
+                    <span id="kumer" class="num-display">0</span>
+                    <button type="button" class="btn-inc" data-target="kumer">+</button>
+                </div>
+            </div>
+            <div class="ctrl">
+                <label for="showke">쇼케</label>
+                <div class="number-control">
+                    <button type="button" class="btn-dec" data-target="showke">-</button>
+                    <span id="showke" class="num-display">0</span>
+                    <button type="button" class="btn-inc" data-target="showke">+</button>
+                </div>
+            </div>
+            <div class="ctrl">
+                <label for="gita">기타</label>
+                <span id="gita" class="num-display">0</span>
+            </div>
+            <div class="ctrl">
+                <label>작업대</label>
+                <span id="workbenchCount" class="num-display">0</span>
+            </div>
             <button class="start-btn">배치 시작</button>
         </div>
     </div>

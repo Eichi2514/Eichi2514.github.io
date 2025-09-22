@@ -215,7 +215,7 @@ $(function () {
                 }
             }
         }
-        $("#workbenchCount").val(count);
+        $("#workbenchCount").text(count);
     }
 
     function validateWorkbenches() {
@@ -244,7 +244,7 @@ $(function () {
         // ✅ 앵커(픽업/캐셔/쇼케) 보호칸 강제 복구
         enforceAnchorProtection();
 
-        $("#workbenchCount").val($(".tile.workbench").length);
+        $("#workbenchCount").text($(".tile.workbench").length);
     }
 
     // ===================== 빈칸 카운트 =====================
@@ -434,8 +434,8 @@ $(function () {
     }
 
     function placeMachines(done) {
-        const romer = parseInt($("#romer").val(), 10) || 0;
-        const kumer = parseInt($("#kumer").val(), 10) || 0;
+        const romer = parseInt($("#romer").text(), 10) || 0;
+        const kumer = parseInt($("#kumer").text(), 10) || 0;
         const total = romer + kumer;
 
         placeFree("로머", "romer", romer);
@@ -457,9 +457,9 @@ $(function () {
 
     function refineWorkbenches() {
         placeMachines();
-        const showke = parseInt($("#showke").val(), 10) || 0;
+        const showke = parseInt($("#showke").text(), 10) || 0;
         placeShowke(showke);
-        $("#workbenchCount").val($(".tile.workbench").length);
+        $("#workbenchCount").text($(".tile.workbench").length);
     }
 
     // ===================== 보드 조작 =====================
@@ -469,8 +469,8 @@ $(function () {
                 .data({occupied: false, protected: false});
             $(this).next("text").text("").hide();
         });
-        $("#gita").val(0);
-        $("#workbenchCount").val(0);
+        $("#gita").text(0);
+        $("#workbenchCount").text(0);
         $("#coord-box").text("좌표 : -");
     }
 
@@ -485,8 +485,8 @@ $(function () {
                 placeFixed();
                 validateWorkbenches();
 
-                const romer = parseInt($("#romer").val(), 10) || 0;
-                const kumer = parseInt($("#kumer").val(), 10) || 0;
+                const romer = parseInt($("#romer").text(), 10) || 0;
+                const kumer = parseInt($("#kumer").text(), 10) || 0;
                 const total = romer + kumer;
                 resetProgress(total - 5);
 
@@ -511,5 +511,20 @@ $(function () {
         $coordBox.text(`좌표 : ${rc}`);
     }).on("mouseleave", ".tile", function () {
         $coordBox.text("좌표 : -");
+    });
+
+    // 앵커 카운트
+    $(".btn-inc").on("click", function() {
+        const targetId = $(this).data("target");
+        const $display = $("#" + targetId);
+        let value = parseInt($display.text(), 10) || 0;
+        $display.text(value + 1);
+    });
+
+    $(".btn-dec").on("click", function() {
+        const targetId = $(this).data("target");
+        const $display = $("#" + targetId);
+        let value = parseInt($display.text(), 10) || 0;
+        if (value > 0) $display.text(value - 1); // 음수 방지
     });
 });
