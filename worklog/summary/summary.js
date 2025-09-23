@@ -82,8 +82,8 @@ function getWorkColor(minutes) {
     const maxMin = 8 * 60; // 8시간 기준
     const ratio = Math.min(minutes / maxMin, 1); // 0~1
     // 연한 파랑 (#b0c4f6) → 진한 남색 (#1e3a8a)
-    const start = { r: 176, g: 196, b: 246 }; // #b0c4f6
-    const end = { r: 30, g: 58, b: 138 }; // #1e3a8a
+    const start = {r: 176, g: 196, b: 246}; // #b0c4f6
+    const end = {r: 30, g: 58, b: 138}; // #1e3a8a
     const r = Math.round(start.r + (end.r - start.r) * ratio);
     const g = Math.round(start.g + (end.g - start.g) * ratio);
     const b = Math.round(start.b + (end.b - start.b) * ratio);
@@ -214,6 +214,24 @@ function renderGrid(from, to) {
             ? `<button class="day-delete" title="하루 삭제">×</button>`
             : '';
 
+        // ✅ 작업내용 HTML 추가
+        const taskListHtml = (r.tasks && r.tasks.length > 0)
+            ? `
+          <div class="mt-1 text-xs space-y-0.5">
+            ${r.tasks.map(t => {
+                const displayTitle = t.title.includes(')')
+                    ? t.title.split(')').slice(1).join(')').trim()
+                    : t.title;
+                return `
+                    <div class="flex justify-between gap-2">
+                        <span class="truncate max-w-[100px]" title="${t.title}">${displayTitle}</span>
+                        <span class="shrink-0">${minutesToHM(t.minutes)}</span>
+                    </div>
+                `;
+            }).join('')}
+          </div>
+        ` : '';
+
         const $tile = $(`
             <div class="day-tile${weekendClass}">
                 ${deleteBtnHtml}
@@ -227,8 +245,10 @@ function renderGrid(from, to) {
             <div class="day-bar" aria-hidden="true">
                 <div class="bar-seg bar-total" style="width:${tPct}%; background-color:${color}"></div>
                 <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
-            </div>
-        `);
+            </div>            
+                ${taskListHtml}
+        </div>
+    `);
 
         // ✅ 삭제 버튼 이벤트
         $tile.find('.day-delete').on('click', (e) => {
@@ -283,7 +303,7 @@ function renderGrid(from, to) {
     $sumTaske.append(tasksHtml);
 
     // ✅ 클릭 이벤트: task 상세 보기 → 모달 띄우기
-    $('#sum-tasks .task-item').on('click', function() {
+    $('#sum-tasks .task-item').on('click', function () {
         const idx = $(this).data('task-idx');
         const task = tasks[idx];
         if (!task) return;
@@ -311,7 +331,7 @@ function renderGrid(from, to) {
         $('body').append(modalHtml);
 
         // 닫기 이벤트 (배경이나 × 버튼 클릭 시 닫기)
-        $('#task-modal-close, #task-modal-overlay').on('click', function(e) {
+        $('#task-modal-close, #task-modal-overlay').on('click', function (e) {
             if (e.target.id === 'task-modal-overlay' || e.target.id === 'task-modal-close') {
                 $('#task-modal-overlay').remove();
             }
