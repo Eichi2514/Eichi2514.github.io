@@ -210,8 +210,10 @@ $(function () {
                 }
                 if (place) {
                     const $t = getTile(r, c);
-                    mark($t, "작업대", "workbench");
-                    count++;
+                    if (!$t.hasClass("gita")) {   // ← 이미 기타면 덮어쓰지 않음
+                        mark($t, "작업대", "workbench");
+                        count++;
+                    }
                 }
             }
         }
@@ -220,7 +222,8 @@ $(function () {
 
     function validateWorkbenches() {
         $(".tile.workbench").get().reverse().forEach(function (el) {
-            const $t = $(el);
+            const $t = $(el)
+            if ($t.hasClass("gita")) return; // ← 기타는 건드리지 않음
             const [r, c] = $t.data("rc").split(",").map(Number);
 
             const $down = getTile(r + 1, c);
@@ -271,7 +274,8 @@ $(function () {
     }
 
     function removeWorkbench(r, c) {
-        const $t = getTile(r, c);
+        const $t = getTile(r, c)
+        if (!$t.length || $t.hasClass("gita")) return; // ← 기타는 제거 대상 아님
         if (!$t.length || !$t.hasClass("workbench")) return;
 
         // 1) 작업대 제거
@@ -419,6 +423,46 @@ $(function () {
         step();
     }
 
+    // ===================== 기타 타일 토글 =====================
+    function updateGitaCount(delta) {
+        const $gita = $("#gita");
+        let value = parseInt($gita.text(), 10) || 0;
+        value = Math.max(0, value + delta); // 음수 방지
+        $gita.text(value);
+    }
+
+    $(document).on("click", ".tile", function () {
+        const $t = $(this);
+
+        // 특수 타일(작업대/로머/쿠머/픽업/캐셔/쥬디/쇼케/휴지통)은 건드리지 않음
+        if (
+            $t.hasClass("workbench") ||
+            $t.hasClass("romer") ||
+            $t.hasClass("kumer") ||
+            $t.hasClass("pickup") ||
+            $t.hasClass("cashier") ||
+            $t.hasClass("judy") ||
+            $t.hasClass("showke") ||
+            $t.hasClass("trash")
+        ) {
+            return;
+        }
+
+        if ($t.hasClass("gita")) {
+            // 기타 → 빈 타일
+            $t.attr("class", "tile")
+                .data({occupied: false, protected: false});
+            $t.next("text").text("").hide();
+            updateGitaCount(-1);
+        } else if (!$t.data("occupied") && !$t.data("protected")) {
+            // 빈 타일 → 기타
+            $t.addClass("gita")
+                .data("occupied", true);
+            $t.next("text").text("기타").show();
+            updateGitaCount(1);
+        }
+    });
+
     // ===================== 기계 배치 =====================
     function placeFree(name, cls, count) {
         let placed = 0;
@@ -456,7 +500,6 @@ $(function () {
     }
 
     function refineWorkbenches() {
-        placeMachines();
         const showke = parseInt($("#showke").text(), 10) || 0;
         placeShowke(showke);
         $("#workbenchCount").text($(".tile.workbench").length);
@@ -465,11 +508,15 @@ $(function () {
     // ===================== 보드 조작 =====================
     function resetBoard() {
         $(".tile").each(function () {
+
+            const $t = $(this);
+            if ($t.hasClass("gita")) return;
+
             $(this).attr("class", "tile")
                 .data({occupied: false, protected: false});
             $(this).next("text").text("").hide();
         });
-        $("#gita").text(0);
+
         $("#workbenchCount").text(0);
         $("#coord-box").text("좌표 : -");
     }
@@ -494,13 +541,29 @@ $(function () {
                     placeMachines(() => {
                         refineWorkbenches();
                         hideLoading();
-                        $btn.text("초기화");
+                        $btn.text("되돌리기");
+
+                        // 초기화 버튼 추가 (없을 때만)
+                        if ($("#reset-btn").length === 0) {
+                            $btn.after(
+                                `<button id="reset-btn" class="reset-btn">초기화</button>`
+                            );
+
+                            // 초기화 버튼 클릭 이벤트
+                            $("#reset-btn").on("click", function () {
+                                location.reload(); // 화면 새로고침
+                            });
+                        }
                     });
                 });
             }, 500); // 살짝 딜레이 줘서 로딩 표시 보장
         } else {
+            // 되돌리기 버튼 눌렀을 때
             resetBoard();
             $btn.text("배치 시작");
+
+            // 초기화 버튼 제거
+            $("#reset-btn").remove();;
         }
     });
 
@@ -514,14 +577,14 @@ $(function () {
     });
 
     // 앵커 카운트
-    $(".btn-inc").on("click", function() {
+    $(".btn-inc").on("click", function () {
         const targetId = $(this).data("target");
         const $display = $("#" + targetId);
         let value = parseInt($display.text(), 10) || 0;
         $display.text(value + 1);
     });
 
-    $(".btn-dec").on("click", function() {
+    $(".btn-dec").on("click", function () {
         const targetId = $(this).data("target");
         const $display = $("#" + targetId);
         let value = parseInt($display.text(), 10) || 0;
