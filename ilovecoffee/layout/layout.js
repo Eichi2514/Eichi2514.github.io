@@ -521,6 +521,7 @@ $(function () {
         $("#coord-box").text("좌표 : -");
     }
 
+    // 배치 시작
     $(".start-btn").on("click", function () {
         const $btn = $(this);
         if ($btn.text() === "배치 시작") {
@@ -563,8 +564,37 @@ $(function () {
             $btn.text("배치 시작");
 
             // 초기화 버튼 제거
-            $("#reset-btn").remove();;
+            $("#reset-btn").remove();
         }
+    });
+
+    // ===================== 도움말 모달 =====================
+    $(function() {
+        const $modal = $("#help-modal");
+        const $close = $(".modal-close")
+
+        // 1) 처음 방문 시 localStorage 확인
+        if (!localStorage.getItem("help1")) {
+            // 아직 본 적이 없으면 모달 자동 표시
+            $modal.fadeIn(200).css("display", "flex");
+            // 본 적 있다고 기록
+            localStorage.setItem("help1", "true");
+        }
+
+        $("#help").on("click", function() {
+            $modal.fadeIn(200).css("display", "flex");
+        });
+
+        $close.on("click", function() {
+            $modal.fadeOut(200);
+        });
+
+        // 배경 클릭 시 닫기
+        $modal.on("click", function(e) {
+            if (e.target === this) {
+                $modal.fadeOut(200);
+            }
+        });
     });
 
     // 좌표 표시

@@ -305,6 +305,48 @@
             font-weight: 600;
             color: var(--primary);
         }
+
+        /* 모달 기본 */
+        .modal {
+            display: none; /* 기본은 안 보임 */
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 모달 박스 */
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: max-content;
+            width: 90%;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* 닫기 버튼 */
+        .modal-close {
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        /* 모달 애니메이션 */
+        @keyframes fadeIn {
+            from {opacity: 0; transform: scale(0.9);}
+            to {opacity: 1; transform: scale(1);}
+        }
     </style>
 </head>
 <body>
@@ -312,7 +354,7 @@
     <div class="head-line">
         <div class="title">작업대 배치도</div>
         <div id="coord-box" style="margin-left:8px;font-size:14px;color:#333;">좌표 : -</div>
-        <div class="help" title="배치 규칙 도움말">?</div>
+        <div id="help" class="help" title="배치 규칙 도움말">?</div>
     </div>
     <div class="box">
         <div class="wrap">
@@ -364,6 +406,29 @@
     <div class="icon">📱</div>
     <div class="text"><h3>화면을 가로로 돌려주세요</h3>
         <p>배치도는 가로 모드에서만 확인할 수 있습니다</p></div>
+</div>
+
+<!-- 설명창 모달 -->
+<div id="help-modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>사용 방법</h3>
+        <ol>
+            <li><b>기타칸 설정</b> :
+                원하는 칸을 터치하면 <span style="color:#111827;font-weight:bold;">기타칸</span>으로 고정됩니다.</li>
+            <li><b>머신 수 설정</b> :
+                오른쪽 패널에서 로머, 쿠머, 쇼케 등의 수를 조절하세요.</li>
+            <li><b>배치 시작</b> :
+                버튼을 누르면 시뮬레이션이 실행되어 작업대와 기계들이 자동으로 배치됩니다.</li>
+            <li><b>되돌리기</b> :
+                배치 시작 전 상태로 돌아갑니다.</li>
+            <li><b>초기화</b> :
+                모든 기타칸과 머신 수를 초기화하고 새로 시작합니다.</li>
+        </ol>
+        <p style="margin-top:12px; font-size:13px; color:#555;">
+            다시 확인하시려면 우측 상단의 <b>?</b> 버튼을 터치해주세요.
+        </p>
+    </div>
 </div>
 
 <div id="loading-overlay">
