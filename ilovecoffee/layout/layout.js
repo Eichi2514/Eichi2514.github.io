@@ -217,7 +217,6 @@ $(function () {
                 }
             }
         }
-        $("#workbenchCount").text(count);
     }
 
     function validateWorkbenches() {
@@ -246,8 +245,6 @@ $(function () {
 
         // ✅ 앵커(픽업/캐셔/쇼케) 보호칸 강제 복구
         enforceAnchorProtection();
-
-        $("#workbenchCount").text($(".tile.workbench").length);
     }
 
     // ===================== 빈칸 카운트 =====================
@@ -423,6 +420,47 @@ $(function () {
         step();
     }
 
+    function calcShowkeNeed(count) {
+        let need = 0;
+        let checked = 0;
+
+        $(".tile.workbench").each(function () {
+            if (checked >= count) return;
+
+            const [r, c] = $(this).data("rc").split(",").map(Number);
+            const $up = getTile(r - 1, c);
+            const $down = getTile(r + 1, c);
+            const $left = getTile(r, c - 1);
+            const $right = getTile(r, c + 1);
+
+            function isFreeOrProtected($t) {
+                return $t.length && (!$t.data("occupied") || $t.data("protected"));
+            }
+
+            const horizontalOk = isFreeOrProtected($left) && isFreeOrProtected($right);
+            const verticalOk = isFreeOrProtected($up) && isFreeOrProtected($down);
+
+            if (horizontalOk || verticalOk) {
+                // 본체 1칸 필요
+                need += 1;
+
+                // 보호칸 중에서 이미 확보 안 된 칸만 추가
+                if (horizontalOk) {
+                    if ($left.length && !$left.data("protected") && !$left.data("occupied")) need++;
+                    if ($right.length && !$right.data("protected") && !$right.data("occupied")) need++;
+                }
+                if (verticalOk) {
+                    if ($up.length && !$up.data("protected") && !$up.data("occupied")) need++;
+                    if ($down.length && !$down.data("protected") && !$down.data("occupied")) need++;
+                }
+
+                checked++;
+            }
+        });
+
+        return need;
+    }
+
     // ===================== 기타 타일 토글 =====================
     function updateGitaCount(delta) {
         const $gita = $("#gita");
@@ -434,30 +472,16 @@ $(function () {
     $(document).on("click", ".tile", function () {
         const $t = $(this);
 
-        // 특수 타일(작업대/로머/쿠머/픽업/캐셔/쥬디/쇼케/휴지통)은 건드리지 않음
-        if (
-            $t.hasClass("workbench") ||
-            $t.hasClass("romer") ||
-            $t.hasClass("kumer") ||
-            $t.hasClass("pickup") ||
-            $t.hasClass("cashier") ||
-            $t.hasClass("judy") ||
-            $t.hasClass("showke") ||
-            $t.hasClass("trash")
-        ) {
-            return;
-        }
-
         if ($t.hasClass("gita")) {
-            // 기타 → 빈 타일
+            // 1) 클릭한 게 기타면 → 빈칸으로
             $t.attr("class", "tile")
                 .data({occupied: false, protected: false});
             $t.next("text").text("").hide();
             updateGitaCount(-1);
-        } else if (!$t.data("occupied") && !$t.data("protected")) {
-            // 빈 타일 → 기타
-            $t.addClass("gita")
-                .data("occupied", true);
+        } else {
+            // 2) 클릭한 게 기타가 아니면 → 기타로
+            $t.attr("class", "tile gita")
+                .data({occupied: true, gita: true});
             $t.next("text").text("기타").show();
             updateGitaCount(1);
         }
@@ -480,28 +504,135 @@ $(function () {
     function placeMachines(done) {
         const romer = parseInt($("#romer").text(), 10) || 0;
         const kumer = parseInt($("#kumer").text(), 10) || 0;
-        const total = romer + kumer;
+        const showke = parseInt($("#showke").text(), 10) || 0;
 
+        // ✅ 쇼케 먼저
+        placeShowke(showke);
+
+        // 그다음 로머, 쿠머
         placeFree("로머", "romer", romer);
         placeFree("쿠머", "kumer", kumer);
         if (done) done();
     }
 
+    /**
+     * 쇼케 배치
+     * 규칙: 좌우 또는 상하가 모두 빈칸(empty) 또는 보호칸(protected)이어야 배치 가능
+     * 전략: 전체를 작업대로 채운 상태에서 필요한 수량만큼만 작업대를 제거하고 쇼케를 놓는다
+     */
     function placeShowke(count) {
         let placed = 0;
-        for (let c = 6; c < COLS && placed < count; c++) {
-            if (canPlace(15, c)) {
-                const $t = getTile(15, c);
-                mark($t, "쇼케", "showke");
-                addProtectCross(15, c);
-                placed++;
+
+        // 작업대 후보들을 순회
+        $(".tile.workbench").each(function () {
+            if (placed >= count) return; // 다 채웠으면 종료
+
+            const $t = $(this);
+            const [r, c] = $t.data("rc").split(",").map(Number);
+
+            const $up = getTile(r - 1, c);
+            const $down = getTile(r + 1, c);
+            const $left = getTile(r, c - 1);
+            const $right = getTile(r, c + 1);
+
+            // 헬퍼: 빈칸 or 보호칸 여부
+            function isFreeOrProtected($nei) {
+                if (!$nei.length) return false;
+                return (!$nei.data("occupied") && !$nei.data("protected")) || $nei.data("protected");
             }
+
+            const horizontalOk = isFreeOrProtected($left) && isFreeOrProtected($right);
+            const verticalOk = isFreeOrProtected($up) && isFreeOrProtected($down);
+
+            if (horizontalOk || verticalOk) {
+                // ✅ 최소 제거: 작업대 지우고 쇼케 배치
+                removeWorkbench(r, c);             // 작업대 제거 (보호칸 처리 포함)
+                mark($t, "쇼케", "showke");        // 쇼케 표시
+                placed++;
+
+                // ✅ 보호칸 지정
+                if (horizontalOk) {
+                    protectTileRC(r, c - 1);
+                    protectTileRC(r, c + 1);
+                }
+                if (verticalOk) {
+                    protectTileRC(r - 1, c);
+                    protectTileRC(r + 1, c);
+                }
+            }
+        });
+
+        if (placed < count) {
+            console.warn(`⚠️ 쇼케 ${count}개 중 ${placed}개만 배치됨 (규칙 맞는 자리가 부족함)`);
         }
     }
 
     function refineWorkbenches() {
-        const showke = parseInt($("#showke").text(), 10) || 0;
-        placeShowke(showke);
+        // 규칙에 따라 작업대를 다시 최대치로 배치
+        for (let c = 0; c < COLS; c++) {
+            for (let r = 0; r < ROWS; r++) {
+                let place = false;
+                if (c % 3 === 0) {
+                    if (r % 3 === 1 || r % 3 === 2) place = true;
+                } else if (c % 3 === 1) {
+                    if (r % 3 === 2 || r % 3 === 0) place = true;
+                } else if (c % 3 === 2) {
+                    if (r % 3 === 0 || r % 3 === 1) place = true;
+                }
+
+                if (place) {
+                    const $t = getTile(r, c);
+                    // 이미 앵커/기타/기계 있는 자리에는 안 놓음
+                    if (!$t.hasClass("gita") &&
+                        !$t.hasClass("romer") &&
+                        !$t.hasClass("kumer") &&
+                        !$t.hasClass("pickup") &&
+                        !$t.hasClass("cashier") &&
+                        !$t.hasClass("judy") &&
+                        !$t.hasClass("showke") &&
+                        !$t.hasClass("trash") &&
+                        !$t.data("occupied") &&
+                        !$t.data("protected")) {
+                        mark($t, "작업대", "workbench");
+                    }
+                }
+            }
+        }
+
+        // 규칙 검증
+        validateWorkbenches();
+
+        // 🔹 추가 보정 단계: 왼쪽이나 아래가 빈칸/보호칸이면 작업대 강제 배치
+        for (let c = COLS - 1; c > 0; c--) {
+            for (let r = ROWS - 1; r > 0; r--) {
+                const $t = getTile(r, c);
+                if ($t.length &&
+                    !$t.hasClass("gita") &&
+                    !$t.hasClass("romer") &&
+                    !$t.hasClass("kumer") &&
+                    !$t.hasClass("pickup") &&
+                    !$t.hasClass("cashier") &&
+                    !$t.hasClass("judy") &&
+                    !$t.hasClass("showke") &&
+                    !$t.hasClass("trash") &&
+                    !$t.data("occupied") &&
+                    !$t.data("protected")) {
+
+                    const $left = getTile(r, c - 1);
+                    const $down = getTile(r + 1, c);
+
+                    function isFreeOrProtected($nei) {
+                        return $nei.length && (!$nei.data("occupied") || $nei.data("protected"));
+                    }
+
+                    if (isFreeOrProtected($left) || isFreeOrProtected($down)) {
+                        mark($t, "작업대", "workbench");
+                    }
+                }
+            }
+        }
+
+        // 최종 개수 업데이트
         $("#workbenchCount").text($(".tile.workbench").length);
     }
 
@@ -535,10 +666,13 @@ $(function () {
 
                 const romer = parseInt($("#romer").text(), 10) || 0;
                 const kumer = parseInt($("#kumer").text(), 10) || 0;
-                const total = romer + kumer;
-                resetProgress(total - 5);
+                const showke = parseInt($("#showke").text(), 10) || 0;
+                // 실제 필요 칸 계산
+                const showkeNeed = calcShowkeNeed(showke);
+                const totalNeed = romer + kumer + showkeNeed;
+                resetProgress(totalNeed - 5);
 
-                ensureFreeTiles(total, () => {
+                ensureFreeTiles(totalNeed, () => {
                     placeMachines(() => {
                         refineWorkbenches();
                         hideLoading();
@@ -569,7 +703,7 @@ $(function () {
     });
 
     // ===================== 도움말 모달 =====================
-    $(function() {
+    $(function () {
         const $modal = $("#help-modal");
         const $close = $(".modal-close")
 
@@ -581,16 +715,16 @@ $(function () {
             localStorage.setItem("help1", "true");
         }
 
-        $("#help").on("click", function() {
+        $("#help").on("click", function () {
             $modal.fadeIn(200).css("display", "flex");
         });
 
-        $close.on("click", function() {
+        $close.on("click", function () {
             $modal.fadeOut(200);
         });
 
         // 배경 클릭 시 닫기
-        $modal.on("click", function(e) {
+        $modal.on("click", function (e) {
             if (e.target === this) {
                 $modal.fadeOut(200);
             }
