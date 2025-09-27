@@ -221,25 +221,40 @@ $(function () {
 
     function validateWorkbenches() {
         $(".tile.workbench").get().reverse().forEach(function (el) {
-            const $t = $(el)
-            if ($t.hasClass("gita")) return; // ← 기타는 건드리지 않음
+            const $t = $(el);
+            if ($t.hasClass("gita")) return; // ← 기타는 건드리지 않음;
             const [r, c] = $t.data("rc").split(",").map(Number);
 
             const $down = getTile(r + 1, c);
             const $right = getTile(r, c + 1);
 
-            const downOk = $down.length && (!$down.data("occupied") || $down.data("protected"));
-            const rightOk = $right.length && (!$right.data("occupied") || $right.data("protected"));
+            const downOk  = (r + 1 < ROWS) && $down.length &&
+                (!$down.data("occupied") || $down.data("protected"));
+            const rightOk = (c + 1 < COLS) && $right.length &&
+                (!$right.data("occupied") || $right.data("protected"));
 
-            if (!(downOk || rightOk)) {
+            let chosen = null;
+
+            if (downOk && rightOk) {
+                // 우선순위: r<c → 아래, r>c → 오른쪽, r==c → 아래
+                if (r < c) chosen = $down;
+                else if (r > c) chosen = $right;
+                else chosen = $down;
+            } else if (downOk) {
+                chosen = $down;
+            } else if (rightOk) {
+                chosen = $right;
+            }
+
+            if (chosen) {
+                // 보호칸 확정
+                if (!chosen.data("protected")) {
+                    chosen.data("protected", true).addClass("protected");
+                }
+            } else {
+                // 보호칸 못 만들면 작업대 제거
                 $t.attr("class", "tile").data({occupied: false, protected: false});
                 $t.next("text").text("").hide();
-            } else {
-                if (downOk && $down.length && !$down.data("occupied")) {
-                    $down.data("protected", true).addClass("protected");
-                } else if (rightOk && $right.length && !$right.data("occupied")) {
-                    $right.data("protected", true).addClass("protected");
-                }
             }
         });
 
@@ -602,7 +617,7 @@ $(function () {
         // 규칙 검증
         validateWorkbenches();
 
-        // 🔹 추가 보정 단계: 왼쪽이나 아래가 빈칸/보호칸이면 작업대 강제 배치
+        // 🔹 추가 보정 단계: 아래나 오른쪽이 빈칸/보호칸이면 작업대 강제 배치
         for (let c = COLS - 1; c > 0; c--) {
             for (let r = ROWS - 1; r > 0; r--) {
                 const $t = getTile(r, c);
@@ -618,14 +633,14 @@ $(function () {
                     !$t.data("occupied") &&
                     !$t.data("protected")) {
 
-                    const $left = getTile(r, c - 1);
                     const $down = getTile(r + 1, c);
+                    const $right = getTile(r, c + 1);
 
                     function isFreeOrProtected($nei) {
                         return $nei.length && (!$nei.data("occupied") || $nei.data("protected"));
                     }
 
-                    if (isFreeOrProtected($left) || isFreeOrProtected($down)) {
+                    if (isFreeOrProtected($down) || isFreeOrProtected($right)) {
                         mark($t, "작업대", "workbench");
                     }
                 }
