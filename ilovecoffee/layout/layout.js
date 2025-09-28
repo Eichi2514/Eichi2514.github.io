@@ -403,7 +403,6 @@ $(function () {
 
     function ensureFreeTiles(needTotal, done) {
         let free = countFreeTiles();
-        const totalWorkbenches = $(".tile.workbench").length;
 
         function step() {
             if (free >= needTotal) {
@@ -415,10 +414,26 @@ $(function () {
             $(".tile.workbench").each(function () {
                 const [r, c] = $(this).data("rc").split(",").map(Number);
                 const gain = simulateRemove(r, c);
-                if (gain > 0 && (!best || gain > best.gain)) {
-                    best = {r, c, gain};
+                if (gain > 0) {
+                    const newFree = free + gain;
+                    // ✅ 목표치를 넘기지 않으면서 가장 많이 빈칸 확보
+                    if (newFree <= needTotal &&
+                        (!best || gain > best.gain)) {
+                        best = {r, c, gain};
+                    }
                 }
             });
+
+            if (!best) {
+                // 그래도 목표치 도달 못했으면 그냥 가장 효율적인 거 선택
+                $(".tile.workbench").each(function () {
+                    const [r, c] = $(this).data("rc").split(",").map(Number);
+                    const gain = simulateRemove(r, c);
+                    if (gain > 0 && (!best || gain > best.gain)) {
+                        best = {r, c, gain};
+                    }
+                });
+            }
 
             if (!best) {
                 if (done) done();
@@ -428,52 +443,10 @@ $(function () {
             removeWorkbench(best.r, best.c);
             free = countFreeTiles();
 
-            // 다음 작업을 비동기로 실행 → UI 갱신 보장
             setTimeout(step, 0);
         }
 
         step();
-    }
-
-    function calcShowkeNeed(count) {
-        let need = 0;
-        let checked = 0;
-
-        $(".tile.workbench").each(function () {
-            if (checked >= count) return;
-
-            const [r, c] = $(this).data("rc").split(",").map(Number);
-            const $up = getTile(r - 1, c);
-            const $down = getTile(r + 1, c);
-            const $left = getTile(r, c - 1);
-            const $right = getTile(r, c + 1);
-
-            function isFreeOrProtected($t) {
-                return $t.length && (!$t.data("occupied") || $t.data("protected"));
-            }
-
-            const horizontalOk = isFreeOrProtected($left) && isFreeOrProtected($right);
-            const verticalOk = isFreeOrProtected($up) && isFreeOrProtected($down);
-
-            if (horizontalOk || verticalOk) {
-                // 본체 1칸 필요
-                need += 1;
-
-                // 보호칸 중에서 이미 확보 안 된 칸만 추가
-                if (horizontalOk) {
-                    if ($left.length && !$left.data("protected") && !$left.data("occupied")) need++;
-                    if ($right.length && !$right.data("protected") && !$right.data("occupied")) need++;
-                }
-                if (verticalOk) {
-                    if ($up.length && !$up.data("protected") && !$up.data("occupied")) need++;
-                    if ($down.length && !$down.data("protected") && !$down.data("occupied")) need++;
-                }
-
-                checked++;
-            }
-        });
-
-        return need;
     }
 
     // ===================== 기타 타일 토글 =====================
@@ -682,9 +655,8 @@ $(function () {
                 const romer = parseInt($("#romer").text(), 10) || 0;
                 const kumer = parseInt($("#kumer").text(), 10) || 0;
                 const showke = parseInt($("#showke").text(), 10) || 0;
-                // 실제 필요 칸 계산
-                const showkeNeed = calcShowkeNeed(showke);
-                const totalNeed = romer + kumer + showkeNeed;
+
+                const totalNeed = romer + kumer + showke;
                 resetProgress(totalNeed - 5);
 
                 ensureFreeTiles(totalNeed, () => {
