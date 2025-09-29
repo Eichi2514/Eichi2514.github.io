@@ -489,6 +489,22 @@ $(function () {
         }
     }
 
+    function placeGita(count) {
+        let placed = $(".tile.gita").length; // 이미 클릭으로 배치된 기타칸 수
+        for (let c = COLS - 1; c >= 0 && placed < count; c--) {
+            for (let r = ROWS - 1; r >= 0 && placed < count; r--) {
+                const $t = getTile(r, c);
+                if (!$t.data("occupied") && !$t.data("protected")) {
+                    $t.attr("class", "tile gita")
+                        .data({occupied: true, gita: true});
+                    $t.next("text").text("기타").show();
+                    placed++;
+                }
+            }
+        }
+        $("#gita").text(placed); // 최종 카운트 반영
+    }
+
     function placeMachines(done) {
         const romer = parseInt($("#romer").text(), 10) || 0;
         const kumer = parseInt($("#kumer").text(), 10) || 0;
@@ -655,12 +671,14 @@ $(function () {
                 const romer = parseInt($("#romer").text(), 10) || 0;
                 const kumer = parseInt($("#kumer").text(), 10) || 0;
                 const showke = parseInt($("#showke").text(), 10) || 0;
+                const gita  = parseInt($("#gita").text(), 10) || 0;
 
-                const totalNeed = romer + kumer + showke;
+                const totalNeed = romer + kumer + showke + gita;
                 resetProgress(totalNeed - 5);
 
                 ensureFreeTiles(totalNeed, () => {
                     placeMachines(() => {
+                        placeGita(gita);
                         refineWorkbenches();
                         hideLoading();
                         $btn.text("되돌리기");
@@ -739,6 +757,17 @@ $(function () {
         const targetId = $(this).data("target");
         const $display = $("#" + targetId);
         let value = parseInt($display.text(), 10) || 0;
-        if (value > 0) $display.text(value - 1); // 음수 방지
+
+        if (targetId === "gita") {
+            // 🔹 현재 화면에 실제로 배치된 기타칸 수
+            const placed = $(".tile.gita").length;
+            // 숫자를 줄이려는 값이 배치된 수보다 적으면 안 됨
+            if (value - 1 < placed) {
+                alert(`현재 화면에 기타 가구가 ${placed}개 배치되어 있어서 ${placed}보다 작게 설정할 수 없습니다.`);
+                return;
+            }
+        }
+
+        if (value > 0) $display.text(value - 1);
     });
 });
