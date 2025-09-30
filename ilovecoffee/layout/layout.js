@@ -299,7 +299,7 @@ $(function () {
         removedCount++;
         if (totalWorkbenches > 0) {
             const percent = Math.min(100, Math.round((removedCount / totalWorkbenches) * 100));
-            console.log(`removedCount : ${removedCount}, totalWorkbenches : ${totalWorkbenches}`);
+            console.log(`제거된 작업대 수: ${removedCount}, 전체 작업대 수: ${totalWorkbenches}`);
             updateProgress(percent);
         }
 
@@ -411,28 +411,44 @@ $(function () {
             }
 
             let best = null;
-            $(".tile.workbench").each(function () {
-                const [r, c] = $(this).data("rc").split(",").map(Number);
-                const gain = simulateRemove(r, c);
-                if (gain > 0) {
-                    const newFree = free + gain;
-                    // ✅ 목표치를 넘기지 않으면서 가장 많이 빈칸 확보
-                    if (newFree <= needTotal &&
-                        (!best || gain > best.gain)) {
-                        best = {r, c, gain};
+
+            // 1️⃣ 보호칸-작업대 규칙 (15,14부터 역순 탐색)
+            for (let r = ROWS - 1; r >= 0 && !best; r--) {
+                for (let c = COLS - 1; c >= 0 && !best; c--) {
+                    const $t = getTile(r, c);
+                    if (!$t.hasClass("protected")) continue;
+
+                    const $left = getTile(r, c - 1);
+                    const $up   = getTile(r - 1, c);
+
+                    const leftIsWB = $left.length && $left.hasClass("workbench");
+                    const upIsWB   = $up.length && $up.hasClass("workbench");
+
+                    if (leftIsWB && upIsWB) continue;
+
+                    if (leftIsWB ^ upIsWB) {
+                        const target = leftIsWB ? {r, c: c - 1} : {r: r - 1, c};
+                        best = {...target, gain: 2};
                     }
                 }
-            });
+            }
 
+            // 2️⃣ 없으면 기존 simulateRemove 로직 (역순 탐색)
             if (!best) {
-                // 그래도 목표치 도달 못했으면 그냥 가장 효율적인 거 선택
-                $(".tile.workbench").each(function () {
-                    const [r, c] = $(this).data("rc").split(",").map(Number);
-                    const gain = simulateRemove(r, c);
-                    if (gain > 0 && (!best || gain > best.gain)) {
-                        best = {r, c, gain};
+                for (let r = ROWS - 1; r >= 0; r--) {
+                    for (let c = COLS - 1; c >= 0; c--) {
+                        const $t = getTile(r, c);
+                        if (!$t.hasClass("workbench")) continue;
+
+                        const gain = simulateRemove(r, c);
+                        if (gain > 0) {
+                            const newFree = free + gain;
+                            if (newFree <= needTotal && (!best || gain > best.gain)) {
+                                best = {r, c, gain};
+                            }
+                        }
                     }
-                });
+                }
             }
 
             if (!best) {
@@ -761,8 +777,9 @@ $(function () {
         if (targetId === "gita") {
             // 🔹 현재 화면에 실제로 배치된 기타칸 수
             const placed = $(".tile.gita").length;
-            // 숫자를 줄이려는 값이 배치된 수보다 적으면 안 됨
-            if (value - 1 < placed) {
+
+            // placed가 0 이상일 때만 제한 검증
+            if (placed > 0 && value - 1 < placed) {
                 alert(`현재 화면에 기타 가구가 ${placed}개 배치되어 있어서 ${placed}보다 작게 설정할 수 없습니다.`);
                 return;
             }
