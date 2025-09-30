@@ -274,13 +274,11 @@ $(function () {
 
     // ===================== 실제 작업대 제거(보호칸 규칙 포함) =====================
     let removedCount = 0;        // 제거된 작업대 개수
-    let totalWorkbenches = 0;    // 시작 시 전체 작업대 수
+    let totalWorkbenches = 144;    // 시작 시 전체 작업대 수
 
-    function resetProgress(needTotal) {
+    function resetProgress() {
         removedCount = 0;
-
-        const free = countFreeTiles();
-        totalWorkbenches = Math.max(0, needTotal - free); // ✅ 부족한 칸만큼만 제거 목표
+        totalWorkbenches = 144;
 
         updateProgress(0);
     }
@@ -299,7 +297,7 @@ $(function () {
         removedCount++;
         if (totalWorkbenches > 0) {
             const percent = Math.min(100, Math.round((removedCount / totalWorkbenches) * 100));
-            console.log(`제거된 작업대 수: ${removedCount}, 전체 작업대 수: ${totalWorkbenches}`);
+            console.log(`제거된 작업대 수: ${removedCount}, 전체 작업대 수: ${totalWorkbenches - removedCount}`);
             updateProgress(percent);
         }
 
@@ -457,7 +455,7 @@ $(function () {
             }
 
             removeWorkbench(best.r, best.c);
-            free = countFreeTiles();
+            free += best.gain;
 
             setTimeout(step, 0);
         }
@@ -690,7 +688,7 @@ $(function () {
                 const gita  = parseInt($("#gita").text(), 10) || 0;
 
                 const totalNeed = romer + kumer + showke + gita;
-                resetProgress(totalNeed - 5);
+                resetProgress();
 
                 ensureFreeTiles(totalNeed, () => {
                     placeMachines(() => {
