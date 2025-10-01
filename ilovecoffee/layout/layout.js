@@ -228,7 +228,7 @@ $(function () {
             const $down = getTile(r + 1, c);
             const $right = getTile(r, c + 1);
 
-            const downOk  = (r + 1 < ROWS) && $down.length &&
+            const downOk = (r + 1 < ROWS) && $down.length &&
                 (!$down.data("occupied") || $down.data("protected"));
             const rightOk = (c + 1 < COLS) && $right.length &&
                 (!$right.data("occupied") || $right.data("protected"));
@@ -273,12 +273,14 @@ $(function () {
     }
 
     // ===================== 실제 작업대 제거(보호칸 규칙 포함) =====================
-    let removedCount = 0;        // 제거된 작업대 개수
+    let removedCount = 0;          // 제거된 작업대 개수
     let totalWorkbenches = 144;    // 시작 시 전체 작업대 수
+    let requiredRemovals = 0;      // 제거해야 하는 작업대 수
 
-    function resetProgress() {
+    function resetProgress(totalNeed) {
         removedCount = 0;
         totalWorkbenches = 144;
+        requiredRemovals = totalNeed;
 
         updateProgress(0);
     }
@@ -296,8 +298,9 @@ $(function () {
         // 진행률 증가
         removedCount++;
         if (totalWorkbenches > 0) {
-            const percent = Math.min(100, Math.round((removedCount / totalWorkbenches) * 100));
+            const percent = Math.min(100, Math.round((removedCount / requiredRemovals) * 100));
             console.log(`제거된 작업대 수: ${removedCount}, 전체 작업대 수: ${totalWorkbenches - removedCount}`);
+            console.log(`제거할 작업대 수 : ${requiredRemovals}, 진행률: ${percent}`);
             updateProgress(percent);
         }
 
@@ -417,10 +420,10 @@ $(function () {
                     if (!$t.hasClass("protected")) continue;
 
                     const $left = getTile(r, c - 1);
-                    const $up   = getTile(r - 1, c);
+                    const $up = getTile(r - 1, c);
 
                     const leftIsWB = $left.length && $left.hasClass("workbench");
-                    const upIsWB   = $up.length && $up.hasClass("workbench");
+                    const upIsWB = $up.length && $up.hasClass("workbench");
 
                     if (leftIsWB && upIsWB) continue;
 
@@ -685,10 +688,10 @@ $(function () {
                 const romer = parseInt($("#romer").text(), 10) || 0;
                 const kumer = parseInt($("#kumer").text(), 10) || 0;
                 const showke = parseInt($("#showke").text(), 10) || 0;
-                const gita  = parseInt($("#gita").text(), 10) || 0;
+                const gita = parseInt($("#gita").text(), 10) || 0;
 
                 const totalNeed = romer + kumer + showke + gita;
-                resetProgress();
+                resetProgress(totalNeed * 0.5);
 
                 ensureFreeTiles(totalNeed, () => {
                     placeMachines(() => {
