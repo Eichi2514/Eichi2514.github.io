@@ -1,7 +1,7 @@
 {
   "name": "알커 배치도",
   "short_name": "배치도",
-  "start_url": ".",
+  "start_url": "/ilovecoffee/layout/layout.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#5a4398",
