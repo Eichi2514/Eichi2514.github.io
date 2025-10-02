@@ -486,7 +486,7 @@ $(function () {
         } else {
             // 2) 클릭한 게 기타가 아니면 → 기타로
             $t.attr("class", "tile gita")
-                .data({occupied: true, gita: true});
+                .data({occupied: true, gita: true, gitaFixed: true});
             $t.next("text").text("기타").show();
             updateGitaCount(1);
         }
@@ -513,7 +513,7 @@ $(function () {
                 const $t = getTile(r, c);
                 if (!$t.data("occupied") && !$t.data("protected")) {
                     $t.attr("class", "tile gita")
-                        .data({occupied: true, gita: true});
+                        .data({occupied: true, gita: true, gitaFixed: false});
                     $t.next("text").text("기타").show();
                     placed++;
                 }
@@ -662,7 +662,9 @@ $(function () {
         $(".tile").each(function () {
 
             const $t = $(this);
-            if ($t.hasClass("gita")) return;
+            if ($t.hasClass("gita") && $t.data("gitaFixed")) {
+                return; // ✅ 클릭으로 만든 기타칸은 유지
+            }
 
             $(this).attr("class", "tile")
                 .data({occupied: false, protected: false});
