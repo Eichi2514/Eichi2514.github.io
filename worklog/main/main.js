@@ -188,6 +188,7 @@ function hasOngoing(arr, ignoreId) {
 // ====== 수정 모달 ======
 function openEdit(entry) {
     $('#edit-id').val(entry.id);
+    $('#edit-date').val(entry.date);
     $('#edit-desc').val(entry.desc);
     $('#edit-memo').val(entry.memo || '');
     $('#edit-start').val(entry.start);
@@ -541,9 +542,11 @@ $(function () {
     });
 
     // 수정 저장
+// 수정 저장
     $('#edit-form').on('submit', function (e) {
         e.preventDefault();
         const id = Number($('#edit-id').val());
+        const newDate = $('#edit-date').val();   // 🔹 새 날짜
         const desc = $('#edit-desc').val().trim();
         const memo = $('#edit-memo').val().trim();
         const start = $('#edit-start').val().trim();
@@ -551,27 +554,50 @@ $(function () {
         if (!/^\d{4}$/.test(start)) return window.alert('시작 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
         if (end && !/^\d{4}$/.test(end)) return window.alert('종료 시간은 4자리 숫자(HHMM)로 입력해 주세요.');
 
-        const arr = getData(currentDate);
-        const entry = arr.find(x => x.id === id);
+        const oldArr = getData(currentDate);
+        const entry = oldArr.find(x => x.id === id);
         if (!entry) return;
 
+        // 시간 검증
         if (end) {
             const s = parseHHMM(start), en = parseHHMM(end);
             if (en <= s) return window.alert('종료 시간은 시작 시간보다 늦어야 합니다.');
-            if (overlapsAny(arr, s, en, id)) return window.alert('다른 일정과 시간이 겹칩니다.');
+            if (overlapsAny(oldArr, s, en, id)) return window.alert('다른 일정과 시간이 겹칩니다.');
             entry.end = end;
             entry.duration = en - s;
         } else {
-            if (hasOngoing(arr, id)) return window.alert('이미 진행 중인 일정이 있습니다.');
+            if (hasOngoing(oldArr, id)) return window.alert('이미 진행 중인 일정이 있습니다.');
             entry.end = null;
             entry.duration = null;
         }
         entry.desc = desc;
         entry.memo = memo;
         entry.start = start;
-        setData(currentDate, arr);
+
+        // 🔹 날짜가 변경되었는지 체크
+        if (entry.date !== newDate) {
+            // 1) 기존 배열에서 제거
+            const newOldArr = oldArr.filter(x => x.id !== id);
+            setData(entry.date, newOldArr);
+
+            // 2) 새 배열에 추가
+            entry.date = newDate;
+            const newArr = getData(newDate);
+            newArr.push(entry);
+            setData(newDate, newArr);
+
+            // 3) 현재 날짜가 바뀐 일정의 날짜라면 화면 이동
+            if (newDate !== currentDate) {
+                setCurrentDate(newDate);
+            } else {
+                render();
+            }
+        } else {
+            setData(currentDate, oldArr);
+            render();
+        }
+
         closeEdit();
-        render();
     });
 
     // 편의 버튼들
