@@ -545,10 +545,10 @@ $(function () {
         let placed = 0;
 
         // ✅ 작업대 후보들을 역순 순회 (15,14부터 시작)
-        $(".tile.workbench").get().reverse().forEach(function (el) {
+        $(".tile.workbench").each(function () {
             if (placed >= count) return; // 다 채웠으면 종료
 
-            const $t = $(el);
+            const $t = $(this);
             const [r, c] = $t.data("rc").split(",").map(Number);
 
             const $up = getTile(r - 1, c);
@@ -572,16 +572,12 @@ $(function () {
 
                 // ✅ 보호칸 지정 (단, 이미 쇼케가 아닌 경우만)
                 if (horizontalOk) {
-                    const $leftShowke = getTile(r, c - 1);
-                    const $rightShowke = getTile(r, c + 1);
-                    if (!$leftShowke.hasClass("showke")) protectTileRC(r, c - 1);
-                    if (!$rightShowke.hasClass("showke")) protectTileRC(r, c + 1);
+                    protectTileRC(r, c - 1);
+                    protectTileRC(r, c + 1);
                 }
                 if (verticalOk) {
-                    const $upShowke = getTile(r - 1, c);
-                    const $downShowke = getTile(r + 1, c);
-                    if (!$upShowke.hasClass("showke")) protectTileRC(r - 1, c);
-                    if (!$downShowke.hasClass("showke")) protectTileRC(r + 1, c);
+                    protectTileRC(r - 1, c);
+                    protectTileRC(r + 1, c);
                 }
             }
         });
