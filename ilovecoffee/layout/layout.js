@@ -544,11 +544,11 @@ $(function () {
     function placeShowke(count) {
         let placed = 0;
 
-        // 작업대 후보들을 순회
-        $(".tile.workbench").each(function () {
+        // ✅ 작업대 후보들을 역순 순회 (15,14부터 시작)
+        $(".tile.workbench").get().reverse().forEach(function (el) {
             if (placed >= count) return; // 다 채웠으면 종료
 
-            const $t = $(this);
+            const $t = $(el);
             const [r, c] = $t.data("rc").split(",").map(Number);
 
             const $up = getTile(r - 1, c);
@@ -566,19 +566,22 @@ $(function () {
             const verticalOk = isFreeOrProtected($up) && isFreeOrProtected($down);
 
             if (horizontalOk || verticalOk) {
-                // ✅ 최소 제거: 작업대 지우고 쇼케 배치
-                removeWorkbench(r, c);             // 작업대 제거 (보호칸 처리 포함)
-                mark($t, "쇼케", "showke");        // 쇼케 표시
+                removeWorkbench(r, c);
+                mark($t, "쇼케", "showke");
                 placed++;
 
-                // ✅ 보호칸 지정
+                // ✅ 보호칸 지정 (단, 이미 쇼케가 아닌 경우만)
                 if (horizontalOk) {
-                    protectTileRC(r, c - 1);
-                    protectTileRC(r, c + 1);
+                    const $leftShowke = getTile(r, c - 1);
+                    const $rightShowke = getTile(r, c + 1);
+                    if (!$leftShowke.hasClass("showke")) protectTileRC(r, c - 1);
+                    if (!$rightShowke.hasClass("showke")) protectTileRC(r, c + 1);
                 }
                 if (verticalOk) {
-                    protectTileRC(r - 1, c);
-                    protectTileRC(r + 1, c);
+                    const $upShowke = getTile(r - 1, c);
+                    const $downShowke = getTile(r + 1, c);
+                    if (!$upShowke.hasClass("showke")) protectTileRC(r - 1, c);
+                    if (!$downShowke.hasClass("showke")) protectTileRC(r + 1, c);
                 }
             }
         });
