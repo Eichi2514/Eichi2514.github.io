@@ -174,9 +174,16 @@ function aggregateRange(from, to) {
     return {rows, sumTotal, tasks};
 }
 
+function filterTasksByCategory(tasks, cats) {
+    if (!cats || cats.length === 0) return tasks;
+    return tasks.filter(t => cats.some(cat => t.title.startsWith(cat)));
+}
+
+let selectedCats = []; // ✅ 선택된 카테고리 전역 상태
 // ========= 렌더 =========
 function renderGrid(from, to) {
     const {rows, sumTotal, tasks} = aggregateRange(from, to);
+    const filteredTasks = filterTasksByCategory(tasks, selectedCats);
     const $grid = $('#result-grid').empty();
 
     const DAY_MIN = 4 * 60;
@@ -191,18 +198,17 @@ function renderGrid(from, to) {
     }
 
     rows.forEach(r => {
-        let totalMin = Math.max(0, r.total | 0);
-        if (totalMin > 0) hasAnyDuration = true;
+        // ✅ 카테고리 필터링 적용
+        const filteredDayTasks = filterTasksByCategory(r.tasks, selectedCats);
+        const totalMin = filteredDayTasks.reduce((sum, t) => sum + t.minutes, 0);
+        const hasDuration = totalMin > 0;
+        if (hasDuration) hasAnyDuration = true;
 
-        // 게이지 길이는 4시간(DAY_MIN)까지만 스케일링
-        let gaugeMin = totalMin;
-        if (gaugeMin > DAY_MIN) {
-            gaugeMin = DAY_MIN;
-        }
-
+        // 게이지 길이 계산
+        const DAY_MIN = 4 * 60;
+        const gaugeMin = Math.min(totalMin, DAY_MIN);
         const tPct = Math.round((gaugeMin / DAY_MIN) * 100);
-        let nPct = 100 - tPct;
-        if (nPct < 0) nPct = 0;
+        const nPct = 100 - tPct;
 
         // ✅ 주말 체크
         const weekday = toDate(r.date).getDay(); // 0=일, 6=토
@@ -210,15 +216,14 @@ function renderGrid(from, to) {
         const color = getWorkColor(totalMin);
 
         // ✅ 일정이 있으면 삭제 버튼 포함, 없으면 제외
-        const deleteBtnHtml = (r.total > 0)
-            ? `<button class="day-delete" title="하루 삭제">×</button>`
-            : '';
+        const deleteBtnHtml = hasDuration
+            ? `<button class="day-delete" title="하루 삭제">×</button>` : '';
 
-        // ✅ 작업내용 HTML 추가
-        const taskListHtml = (r.tasks && r.tasks.length > 0)
+        // ✅ 필터된 작업만 표시
+        const taskListHtml = (filteredDayTasks.length > 0)
             ? `
-          <div class="mt-1 text-xs space-y-0.5">
-            ${r.tasks.map(t => {
+        <div class="mt-1 text-xs space-y-0.5">
+            ${filteredDayTasks.map(t => {
                 const displayTitle = t.title.includes(')')
                     ? t.title.split(')').slice(1).join(')').trim()
                     : t.title;
@@ -238,19 +243,19 @@ function renderGrid(from, to) {
                 <div class="day-date${weekendClass}">${formatDateKorean(r.date)} (${dayOfWeek(r.date)})</div>
                 <div class="flex flex-col gap-1 text-[12px]">
                 <div class="flex items-center justify-between">
-                    <span>시간</span>                    
-                    ${r.total ? `<span class="badge">${minutesToHM(r.total)}</span>` : ''}
+                    <span>시간</span>
+                    ${hasDuration ? `<span class="badge">${minutesToHM(totalMin)}</span>` : ''}
                 </div>
             </div>
             <div class="day-bar" aria-hidden="true">
                 <div class="bar-seg bar-total" style="width:${tPct}%; background-color:${color}"></div>
                 <div class="bar-seg bar-empty" style="width:${nPct}%"></div>
-            </div>            
-                ${taskListHtml}
+            </div>
+            ${taskListHtml}
         </div>
     `);
 
-        // ✅ 삭제 버튼 이벤트
+        // 삭제, 클릭 이벤트 동일
         $tile.find('.day-delete').on('click', (e) => {
             e.stopPropagation(); // 날짜 클릭 이벤트 막기
             if (!window.confirm(`${formatDateKorean(r.date)}의 모든 일정을 삭제하시겠습니까?`)) return;
@@ -274,14 +279,15 @@ function renderGrid(from, to) {
 
     // “집계할 데이터 없음”은 총 소요가 0일 때만 표시
     $('#empty').toggleClass('hidden', hasAnyDuration);
-    $('#sum-total').text(minutesToHM(sumTotal));
+    const filteredTotal = filteredTasks.reduce((sum, t) => sum + t.minutes, 0);
+    $('#sum-total').text(minutesToHM(filteredTotal));
 
     // 목록용 HTML
     let tasksHtml = '';
-    if (tasks.length > 0) {
+    if (filteredTasks.length > 0) {
         tasksHtml = `
-            <div id="sum-tasks" class="mt-2 text-sm">
-                ${tasks.map((t, idx) => `
+        <div id="sum-tasks" class="mt-2 text-sm">
+            ${filteredTasks.map((t, idx) => `
                     <div class="flex justify-between items-center gap-2 min-w-0 task-item cursor-pointer" 
                          data-task-idx="${idx}">
                         <div class="min-w-0 flex-1">
@@ -302,37 +308,80 @@ function renderGrid(from, to) {
     $sumTaske.find('#sum-tasks').remove(); // 이전거 제거
     $sumTaske.append(tasksHtml);
 
+    // ✅ 카테고리 자동 추출 (중복 제거)
+    const allCategories = [...new Set(
+        tasks.map(t => (t.title.includes(')') ? t.title.split(')')[0] : '기타'))
+    )];
+
+    // ✅ 체크박스 목록 갱신
+    const $catBox = $('#category-filter');
+    $catBox.empty();
+    if (allCategories.length === 0) {
+        $catBox.append(`<div class="text-gray-400 text-sm text-center">카테고리 없음</div>`);
+    } else {
+        allCategories.forEach(cat => {
+            const safeId = cat.replace(/[^\w가-힣]/g, '');
+            const checked = selectedCats.includes(cat) ? 'checked' : '';
+
+            $catBox.append(`
+                <label class="flex items-center gap-2 cursor-pointer text-sm">
+                    <input type="checkbox" class="cat-check accent-indigo-600" value="${cat}" id="chk-${safeId}" ${checked}>
+                    <span>${cat}</span>
+                </label>
+            `);
+        });
+    }
+
+
+    // ✅ 체크박스 변경 시 전체 다시 렌더링
+    $catBox.off('change').on('change', '.cat-check', function () {
+        selectedCats = $('.cat-check:checked').map(function () {
+            return $(this).val();
+        }).get();
+
+        // 전체 다시 렌더링
+        renderGrid($('#date-from').val(), $('#date-to').val());
+    });
+
     // ✅ 클릭 이벤트: task 상세 보기 → 모달 띄우기
-    $('#sum-tasks .task-item').on('click', function () {
+    $('#sum-tasks').off('click', '.task-item').on('click', '.task-item', function () {
         const idx = $(this).data('task-idx');
-        const task = tasks[idx];
+        const task = filteredTasks[idx];
         if (!task) return;
 
-        // 모달 HTML
+        // 모달 HTML (카테고리 모달과 동일한 구조)
         const modalHtml = `
-            <div id="task-modal-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-lg p-4 relative" style="min-width:320px;">                    
-                    <button id="task-modal-close" class="absolute text-3xl top-2 right-2 text-gray-500 hover:text-black">&times;</button>                    
-                    <div class="font-semibold text-xl mb-2 mr-8">${task.title} 작업일</div>  
-                    <div class="max-h-60 overflow-y-auto text-lg pr-1">
-                        ${task.dates.map(d => `
-                            <a href="../main/main.html?date=${d.date}" class="modal-date-item flex justify-between py-1 border-b last:border-0 rounded transition-colors">
-                                <span>${d.date}</span>
-                                <span>${minutesToHM(d.minutes)}</span>
-                            </a>
-                        `).join('')}
-                    </div>
+        <div id="task-modal-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col" style="min-width: 320px; max-height: 60vh;">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="font-semibold text-lg">${task.title}</h2>
+                    <button id="task-modal-close" class="text-2xl leading-none text-gray-500 hover:text-black">&times;</button>
                 </div>
+                <div class="border rounded p-2 overflow-y-auto flex-1 space-y-1">
+                    ${task.dates.map(d => `
+                        <a href="../main/main.html?date=${d.date}" 
+                           class="flex justify-between py-1 px-2 border-b last:border-0 rounded hover:bg-gray-100 transition-colors">
+                            <span>${d.date}</span>
+                            <span class="font-medium">${minutesToHM(d.minutes)}</span>
+                        </a>
+                    `).join('')}
+                </div>
+                <button id="task-modal-apply" class="btn btn-outline w-full mt-3">닫기</button>
             </div>
-        `;
+        </div>
+    `;
 
         // 기존 모달 제거 후 새로 추가
         $('#task-modal-overlay').remove();
         $('body').append(modalHtml);
 
         // 닫기 이벤트 (배경이나 × 버튼 클릭 시 닫기)
-        $('#task-modal-close, #task-modal-overlay').on('click', function (e) {
-            if (e.target.id === 'task-modal-overlay' || e.target.id === 'task-modal-close') {
+        $('#task-modal-close, #task-modal-apply, #task-modal-overlay').on('click', function (e) {
+            if (
+                e.target.id === 'task-modal-overlay' ||
+                e.target.id === 'task-modal-close' ||
+                e.target.id === 'task-modal-apply'
+            ) {
                 $('#task-modal-overlay').remove();
             }
         });
@@ -389,4 +438,17 @@ $(function () {
         refreshScheduleCache();   // 혹시 메인 페이지에서 데이터가 갱신됐을 수 있으니 리로드
         renderGrid(from, to);
     });
+
+    // ========= 모달 관련 =========
+    function openFilterModal() {
+        $('#filter-modal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeFilterModal() {
+        $('#filter-modal').addClass('hidden').removeClass('flex');
+    }
+
+    // 버튼 이벤트 등록
+    $(document).on('click', '#btn-filter', openFilterModal);
+    $(document).on('click', '#btn-filter-close, #btn-filter-apply', closeFilterModal);
 });
