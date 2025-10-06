@@ -338,6 +338,60 @@
             background: #777;
         }
 
+        #customAlert .alert-box, #customConfirm .alert-box {
+            background: #ffbcae;
+            padding: 25px 25px 20px;
+            border-radius: 12px;
+            width: 360px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: left;
+            position: relative;
+        }
+
+        #customAlert .alert-content, #customConfirm .alert-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #customAlert .alert-text, #customConfirm .alert-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 10px;
+
+            white-space: pre-line;      /* \n 줄바꿈 인식 */
+            word-break: keep-all;      /* 단어 기준 줄바꿈 */
+            overflow-wrap: break-word;  /* 긴 단어 강제 줄바꿈 */
+        }
+
+
+        #customAlert .alert-img, #customConfirm .alert-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        #alertConfirmBtn {
+            display: block;
+            width: 100%;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        #alertConfirmBtn:hover {
+            background: #47327a;
+        }
     </style>
 </head>
 <body>
@@ -425,6 +479,31 @@
         <h2>현재 레벨 입력</h2>
         <input id="levelInput" type="number" placeholder="레벨을 입력해주세요" min="1" max="100">
         <button id="saveLevelConfirmBtn">저장</button>
+    </div>
+</div>
+
+<!-- 커스텀 알림 모달 -->
+<div id="customAlert" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div class="alert-content">
+            <div class="alert-text"></div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+        <button id="alertConfirmBtn">확인</button>
+    </div>
+</div>
+
+<!-- 커스텀 컨펌 모달 -->
+<div id="customConfirm" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div class="alert-content">
+            <div class="alert-text"></div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button id="confirmYesBtn" style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">확인</button>
+            <button id="confirmNoBtn" style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">취소</button>
+        </div>
     </div>
 </div>
 
@@ -660,33 +739,58 @@
             $("#expModal").hide();
         });
 
-        // ✅ 경험치 저장 함수
+        // ✅ 경험치 저장 함수 (한 번만 get 호출)
         async function saveExp() {
             const nickname = localStorage.getItem("coffee-nickname");
-            if (!nickname) return alert("로그인 후 이용해주세요.");
+            if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
             const exp = parseInt($("#todayExp").val());
             const level = parseInt($("#todayLevel").val());
             const dateInput = $("#expDate").val();
             const selectedDate = dateInput || getKoreanDate();
 
-            if (!exp || exp < 0) return alert("경험치를 올바르게 입력해주세요.");
-            if (!level || level < 1 || level > 100) return alert("레벨은 1~100 사이여야 합니다.");
+            if (!exp || exp < 0) return showAlert("경험치를 올바르게 입력해주세요.");
+            if (!level || level < 1 || level > 100) return showAlert("레벨은 1~100 사이여야 합니다.");
 
-            const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
-            const snapshot = await get(recordRef);
-            if (snapshot.exists()) return alert("이미 해당 날짜에 경험치를 입력했습니다!");
+            // ✅ 전체 기록 한 번만 가져오기
+            const recordsRef = ref(db, `coffeeUsers/${nickname}/expRecords`);
+            const allRecordsSnap = await get(recordsRef);
+            const allRecords = allRecordsSnap.exists() ? allRecordsSnap.val() : {};
 
-            await set(recordRef, { level, exp, savedAt: Date.now() });
+            // ✅ 이미 같은 날짜가 있으면 중복 차단
+            if (allRecords[selectedDate]) {
+                return showAlert("이미 해당 날짜에 경험치를 입력했습니다!");
+            }
 
-            // 🔹 현재 회원의 레벨도 업데이트
+            // ✅ 바로 이전 날짜 찾기
+            const dates = Object.keys(allRecords).sort();
+            const prevDate = dates[dates.length - 1];
+
+            if (prevDate && prevDate < selectedDate) {
+                const prevRecord = allRecords[prevDate];
+                const prevLevel = prevRecord.level;
+                const prevExp = prevRecord.exp;
+
+                // 🔸 같은 레벨인데 경험치가 낮으면 입력 금지
+                if (level === prevLevel && exp < prevExp) {
+                    return showAlert(`이전 기록(${prevDate})보다 낮은 경험치는 입력할 수 없습니다.`);
+                }
+            }
+
+            // ✅ 새 기록 저장
+            await set(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`), {
+                level,
+                exp,
+                savedAt: Date.now(),
+            });
+
+            // 🔹 현재 회원 레벨 업데이트
             await set(ref(db, `coffeeUsers/${nickname}/level`), level);
 
-            alert(`레벨 ${level}, 경험치 ${exp} 저장 완료!`);
+            showAlert(`레벨 ${level}\n경험치 ${exp} 저장 완료!`);
             $("#expModal").hide();
             $("#todayExp").val("");
 
-            // 🔹 최신 데이터 다시 반영
             await loadUserData(nickname);
         }
 
@@ -718,7 +822,7 @@
                     }
 
                     if (deletedCount > 0) {
-                        alert(`1년 이상 지난 기록 ${deletedCount}건이 자동 삭제되었습니다.`);
+                        showAlert(`1년 이상 지난 기록 ${deletedCount}건이 자동 삭제되었습니다.`);
                     }
                 }
 
@@ -908,86 +1012,6 @@
                         </div>
                     `);
                     $("body").append(editModal);
-
-                    // ============================
-                    // ✅ (3) 행 클릭 시 옵션 모달 표시
-                    // ============================
-                    let selectedDate = null;
-                    $(document).on("click", ".exp-row", function () {
-                        selectedDate = $(this).data("date");
-                        $("#optionModal").css("display", "flex");
-                    });
-
-                    // ✅ 옵션 모달 - 닫기
-                    $(document).on("click", "#closeOptionBtn", function () {
-                        $("#optionModal").hide();
-                    });
-
-                    // ✅ 삭제 버튼 클릭 시
-                    $(document).on("click", "#deleteExpBtn", async function () {
-                        const nickname = localStorage.getItem("coffee-nickname");
-                        if (!nickname || !selectedDate) return;
-                        if (!confirm(`${selectedDate} 데이터를 삭제할까요?`)) return;
-                        await remove(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`));
-                        alert("삭제되었습니다!");
-                        $("#optionModal").hide();
-                        await loadUserData(nickname);
-                    });
-
-                    // ✅ 수정 버튼 클릭 시 수정 모달 열기
-                    $(document).on("click", "#editExpBtn", async function () {
-                        const nickname = localStorage.getItem("coffee-nickname");
-                        if (!nickname || !selectedDate) return;
-                        const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
-                        const snapshot = await get(recordRef);
-                        if (snapshot.exists()) {
-                            const record = snapshot.val();
-                            $("#editExpDate").val(selectedDate);
-                            $("#editLevelValue").val(record.level || 1);
-                            $("#editExpValue").val(record.exp);
-                            $("#optionModal").hide();
-                            $("#editModal").css("display", "flex");
-                        }
-                    });
-
-                    // ✅ 수정 저장 버튼
-                    $(document).on("click", "#updateExpBtn", async function () {
-                        const nickname = localStorage.getItem("coffee-nickname");
-                        const newLevel = parseInt($("#editLevelValue").val());
-                        const newExp = parseInt($("#editExpValue").val());
-                        const newDate = $("#editExpDate").val();
-
-                        if (!nickname) return alert("로그인 후 이용해주세요.");
-                        if (!newDate || !newExp || newLevel < 1 || newLevel > 100) return alert("값이 올바르지 않습니다.");
-
-                        // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
-                        if (newDate !== selectedDate) {
-                            // ✅ 날짜가 변경된 경우: 새로 저장 후 기존 삭제
-                            const oldRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
-                            const newRef = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
-
-                            await set(newRef, { level: newLevel, exp: newExp, savedAt: Date.now() });
-                            await remove(oldRef);
-                        } else {
-                            // ✅ 날짜가 그대로면 단순 수정
-                            const refPath = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
-                            await set(refPath, { level: newLevel, exp: newExp, savedAt: Date.now() });
-                        }
-
-                        alert("수정되었습니다!");
-
-                        // 🔹 현재 회원의 레벨도 업데이트
-                        await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
-
-                        $("#editModal").hide();
-                        await loadUserData(nickname);
-                    });
-
-                    // ✅ 수정 모달 닫기
-                    $(document).on("click", "#closeEditModal", function () {
-                        $("#editModal").hide();
-                    });
-
                 }
             } else {
                 console.log("불러올 데이터가 없습니다.");
@@ -999,11 +1023,11 @@
             const nickname = localStorage.getItem("coffee-nickname");
             const levelVal = parseInt($("#levelInput").val());
 
-            if (!nickname) return alert("로그인 후 이용해주세요.");
-            if (!levelVal || levelVal < 1 || levelVal > 100) return alert("1~100 사이의 값을 입력하세요.");
+            if (!nickname) return showAlert("로그인 후 이용해주세요.");
+            if (!levelVal || levelVal < 1 || levelVal > 100) return showAlert("1~100 사이의 값을 입력하세요.");
 
             await set(ref(db, `coffeeUsers/${nickname}/level`), levelVal);
-            alert(`레벨 ${levelVal}이(가) 저장되었습니다!`);
+            showAlert(`레벨 ${levelVal}이(가) 저장되었습니다!`);
             $("#levelModal").hide();
 
             // 입력 후 바로 다시 데이터 갱신
@@ -1037,6 +1061,136 @@
                 $btn.removeData("clicked");
             }, 800);
         });
+
+        // ============================
+        // ✅ (3) 행 클릭 시 옵션 모달 표시
+        // ============================
+        let selectedDate = null;
+        $(document).on("click", ".exp-row", function () {
+            selectedDate = $(this).data("date");
+            $("#optionModal").css("display", "flex");
+        });
+
+        // ✅ 옵션 모달 - 닫기
+        $(document).on("click", "#closeOptionBtn", function () {
+            $("#optionModal").hide();
+        });
+
+        // ✅ 삭제 버튼 클릭 시
+        $(document).on("click", "#deleteExpBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (!nickname || !selectedDate) return;
+            $("#optionModal").hide();
+            showConfirm(`${selectedDate} 데이터를 삭제할까요?`, async (ok) => {
+                if (ok) {
+                    // ✅ 선택한 기록 삭제
+                    await remove(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`));
+
+                    // ✅ 남은 기록 중 가장 최근 날짜의 레벨을 다시 불러와서 회원 레벨 갱신
+                    const recordsRef = ref(db, `coffeeUsers/${nickname}/expRecords`);
+                    const snapshot = await get(recordsRef);
+
+                    if (snapshot.exists()) {
+                        const records = snapshot.val();
+                        const dates = Object.keys(records).sort(); // 날짜 오름차순 정렬
+                        const lastDate = dates[dates.length - 1]; // 가장 최근 날짜
+                        const latestLevel = records[lastDate].level;
+
+                        // 🔹 회원 레벨을 최신 기록의 레벨로 갱신
+                        await set(ref(db, `coffeeUsers/${nickname}/level`), latestLevel);
+                    } else {
+                        // 🔹 모든 기록이 삭제된 경우, 레벨 초기화
+                        await set(ref(db, `coffeeUsers/${nickname}/level`), 1);
+                    }
+
+                    showAlert("삭제되었습니다!");
+                    $("#optionModal").hide();
+                    await loadUserData(nickname);
+                }
+            });
+        });
+
+        // ✅ 수정 버튼 클릭 시 수정 모달 열기
+        $(document).on("click", "#editExpBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (!nickname || !selectedDate) return;
+            const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+            const snapshot = await get(recordRef);
+            if (snapshot.exists()) {
+                const record = snapshot.val();
+                $("#editExpDate").val(selectedDate);
+                $("#editLevelValue").val(record.level || 1);
+                $("#editExpValue").val(record.exp);
+                $("#optionModal").hide();
+                $("#editModal").css("display", "flex");
+            }
+        });
+
+        // ✅ 수정 저장 버튼
+        $(document).on("click", "#updateExpBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            const newLevel = parseInt($("#editLevelValue").val());
+            const newExp = parseInt($("#editExpValue").val());
+            const newDate = $("#editExpDate").val();
+
+            if (!nickname) return showAlert("로그인 후 이용해주세요.");
+            if (!newDate || !newExp || newLevel < 1 || newLevel > 100) return showAlert("값이 올바르지 않습니다.");
+
+            // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
+            if (newDate !== selectedDate) {
+                // ✅ 날짜가 변경된 경우: 새로 저장 후 기존 삭제
+                const oldRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+                const newRef = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
+
+                await set(newRef, { level: newLevel, exp: newExp, savedAt: Date.now() });
+                await remove(oldRef);
+            } else {
+                // ✅ 날짜가 그대로면 단순 수정
+                const refPath = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
+                await set(refPath, { level: newLevel, exp: newExp, savedAt: Date.now() });
+            }
+
+            showAlert("수정되었습니다!");
+
+            // 🔹 현재 회원의 레벨도 업데이트
+            await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
+
+            $("#editModal").hide();
+            await loadUserData(nickname);
+        });
+
+        // ✅ 수정 모달 닫기
+        $(document).on("click", "#closeEditModal", function () {
+            $("#editModal").hide();
+        });
+
+        // ✅ 커스텀 알림 함수
+        function showAlert(message) {
+            $("#customAlert .alert-text").html(message);
+            $("#customAlert").fadeIn(150);
+        }
+
+        // 닫기 버튼
+        $(document).on("click", "#alertConfirmBtn", function () {
+            $("#customAlert").fadeOut(150);
+        });
+
+        // ✅ 커스텀 컨펌 함수
+        function showConfirm(message, onConfirm) {
+            $("#customConfirm .alert-text").html(message);
+            $("#customConfirm").fadeIn(150);
+
+            // 기존 핸들러 제거 후 다시 등록 (중복 방지)
+            $(document).off("click", "#confirmYesBtn").on("click", "#confirmYesBtn", function () {
+                $("#customConfirm").fadeOut(150);
+                if (typeof onConfirm === "function") onConfirm(true);
+            });
+
+            $(document).off("click", "#confirmNoBtn").on("click", "#confirmNoBtn", function () {
+                $("#customConfirm").fadeOut(150);
+                if (typeof onConfirm === "function") onConfirm(false);
+            });
+        }
     });
 </script>
 </body>
