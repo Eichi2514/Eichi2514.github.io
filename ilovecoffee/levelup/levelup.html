@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>그럴수이치</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../levelup/manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f3f9;
+            color: #333;
+        }
+
+        /* ===== 전체 래퍼 ===== */
+        #mainPage {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            background: #fff;
+            padding: 20px 16px 60px;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            text-align: center;
+        }
+
+        /* ===== 레벨 입력 영역 ===== */
+        .level-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .level-input label {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        #currentLevel {
+            width: 80px;
+            text-align: center;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        #saveLevelBtn {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        #saveLevelBtn:hover {
+            background: #47327a;
+        }
+
+        /* ===== 제목 / 버튼 ===== */
+        h1 {
+            text-align: center;
+            color: #5a4398;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== 헤더 스타일 ===== */
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-bar h1 {
+            color: #fff; /* 흰 글씨 */
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar #logoutBtn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .header-bar #logoutBtn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+
+        .levelup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+
+        .levelup-header h3 {
+            margin: 0;
+            color: #444;
+            font-size: 17px;
+        }
+
+        #expButton {
+            background: transparent;         /* 배경 투명 */
+            color: #5a4398;                  /* 글자 보라색 */
+            border: 2px solid #5a4398;       /* 진한 보라색 테두리 */
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        #expButton:hover {
+            background: #5a4398;             /* hover 시 배경 채워짐 */
+            color: #fff;                     /* 글자색 반전 */
+        }
+
+        /* ===== 섹션 제목 ===== */
+        h3 {
+            margin-top: 40px;
+            margin-bottom: 10px;
+            color: #444;
+            text-align: left;
+            font-size: 17px;
+        }
+
+        /* ===== 테이블 ===== */
+        #expTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #expTable th,
+        #expTable td {
+            border: 1px solid #e0dff2;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #expTable th {
+            background: #f6f4fc;
+            color: #5a4398;
+            font-weight: 600;
+        }
+
+        #expTable tr:nth-child(even) {
+            background: #faf9fd;
+        }
+
+        /* ===== 모달 공통 ===== */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-modal {
+            background: #fff;
+            padding: 30px 25px 50px 25px;
+            border-radius: 12px;
+            width: 360px;
+            min-height: max-content;
+            text-align: center;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-modal h2 {
+            margin-bottom: 15px;
+            color: #5a4398;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .login-modal button {
+            width: 100%;
+            padding: 10px;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .login-modal button:hover {
+            background: #47327a;
+        }
+
+        .msg {
+            margin-top: 10px;
+            color: red;
+            font-size: 20px;
+            height: 24px;
+        }
+
+        #closeExpModal, #closeEditModal {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0;
+            margin: 0;
+            width: max-content;
+        }
+
+        #closeExpModal:hover {
+            color: #5a4398; /* hover 시 포인트 색 */
+        }
+
+        /* ===== 옵션 선택 모달 ===== */
+        #optionModal {
+            display: none;
+        }
+
+        #optionModal .login-modal {
+            width: 280px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* 제목 가운데 정렬 */
+        #optionModal h3 {
+            color: #5a4398;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* 공통 버튼 스타일 */
+        #optionModal button {
+            width: 100%;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        /* 개별 색상 */
+        #editExpBtn {
+            color: #5a4398;
+            border: 2px solid #5a4398;
+        }
+
+        #deleteExpBtn {
+            color: #d9534f;
+            border: 2px solid #d9534f;
+        }
+
+        #closeOptionBtn {
+            color: #777;
+            border: 2px solid #777;
+        }
+
+        /* hover 효과 (색 반전) */
+        #optionModal button:hover {
+            color: #fff;
+        }
+
+        #editExpBtn:hover {
+            background: #5a4398;
+        }
+
+        #deleteExpBtn:hover {
+            background: #d9534f;
+        }
+
+        #closeOptionBtn:hover {
+            background: #777;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="mainPage">
+    <div class="level-row header-bar">
+        <h1>레벨업 일자 계산기</h1>
+        <button id="logoutBtn">로그아웃</button>
+    </div>
+
+    <div class="level-input">
+        <span id="nicknameDisplay"
+              style="display:inline-block; padding:8px 0;
+              font-size:16px; font-weight:600; color:#5a4398;">
+        </span>
+        <span id="currentLevelDisplay"
+              style="display:inline-block; padding:8px 0;
+              font-size:16px; font-weight:600; color:#5a4398;">
+        </span>
+        <button id="expButton">경험치 입력</button>
+    </div>
+
+    <div class="levelup-header">
+        <h3>레벨업 예정일</h3>
+        <span id="avgExp" style="font-size:15px; color:#5a4398; font-weight:600;"></span>
+    </div>
+
+    <div id="levelUpBox" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;"></div>
+
+    <h3>일자별 경험치</h3>
+    <table id="expTable">
+        <thead>
+        <tr>
+            <th>날짜</th>
+            <th>Lv</th>
+            <th>현재 경험치</th>
+            <th>획득 경험치</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- 경험치 입력 모달 -->
+<div id="expModal" class="login-overlay" style="display:none;">
+    <div class="login-modal" style="position: relative;">
+        <button id="closeExpModal">✕</button>
+        <h2>경험치 입력</h2>
+        <div style="margin-bottom:10px;">
+            <label for="expDate" style="display:block; font-size:14px; text-align:left; color:#555;">날짜</label>
+            <input id="expDate" type="date"
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+        </div>
+
+        <div style="margin-bottom:10px;">
+            <label for="todayLevel" style="display:block; font-size:14px; text-align:left; color:#555;">현재 레벨</label>
+            <input id="todayLevel" type="number" min="1" max="100"
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+        </div>
+
+        <div style="margin-bottom:10px;">
+            <label for="todayExp" style="display:block; font-size:14px; text-align:left; color:#555;">현재 경험치</label>
+            <input id="todayExp" type="number" placeholder="현재 경험치"
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+        </div>
+
+        <button id="saveExpBtn">저장</button>
+    </div>
+</div>
+
+<!-- 로그인 팝업 -->
+<div id="loginPopup" class="login-overlay">
+    <div class="login-modal">
+        <h2>로그인</h2>
+        <input id="nickname" type="text" placeholder="닉네임">
+        <input id="password" type="password" placeholder="비밀번호">
+        <button id="loginBtn">확인</button>
+        <div class="msg" id="message"></div>
+    </div>
+</div>
+
+<!-- 레벨 입력 모달 -->
+<div id="levelModal" class="login-overlay" style="display:none;">
+    <div class="login-modal">
+        <h2>현재 레벨 입력</h2>
+        <input id="levelInput" type="number" placeholder="레벨을 입력해주세요" min="1" max="100">
+        <button id="saveLevelConfirmBtn">저장</button>
+    </div>
+</div>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, set, get, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    const levelExp = [
+        0,       // 1레벨
+        25,      // 2레벨
+        60,      // 3레벨
+        70,
+        80,
+        90,
+        100,
+        160,
+        250,
+        380,      // 10레벨
+        520,
+        880,
+        1210,
+        1750,
+        2500,
+        3639,
+        4790,
+        5999,
+        7392,
+        9102,      // 20레벨
+        10992,
+        13100,
+        14800,
+        15800,
+        18100,
+        19841,
+        22000,
+        23500,
+        26000,
+        29000,      // 30레벨
+        30800,
+        33800,
+        36000,
+        39000,
+        41800,
+        45700,
+        49000,
+        53000,
+        58000,
+        63000,      // 40레벨
+        67810,
+        73500,
+        79000,
+        86000,
+        92000,
+        99800,
+        107000,
+        117000,
+        131000,
+        150000,      // 50레벨
+        160000,
+        175000,
+        191000,
+        209000,
+        228000,
+        249000,
+        271000,
+        295000,
+        321000,
+        350000,      // 60레벨
+        382000,
+        417000,
+        455000,
+        496000,
+        540000,
+        587000,
+        637000,
+        690000,
+        746000,
+        805000,      // 70레벨
+        867000,
+        932000,
+        1000000,
+        1071000,
+        1145000,
+        1222000,
+        1302000,
+        1385000,
+        1471000,
+        1560000,      // 80레벨
+        1800000,
+        2200000,
+        2700000,
+        3200000,
+        3900000,
+        4700000,
+        5600000,
+        6800000,
+        8100000,
+        15000000,      // 90레벨
+        19500000,
+        25350000,
+        32960000,
+        42850000,
+        55710000,
+        72990000,
+        96350000,
+        128150000,
+        171730000,
+        240430000,      // 100레벨
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function getKoreanDate() {
+        const now = new Date();
+        // 한국 시간으로 보정 (UTC + 9)
+        const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+
+        // 직접 문자열로 포맷 (UTC 문제 완벽 차단)
+        const year = koreaTime.getFullYear();
+        const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+        const day = String(koreaTime.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+    $(function () {
+        const $popup = $("#loginPopup");
+        const $mainPage = $("#mainPage");
+        const $msg = $("#message");
+        const $nicknameDisplay = $("#nicknameDisplay");
+        const $currentLevelDisplay = $("#currentLevelDisplay");
+
+        const savedNick = localStorage.getItem("coffee-nickname");
+        if (savedNick) {
+            const userRef = ref(db, `coffeeUsers/${savedNick}`);
+            get(userRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    // ✅ 정상 계정이면 페이지 표시
+                    $popup.hide();
+                    $mainPage.show();
+                    loadUserData(savedNick);
+                } else {
+                    // ❌ DB에 없는 닉네임일 경우 자동 제거
+                    console.warn("저장된 닉네임이 유효하지 않아 초기화합니다.");
+                    localStorage.removeItem("coffee-nickname");
+                    $popup.show();
+                    $mainPage.hide();
+                }
+            }).catch(err => {
+                console.error("데이터 확인 중 오류 발생:", err);
+                localStorage.removeItem("coffee-nickname");
+                $popup.show();
+                $mainPage.hide();
+            });
+        } else {
+            // 로컬스토리지에 닉네임이 없으면 로그인 팝업 유지
+            $popup.show();
+            $mainPage.hide();
+        }
+
+        // ✅ 로그인 처리
+        $("#loginBtn").on("click", async function () {
+            const nickname = $("#nickname").val().trim();
+            const password = $("#password").val().trim();
+
+            if (!nickname || !password) {
+                $msg.text("닉네임과 비밀번호를 모두 입력하세요.");
+                return;
+            }
+
+            const userRef = ref(db, `coffeeUsers/${nickname}`);
+            const snapshot = await get(userRef);
+
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                if (userData.password === password) {
+                    $msg.css("color", "green").text("로그인 성공!");
+                    localStorage.setItem("coffee-nickname", nickname);
+                    setTimeout(() => {
+                        $popup.hide();
+                        $mainPage.show();
+                        loadUserData(nickname);
+                    }, 800);
+                } else {
+                    $msg.css("color", "red")
+                        .html("이미 존재하는 닉네임이거나<br>비밀번호가 틀렸습니다.");
+                }
+            } else {
+                await set(userRef, {password});
+                $msg.css("color", "green").text("새 계정이 등록되었습니다.");
+                localStorage.setItem("coffee-nickname", nickname);
+                setTimeout(() => {
+                    $popup.hide();
+                    $mainPage.show();
+                    loadUserData(nickname);
+                }, 800);
+            }
+        });
+
+        // ✅ 경험치 입력 모달 열기
+        $("#expButton").on("click", async function () {
+            const today = getKoreanDate();
+            $("#expDate").val(today);
+
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (nickname) {
+                const userRef = ref(db, `coffeeUsers/${nickname}/level`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    $("#todayLevel").val(snapshot.val()); // 🔹 기본값 설정
+                }
+            }
+
+            $("#expModal").css("display", "flex");
+        });
+
+        // ✅ 경험치 저장 버튼
+        $("#saveExpBtn").on("click", async function () {
+            await saveExp();
+            $("#todayExp").val("");
+            $("#expModal").hide();
+        });
+
+        // ✅ 경험치 저장 함수
+        async function saveExp() {
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (!nickname) return alert("로그인 후 이용해주세요.");
+
+            const exp = parseInt($("#todayExp").val());
+            const level = parseInt($("#todayLevel").val());
+            const dateInput = $("#expDate").val();
+            const selectedDate = dateInput || getKoreanDate();
+
+            if (!exp || exp < 0) return alert("경험치를 올바르게 입력해주세요.");
+            if (!level || level < 1 || level > 100) return alert("레벨은 1~100 사이여야 합니다.");
+
+            const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+            const snapshot = await get(recordRef);
+            if (snapshot.exists()) return alert("이미 해당 날짜에 경험치를 입력했습니다!");
+
+            await set(recordRef, { level, exp, savedAt: Date.now() });
+
+            // 🔹 현재 회원의 레벨도 업데이트
+            await set(ref(db, `coffeeUsers/${nickname}/level`), level);
+
+            alert(`레벨 ${level}, 경험치 ${exp} 저장 완료!`);
+            $("#expModal").hide();
+            $("#todayExp").val("");
+
+            // 🔹 최신 데이터 다시 반영
+            await loadUserData(nickname);
+        }
+
+        // ✅ 사용자 전체 데이터 불러오기
+        async function loadUserData(nickname) {
+            const userRef = ref(db, `coffeeUsers/${nickname}`);
+            const snapshot = await get(userRef);
+
+            $("#optionModal, #editModal").remove(); // 중복 방지용
+
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+
+                // 🔹 오래된 기록(1년 초과)은 자동 삭제
+                if (userData.expRecords) {
+                    // 🔹 현재 한국 날짜를 기준으로 계산
+                    const now = new Date();
+                    const koreaNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+                    const oneYearAgo = new Date(koreaNow.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    let deletedCount = 0;
+
+                    for (const date in userData.expRecords) {
+                        const [y, m, d] = date.split("-").map(Number);
+                        const recordDate = new Date(y, m - 1, d);
+                        if (recordDate < oneYearAgo) {
+                            await remove(ref(db, `coffeeUsers/${nickname}/expRecords/${date}`));
+                            deletedCount++;
+                        }
+                    }
+
+                    if (deletedCount > 0) {
+                        alert(`1년 이상 지난 기록 ${deletedCount}건이 자동 삭제되었습니다.`);
+                    }
+                }
+
+                // 🔹 레벨 없을 때 레벨 입력 모달 표시
+                if (!userData.level) {
+                    $("#levelModal").css("display", "flex");
+                    return;
+                } else {
+                    $nicknameDisplay.text(`${nickname}`);
+                    $currentLevelDisplay.text(`${userData.level}`);
+                }
+
+                if (userData.expRecords) {
+                    const records = userData.expRecords;
+                    const sorted = Object.keys(records).sort();
+                    const $tbody = $("#expTable tbody");
+                    $tbody.empty();
+
+                    let prevExp = null;
+                    let prevLevel = null;
+                    let prevDate = null;
+                    let diffs = []; // 🔸 획득 경험치 저장용
+
+                    sorted.forEach(date => {
+                        const currentExp = records[date].exp || 0;
+                        const currentLevel = records[date].level || userData.level;
+                        let gained = "-";
+                        let approx = "";
+
+                        // 🔹 날짜 포맷 변경
+                        const [yyyy, mm, dd] = date.split("-");
+                        const formattedDate = `${mm}.${dd}`;
+
+                        if (prevExp !== null && prevLevel !== null) {
+                            // 🔹 두 날짜 사이의 간격 계산
+                            const prevD = new Date(prevDate);
+                            const curD = new Date(date);
+                            const diffDays = Math.floor((curD - prevD) / (1000 * 60 * 60 * 24));
+
+                            let diff = 0;
+                            if (currentLevel > prevLevel) {
+                                diff += (levelExp[prevLevel] - prevExp);
+                                for (let lv = prevLevel + 1; lv < currentLevel; lv++) {
+                                    diff += levelExp[lv];
+                                }
+                                diff += currentExp;
+                            } else if (currentLevel === prevLevel && currentExp >= prevExp) {
+                                diff = currentExp - prevExp;
+                            }
+
+                            if (diff > 0) {
+                                gained = diff.toLocaleString();
+                                const man = Math.floor(diff / 10000);
+                                approx = man >= 1 ? `약 ${man}만` : '';
+                            } else {
+                                gained = "0";
+                            }
+
+                            diffs.push(diff);
+
+                            // ✅ 중간 날짜(하루 이상 비었을 때) 0 경험치 추가
+                            if (diffDays > 1) {
+                                for (let i = 1; i < diffDays; i++) {
+                                    diffs.push(0);
+                                }
+                            }
+                        }
+
+                        $tbody.prepend(`
+                            <tr class="exp-row" data-date="${date}">
+                                <td>${formattedDate}</td>
+                                <td>${currentLevel}</td>
+                                <td>${currentExp.toLocaleString()}</td>
+                                <td>${gained}<br><span style="color:red">${approx}</span></td>
+                            </tr>
+                        `);
+
+                        prevExp = currentExp;
+                        prevLevel = currentLevel;
+                        prevDate = date; // ✅ 이전 날짜 저장
+                    });
+
+                    // 🔸 평균 계산 및 전체 레벨업 예정일 표시 (레벨업 시 경험치 0으로 초기화 구조)
+                    if (diffs.length > 0 && userData.level) {
+                        const avgGain = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+                        const currentLevel = userData.level;
+                        const records = userData.expRecords;
+                        const sortedDates = Object.keys(records).sort();
+                        const latestDate = sortedDates[sortedDates.length - 1];
+                        const currentExp = records[latestDate].exp || 0; // 🔸 현재 경험치
+                        const today = new Date();
+                        const koreaNow = new Date(today.getTime() + (9 * 60 * 60 * 1000));
+
+                        if (avgGain < 10000) {
+                            $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()}`);
+                        } else {
+                            const man = Math.floor(avgGain / 10000);
+                            $("#avgExp").text(`평균 경험치 : 약 ${man}만`);
+                        }
+
+                        let tableHTML = `
+                            <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                <thead>
+                                    <tr style="background:#f6f4fc; color:#5a4398;">
+                                        <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
+                                        <th style="padding:8px; border:1px solid #e0dff2;">예상 남은일수</th>
+                                        <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                    </tr>
+                                </thead>
+                            <tbody>
+                        `;
+
+                        let accumulatedDays = 0;
+                        let curExp = currentExp;
+
+                        const maxLevel = currentLevel >= 90 ? 100 : currentLevel + 10;
+
+                        for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
+                            const needExp = levelExp[lvl]; // 이번 레벨에서 다음 레벨까지 필요한 양
+                            if (!needExp) break;
+
+                            const remainExp = Math.max(needExp - curExp, 0);
+                            const daysNeeded = Math.ceil(remainExp / avgGain);
+                            accumulatedDays += daysNeeded;
+
+                            // 도달일 계산
+                            const estDate = new Date(koreaNow);
+                            estDate.setDate(koreaNow.getDate() + accumulatedDays);
+                            const yyyy = estDate.getFullYear();
+                            const mm = String(estDate.getMonth() + 1).padStart(2, '0');
+                            const dd = String(estDate.getDate()).padStart(2, '0');
+
+                            tableHTML += `
+                                <tr>
+                                    <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
+                                    <td style="padding:8px; border:1px solid #e0dff2;">D-${accumulatedDays}</td>
+                                    <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                </tr>
+                            `;
+
+                            // 다음 루프는 경험치 0부터 시작
+                            curExp = 0;
+                        }
+
+                        tableHTML += `
+                                </tbody>
+                            </table>
+                        `;
+
+                        $("#levelUpBox").html(tableHTML);
+                    } else {
+                        $("#levelUpBox").html(`<p style="color:#999;">계산할 데이터가 부족합니다.</p>`);
+                    }
+
+                    // ============================
+                    // ✅ (1) 옵션 선택 모달 추가
+                    // ============================
+                    const optionModal = $(`
+                        <div id="optionModal" class="login-overlay" style="display:none;">
+                            <div class="login-modal">
+                                <h3>옵션을 선택해주세요</h3>
+                                <button id="editExpBtn">수정</button>
+                                <button id="deleteExpBtn">삭제</button>
+                                <button id="closeOptionBtn">닫기</button>
+                            </div>
+                        </div>
+                    `);
+
+                    $("body").append(optionModal);
+
+                    // ============================
+                    // ✅ (2) 수정 모달 추가
+                    // ============================
+                    const editModal = $(`
+                        <div id="editModal" class="login-overlay" style="display:none;">
+                            <div class="login-modal" style="position:relative; width:360px;">
+                                <button id="closeEditModal">✕</button>
+                                <h2>경험치 수정</h2>
+                                <label style="display:block; text-align:left; color:#555;">날짜</label>
+                                <input id="editExpDate" type="date" style="margin-bottom:10px;">
+                                <label style="display:block; text-align:left; color:#555;">현재 레벨</label>
+                                <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
+                                <label style="display:block; text-align:left; color:#555;">현재 경험치</label>
+                                <input id="editExpValue" type="number" style="margin-bottom:10px;">
+                                <button id="updateExpBtn">저장</button>
+                            </div>
+                        </div>
+                    `);
+                    $("body").append(editModal);
+
+                    // ============================
+                    // ✅ (3) 행 클릭 시 옵션 모달 표시
+                    // ============================
+                    let selectedDate = null;
+                    $(document).on("click", ".exp-row", function () {
+                        selectedDate = $(this).data("date");
+                        $("#optionModal").css("display", "flex");
+                    });
+
+                    // ✅ 옵션 모달 - 닫기
+                    $(document).on("click", "#closeOptionBtn", function () {
+                        $("#optionModal").hide();
+                    });
+
+                    // ✅ 삭제 버튼 클릭 시
+                    $(document).on("click", "#deleteExpBtn", async function () {
+                        const nickname = localStorage.getItem("coffee-nickname");
+                        if (!nickname || !selectedDate) return;
+                        if (!confirm(`${selectedDate} 데이터를 삭제할까요?`)) return;
+                        await remove(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`));
+                        alert("삭제되었습니다!");
+                        $("#optionModal").hide();
+                        await loadUserData(nickname);
+                    });
+
+                    // ✅ 수정 버튼 클릭 시 수정 모달 열기
+                    $(document).on("click", "#editExpBtn", async function () {
+                        const nickname = localStorage.getItem("coffee-nickname");
+                        if (!nickname || !selectedDate) return;
+                        const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+                        const snapshot = await get(recordRef);
+                        if (snapshot.exists()) {
+                            const record = snapshot.val();
+                            $("#editExpDate").val(selectedDate);
+                            $("#editLevelValue").val(record.level || 1);
+                            $("#editExpValue").val(record.exp);
+                            $("#optionModal").hide();
+                            $("#editModal").css("display", "flex");
+                        }
+                    });
+
+                    // ✅ 수정 저장 버튼
+                    $(document).on("click", "#updateExpBtn", async function () {
+                        const nickname = localStorage.getItem("coffee-nickname");
+                        const newLevel = parseInt($("#editLevelValue").val());
+                        const newExp = parseInt($("#editExpValue").val());
+                        const newDate = $("#editExpDate").val();
+
+                        if (!nickname) return alert("로그인 후 이용해주세요.");
+                        if (!newDate || !newExp || newLevel < 1 || newLevel > 100) return alert("값이 올바르지 않습니다.");
+
+                        // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
+                        if (newDate !== selectedDate) {
+                            // ✅ 날짜가 변경된 경우: 새로 저장 후 기존 삭제
+                            const oldRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+                            const newRef = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
+
+                            await set(newRef, { level: newLevel, exp: newExp, savedAt: Date.now() });
+                            await remove(oldRef);
+                        } else {
+                            // ✅ 날짜가 그대로면 단순 수정
+                            const refPath = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
+                            await set(refPath, { level: newLevel, exp: newExp, savedAt: Date.now() });
+                        }
+
+                        alert("수정되었습니다!");
+
+                        // 🔹 현재 회원의 레벨도 업데이트
+                        await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
+
+                        $("#editModal").hide();
+                        await loadUserData(nickname);
+                    });
+
+                    // ✅ 수정 모달 닫기
+                    $(document).on("click", "#closeEditModal", function () {
+                        $("#editModal").hide();
+                    });
+
+                }
+            } else {
+                console.log("불러올 데이터가 없습니다.");
+            }
+        }
+
+        // ✅ 레벨 입력 모달 저장 버튼
+        $(document).on("click", "#saveLevelConfirmBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            const levelVal = parseInt($("#levelInput").val());
+
+            if (!nickname) return alert("로그인 후 이용해주세요.");
+            if (!levelVal || levelVal < 1 || levelVal > 100) return alert("1~100 사이의 값을 입력하세요.");
+
+            await set(ref(db, `coffeeUsers/${nickname}/level`), levelVal);
+            alert(`레벨 ${levelVal}이(가) 저장되었습니다!`);
+            $("#levelModal").hide();
+
+            // 입력 후 바로 다시 데이터 갱신
+            await loadUserData(nickname);
+        });
+
+        $("#logoutBtn").on("click", function () {
+            localStorage.removeItem("coffee-nickname");
+            location.reload();
+        });
+
+        // ✅ 경험치 입력 모달 닫기 버튼
+        $("#closeExpModal").on("click", function () {
+            $("#expModal").hide();
+        });
+
+        // 🔹 모든 버튼의 빠른 연속 클릭(더블클릭) 방지
+        $(document).on("click", "button", function (e) {
+            const $btn = $(this);
+
+            // 이미 잠겨 있으면 실행 막기
+            if ($btn.data("clicked")) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
+
+            // 0.8초간 클릭 잠금
+            $btn.data("clicked", true);
+            setTimeout(() => {
+                $btn.removeData("clicked");
+            }, 800);
+        });
+    });
+</script>
+</body>
+</html>
