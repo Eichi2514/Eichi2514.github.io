@@ -630,9 +630,7 @@
     const db = getDatabase(app);
 
     function getKoreanDate() {
-        const now = new Date();
-        // 한국 시간으로 보정 (UTC + 9)
-        const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        const koreaTime = new Date();
 
         // 직접 문자열로 포맷 (UTC 문제 완벽 차단)
         const year = koreaTime.getFullYear();
@@ -640,6 +638,18 @@
         const day = String(koreaTime.getDate()).padStart(2, '0');
 
         return `${year}-${month}-${day}`;
+    }
+
+    // ✅ 한국시간 타임스탬프 함수 추가
+    function getKoreanTimestamp() {
+        const koreaTime = new Date();
+        const yy = String(koreaTime.getFullYear()).slice(2);
+        const mm = String(koreaTime.getMonth() + 1).padStart(2, "0");
+        const dd = String(koreaTime.getDate()).padStart(2, "0");
+        const hh = String(koreaTime.getHours()).padStart(2, "0");
+        const mi = String(koreaTime.getMinutes()).padStart(2, "0");
+        const ss = String(koreaTime.getSeconds()).padStart(2, "0");
+        return `${yy}.${mm}.${dd}-${hh}:${mi}:${ss}`;
     }
 
     $(function () {
@@ -782,7 +792,7 @@
             await set(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`), {
                 level,
                 exp,
-                savedAt: Date.now(),
+                savedAt: getKoreanTimestamp(),
             });
 
             // 🔹 현재 회원 레벨 업데이트
@@ -1143,12 +1153,12 @@
                 const oldRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
                 const newRef = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
 
-                await set(newRef, { level: newLevel, exp: newExp, savedAt: Date.now() });
+                await set(newRef, { level: newLevel, exp: newExp, savedAt: getKoreanTimestamp() });
                 await remove(oldRef);
             } else {
                 // ✅ 날짜가 그대로면 단순 수정
                 const refPath = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
-                await set(refPath, { level: newLevel, exp: newExp, savedAt: Date.now() });
+                await set(refPath, { level: newLevel, exp: newExp, savedAt: getKoreanTimestamp() });
             }
 
             showAlert("수정되었습니다!");
