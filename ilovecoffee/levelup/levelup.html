@@ -144,9 +144,9 @@
         }
 
         #expButton {
-            background: transparent;         /* 배경 투명 */
-            color: #5a4398;                  /* 글자 보라색 */
-            border: 2px solid #5a4398;       /* 진한 보라색 테두리 */
+            background: transparent; /* 배경 투명 */
+            color: #5a4398; /* 글자 보라색 */
+            border: 2px solid #5a4398; /* 진한 보라색 테두리 */
             border-radius: 8px;
             padding: 5px 10px;
             font-size: 15px;
@@ -156,8 +156,8 @@
         }
 
         #expButton:hover {
-            background: #5a4398;             /* hover 시 배경 채워짐 */
-            color: #fff;                     /* 글자색 반전 */
+            background: #5a4398; /* hover 시 배경 채워짐 */
+            color: #fff; /* 글자색 반전 */
         }
 
         /* ===== 섹션 제목 ===== */
@@ -342,7 +342,7 @@
             padding: 25px 25px 20px;
             border-radius: 12px;
             width: 360px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             text-align: left;
             position: relative;
         }
@@ -361,9 +361,9 @@
             flex: 1;
             padding-right: 10px;
 
-            white-space: pre-line;      /* \n 줄바꿈 인식 */
-            word-break: keep-all;      /* 단어 기준 줄바꿈 */
-            overflow-wrap: break-word;  /* 긴 단어 강제 줄바꿈 */
+            white-space: pre-line; /* \n 줄바꿈 인식 */
+            word-break: keep-all; /* 단어 기준 줄바꿈 */
+            overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
         }
 
 
@@ -414,7 +414,6 @@
     </div>
 
     <div class="levelup-header">
-        <h3>레벨업 예정일</h3>
         <span id="avgExp" style="font-size:15px; color:#5a4398; font-weight:600;"></span>
     </div>
 
@@ -453,7 +452,7 @@
 
         <div style="margin-bottom:10px;">
             <label for="todayExp" style="display:block; font-size:14px; text-align:left; color:#555;">현재 경험치</label>
-            <input id="todayExp" type="number" placeholder="현재 경험치"
+            <input id="todayExp" type="text" inputmode="numeric" placeholder="현재 경험치"
                    style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
         </div>
 
@@ -502,8 +501,14 @@
             <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
         </div>
         <div style="display:flex; gap:10px; margin-top:20px;">
-            <button id="confirmYesBtn" style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">확인</button>
-            <button id="confirmNoBtn" style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">취소</button>
+            <button id="confirmYesBtn"
+                    style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">
+                확인
+            </button>
+            <button id="confirmNoBtn"
+                    style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">
+                취소
+            </button>
         </div>
     </div>
 </div>
@@ -750,17 +755,18 @@
             $("#expModal").hide();
         });
 
-        // ✅ 경험치 저장 함수 (한 번만 get 호출)
+        // ✅ 경험치 저장 함수 (쉼표 제거 후 저장)
         async function saveExp() {
             const nickname = localStorage.getItem("coffee-nickname");
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
-            const exp = parseInt($("#todayExp").val());
+            // 🔹 쉼표 제거 후 숫자 변환
+            const exp = parseInt($("#todayExp").val().replace(/,/g, ""));
             const level = parseInt($("#todayLevel").val());
             const dateInput = $("#expDate").val();
             const selectedDate = dateInput || getKoreanDate();
 
-            if (!exp || exp < 0) return showAlert("경험치를 올바르게 입력해주세요.");
+            if (isNaN(exp) || exp < 0) return showAlert("경험치를 올바르게 입력해주세요.");
             if (!level || level < 1 || level > 100) return showAlert("레벨은 1~100 사이여야 합니다.");
 
             // ✅ 전체 기록 한 번만 가져오기
@@ -788,7 +794,7 @@
                 }
             }
 
-            // ✅ 새 기록 저장
+            // ✅ 새 기록 저장 (쉼표 없는 정수 저장)
             await set(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`), {
                 level,
                 exp,
@@ -798,7 +804,7 @@
             // 🔹 현재 회원 레벨 업데이트
             await set(ref(db, `coffeeUsers/${nickname}/level`), level);
 
-            showAlert(`레벨 ${level}\n경험치 ${exp} 저장 완료!`);
+            showAlert(`레벨 ${level}\n경험치 ${exp.toLocaleString()} 저장 완료!`);
             $("#expModal").hide();
             $("#todayExp").val("");
 
@@ -819,7 +825,7 @@
                 if (userData.expRecords) {
                     // 🔹 현재 한국 날짜를 기준으로 계산
                     const now = new Date();
-                    const koreaNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+                    const koreaNow = new Date(now.getTime());
                     const oneYearAgo = new Date(koreaNow.getTime() - 365 * 24 * 60 * 60 * 1000);
                     let deletedCount = 0;
 
@@ -925,7 +931,7 @@
                         const latestDate = sortedDates[sortedDates.length - 1];
                         const currentExp = records[latestDate].exp || 0; // 🔸 현재 경험치
                         const today = new Date();
-                        const koreaNow = new Date(today.getTime() + (9 * 60 * 60 * 1000));
+                        const koreaNow = new Date(today.getTime());
 
                         if (avgGain < 10000) {
                             $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()}`);
@@ -939,13 +945,14 @@
                                 <thead>
                                     <tr style="background:#f6f4fc; color:#5a4398;">
                                         <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
-                                        <th style="padding:8px; border:1px solid #e0dff2;">예상 남은일수</th>
-                                        <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                        <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                        <th style="padding:8px; border:1px solid #e0dff2;">레벨업 예정일</th>
                                     </tr>
                                 </thead>
                             <tbody>
                         `;
 
+                        let accumulatedExp = 0;
                         let accumulatedDays = 0;
                         let curExp = currentExp;
 
@@ -955,26 +962,36 @@
                             const needExp = levelExp[lvl]; // 이번 레벨에서 다음 레벨까지 필요한 양
                             if (!needExp) break;
 
+                            // 이번 레벨에서 다음 레벨까지 필요한 경험치
                             const remainExp = Math.max(needExp - curExp, 0);
-                            const daysNeeded = Math.ceil(remainExp / avgGain);
-                            accumulatedDays += daysNeeded;
+                            accumulatedExp += remainExp;
 
-                            // 도달일 계산
+
+                            // ✅ 총 누적 경험치를 평균으로 나눠서 필요한 일수 계산
+                            const daysNeeded = Math.ceil(accumulatedExp / avgGain);
+
+                            // ✅ 도달일 계산 (오늘 기준 + 필요 일수)
                             const estDate = new Date(koreaNow);
-                            estDate.setDate(koreaNow.getDate() + accumulatedDays);
+                            estDate.setDate(koreaNow.getDate() + daysNeeded);
+
                             const yyyy = estDate.getFullYear();
                             const mm = String(estDate.getMonth() + 1).padStart(2, '0');
                             const dd = String(estDate.getDate()).padStart(2, '0');
 
+                            // ✅ D-day는 오늘 포함 표시만 별도로 (표시용 +1)
+                            const dDay = daysNeeded > 0 ? `D-${daysNeeded}` : "D-day";
+
+
+                            // 출력 부분 수정
                             tableHTML += `
                                 <tr>
                                     <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
-                                    <td style="padding:8px; border:1px solid #e0dff2;">D-${accumulatedDays}</td>
+                                    <td style="padding:8px; border:1px solid #e0dff2;">${dDay}</td>
                                     <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                 </tr>
                             `;
 
-                            // 다음 루프는 경험치 0부터 시작
+                            // 다음 루프부터는 경험치 0부터 시작
                             curExp = 0;
                         }
 
@@ -1017,7 +1034,7 @@
                                 <label style="display:block; text-align:left; color:#555;">현재 레벨</label>
                                 <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
                                 <label style="display:block; text-align:left; color:#555;">현재 경험치</label>
-                                <input id="editExpValue" type="number" style="margin-bottom:10px;">
+                                <input id="editExpValue" type="text" inputmode="numeric" style="margin-bottom:10px;">
                                 <button id="updateExpBtn">저장</button>
                             </div>
                         </div>
@@ -1121,7 +1138,7 @@
             });
         });
 
-        // ✅ 수정 버튼 클릭 시 수정 모달 열기
+        // ✅ 수정 버튼 클릭 시 쉼표 있는 값으로 표시
         $(document).on("click", "#editExpBtn", async function () {
             const nickname = localStorage.getItem("coffee-nickname");
             if (!nickname || !selectedDate) return;
@@ -1131,21 +1148,21 @@
                 const record = snapshot.val();
                 $("#editExpDate").val(selectedDate);
                 $("#editLevelValue").val(record.level || 1);
-                $("#editExpValue").val(record.exp);
+                $("#editExpValue").val(record.exp.toLocaleString()); // ✅ 쉼표 포함 표시
                 $("#optionModal").hide();
                 $("#editModal").css("display", "flex");
             }
         });
 
-        // ✅ 수정 저장 버튼
+        // ✅ 수정 저장 버튼 (쉼표 제거 후 저장)
         $(document).on("click", "#updateExpBtn", async function () {
             const nickname = localStorage.getItem("coffee-nickname");
             const newLevel = parseInt($("#editLevelValue").val());
-            const newExp = parseInt($("#editExpValue").val());
+            const newExp = parseInt($("#editExpValue").val().replace(/,/g, "")); // ✅ 쉼표 제거
             const newDate = $("#editExpDate").val();
 
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
-            if (!newDate || !newExp || newLevel < 1 || newLevel > 100) return showAlert("값이 올바르지 않습니다.");
+            if (!newDate || isNaN(newExp) || newLevel < 1 || newLevel > 100) return showAlert("값이 올바르지 않습니다.");
 
             // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
             if (newDate !== selectedDate) {
@@ -1153,15 +1170,15 @@
                 const oldRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
                 const newRef = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
 
-                await set(newRef, { level: newLevel, exp: newExp, savedAt: getKoreanTimestamp() });
+                await set(newRef, {level: newLevel, exp: newExp, savedAt: getKoreanTimestamp()});
                 await remove(oldRef);
             } else {
                 // ✅ 날짜가 그대로면 단순 수정
                 const refPath = ref(db, `coffeeUsers/${nickname}/expRecords/${newDate}`);
-                await set(refPath, { level: newLevel, exp: newExp, savedAt: getKoreanTimestamp() });
+                await set(refPath, {level: newLevel, exp: newExp, savedAt: getKoreanTimestamp()});
             }
 
-            showAlert("수정되었습니다!");
+            showAlert(`레벨 ${newLevel}\n경험치 ${newExp.toLocaleString()}(으)로 수정되었습니다!`);
 
             // 🔹 현재 회원의 레벨도 업데이트
             await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
@@ -1202,6 +1219,16 @@
                 if (typeof onConfirm === "function") onConfirm(false);
             });
         }
+
+        // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
+        $(document).on("input", "#todayExp, #editExpValue", function () {
+            let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 남기기
+            if (value) {
+                // 3자리마다 쉼표 추가
+                value = parseInt(value, 10).toLocaleString();
+            }
+            $(this).val(value);
+        });
     });
 </script>
 </body>
