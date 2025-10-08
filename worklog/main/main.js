@@ -189,11 +189,21 @@ function hasOngoing(arr, ignoreId) {
 function openEdit(entry) {
     $('#edit-id').val(entry.id);
     $('#edit-date').val(entry.date);
-    $('#edit-desc').val(entry.desc);
+
+    // ✅ desc에서 카테고리/제목 분리
+    let category = '';
+    let title = entry.desc || '';
+    const idx = title.indexOf(')');
+    if (idx >= 0) {
+        category = title.slice(0, idx).trim();
+        title = title.slice(idx + 1).trim();
+    }
+
+    $('#edit-category').val(category);
+    $('#edit-title').val(title);
     $('#edit-memo').val(entry.memo || '');
     $('#edit-start').val(entry.start);
     $('#edit-end').val(entry.end || '');
-    $('#edit-type').val(entry.type === 'work' ? 'work' : 'other');
     $('#edit-backdrop').css('display', 'flex');
 }
 
@@ -214,7 +224,15 @@ function render() {
         $.each(viewData, function (_, entry) {
             const timeCell = entry.end ? `${formatHHMM(entry.start)} ~ ${formatHHMM(entry.end)}`
                 : `${formatHHMM(entry.start)} <span class="text-xs text-gray-400">(진행중)</span>`;
-            const titleHtml = `<div class="ellipsis title-clip">${escapeHtml(entry.desc)}</div>`;
+
+            // ✅ desc에서 카테고리와 제목 분리
+            let category = '';
+            let title = entry.desc || '';
+            const idx = title.indexOf(')');
+            if (idx >= 0) {
+                category = title.slice(0, idx).trim();
+                title = title.slice(idx + 1).trim();
+            }
 
             let dur;
             if (entry.end) {
@@ -231,7 +249,8 @@ function render() {
 
             const $tr = $('<tr/>').addClass('data-row').append(
                 $('<td/>').addClass('time cell-nowrap').html(timeCell),
-                $('<td/>').addClass('text-left font-semibold cell-nowrap').html(titleHtml),
+                $('<td/>').addClass('text-left cell-nowrap').text(category || '-'),
+                $('<td/>').addClass('text-left font-semibold cell-nowrap').text(title || '-'),
                 $('<td/>').addClass('type cell-nowrap').html(dur),
                 $('<td/>').addClass('actions cell-nowrap').append(
                     $('<div/>').addClass('btn-group-nowrap')
@@ -517,8 +536,15 @@ $(function () {
     // 신규 일정 시작
     $('#schedule-form').on('submit', function (e) {
         e.preventDefault();
-        const desc = $('#entry-desc').val().trim();
+
+        const category = $('#entry-category').val().trim();
+        const title = $('#entry-title').val().trim();
         const memo = $('#entry-memo').val().trim();
+
+        if (!category || !title) return window.alert('카테고리와 제목을 모두 입력하세요.');
+
+        // ✅ desc는 "카테고리)제목" 형태로 저장
+        const desc = `${category})${title}`;
 
         // ✅ 시작 시간 자동 세팅
         const startRaw = nowHHMM();
@@ -542,12 +568,14 @@ $(function () {
     });
 
     // 수정 저장
-// 수정 저장
     $('#edit-form').on('submit', function (e) {
         e.preventDefault();
         const id = Number($('#edit-id').val());
         const newDate = $('#edit-date').val();   // 🔹 새 날짜
-        const desc = $('#edit-desc').val().trim();
+        const category = $('#edit-category').val().trim();
+        const title = $('#edit-title').val().trim();
+        if (!category || !title) return window.alert('카테고리와 제목을 모두 입력하세요.');
+        const desc = `${category})${title}`;
         const memo = $('#edit-memo').val().trim();
         const start = $('#edit-start').val().trim();
         const end = $('#edit-end').val().trim();
@@ -618,11 +646,60 @@ $(function () {
 
     scheduleRenderEveryMinute();
 
-    // ====== 자동완성 (최근 7일 제목) ======
-    const $descInput = $('#entry-desc');
-    const $suggestions = $('#title-suggestions');
+    // ====== 자동완성 (카테고리 + 제목) ======
+    const $catInput = $('#entry-category');
+    const $titleInput = $('#entry-title');
+    const $catSuggestions = $('#category-suggestions');
+    const $titleSuggestions = $('#title-suggestions');
 
-    // 최근 7일간 제목 모으기
+    // ✅ 저장된 데이터에서 카테고리 목록 수집
+    function getAllCategories() {
+        const map = getMap();
+        const categories = new Set();
+
+        Object.values(map).forEach(arr => {
+            arr.forEach(e => {
+                if (e.desc && e.desc.includes(')')) {
+                    const idx = e.desc.indexOf(')');
+                    const cat = e.desc.slice(0, idx).trim();
+                    if (cat) categories.add(cat);
+                }
+            });
+        });
+
+        return Array.from(categories);
+    }
+
+    // 🔹 카테고리 입력 시 자동완성 표시
+    $catInput.on('focus input', function () {
+        const val = $(this).val().trim();
+        const allCats = getAllCategories();
+        if (allCats.length === 0) {
+            $catSuggestions.hide();
+            return;
+        }
+
+        const filtered = val
+            ? allCats.filter(c => c.includes(val))
+            : allCats; // 입력 없으면 전체 표시
+
+        if (filtered.length === 0) return $catSuggestions.hide();
+
+        $catSuggestions.empty();
+        filtered.forEach(cat => {
+            $('<div/>')
+                .addClass('px-2 py-1 cursor-pointer hover:bg-gray-100')
+                .text(cat)
+                .on('click', function () {
+                    $catInput.val(cat);
+                    $catSuggestions.hide();
+                })
+                .appendTo($catSuggestions);
+        });
+        $catSuggestions.show();
+    });
+
+    // 🔹 제목 자동완성: 최근 7일 내 포함 검색
     function getRecentTitles(keyword) {
         const titles = new Set();
         const today = toDate(todayStr());
@@ -632,46 +709,42 @@ $(function () {
             const dateStr = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
             const arr = getData(dateStr);
             arr.forEach(e => {
-                if (e.desc && e.desc.includes(keyword)) {
-                    titles.add(e.desc);
+                const desc = e.desc || '';
+                const title = cleanDesc(desc); // 괄호 이후 부분
+                if (title && (!keyword || title.includes(keyword))) {
+                    titles.add(title);
                 }
             });
         }
         return Array.from(titles);
     }
 
-    // 입력 이벤트
-    $descInput.on('input', function () {
+    $titleInput.on('input', function () {
         const val = $(this).val().trim();
-        if (!val) {
-            $suggestions.hide();
-            return;
-        }
+        if (!val) return $titleSuggestions.hide();
 
         const matches = getRecentTitles(val);
-        if (matches.length === 0) {
-            $suggestions.hide();
-            return;
-        }
+        if (matches.length === 0) return $titleSuggestions.hide();
 
-        $suggestions.empty();
+        $titleSuggestions.empty();
         matches.forEach(title => {
             $('<div/>')
                 .addClass('px-2 py-1 cursor-pointer hover:bg-gray-100')
                 .text(title)
                 .on('click', function () {
-                    $descInput.val(title);
-                    $suggestions.hide();
+                    $titleInput.val(title);
+                    $titleSuggestions.hide();
                 })
-                .appendTo($suggestions);
+                .appendTo($titleSuggestions);
         });
-        $suggestions.show();
+        $titleSuggestions.show();
     });
 
-    // 입력창 밖 클릭하면 닫기
+    // 🔹 입력창 밖 클릭 시 닫기
     $(document).on('click', function (e) {
-        if (!$(e.target).closest('#entry-desc, #title-suggestions').length) {
-            $suggestions.hide();
-        }
+        if (!$(e.target).closest('#entry-category, #category-suggestions').length)
+            $catSuggestions.hide();
+        if (!$(e.target).closest('#entry-title, #title-suggestions').length)
+            $titleSuggestions.hide();
     });
 });

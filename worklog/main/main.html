@@ -25,10 +25,18 @@
             <!-- 입력 폼 -->
             <div class="card">
                 <form id="schedule-form" class="grid grid-cols-1 gap-3">
-                    <div class="form-inline">
-                        <label class="block relative w-full">
-                            <input type="text" id="entry-desc" placeholder="카테고리" required autocomplete="off"/>
-                            <!-- 자동완성 목록 -->
+                    <div class="form-inline flex gap-2">
+                        <!-- 카테고리 입력 -->
+                        <label class="block relative w-3/10" style="flex: 0 0 30%">
+                            <input type="text" id="entry-category" placeholder="카테고리" required autocomplete="off"/>
+                            <div id="category-suggestions"
+                                 class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm">
+                            </div>
+                        </label>
+
+                        <!-- 제목 입력 -->
+                        <label class="block relative w-7/10" style="flex: 1">
+                            <input type="text" id="entry-title" placeholder="제목" required autocomplete="off"/>
                             <div id="title-suggestions"
                                  class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm">
                             </div>
@@ -76,7 +84,8 @@
                     <thead>
                     <tr>
                         <th style="width:120px">시간</th>
-                        <th>카테고리</th>
+                        <th style="width:120px">카테고리</th>
+                        <th>제목</th>
                         <th style="width:120px">소요시간</th>
                         <th style="width:200px">관리</th>
                     </tr>
@@ -100,8 +109,20 @@
                 <input type="date" id="edit-date" required/>
             </label>
             <label class="block">
-                <span class="block text-sm text-gray-500 mb-1">제목</span>
-                <input type="text" id="edit-desc" required/>
+                <div class="flex gap-2">
+                    <div class="relative w-3/10" style="flex: 0 0 30%">
+                        <span class="block text-sm text-gray-500 mb-1">카테고리</span>
+                        <input type="text" id="edit-category" autocomplete="off" required/>
+                        <div id="edit-category-suggestions"
+                             class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm"></div>
+                    </div>
+                    <div class="relative w-7/10" style="flex: 1">
+                        <span class="block text-sm text-gray-500 mb-1">제목</span>
+                        <input type="text" id="edit-title" autocomplete="off" required/>
+                        <div id="edit-title-suggestions"
+                             class="absolute bg-white border rounded shadow mt-1 w-full hidden z-10 max-h-40 overflow-y-auto text-sm"></div>
+                    </div>
+                </div>
             </label>
             <label class="block">
                 <span class="block text-sm text-gray-500 mb-1">메모</span>

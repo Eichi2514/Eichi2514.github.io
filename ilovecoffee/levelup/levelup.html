@@ -937,7 +937,7 @@
                             $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()}`);
                         } else {
                             const man = Math.floor(avgGain / 10000);
-                            $("#avgExp").text(`평균 경험치 : 약 ${man}만`);
+                            $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()} ( 약 ${man}만 )`);
                         }
 
                         let tableHTML = `
