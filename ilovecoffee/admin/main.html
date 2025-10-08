@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background: #f4f3f9;
+            margin: 0;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #controlBar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #controlBar input, #controlBar select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #userTable {
+            width: calc(100% - 40px);
+            margin: 10px 20px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #userTable th, #userTable td {
+            border: 1px solid #e0dff2;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #userTable th {
+            background: #f6f4fc;
+            color: #5a4398;
+        }
+
+        #loading {
+            text-align: center;
+            color: #5a4398;
+            font-weight: 600;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #colorGuide {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: right;
+            font-size: 14px;
+            color: #555;
+            margin: 10px 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+<div class="header-bar">
+    <h1>관리자 대시보드</h1>
+    <button id="logoutBtn">로그아웃</button>
+</div>
+
+<div id="controlBar">
+    <input type="text" id="searchInput" placeholder="닉네임 검색">
+    <select id="sortSelect">
+        <option value="nickname">닉네임순</option>
+        <option value="level">레벨순</option>
+        <option value="dday">D-day</option>
+        <option value="avgexp">경험치</option>
+    </select>
+</div>
+
+<div id="colorGuide">
+    <div class="legend-item">
+        <span class="color-box" style="background:#fff8d1;"></span>1일
+    </div>
+    <div class="legend-item">
+        <span class="color-box" style="background:#ffd6d6;"></span>7일
+    </div>
+    <div class="legend-item">
+        <span class="color-box" style="background:#f0f0f0;"></span>15일
+    </div>
+    <div class="legend-item">
+        <span class="color-box" style="background:#cfcfcf;"></span>미기록
+    </div>
+</div>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>닉네임</th>
+        <th>Lv</th>
+        <th>평균 경험치</th>
+        <th>D-day</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="loading">불러오는 중...</div>
+
+<script type="module">
+    // ✅ 레벨 경험치 테이블
+    const levelExp = [
+        0, 25, 60, 70, 80, 90, 100, 160, 250, 380, 520, 880, 1210, 1750, 2500, 3639, 4790, 5999,
+        7392, 9102, 10992, 13100, 14800, 15800, 18100, 19841, 22000, 23500, 26000, 29000,
+        30800, 33800, 36000, 39000, 41800, 45700, 49000, 53000, 58000, 63000, 67810, 73500,
+        79000, 86000, 92000, 99800, 107000, 117000, 131000, 150000, 160000, 175000, 191000,
+        209000, 228000, 249000, 271000, 295000, 321000, 350000, 382000, 417000, 455000,
+        496000, 540000, 587000, 637000, 690000, 746000, 805000, 867000, 932000, 1000000,
+        1071000, 1145000, 1222000, 1302000, 1385000, 1471000, 1560000, 1800000, 2200000,
+        2700000, 3200000, 3900000, 4700000, 5600000, 6800000, 8100000, 15000000, 19500000,
+        25350000, 32960000, 42850000, 55710000, 72990000, 96350000, 128150000, 171730000,
+        240430000
+    ];
+
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    $(function () {
+        const nickname = localStorage.getItem("coffee-nickname");
+        if (!nickname) return alert("로그인이 필요합니다."), location.href = "../levelup/";
+
+        // 관리자 권한 확인
+        get(ref(db, `coffeeUsers/${nickname}`)).then(async snap => {
+            if (!snap.exists() || !snap.val().isAdmin) {
+                alert("관리자만 접근할 수 있습니다.");
+                location.href = "../levelup/";
+                return;
+            }
+
+            $("#loading").show();
+            const usersSnap = await get(ref(db, "coffeeUsers"));
+            $("#loading").hide();
+
+            if (!usersSnap.exists()) {
+                $("#userTable tbody").html("<tr><td colspan='4'>등록된 사용자가 없습니다.</td></tr>");
+                return;
+            }
+
+            let users = [];
+            usersSnap.forEach(child => {
+                users.push({key: child.key, ...child.val()});
+            });
+
+            // ======================
+            // 🔹 렌더링 함수
+            // ======================
+            function renderTable(list) {
+                const $tbody = $("#userTable tbody");
+                $tbody.empty();
+
+                if (list.length === 0) {
+                    $tbody.html("<tr><td colspan='4'>검색 결과가 없습니다.</td></tr>");
+                    return;
+                }
+
+                const today = new Date();
+                const todayStr = today.toISOString().split("T")[0]; // yyyy-mm-dd
+
+                list.forEach(u => {
+                    const records = u.expRecords ? Object.entries(u.expRecords) : [];
+                    let avgExp = 0;
+                    let dDayText = "-";
+                    let dDayValue = 99999;
+                    let lastDate = null; // ✅ 최근 기록 날짜 저장용
+
+                    if (records.length > 0) {
+                        // 🔹 가장 최근 날짜 구하기
+                        records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+                        lastDate = records[records.length - 1][0];
+
+                        if (records.length > 1) {
+                            let totalGain = 0;
+                            for (let i = 1; i < records.length; i++) {
+                                const prev = records[i - 1][1];
+                                const cur = records[i][1];
+                                if (cur.exp > prev.exp) totalGain += cur.exp - prev.exp;
+                            }
+                            avgExp = Math.round(totalGain / (records.length - 1));
+
+                            const last = records[records.length - 1][1];
+                            const level = u.level || 1;
+                            const curExp = last.exp || 0;
+                            const need = levelExp[level] || 0;
+                            const remain = Math.max(need - curExp, 0);
+
+                            if (avgExp > 0 && remain > 0) {
+                                const days = Math.ceil(remain / avgExp);
+                                dDayValue = days;
+                                dDayText = days > 0 ? `D-${days}` : "D-day";
+                            }
+                        }
+                    }
+
+                    u.avgExp = avgExp;
+                    u.dDayValue = dDayValue;
+                    u.dDayText = dDayText;
+
+                    // ✅ 날짜 차이 계산
+                    let bgColor = "";
+                    if (lastDate) {
+                        const last = new Date(lastDate);
+                        const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+
+                        if (diffDays >= 15) {
+                            bgColor = "#f0f0f0"; // 15일 이상 → 연한 회색
+                        } else if (diffDays >= 7) {
+                            bgColor = "#ffd6d6"; // 7일 이상 → 빨간색
+                        } else if (diffDays >= 1) {
+                            bgColor = "#fff8d1"; // 오늘 미입력 → 연노랑
+                        }
+                    } else {
+                        bgColor = "#cfcfcf"; // 기록 없음 → 진한 회색
+                    }
+
+                    $tbody.append(`
+                        <tr style="background:${bgColor}">
+                            <td>${u.key}</td>
+                            <td>${u.level || "-"}</td>
+                            <td>${avgExp ? (avgExp >= 10000 ? `${Math.floor(avgExp / 10000)}만` : avgExp.toLocaleString()) : "-"}</td>
+                            <td>${dDayText}</td>
+                        </tr>
+                    `);
+                });
+            }
+
+            // ✅ 첫 렌더링 (닉네임순)
+            users.sort((a, b) => a.key.localeCompare(b.key));
+            renderTable(users);
+
+            // ======================
+            // 🔹 검색 기능
+            // ======================
+            let searchTimer;
+            $("#searchInput").on("input", function () {
+                clearTimeout(searchTimer);
+                const keyword = $(this).val().trim().toLowerCase();
+
+                searchTimer = setTimeout(() => {
+                    const filtered = users.filter(u =>
+                        u.key.toLowerCase().includes(keyword)
+                    );
+                    renderTable(filtered);
+                }, 300);
+            });
+
+            // ======================
+            // 🔹 정렬 기능
+            // ======================
+            $("#sortSelect").on("change", function () {
+                const mode = $(this).val();
+                let sorted = [...users];
+
+                if (mode === "nickname") {
+                    sorted.sort((a, b) => a.key.localeCompare(b.key));
+                } else if (mode === "level") {
+                    sorted.sort((a, b) => (b.level || 0) - (a.level || 0));
+                } else if (mode === "dday") {
+                    sorted.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
+                } else if (mode === "avgexp") { // ✅ 평균 경험치 높은순 추가
+                    sorted.sort((a, b) => (b.avgExp || 0) - (a.avgExp || 0));
+                }
+
+                renderTable(sorted);
+            });
+
+            // 로그아웃
+            $("#logoutBtn").on("click", () => {
+                localStorage.removeItem("coffee-nickname");
+                location.href = "../levelup/";
+            });
+        });
+    });
+</script>
+</body>
+</html>

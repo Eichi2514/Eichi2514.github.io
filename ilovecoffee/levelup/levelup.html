@@ -391,6 +391,10 @@
         #alertConfirmBtn:hover {
             background: #47327a;
         }
+
+        #adminBtn-bar {
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -418,6 +422,8 @@
     </div>
 
     <div id="levelUpBox" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;"></div>
+
+    <div id="adminBtn-bar"></div>
 
     <h3>일자별 경험치</h3>
     <table id="expTable">
@@ -720,7 +726,10 @@
                         .html("이미 존재하는 닉네임이거나<br>비밀번호가 틀렸습니다.");
                 }
             } else {
-                await set(userRef, {password});
+                await set(userRef, {
+                    password,
+                    signupDate: getKoreanTimestamp(),   // 가입일 저장
+                });
                 $msg.css("color", "green").text("새 계정이 등록되었습니다.");
                 localStorage.setItem("coffee-nickname", nickname);
                 setTimeout(() => {
@@ -850,6 +859,28 @@
                 } else {
                     $nicknameDisplay.text(`${nickname}`);
                     $currentLevelDisplay.text(`${userData.level}`);
+                }
+
+                // 🔹 관리자일 경우 관리자 페이지 버튼 표시
+                if (userData.isAdmin) {
+                    if ($("#adminBtn").length === 0) { // 중복 방지
+                        const adminBtn = $('<button id="adminBtn">관리자 페이지</button>').css({
+                            background: '#5a4398',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 16px',
+                            marginTop: '10px',
+                            cursor: 'pointer',
+                            fontWeight: '600'
+                        });
+                        $("#adminBtn-bar").append(adminBtn);
+
+                        // 클릭 시 관리자 페이지 이동
+                        adminBtn.on("click", () => {
+                            window.location.href = "../admin/main.html";
+                        });
+                    }
                 }
 
                 if (userData.expRecords) {
