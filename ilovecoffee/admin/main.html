@@ -201,13 +201,13 @@
 
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
-        if (!nickname) return alert("로그인이 필요합니다."), location.href = "../levelup/levelup.html";
+        if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
 
         // 관리자 권한 확인
         get(ref(db, `coffeeUsers/${nickname}`)).then(async snap => {
             if (!snap.exists() || !snap.val().isAdmin) {
                 alert("관리자만 접근할 수 있습니다.");
-                location.href = "../levelup/levelup.html";
+                location.href = "/ilovecoffee/levelup/levelup.html";
                 return;
             }
 
@@ -366,7 +366,7 @@
 
             // 뒤로가기
             $("#backBtn").on("click", () => {
-                location.href = "../levelup/levelup.html";
+                location.href = "/ilovecoffee/levelup/levelup.html";
             });
         });
     });

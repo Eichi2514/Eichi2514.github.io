@@ -171,13 +171,13 @@
 
     $(async function () {
         const nickname = localStorage.getItem("coffee-nickname");
-        if (!nickname) return alert("로그인이 필요합니다."), location.href = "../levelup/levelup.html";
+        if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
 
         // ✅ 내 계정 먼저 확인
         const mySnap = await get(ref(db, `coffeeUsers/${nickname}`));
         if (!mySnap.exists()) {
             alert("계정을 찾을 수 없습니다.");
-            location.href = "../levelup/levelup.html";
+            location.href = "/ilovecoffee/levelup/levelup.html";
             return;
         }
 
@@ -186,7 +186,7 @@
         // ✅ 아카이브 공개여부 확인
         if (!myData.rankingPublic) {
             alert("아카이브 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
-            location.href = "../levelup/levelup.html";
+            location.href = "/ilovecoffee/levelup/levelup.html";
             return;
         }
 
@@ -200,7 +200,7 @@
 
         if (!records[todayStr] && !records[yesterStr]) {
             alert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
-            location.href = "../levelup/levelup.html";
+            location.href = "/ilovecoffee/levelup/levelup.html";
             return;
         }
 
@@ -311,7 +311,7 @@
         });
 
         // ✅ 뒤로가기
-        $("#backBtn").on("click", () => location.href = "../levelup/levelup.html");
+        $("#backBtn").on("click", () => location.href = "/ilovecoffee/levelup/levelup.html");
     });
 </script>
 </body>
