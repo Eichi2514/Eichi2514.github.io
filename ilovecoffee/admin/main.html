@@ -238,7 +238,6 @@
                 }
 
                 const today = new Date();
-                const todayStr = today.toISOString().split("T")[0]; // yyyy-mm-dd
 
                 list.forEach(u => {
                     const records = u.expRecords ? Object.entries(u.expRecords) : [];
@@ -253,13 +252,30 @@
                         lastDate = records[records.length - 1][0];
 
                         if (records.length > 1) {
-                            let totalGain = 0;
+                            const diffs = [];
+
                             for (let i = 1; i < records.length; i++) {
                                 const prev = records[i - 1][1];
                                 const cur = records[i][1];
-                                if (cur.exp > prev.exp) totalGain += cur.exp - prev.exp;
+                                let diff = 0;
+
+                                if (cur.level > prev.level) {
+                                    // 🔹 레벨업 구간 계산
+                                    diff += (levelExp[prev.level] - prev.exp);
+                                    for (let lv = prev.level + 1; lv < cur.level; lv++) {
+                                        diff += levelExp[lv];
+                                    }
+                                    diff += cur.exp;
+                                } else if (cur.level === prev.level && cur.exp >= prev.exp) {
+                                    diff = cur.exp - prev.exp;
+                                }
+
+                                if (diff > 0) diffs.push(diff);
                             }
-                            avgExp = Math.round(totalGain / (records.length - 1));
+
+                            avgExp = diffs.length > 0
+                                ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)
+                                : 0;
 
                             const last = records[records.length - 1][1];
                             const level = u.level || 1;
@@ -283,7 +299,12 @@
                     let bgColor = "";
                     if (lastDate) {
                         const last = new Date(lastDate);
-                        const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+
+                        // 🔹 시분초를 제거한 ‘순수 날짜’ 기준으로 계산
+                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        const lastDateOnly = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+
+                        const diffDays = Math.floor((todayDateOnly - lastDateOnly) / (1000 * 60 * 60 * 24));
 
                         if (diffDays >= 15) {
                             bgColor = "#f0f0f0"; // 15일 이상 → 연한 회색

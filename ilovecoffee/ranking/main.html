@@ -193,10 +193,14 @@
         // ✅ 오늘 또는 어제 기록 확인
         const records = myData.expRecords || {};
         const today = new Date();
-        const todayStr = today.toISOString().split("T")[0];
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        const todayStr = `${year}-${month}-${day}`;
+
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const yesterStr = yesterday.toISOString().split("T")[0];
+        const yesterStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
 
         if (!records[todayStr] && !records[yesterStr]) {
             alert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
@@ -223,7 +227,7 @@
             if (u.rankingPublic && u.expRecords) users.push({key: child.key, ...u});
         });
 
-        // ✅ 계산 함수
+        // ✅ 경험치 평균 계산 로직 (레벨업 포함)
         users.forEach(u => {
             const records = Object.entries(u.expRecords);
             if (records.length < 2) return;
@@ -231,13 +235,31 @@
             records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
             let totalGain = 0;
+            const diffs = [];
+
             for (let i = 1; i < records.length; i++) {
                 const prev = records[i - 1][1];
                 const cur = records[i][1];
-                if (cur.exp > prev.exp) totalGain += cur.exp - prev.exp;
+                let diff = 0;
+
+                if (cur.level > prev.level) {
+                    // 🔹 레벨업 구간 계산
+                    diff += (levelExp[prev.level] - prev.exp);
+                    for (let lv = prev.level + 1; lv < cur.level; lv++) {
+                        diff += levelExp[lv];
+                    }
+                    diff += cur.exp;
+                } else if (cur.level === prev.level && cur.exp >= prev.exp) {
+                    diff = cur.exp - prev.exp;
+                }
+
+                if (diff > 0) diffs.push(diff);
             }
 
-            const avgExp = Math.round(totalGain / (records.length - 1));
+            const avgExp = diffs.length > 0
+                ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)
+                : 0;
+
             const last = records[records.length - 1][1];
             const level = u.level || 1;
             const curExp = last.exp || 0;
