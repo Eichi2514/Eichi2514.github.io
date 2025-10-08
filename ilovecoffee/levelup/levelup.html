@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <!-- PWA manifest -->
-    <link rel="manifest" href="../levelup/manifest.json">
+    <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
 
     <style>
@@ -43,10 +43,11 @@
         /* ===== 레벨 입력 영역 ===== */
         .level-input {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             gap: 10px;
             margin-bottom: 30px;
+            padding: 0 8px;
         }
 
         .level-input label {
@@ -395,26 +396,62 @@
         #adminBtn-bar {
             text-align: right;
         }
+
+        /* ===== 아카이브 공개 토글 스위치 ===== */
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+
+        .toggle-switch::after {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* ON 상태 */
+        .toggle-switch.on {
+            background: #5a4398;
+        }
+
+        .toggle-switch.on::after {
+            left: 26px;
+        }
     </style>
 </head>
 <body>
 
 <div id="mainPage">
     <div class="level-row header-bar">
-        <h1>레벨업 일자 계산기</h1>
+        <h1>그럴수이치</h1>
         <button id="logoutBtn">로그아웃</button>
     </div>
 
     <div class="level-input">
-        <span id="nicknameDisplay"
-              style="display:inline-block; padding:8px 0;
-              font-size:16px; font-weight:600; color:#5a4398;">
-        </span>
-        <span id="currentLevelDisplay"
-              style="display:inline-block; padding:8px 0;
-              font-size:16px; font-weight:600; color:#5a4398;">
-        </span>
-        <button id="expButton">경험치 입력</button>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span id="nicknameDisplay"
+                  style="display:inline-block; padding:8px 0;
+                  font-size:16px; font-weight:600; color:#5a4398;">
+            </span>
+            <span id="currentLevelDisplay"
+                  style="display:inline-block; padding:8px 0;
+                  font-size:16px; font-weight:600; color:#5a4398;">
+            </span>
+            <button id="expButton">경험치 입력</button>
+        </div>
+        <div id="rankingToggle" class="toggle-switch"></div>
     </div>
 
     <div class="levelup-header">
@@ -678,6 +715,13 @@
                     // ✅ 정상 계정이면 페이지 표시
                     $popup.hide();
                     $mainPage.show();
+                    const todayValue = "v1";
+                    const lastUpdate = localStorage.getItem("LU-update");
+
+                    if (lastUpdate !== todayValue) {
+                        showAlert("! New !\n우측 상단의 버튼을 터치하여 활성화해보세요!");
+                        localStorage.setItem("LU-update", todayValue);
+                    }
                     loadUserData(savedNick);
                 } else {
                     // ❌ DB에 없는 닉네임일 경우 자동 제거
@@ -820,6 +864,70 @@
             await loadUserData(nickname);
         }
 
+        // ✅ 아카이브 버튼 추가 함수
+        function addRankingButton() {
+            if ($("#rankingBtn").length > 0) return; // 중복 방지
+
+            const rankingBtn = $('<button id="rankingBtn">아카이브</button>').css({
+                background: '#5a4398',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                marginTop: '10px',
+                marginLeft: '8px',
+                cursor: 'pointer',
+                fontWeight: '600'
+            });
+
+            $("#adminBtn-bar").append(rankingBtn);
+
+            // ✅ 클릭 시 아카이브 접근 조건 검증
+            rankingBtn.on("click", async () => {
+                const nickname = localStorage.getItem("coffee-nickname");
+                if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+                const userRef = ref(db, `coffeeUsers/${nickname}`);
+                const snapshot = await get(userRef);
+
+                if (!snapshot.exists()) return showAlert("계정 정보를 불러오지 못했습니다.");
+
+                const userData = snapshot.val();
+                const records = userData.expRecords || {};
+                const rankingPublic = !!userData.rankingPublic;
+
+                // 🔹 오늘 / 어제 날짜 문자열 구하기
+                const today = getKoreanDate();
+                const yesterday = (() => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - 1);
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                })();
+
+                const recordKeys = Object.keys(records);
+                const hasRecentRecord = records[today] || records[yesterday];
+
+                // ✅ 조건 확인
+                if (!rankingPublic) {
+                    showAlert("아카이브 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
+                    return;
+                }
+
+                if (recordKeys.length === 0 || !hasRecentRecord) {
+                    showAlert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
+                    return;
+                }
+
+                // ✅ 통과 시 페이지 이동
+                window.location.href = "../ranking/main.html";
+            });
+        }
+
+        // ✅ 아카이브 버튼 제거 함수
+        function removeRankingButton() {
+            $("#rankingBtn").remove();
+        }
+
         // ✅ 사용자 전체 데이터 불러오기
         async function loadUserData(nickname) {
             const userRef = ref(db, `coffeeUsers/${nickname}`);
@@ -864,7 +972,7 @@
                 // 🔹 관리자일 경우 관리자 페이지 버튼 표시
                 if (userData.isAdmin) {
                     if ($("#adminBtn").length === 0) { // 중복 방지
-                        const adminBtn = $('<button id="adminBtn">관리자 페이지</button>').css({
+                        const adminBtn = $('<button id="adminBtn">관리자</button>').css({
                             background: '#5a4398',
                             color: '#fff',
                             border: 'none',
@@ -881,6 +989,20 @@
                             window.location.href = "../admin/main.html";
                         });
                     }
+                }
+
+                // ✅ 아카이브 공개 여부에 따라 아카이브 페이지 버튼 동적 제어
+                const $rankingBtnBar = $("#adminBtn-bar");
+                const existingRankingBtn = $("#rankingBtn");
+
+                // 🔹 공개 상태일 때 버튼 없으면 추가
+                if (userData.rankingPublic) {
+                    if (existingRankingBtn.length === 0) {
+                        addRankingButton();
+                    }
+                } else {
+                    // 🔹 비공개 상태면 버튼 제거
+                    removeRankingButton();
                 }
 
                 if (userData.expRecords) {
@@ -1072,6 +1194,47 @@
                     `);
                     $("body").append(editModal);
                 }
+
+                // ✅ 아카이브 공개 토글 스위치 상태 반영
+                const $toggle = $("#rankingToggle");
+                if (userData.rankingPublic) {
+                    $toggle.addClass("on");
+                } else {
+                    $toggle.removeClass("on");
+                }
+
+                // ✅ 클릭 시 상태 토글
+                $toggle.off("click").on("click", async function () {
+                    const nickname = localStorage.getItem("coffee-nickname");
+                    const isCurrentlyOn = $toggle.hasClass("on");
+                    const newStatus = !isCurrentlyOn;
+
+                    if (newStatus) {
+                        // 🔹 공개로 전환하려 할 때
+                        showConfirm(
+                            "내 정보가 공개되며,\n다른 회원의 정보도 확인할 수 있습니다.",
+                            async (ok) => {
+                                if (ok) {
+                                    $toggle.addClass("on");
+                                    await set(ref(db, `coffeeUsers/${nickname}/rankingPublic`), true);
+                                    addRankingButton();
+                                }
+                            }
+                        );
+                    } else {
+                        // 🔹 비공개 전환 시
+                        showConfirm(
+                            "내 정보가 비공개되며,\n다른 회원의 정보도 확인할 수 없습니다.",
+                            async (ok) => {
+                                if (ok) {
+                                    $toggle.removeClass("on");
+                                    await set(ref(db, `coffeeUsers/${nickname}/rankingPublic`), false);
+                                    removeRankingButton();
+                                }
+                            }
+                        );
+                    }
+                });
             } else {
                 console.log("불러올 데이터가 없습니다.");
             }

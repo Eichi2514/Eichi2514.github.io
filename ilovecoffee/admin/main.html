@@ -7,6 +7,14 @@
     <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
     <style>
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
@@ -86,6 +94,10 @@
             display: none;
         }
 
+        #searchInput {
+            width: 140px;
+        }
+
         #colorGuide {
             display: flex;
             gap: 16px;
@@ -113,15 +125,15 @@
 
 <body>
 <div class="header-bar">
-    <h1>관리자 대시보드</h1>
-    <button id="logoutBtn">로그아웃</button>
+    <h1>대시보드</h1>
+    <button id="backBtn">뒤로가기</button>
 </div>
 
 <div id="controlBar">
     <input type="text" id="searchInput" placeholder="닉네임 검색">
     <select id="sortSelect">
-        <option value="nickname">닉네임순</option>
-        <option value="level">레벨순</option>
+        <option value="nickname">닉네임</option>
+        <option value="level">레벨</option>
         <option value="dday">D-day</option>
         <option value="avgexp">경험치</option>
     </select>
@@ -189,13 +201,13 @@
 
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
-        if (!nickname) return alert("로그인이 필요합니다."), location.href = "../levelup/";
+        if (!nickname) return alert("로그인이 필요합니다."), location.href = "../levelup/levelup.html";
 
         // 관리자 권한 확인
         get(ref(db, `coffeeUsers/${nickname}`)).then(async snap => {
             if (!snap.exists() || !snap.val().isAdmin) {
                 alert("관리자만 접근할 수 있습니다.");
-                location.href = "../levelup/";
+                location.href = "../levelup/levelup.html";
                 return;
             }
 
@@ -281,7 +293,24 @@
                             bgColor = "#fff8d1"; // 오늘 미입력 → 연노랑
                         }
                     } else {
-                        bgColor = "#cfcfcf"; // 기록 없음 → 진한 회색
+                        // ✅ 기록 없음 → 회원가입일 기준으로 구분
+                        if (u.signupDate) {
+                            // 예: "25.10.07-00:00:00" → "2025-10-07T00:00:00"
+                            const parts = u.signupDate.split(/[\.\-:]/);
+                            // ["25", "10", "07", "00", "00", "00"]
+                            const year = 2000 + Number(parts[0]); // 25 → 2025
+                            const month = Number(parts[1]) - 1;
+                            const day = Number(parts[2]);
+                            const hour = Number(parts[3]);
+                            const min = Number(parts[4]);
+                            const sec = Number(parts[5]);
+                            const signup = new Date(year, month, day, hour, min, sec);
+                            const diffJoinDays = Math.floor((today - signup) / (1000 * 60 * 60 * 24));
+
+                            if (diffJoinDays >= 7) {
+                                bgColor = "#cfcfcf"; // 가입 7일 이상 지남 → 회색
+                            }
+                        }
                     }
 
                     $tbody.append(`
@@ -335,10 +364,9 @@
                 renderTable(sorted);
             });
 
-            // 로그아웃
-            $("#logoutBtn").on("click", () => {
-                localStorage.removeItem("coffee-nickname");
-                location.href = "../levelup/";
+            // 뒤로가기
+            $("#backBtn").on("click", () => {
+                location.href = "../levelup/levelup.html";
             });
         });
     });
