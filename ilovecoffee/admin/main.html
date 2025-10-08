@@ -199,6 +199,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    function toDateOnly(d) {
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function dayDiff(a, b) {
+        return Math.floor((toDateOnly(b) - toDateOnly(a)) / (1000 * 60 * 60 * 24));
+    }
+
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
         if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
@@ -241,53 +249,56 @@
 
                 list.forEach(u => {
                     const records = u.expRecords ? Object.entries(u.expRecords) : [];
+
                     let avgExp = 0;
                     let dDayText = "-";
                     let dDayValue = 99999;
-                    let lastDate = null; // ✅ 최근 기록 날짜 저장용
+                    let lastDate = null;
 
                     if (records.length > 0) {
-                        // 🔹 가장 최근 날짜 구하기
+                        // 날짜 오름차순 정렬 후 첫/마지막 날짜 구함
                         records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+                        const firstDate = new Date(records[0][0]);
+                        const lastDateObj = new Date(records[records.length - 1][0]);
                         lastDate = records[records.length - 1][0];
 
-                        if (records.length > 1) {
-                            const diffs = [];
+                        // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
+                        const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
 
-                            for (let i = 1; i < records.length; i++) {
-                                const prev = records[i - 1][1];
-                                const cur = records[i][1];
-                                let diff = 0;
+                        // ✅ 구간별 총 획득 경험치 합산
+                        let totalGain = 0;
+                        for (let i = 1; i < records.length; i++) {
+                            const prev = records[i - 1][1];
+                            const cur  = records[i][1];
+                            let diff = 0;
 
-                                if (cur.level > prev.level) {
-                                    // 🔹 레벨업 구간 계산
-                                    diff += (levelExp[prev.level] - prev.exp);
-                                    for (let lv = prev.level + 1; lv < cur.level; lv++) {
-                                        diff += levelExp[lv];
-                                    }
-                                    diff += cur.exp;
-                                } else if (cur.level === prev.level && cur.exp >= prev.exp) {
-                                    diff = cur.exp - prev.exp;
+                            if (cur.level > prev.level) {
+                                diff += (levelExp[prev.level] - prev.exp);
+                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
+                                    diff += levelExp[lv];
                                 }
-
-                                if (diff > 0) diffs.push(diff);
+                                diff += cur.exp;
+                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
+                                diff = cur.exp - prev.exp;
                             }
 
-                            avgExp = diffs.length > 0
-                                ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)
-                                : 0;
+                            if (diff > 0) totalGain += diff;
+                        }
 
-                            const last = records[records.length - 1][1];
-                            const level = u.level || 1;
-                            const curExp = last.exp || 0;
-                            const need = levelExp[level] || 0;
-                            const remain = Math.max(need - curExp, 0);
+                        // ✅ 평균 = 총획득 / 총일수(빈 날 포함)
+                        avgExp = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
 
-                            if (avgExp > 0 && remain > 0) {
-                                const days = Math.ceil(remain / avgExp);
-                                dDayValue = days;
-                                dDayText = days > 0 ? `D-${days}` : "D-day";
-                            }
+                        // ✅ D-day 계산 (마지막 기록 기준)
+                        const last = records[records.length - 1][1];
+                        const level = u.level || 1;
+                        const curExp = last.exp || 0;
+                        const need = levelExp[level] || 0;
+                        const remain = Math.max(need - curExp, 0);
+
+                        if (avgExp > 0 && remain > 0) {
+                            const days = Math.ceil(remain / avgExp);
+                            dDayValue = days;
+                            dDayText = days > 0 ? `D-${days}` : "D-day";
                         }
                     }
 

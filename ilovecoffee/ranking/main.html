@@ -92,7 +92,7 @@
         }
 
         #searchInput {
-             width: 140px;
+            width: 140px;
         }
 
         #myRankInfo {
@@ -143,7 +143,14 @@
 
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {getDatabase, ref, get, query, orderByChild, equalTo} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {
+        getDatabase,
+        ref,
+        get,
+        query,
+        orderByChild,
+        equalTo
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -156,18 +163,26 @@
     };
 
     const levelExp = [
-        0,25,60,70,80,90,100,160,250,380,520,880,1210,1750,2500,3639,4790,5999,7392,9102,10992,13100,
-        14800,15800,18100,19841,22000,23500,26000,29000,30800,33800,36000,39000,41800,45700,49000,
-        53000,58000,63000,67810,73500,79000,86000,92000,99800,107000,117000,131000,150000,160000,
-        175000,191000,209000,228000,249000,271000,295000,321000,350000,382000,417000,455000,496000,
-        540000,587000,637000,690000,746000,805000,867000,932000,1000000,1071000,1145000,1222000,
-        1302000,1385000,1471000,1560000,1800000,2200000,2700000,3200000,3900000,4700000,5600000,
-        6800000,8100000,15000000,19500000,25350000,32960000,42850000,55710000,72990000,96350000,
-        128150000,171730000,240430000
+        0, 25, 60, 70, 80, 90, 100, 160, 250, 380, 520, 880, 1210, 1750, 2500, 3639, 4790, 5999, 7392, 9102, 10992, 13100,
+        14800, 15800, 18100, 19841, 22000, 23500, 26000, 29000, 30800, 33800, 36000, 39000, 41800, 45700, 49000,
+        53000, 58000, 63000, 67810, 73500, 79000, 86000, 92000, 99800, 107000, 117000, 131000, 150000, 160000,
+        175000, 191000, 209000, 228000, 249000, 271000, 295000, 321000, 350000, 382000, 417000, 455000, 496000,
+        540000, 587000, 637000, 690000, 746000, 805000, 867000, 932000, 1000000, 1071000, 1145000, 1222000,
+        1302000, 1385000, 1471000, 1560000, 1800000, 2200000, 2700000, 3200000, 3900000, 4700000, 5600000,
+        6800000, 8100000, 15000000, 19500000, 25350000, 32960000, 42850000, 55710000, 72990000, 96350000,
+        128150000, 171730000, 240430000
     ];
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    function toDateOnly(d) {
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function dayDiff(a, b) {
+        return Math.floor((toDateOnly(b) - toDateOnly(a)) / (1000 * 60 * 60 * 24));
+    }
 
     $(async function () {
         const nickname = localStorage.getItem("coffee-nickname");
@@ -228,22 +243,27 @@
         });
 
         // ✅ 경험치 평균 계산 로직 (레벨업 포함)
+        // ✅ 경험치 평균 계산 로직 (빈 날짜 포함)
         users.forEach(u => {
             const records = Object.entries(u.expRecords);
-            if (records.length < 2) return;
+            if (records.length === 0) return;
 
+            // 날짜 오름차순 정렬
             records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+            const firstDate = new Date(records[0][0]);
+            const lastDateObj = new Date(records[records.length - 1][0]);
 
+            // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
+            const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
+
+            // ✅ 구간별 총 획득 경험치 합산
             let totalGain = 0;
-            const diffs = [];
-
             for (let i = 1; i < records.length; i++) {
                 const prev = records[i - 1][1];
-                const cur = records[i][1];
+                const cur  = records[i][1];
                 let diff = 0;
 
                 if (cur.level > prev.level) {
-                    // 🔹 레벨업 구간 계산
                     diff += (levelExp[prev.level] - prev.exp);
                     for (let lv = prev.level + 1; lv < cur.level; lv++) {
                         diff += levelExp[lv];
@@ -253,13 +273,13 @@
                     diff = cur.exp - prev.exp;
                 }
 
-                if (diff > 0) diffs.push(diff);
+                if (diff > 0) totalGain += diff;
             }
 
-            const avgExp = diffs.length > 0
-                ? Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length)
-                : 0;
+            // ✅ 평균 = 총획득 / 총일수(빈 날 포함)
+            const avgExp = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
 
+            // ✅ D-day 계산 (마지막 기록 기준)
             const last = records[records.length - 1][1];
             const level = u.level || 1;
             const curExp = last.exp || 0;
@@ -279,13 +299,13 @@
         const $tbody = $("#rankingTable tbody");
         users.forEach(u => {
             $tbody.append(`
-                <tr>
-                    <td>${u.key}</td>
-                    <td>${u.level || "-"}</td>
-                    <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
-                    <td>${u.dDayText}</td>
-                </tr>
-            `);
+                    <tr>
+                        <td>${u.key}</td>
+                        <td>${u.level || "-"}</td>
+                        <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
+                        <td>${u.dDayText}</td>
+                    </tr>
+                `);
         });
 
         // ✅ 내 위치 계산
@@ -322,13 +342,13 @@
             $tbody.empty();
             sorted.forEach(u => {
                 $tbody.append(`
-                    <tr>
-                        <td>${u.key}</td>
-                        <td>${u.level || "-"}</td>
-                        <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
-                        <td>${u.dDayText}</td>
-                    </tr>
-                `);
+                        <tr>
+                            <td>${u.key}</td>
+                            <td>${u.level || "-"}</td>
+                            <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
+                            <td>${u.dDayText}</td>
+                        </tr>
+                    `);
             });
         });
 
