@@ -350,6 +350,12 @@
                         </tr>
                     `);
             });
+
+            // ✅ 정렬 후 내 위치 다시 계산 & 강조
+            const myIndex = sorted.findIndex(u => u.key === nickname);
+            const myRank = myIndex >= 0 ? myIndex + 1 : "-";
+            $("#myRankText").text(`내 위치 : ${myRank}번째`);
+            $(`#rankingTable tbody tr`).eq(myIndex).css("background", "#ede7ff");
         });
 
         // ✅ 뒤로가기
