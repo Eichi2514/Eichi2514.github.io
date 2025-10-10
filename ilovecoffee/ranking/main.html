@@ -285,11 +285,41 @@
             const curExp = last.exp || 0;
             const need = levelExp[level] || 0;
             const remain = Math.max(need - curExp, 0);
-            const dDay = avgExp > 0 ? Math.ceil(remain / avgExp) : 9999;
+            let dDay = avgExp > 0 ? Math.ceil(remain / avgExp) : 9999;
+            let dDayText = dDay < 9999 ? `D-${dDay}` : "-";
+
+            // ✅ 최대 레벨(만렙) 자동 계산
+            const maxLevel = levelExp.length;
+
+            // ✅ 만렙일 경우 → 현재 경험치보다 높은 목표 중 가장 가까운 목표까지 남은 일수 표시
+            if (level >= maxLevel && u.goalTargets && u.goalTargets.length > 0 && avgExp > 0) {
+                // 🔹 현재 경험치보다 높은 목표만 필터링 후 오름차순 정렬
+                const higherGoals = u.goalTargets.filter(g => g > curExp).sort((a, b) => a - b);
+
+                if (higherGoals.length > 0) {
+                    const nextGoal = higherGoals[0];
+                    const remainGoalExp = nextGoal - curExp;
+
+                    // 🔹 남은 경험치가 0보다 커야만 계산
+                    if (remainGoalExp > 0) {
+                        const goalDays = Math.ceil(remainGoalExp / avgExp);
+                        dDay = goalDays;
+                        dDayText = `D-${goalDays}`;
+                    } else {
+                        dDayText = "D-day";
+                    }
+                } else {
+                    // 🔹 남은 목표가 없을 경우
+                    dDayText = "-";
+                }
+            } else if (level >= maxLevel) {
+                // 🔹 목표 자체가 없을 경우
+                dDayText = "-";
+            }
 
             u.avgExp = avgExp;
             u.dDayValue = dDay;
-            u.dDayText = dDay < 9999 ? `D-${dDay}` : "-";
+            u.dDayText = dDayText;
         });
 
         // ✅ 기본 정렬: D-day 짧은 순

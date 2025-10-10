@@ -188,7 +188,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 50;
+        }
+
+        /* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
+        #customAlert,
+        #customConfirm {
+            z-index: 100; /* 다른 모든 모달보다 앞 */
+        }
+
+        #customAlert .alert-box,
+        #customConfirm .alert-box {
+            position: relative;
+            z-index: 101; /* 내부 콘텐츠도 최상단 */
         }
 
         .login-modal {
@@ -238,22 +250,22 @@
             height: 24px;
         }
 
-        #closeExpModal, #closeEditModal, #closeGoalModal {
+        .closeBtn {
             position: absolute;
             top: 8px;
             right: 10px;
-            background: none;
+            background: none !important;
             border: none;
             font-size: 20px;
-            color: #aaa;
+            color: #aaa !important;
             cursor: pointer;
             transition: color 0.2s;
             padding: 0;
             margin: 0;
-            width: max-content;
+            width: max-content !important;
         }
 
-        #closeExpModal:hover, #closeEditModal:hover, #closeGoalModal:hover {
+        .closeBtn:hover {
             color: #5a4398; /* hover 시 포인트 색 */
         }
 
@@ -474,16 +486,53 @@
             font-weight: 600;
         }
 
+        /* ===== 로딩 스크린 ===== */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f3f9;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        /* ===== 스피너 애니메이션 ===== */
+        .spinner {
+            border: 5px solid #eee;
+            border-top: 5px solid #5a4398;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== 로딩 문구 ===== */
+        #loadingScreen p {
+            margin-top: 10px;
+            color: #5a4398;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* ===== 회전 애니메이션 ===== */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
-<div id="mainPage">
+<div id="mainPage" style="display:none;">
     <div class="level-row header-bar">
         <h1>그럴수이치</h1>
         <div class="settings-menu">
             <button id="settingsBtn">설정</button>
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
+                <button id="changeNicknameBtn">닉네임 변경</button>
+                <button id="changePasswordBtn">비밀번호 변경</button>
                 <button id="logoutBtn">로그아웃</button>
             </div>
         </div>
@@ -526,10 +575,29 @@
     </table>
 </div>
 
+<!-- 로그인 팝업 -->
+<div id="loginPopup" class="login-overlay" style="display:none;">
+    <div class="login-modal">
+        <h2>로그인</h2>
+        <input id="nickname" type="text" placeholder="닉네임">
+        <input id="password" type="password" placeholder="비밀번호">
+        <button id="loginBtn">확인</button>
+        <div class="msg" id="message">
+            첫 로그인시 계정이 생성됩니다.
+        </div>
+    </div>
+</div>
+
+<!-- 로딩 스피너 -->
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>로딩 중...</p>
+</div>
+
 <!-- 경험치 입력 모달 -->
 <div id="expModal" class="login-overlay" style="display:none;">
     <div class="login-modal" style="position: relative;">
-        <button id="closeExpModal">✕</button>
+        <button id="closeExpModal" class="closeBtn">✕</button>
         <h2>경험치 입력</h2>
         <div style="margin-bottom:10px;">
             <label for="expDate" style="display:block; font-size:14px; text-align:left; color:#555;">날짜</label>
@@ -550,19 +618,6 @@
         </div>
 
         <button id="saveExpBtn">저장</button>
-    </div>
-</div>
-
-<!-- 로그인 팝업 -->
-<div id="loginPopup" class="login-overlay">
-    <div class="login-modal">
-        <h2>로그인</h2>
-        <input id="nickname" type="text" placeholder="닉네임">
-        <input id="password" type="password" placeholder="비밀번호">
-        <button id="loginBtn">확인</button>
-        <div class="msg" id="message">
-            첫 로그인시 계정이 생성됩니다.
-        </div>
     </div>
 </div>
 
@@ -750,6 +805,60 @@
         return `${yy}.${mm}.${dd}-${hh}:${mi}:${ss}`;
     }
 
+    function validateNickname(nickname) {
+        if (!nickname || nickname.trim().length < 2) {
+            showAlert("닉네임은 2자 이상이어야 합니다.");
+            return false;
+        }
+        if (nickname.length > 12) {
+            showAlert("닉네임은 12자 이하로 입력해주세요.");
+            return false;
+        }
+        if (!/^[가-힣a-zA-Z0-9_]+$/.test(nickname)) {
+            showAlert("닉네임은 한글, 영문, 숫자, 밑줄(_)만 사용할 수 있습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    function validatePassword(password) {
+        if (!password || password.trim().length < 4) {
+            showAlert("비밀번호는 4자 이상이어야 합니다.");
+            return false;
+        }
+        if (password.length > 20) {
+            showAlert("비밀번호는 최대 20자까지 가능합니다.");
+            return false;
+        }
+        if (!/^[a-zA-Z0-9!@#$%^&*]+$/.test(password)) {
+            showAlert("비밀번호는 영문, 숫자, 특수문자(!@#$%^&*)만 가능합니다.");
+            return false;
+        }
+        return true;
+    }
+
+    function validateDateNotFuture(inputDate) {
+        if (!inputDate) {
+            showAlert("날짜를 선택해주세요.");
+            return false;
+        }
+        const today = getKoreanDate();
+        if (inputDate > today) {
+            showAlert("미래 날짜는 입력할 수 없습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    function validateUniqueGoals(goals) {
+        const unique = [...new Set(goals)];
+        if (unique.length !== goals.length) {
+            showAlert("중복된 목표값이 있습니다.");
+            return false;
+        }
+        return true;
+    }
+
     $("#logoutBtn").on("click", function () {
         showConfirm("정말 로그아웃할까요?", async (ok) => {
             if (ok) {
@@ -770,6 +879,11 @@
         if (!$(e.target).closest(".settings-menu").length) {
             $("#settingsDropdown").hide();
         }
+    });
+
+    // ✅ 드롭다운 메뉴 안의 버튼 클릭 시 메뉴 닫기
+    $(document).on("click", "#settingsDropdown button", function () {
+        $("#settingsDropdown").hide();
     });
 
     // ✅ 경험치 입력 모달 닫기 버튼
@@ -860,17 +974,33 @@
 
     // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
     $(document).on("input", "#todayExp, #editExpValue", function () {
-        let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 남기기
-        if (value) {
-            // 3자리마다 쉼표 추가
-            value = parseInt(value, 10).toLocaleString();
-        }
-        $(this).val(value);
+        bindNumericCommaFormatter("#todayExp, #editExpValue", 1_000_000_000_000, "경험치는 최대 1조까지 입력할 수 있어요.");
     });
+
+    // ✅ 숫자 입력 시 실시간 쉼표 포맷 + 상한 체크 공용 함수
+    function bindNumericCommaFormatter(selector, maxValue = 1_000_000_000_000, maxMsg = "최대 1조까지 입력할 수 있어요.") {
+        $(document).off("input", selector).on("input", selector, function () {
+            let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 추출
+            if (!value) {
+                $(this).val("");
+                return;
+            }
+
+            let num = parseInt(value, 10);
+
+            if (num > maxValue) {
+                showAlert(maxMsg);
+                num = maxValue;
+            }
+
+            $(this).val(num.toLocaleString()); // 3자리마다 쉼표 표시
+        });
+    }
 
     $(function () {
         const $popup = $("#loginPopup");
         const $mainPage = $("#mainPage");
+        const $loadingScreen = $("#loadingScreen");
         const $msg = $("#message");
         const $nicknameDisplay = $("#nicknameDisplay");
         const $currentLevelDisplay = $("#currentLevelDisplay");
@@ -881,7 +1011,7 @@
             get(userRef).then(snapshot => {
                 if (snapshot.exists()) {
                     // ✅ 정상 계정이면 페이지 표시
-                    $popup.hide();
+                    $loadingScreen.hide();
                     $mainPage.show();
                     const todayValue = "v1";
                     const lastUpdate = localStorage.getItem("LU-update");
@@ -895,19 +1025,19 @@
                     // ❌ DB에 없는 닉네임일 경우 자동 제거
                     console.warn("저장된 닉네임이 유효하지 않아 초기화합니다.");
                     localStorage.removeItem("coffee-nickname");
+                    $loadingScreen.hide();
                     $popup.show();
-                    $mainPage.hide();
                 }
             }).catch(err => {
                 console.error("데이터 확인 중 오류 발생:", err);
                 localStorage.removeItem("coffee-nickname");
+                $loadingScreen.hide();
                 $popup.show();
-                $mainPage.hide();
             });
         } else {
             // 로컬스토리지에 닉네임이 없으면 로그인 팝업 유지
+            $loadingScreen.hide();
             $popup.show();
-            $mainPage.hide();
         }
 
         // ✅ 로그인 처리
@@ -919,6 +1049,10 @@
                 $msg.text("닉네임과 비밀번호를 모두 입력하세요.");
                 return;
             }
+
+            if (!validateNickname(nickname)) return;
+
+            if(!validatePassword(password)) return;
 
             const userRef = ref(db, `coffeeUsers/${nickname}`);
             const snapshot = await get(userRef);
@@ -985,6 +1119,7 @@
             const exp = parseInt($("#todayExp").val().replace(/,/g, ""));
             const level = parseInt($("#todayLevel").val());
             const dateInput = $("#expDate").val();
+            if (!validateDateNotFuture(dateInput)) return;
             const selectedDate = dateInput || getKoreanDate();
 
             if (isNaN(exp) || exp < 0) return showAlert("경험치를 올바르게 입력해주세요.");
@@ -1409,7 +1544,7 @@
                     const editModal = $(`
                         <div id="editModal" class="login-overlay" style="display:none;">
                             <div class="login-modal" style="position:relative; width:360px;">
-                                <button id="closeEditModal">✕</button>
+                                <button id="closeEditModal" class="closeBtn">✕</button>
                                 <h2>경험치 수정</h2>
                                 <label style="display:block; text-align:left; color:#555;">날짜</label>
                                 <input id="editExpDate" type="date" style="margin-bottom:10px;">
@@ -1532,6 +1667,7 @@
 
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
             if (!newDate || isNaN(newExp) || newLevel < 1 || newLevel > 100) return showAlert("값이 올바르지 않습니다.");
+            if (!validateDateNotFuture(newDate)) return;
 
             // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
             if (newDate !== selectedDate) {
@@ -1578,7 +1714,7 @@
                 const modal = $(`
                     <div id="goalModal" class="login-overlay">
                         <div class="login-modal" style="position:relative;">
-                            <button id="closeGoalModal">✕</button>
+                            <button id="closeGoalModal" class="closeBtn">✕</button>
                             <h2>목표 설정</h2>
                             <div id="goalInputs" style="margin-bottom:10px;"></div>
                             <button id="saveGoalBtn">저장</button>
@@ -1599,11 +1735,9 @@
                     `);
                 }
 
-                // ✅ 실시간 쉼표 포맷 적용
-                $(document).off("input", ".goalInput").on("input", ".goalInput", function() {
-                    let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 추출
-                    if (value) value = parseInt(value, 10).toLocaleString(); // 3자리 쉼표
-                    $(this).val(value);
+                // ✅ 실시간 쉼표 포맷 + 상한(1조) 체크
+                $(document).off("input", ".goalInput").on("input", ".goalInput", function () {
+                    bindNumericCommaFormatter(".goalInput", 1_000_000_000_000, "목표 경험치는 최대 1조까지 입력할 수 있어요.");
                 });
 
                 // 닫기 버튼
@@ -1620,6 +1754,7 @@
                     }).get();
 
                     const filtered = values.filter(v => v !== null);
+                    if (!validateUniqueGoals(filtered)) return;
                     if (filtered.length === 0) {
                         showAlert("목표를 하나 이상 입력해주세요.");
                         return;
@@ -1658,6 +1793,105 @@
             checkGoalButtonCondition(nickname);
         });
 
+        // ✅ 닉네임 변경 모달 열기
+        $(document).on("click", "#changeNicknameBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+            // 기존 모달 제거 후 새로 생성
+            $("#nicknameModal").remove();
+            const modal = $(`
+                <div id="nicknameModal" class="login-overlay">
+                    <div class="login-modal" style="position:relative;">
+                        <button id="closeNicknameModal" class="closeBtn">✕</button>
+                        <h2>닉네임 변경</h2>
+                        <input id="newNicknameInput" type="text" value="${nickname}"
+                               style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
+                        <button id="saveNicknameBtn">저장</button>
+                    </div>
+                </div>
+            `);
+            $("body").append(modal);
+
+            // 닫기 버튼
+            $(document).off("click", "#closeNicknameModal").on("click", "#closeNicknameModal", function () {
+                $("#nicknameModal").remove();
+            });
+
+            // 저장 버튼
+            $(document).off("click", "#saveNicknameBtn").on("click", "#saveNicknameBtn", async function () {
+                const newNick = $("#newNicknameInput").val().trim();
+                if (!newNick) return showAlert("새 닉네임을 입력해주세요.");
+                if (!validateNickname(newNick)) return;
+                if (newNick === nickname) return showAlert("기존 닉네임과 동일합니다.");
+
+                const dbRef = ref(db, `coffeeUsers/${nickname}`);
+                const snapshot = await get(dbRef);
+                if (!snapshot.exists()) return showAlert("계정 정보를 불러올 수 없습니다.");
+                const userData = snapshot.val();
+
+                const newRef = ref(db, `coffeeUsers/${newNick}`);
+                const checkSnap = await get(newRef);
+                if (checkSnap.exists()) {
+                    showAlert("이미 존재하는 닉네임입니다.");
+                    return;
+                }
+
+                // ✅ 닉네임 변경 로그 저장
+                const safeTimestamp = getKoreanTimestamp().replaceAll('.', '_');
+                const randomSuffix = Math.floor(Math.random() * 100); // 0~99
+                const logKey = `${safeTimestamp}_${randomSuffix}`;
+
+                const logRef = ref(db, `coffeeUsersLogs/nickChanges/${logKey}`);
+                const logText = `${nickname}가 ${newNick}로 변경되었습니다`;
+                await set(logRef, logText);
+
+                await set(newRef, userData);
+                await remove(dbRef);
+                localStorage.setItem("coffee-nickname", newNick);
+                showAlert("닉네임이 변경되었습니다!");
+                $("#nicknameModal").remove();
+                location.reload();
+            });
+        });
+
+
+        // ✅ 비밀번호 변경 모달 열기
+        $(document).on("click", "#changePasswordBtn", async function () {
+            const nickname = localStorage.getItem("coffee-nickname");
+            if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+            // 기존 모달 제거 후 새로 생성
+            $("#passwordModal").remove();
+            const modal = $(`
+                <div id="passwordModal" class="login-overlay">
+                    <div class="login-modal" style="position:relative;">
+                        <button id="closePasswordModal" class="closeBtn">✕</button>
+                        <h2>비밀번호 변경</h2>
+                        <input id="newPasswordInput" type="password" placeholder="새 비밀번호 입력 (4자 이상)"
+                               style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
+                        <button id="savePasswordBtn">저장</button>
+                    </div>
+                </div>
+            `);
+            $("body").append(modal);
+
+            // 닫기 버튼
+            $(document).off("click", "#closePasswordModal").on("click", "#closePasswordModal", function () {
+                $("#passwordModal").remove();
+            });
+
+            // 저장 버튼
+            $(document).off("click", "#savePasswordBtn").on("click", "#savePasswordBtn", async function () {
+                const newPassword = $("#newPasswordInput").val().trim();
+                if (!newPassword) return showAlert("새 비밀번호를 입력해주세요.");
+                if(!validatePassword(newPassword)) return;
+
+                await set(ref(db, `coffeeUsers/${nickname}/password`), newPassword);
+                showAlert("비밀번호가 변경되었습니다!");
+                $("#passwordModal").remove();
+            });
+        });
     });
 </script>
 </body>

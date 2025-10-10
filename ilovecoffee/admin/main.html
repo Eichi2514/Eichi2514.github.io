@@ -295,10 +295,38 @@
                         const need = levelExp[level] || 0;
                         const remain = Math.max(need - curExp, 0);
 
-                        if (avgExp > 0 && remain > 0) {
-                            const days = Math.ceil(remain / avgExp);
-                            dDayValue = days;
-                            dDayText = days > 0 ? `D-${days}` : "D-day";
+                        // ✅ 최대 레벨 계산
+                        const maxLevel = levelExp.length;
+
+                        if (avgExp > 0) {
+                            if (level < maxLevel) {
+                                // 일반 레벨 구간
+                                if (remain > 0) {
+                                    const days = Math.ceil(remain / avgExp);
+                                    dDayValue = days;
+                                    dDayText = days > 0 ? `D-${days}` : "D-day";
+                                }
+                            } else {
+                                // ✅ 만렙일 경우 (목표 기반 계산)
+                                if (u.goalTargets && u.goalTargets.length > 0) {
+                                    const higherGoals = u.goalTargets.filter(g => g > curExp).sort((a, b) => a - b);
+                                    if (higherGoals.length > 0) {
+                                        const nextGoal = higherGoals[0];
+                                        const remainGoalExp = nextGoal - curExp;
+                                        if (remainGoalExp > 0) {
+                                            const goalDays = Math.ceil(remainGoalExp / avgExp);
+                                            dDayValue = goalDays;
+                                            dDayText = `D-${goalDays}`;
+                                        } else {
+                                            dDayText = "D-day";
+                                        }
+                                    } else {
+                                        dDayText = "-"; // 남은 목표 없음
+                                    }
+                                } else {
+                                    dDayText = "-"; // 목표 자체 없음
+                                }
+                            }
                         }
                     }
 
