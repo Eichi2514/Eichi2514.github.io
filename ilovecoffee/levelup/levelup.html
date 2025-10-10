@@ -113,23 +113,6 @@
             margin: 0;
         }
 
-        .header-bar #logoutBtn {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .header-bar #logoutBtn:hover {
-            background: rgba(255, 255, 255, 0.35);
-        }
-
-
         .levelup-header {
             display: flex;
             justify-content: space-between;
@@ -255,7 +238,7 @@
             height: 24px;
         }
 
-        #closeExpModal, #closeEditModal {
+        #closeExpModal, #closeEditModal, #closeGoalModal {
             position: absolute;
             top: 8px;
             right: 10px;
@@ -270,7 +253,7 @@
             width: max-content;
         }
 
-        #closeExpModal:hover {
+        #closeExpModal:hover, #closeEditModal:hover, #closeGoalModal:hover {
             color: #5a4398; /* hover 시 포인트 색 */
         }
 
@@ -429,6 +412,68 @@
         .toggle-switch.on::after {
             left: 26px;
         }
+
+        /* ===== 설정 메뉴 스타일 ===== */
+        .settings-menu {
+            position: relative;
+        }
+
+        #settingsBtn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #settingsBtn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            z-index: 100;
+            min-width: 140px;
+        }
+
+        /* ✅ 드롭다운 버튼 개별 스타일 */
+        .dropdown-menu button {
+            display: block;
+            width: 100%;
+            background: #fff;
+            border: none;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        /* 마지막 버튼은 구분선 제거 */
+        .dropdown-menu button:last-child {
+            border-bottom: none;
+        }
+
+        /* ✅ hover 시 강조 */
+        .dropdown-menu button:hover {
+            background: #f6f4fc;
+            color: #5a4398;
+            font-weight: 600;
+        }
+
     </style>
 </head>
 <body>
@@ -436,7 +481,12 @@
 <div id="mainPage">
     <div class="level-row header-bar">
         <h1>그럴수이치</h1>
-        <button id="logoutBtn">로그아웃</button>
+        <div class="settings-menu">
+            <button id="settingsBtn">설정</button>
+            <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
+                <button id="logoutBtn">로그아웃</button>
+            </div>
+        </div>
     </div>
 
     <div class="level-input">
@@ -699,6 +749,124 @@
         const ss = String(koreaTime.getSeconds()).padStart(2, "0");
         return `${yy}.${mm}.${dd}-${hh}:${mi}:${ss}`;
     }
+
+    $("#logoutBtn").on("click", function () {
+        showConfirm("정말 로그아웃할까요?", async (ok) => {
+            if (ok) {
+                localStorage.removeItem("coffee-nickname");
+                location.reload();
+            }
+        });
+    });
+
+    // ✅ 설정 버튼 클릭 시 드롭다운 토글
+    $("#settingsBtn").on("click", function (e) {
+        e.stopPropagation();
+        $("#settingsDropdown").toggle();
+    });
+
+    // ✅ 다른 곳 클릭 시 드롭다운 닫기
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(".settings-menu").length) {
+            $("#settingsDropdown").hide();
+        }
+    });
+
+    // ✅ 경험치 입력 모달 닫기 버튼
+    $("#closeExpModal").on("click", function () {
+        $("#expModal").hide();
+    });
+
+    // 🔹 모든 버튼의 빠른 연속 클릭(더블클릭) 방지
+    $(document).on("click", "button", function (e) {
+        const $btn = $(this);
+
+        // 이미 잠겨 있으면 실행 막기
+        if ($btn.data("clicked")) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+        }
+
+        // 0.8초간 클릭 잠금
+        $btn.data("clicked", true);
+        setTimeout(() => {
+            $btn.removeData("clicked");
+        }, 800);
+    });
+
+    // ============================
+    // ✅ (3) 행 클릭 시 옵션 모달 표시
+    // ============================
+    let selectedDate = null;
+    $(document).on("click", ".exp-row", function () {
+        selectedDate = $(this).data("date");
+        $("#optionModal").css("display", "flex");
+    });
+
+    // ✅ 옵션 모달 - 닫기
+    $(document).on("click", "#closeOptionBtn", function () {
+        $("#optionModal").hide();
+    });
+
+    // ✅ 수정 버튼 클릭 시 쉼표 있는 값으로 표시
+    $(document).on("click", "#editExpBtn", async function () {
+        const nickname = localStorage.getItem("coffee-nickname");
+        if (!nickname || !selectedDate) return;
+        const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
+        const snapshot = await get(recordRef);
+        if (snapshot.exists()) {
+            const record = snapshot.val();
+            $("#editExpDate").val(selectedDate);
+            $("#editLevelValue").val(record.level || 1);
+            $("#editExpValue").val(record.exp.toLocaleString()); // ✅ 쉼표 포함 표시
+            $("#optionModal").hide();
+            $("#editModal").css("display", "flex");
+        }
+    });
+
+    // ✅ 수정 모달 닫기
+    $(document).on("click", "#closeEditModal", function () {
+        $("#editModal").hide();
+    });
+
+    // ✅ 커스텀 알림 함수
+    function showAlert(message) {
+        $("#customAlert .alert-text").html(message);
+        $("#customAlert").fadeIn(150);
+    }
+
+    // 닫기 버튼
+    $(document).on("click", "#alertConfirmBtn", function () {
+        $("#customAlert").fadeOut(150);
+    });
+
+    // ✅ 커스텀 컨펌 함수
+    function showConfirm(message, onConfirm) {
+        $("#customConfirm .alert-text").html(message);
+        $("#customConfirm").fadeIn(150);
+
+        // 기존 핸들러 제거 후 다시 등록 (중복 방지)
+        $(document).off("click", "#confirmYesBtn").on("click", "#confirmYesBtn", function () {
+            $("#customConfirm").fadeOut(150);
+            if (typeof onConfirm === "function") onConfirm(true);
+        });
+
+        $(document).off("click", "#confirmNoBtn").on("click", "#confirmNoBtn", function () {
+            $("#customConfirm").fadeOut(150);
+            if (typeof onConfirm === "function") onConfirm(false);
+        });
+    }
+
+    // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
+    $(document).on("input", "#todayExp, #editExpValue", function () {
+        let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 남기기
+        if (value) {
+            // 3자리마다 쉼표 추가
+            value = parseInt(value, 10).toLocaleString();
+        }
+        $(this).val(value);
+    });
 
     $(function () {
         const $popup = $("#loginPopup");
@@ -1154,6 +1322,67 @@
                         `;
 
                         $("#levelUpBox").html(tableHTML);
+
+                        // ✅ 목표 경험치 도달 예상일 표 추가
+                        if (userData.goalTargets && avgGain > 0) {
+                            $("#levelUpBox").empty();
+                            const goalTargets = userData.goalTargets.sort((a, b) => a - b);
+                            const currentExp = records[latestDate].exp || 0;
+
+                            let goalTable = `
+                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                    <thead>
+                                        <tr style="background:#f6f4fc; color:#5a4398;">
+                                            <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
+                            `;
+
+                            goalTargets.forEach(goal => {
+                                const remainExp = Math.max(goal - currentExp, 0);
+                                if (remainExp <= 0) return; // 이미 달성한 목표는 표시 안 함
+
+                                const daysNeeded = Math.ceil(remainExp / avgGain);
+                                const estDate = new Date(koreaNow);
+                                estDate.setDate(koreaNow.getDate() + daysNeeded);
+
+                                const yyyy = estDate.getFullYear();
+                                const mm = String(estDate.getMonth() + 1).padStart(2, '0');
+                                const dd = String(estDate.getDate()).padStart(2, '0');
+                                const dDay = daysNeeded > 0 ? `D-${daysNeeded}` : "D-day";
+
+                                // ✅ 숫자 단위 변환
+                                let formattedGoal = "";
+                                if (goal < 10000) {
+                                    formattedGoal = goal.toLocaleString();
+                                } else if (goal < 100000000) {
+                                    formattedGoal = `${Math.floor(goal / 10000)}만`;
+                                } else {
+                                    formattedGoal = `${Math.floor(goal / 100000000)}억`;
+                                }
+
+                                goalTable += `
+                                    <tr>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal.toLocaleString()}</td>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${dDay}</td>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                    </tr>
+                                `;
+                            });
+
+                            goalTable += `
+                                    </tbody>
+                                </table>
+                            `;
+
+                            $("#levelUpBox").append(`
+                                ${goalTable}
+                            `);
+                        }
+
                     } else {
                         $("#levelUpBox").html(`<p style="color:#999;">계산할 데이터가 부족합니다.</p>`);
                     }
@@ -1193,6 +1422,8 @@
                         </div>
                     `);
                     $("body").append(editModal);
+                } else {
+                    $("#levelUpBox").html(`<p style="color:#999;">계산할 데이터가 부족합니다.</p>`);
                 }
 
                 // ✅ 아카이브 공개 토글 스위치 상태 반영
@@ -1235,6 +1466,8 @@
                         );
                     }
                 });
+
+                $(document).trigger("dataLoaded", [nickname]);
             } else {
                 console.log("불러올 데이터가 없습니다.");
             }
@@ -1254,48 +1487,6 @@
 
             // 입력 후 바로 다시 데이터 갱신
             await loadUserData(nickname);
-        });
-
-        $("#logoutBtn").on("click", function () {
-            localStorage.removeItem("coffee-nickname");
-            location.reload();
-        });
-
-        // ✅ 경험치 입력 모달 닫기 버튼
-        $("#closeExpModal").on("click", function () {
-            $("#expModal").hide();
-        });
-
-        // 🔹 모든 버튼의 빠른 연속 클릭(더블클릭) 방지
-        $(document).on("click", "button", function (e) {
-            const $btn = $(this);
-
-            // 이미 잠겨 있으면 실행 막기
-            if ($btn.data("clicked")) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            }
-
-            // 0.8초간 클릭 잠금
-            $btn.data("clicked", true);
-            setTimeout(() => {
-                $btn.removeData("clicked");
-            }, 800);
-        });
-
-        // ============================
-        // ✅ (3) 행 클릭 시 옵션 모달 표시
-        // ============================
-        let selectedDate = null;
-        $(document).on("click", ".exp-row", function () {
-            selectedDate = $(this).data("date");
-            $("#optionModal").css("display", "flex");
-        });
-
-        // ✅ 옵션 모달 - 닫기
-        $(document).on("click", "#closeOptionBtn", function () {
-            $("#optionModal").hide();
         });
 
         // ✅ 삭제 버튼 클릭 시
@@ -1332,22 +1523,6 @@
             });
         });
 
-        // ✅ 수정 버튼 클릭 시 쉼표 있는 값으로 표시
-        $(document).on("click", "#editExpBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
-            if (!nickname || !selectedDate) return;
-            const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
-            const snapshot = await get(recordRef);
-            if (snapshot.exists()) {
-                const record = snapshot.val();
-                $("#editExpDate").val(selectedDate);
-                $("#editLevelValue").val(record.level || 1);
-                $("#editExpValue").val(record.exp.toLocaleString()); // ✅ 쉼표 포함 표시
-                $("#optionModal").hide();
-                $("#editModal").css("display", "flex");
-            }
-        });
-
         // ✅ 수정 저장 버튼 (쉼표 제거 후 저장)
         $(document).on("click", "#updateExpBtn", async function () {
             const nickname = localStorage.getItem("coffee-nickname");
@@ -1381,48 +1556,108 @@
             await loadUserData(nickname);
         });
 
-        // ✅ 수정 모달 닫기
-        $(document).on("click", "#closeEditModal", function () {
-            $("#editModal").hide();
-        });
+        // ✅ 목표 설정 버튼 함수
+        function addGoalButton() {
+            if ($("#goalBtn").length > 0) return; // 중복 방지
 
-        // ✅ 커스텀 알림 함수
-        function showAlert(message) {
-            $("#customAlert .alert-text").html(message);
-            $("#customAlert").fadeIn(150);
+            const goalBtn = $('<button id="goalBtn">목표 설정</button>');
+            $("#settingsDropdown").prepend(goalBtn);
+
+            // 클릭 시 모달 열기
+            goalBtn.on("click", async () => {
+                const nickname = localStorage.getItem("coffee-nickname");
+                if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+                const goalRef = ref(db, `coffeeUsers/${nickname}/goalTargets`);
+                const snapshot = await get(goalRef);
+                const savedGoals = snapshot.exists() ? snapshot.val() : [];
+
+                // 기존 모달 제거 후 새로 생성
+                $("#goalModal").remove();
+
+                const modal = $(`
+                    <div id="goalModal" class="login-overlay">
+                        <div class="login-modal" style="position:relative;">
+                            <button id="closeGoalModal">✕</button>
+                            <h2>목표 설정</h2>
+                            <div id="goalInputs" style="margin-bottom:10px;"></div>
+                            <button id="saveGoalBtn">저장</button>
+                        </div>
+                    </div>
+                `);
+
+                $("body").append(modal);
+
+                // 입력창 5개 생성 (쉼표 포함)
+                const $goalInputs = $("#goalInputs");
+                for (let i = 0; i < 5; i++) {
+                    const val = savedGoals[i] ? savedGoals[i].toLocaleString() : "";
+                    $goalInputs.append(`
+                        <input type="text" class="goalInput" placeholder="목표 경험치 ${i + 1}" value="${val}"
+                               style="width:100%; padding:8px; margin-bottom:8px;
+                               font-size:16px; border:1px solid #ccc; border-radius:6px;">
+                    `);
+                }
+
+                // ✅ 실시간 쉼표 포맷 적용
+                $(document).off("input", ".goalInput").on("input", ".goalInput", function() {
+                    let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 추출
+                    if (value) value = parseInt(value, 10).toLocaleString(); // 3자리 쉼표
+                    $(this).val(value);
+                });
+
+                // 닫기 버튼
+                $(document).off("click", "#closeGoalModal").on("click", "#closeGoalModal", function() {
+                    $("#goalModal").remove();
+                });
+
+                // 저장 버튼 클릭
+                $(document).off("click", "#saveGoalBtn").on("click", "#saveGoalBtn", async function() {
+                    const values = $(".goalInput").map((_, el) => {
+                        const raw = $(el).val().replace(/,/g, ""); // 쉼표 제거
+                        const num = parseInt(raw);
+                        return isNaN(num) ? null : num;
+                    }).get();
+
+                    const filtered = values.filter(v => v !== null);
+                    if (filtered.length === 0) {
+                        showAlert("목표를 하나 이상 입력해주세요.");
+                        return;
+                    }
+
+                    // 오름차순 정렬
+                    const sorted = filtered.sort((a, b) => a - b);
+
+                    await set(ref(db, `coffeeUsers/${nickname}/goalTargets`), sorted);
+                    showAlert("목표 경험치가 저장되었습니다!");
+                    $("#goalModal").remove();
+
+                    await loadUserData(nickname);
+                });
+            });
         }
 
-        // 닫기 버튼
-        $(document).on("click", "#alertConfirmBtn", function () {
-            $("#customAlert").fadeOut(150);
-        });
+        // ✅ (추가) 만렙이면 목표 등록 버튼 활성화
+        async function checkGoalButtonCondition(nickname) {
+            const userRef = ref(db, `coffeeUsers/${nickname}`);
+            const snapshot = await get(userRef);
+            if (!snapshot.exists()) return;
 
-        // ✅ 커스텀 컨펌 함수
-        function showConfirm(message, onConfirm) {
-            $("#customConfirm .alert-text").html(message);
-            $("#customConfirm").fadeIn(150);
+            const userData = snapshot.val();
+            const currentLevel = userData.level || 1;
 
-            // 기존 핸들러 제거 후 다시 등록 (중복 방지)
-            $(document).off("click", "#confirmYesBtn").on("click", "#confirmYesBtn", function () {
-                $("#customConfirm").fadeOut(150);
-                if (typeof onConfirm === "function") onConfirm(true);
-            });
-
-            $(document).off("click", "#confirmNoBtn").on("click", "#confirmNoBtn", function () {
-                $("#customConfirm").fadeOut(150);
-                if (typeof onConfirm === "function") onConfirm(false);
-            });
-        }
-
-        // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
-        $(document).on("input", "#todayExp, #editExpValue", function () {
-            let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 남기기
-            if (value) {
-                // 3자리마다 쉼표 추가
-                value = parseInt(value, 10).toLocaleString();
+            // 만렙이면 추가 (유동적으로 levelExp 길이 사용)
+            const maxLevel = levelExp.length;
+            if (currentLevel >= maxLevel) {
+                addGoalButton();
             }
-            $(this).val(value);
+        }
+
+        // ✅ 로그인 또는 데이터 로드 시 호출
+        $(document).on("dataLoaded", function(e, nickname) {
+            checkGoalButtonCondition(nickname);
         });
+
     });
 </script>
 </body>
