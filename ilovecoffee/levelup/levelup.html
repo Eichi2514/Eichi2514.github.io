@@ -531,6 +531,7 @@
         <div class="settings-menu">
             <button id="settingsBtn">설정</button>
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
+                <button id="layoutBtn">배치도</button>
                 <button id="changeNicknameBtn">닉네임 변경</button>
                 <button id="changePasswordBtn">비밀번호 변경</button>
                 <button id="logoutBtn">로그아웃</button>
@@ -782,6 +783,31 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // ✅ 로그인 닉네임 가져오기 (coffee-subnick → coffee-nickname 순서)
+    function getActiveNickname() {
+        const subNick = localStorage.getItem("coffee-subnick");
+        if (subNick) {
+            // 사용 즉시 삭제 (1회용)
+            localStorage.removeItem("coffee-subnick");
+            return subNick;
+        }
+        return localStorage.getItem("coffee-nickname") || null;
+    }
+
+    function goToPage(target = "levelup") {
+        const basePath = window.location.pathname.split("/levelup")[0];
+
+        const pageMap = {
+            admin: `${basePath}/admin/main.html`,
+            ranking: `${basePath}/ranking/main.html`,
+            levelup: `${basePath}/levelup/levelup.html`,
+            layout: `${basePath}/layout/layout.html`
+        };
+
+        const targetUrl = pageMap[target] || pageMap.levelup;
+        location.href = targetUrl;
+    }
+
     function getKoreanDate() {
         const koreaTime = new Date();
 
@@ -868,6 +894,14 @@
         });
     });
 
+    $("#layoutBtn").on("click", function () {
+        showConfirm("배치도 페이지로 이동 할까요?", async (ok) => {
+            if (ok) {
+                goToPage("layout");
+            }
+        });
+    });
+
     // ✅ 설정 버튼 클릭 시 드롭다운 토글
     $("#settingsBtn").on("click", function (e) {
         e.stopPropagation();
@@ -925,7 +959,7 @@
 
     // ✅ 수정 버튼 클릭 시 쉼표 있는 값으로 표시
     $(document).on("click", "#editExpBtn", async function () {
-        const nickname = localStorage.getItem("coffee-nickname");
+        const nickname = getActiveNickname();
         if (!nickname || !selectedDate) return;
         const recordRef = ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`);
         const snapshot = await get(recordRef);
@@ -1005,7 +1039,7 @@
         const $nicknameDisplay = $("#nicknameDisplay");
         const $currentLevelDisplay = $("#currentLevelDisplay");
 
-        const savedNick = localStorage.getItem("coffee-nickname");
+        const savedNick = getActiveNickname();
         if (savedNick) {
             const userRef = ref(db, `coffeeUsers/${savedNick}`);
             get(userRef).then(snapshot => {
@@ -1091,7 +1125,7 @@
             const today = getKoreanDate();
             $("#expDate").val(today);
 
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             if (nickname) {
                 const userRef = ref(db, `coffeeUsers/${nickname}/level`);
                 const snapshot = await get(userRef);
@@ -1112,7 +1146,7 @@
 
         // ✅ 경험치 저장 함수 (쉼표 제거 후 저장)
         async function saveExp() {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
             // 🔹 쉼표 제거 후 숫자 변환
@@ -1157,8 +1191,13 @@
                 savedAt: getKoreanTimestamp(),
             });
 
-            // 🔹 현재 회원 레벨 업데이트
-            await set(ref(db, `coffeeUsers/${nickname}/level`), level);
+            // 🔹 현재 표시 중인 레벨 가져오기
+            const currentLevelVal = parseInt($("#currentLevelDisplay").text()) || 1;
+
+            // 🔹 새로 입력한 레벨이 기존보다 높을 때만 갱신
+            if (level > currentLevelVal) {
+                await set(ref(db, `coffeeUsers/${nickname}/level`), level);
+            }
 
             showAlert(`레벨 ${level}\n경험치 ${exp.toLocaleString()} 저장 완료!`);
             $("#expModal").hide();
@@ -1187,7 +1226,7 @@
 
             // ✅ 클릭 시 아카이브 접근 조건 검증
             rankingBtn.on("click", async () => {
-                const nickname = localStorage.getItem("coffee-nickname");
+                const nickname = getActiveNickname();
                 if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
                 const userRef = ref(db, `coffeeUsers/${nickname}`);
@@ -1222,7 +1261,7 @@
                 }
 
                 // ✅ 통과 시 페이지 이동
-                window.location.href = "/ilovecoffee/ranking/main.html";
+                goToPage("ranking");
             });
         }
 
@@ -1289,7 +1328,7 @@
 
                         // 클릭 시 관리자 페이지 이동
                         adminBtn.on("click", () => {
-                            window.location.href = "/ilovecoffee/admin/main.html";
+                            goToPage("admin");
                         });
                     }
                 }
@@ -1571,7 +1610,7 @@
 
                 // ✅ 클릭 시 상태 토글
                 $toggle.off("click").on("click", async function () {
-                    const nickname = localStorage.getItem("coffee-nickname");
+                    const nickname = getActiveNickname();
                     const isCurrentlyOn = $toggle.hasClass("on");
                     const newStatus = !isCurrentlyOn;
 
@@ -1610,7 +1649,7 @@
 
         // ✅ 레벨 입력 모달 저장 버튼
         $(document).on("click", "#saveLevelConfirmBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             const levelVal = parseInt($("#levelInput").val());
 
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
@@ -1626,7 +1665,7 @@
 
         // ✅ 삭제 버튼 클릭 시
         $(document).on("click", "#deleteExpBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             if (!nickname || !selectedDate) return;
             $("#optionModal").hide();
             showConfirm(`${selectedDate} 데이터를 삭제할까요?`, async (ok) => {
@@ -1660,7 +1699,7 @@
 
         // ✅ 수정 저장 버튼 (쉼표 제거 후 저장)
         $(document).on("click", "#updateExpBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             const newLevel = parseInt($("#editLevelValue").val());
             const newExp = parseInt($("#editExpValue").val().replace(/,/g, "")); // ✅ 쉼표 제거
             const newDate = $("#editExpDate").val();
@@ -1701,7 +1740,7 @@
 
             // 클릭 시 모달 열기
             goalBtn.on("click", async () => {
-                const nickname = localStorage.getItem("coffee-nickname");
+                const nickname = getActiveNickname();
                 if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
                 const goalRef = ref(db, `coffeeUsers/${nickname}/goalTargets`);
@@ -1795,7 +1834,7 @@
 
         // ✅ 닉네임 변경 모달 열기
         $(document).on("click", "#changeNicknameBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
             // 기존 모달 제거 후 새로 생성
@@ -1858,7 +1897,7 @@
 
         // ✅ 비밀번호 변경 모달 열기
         $(document).on("click", "#changePasswordBtn", async function () {
-            const nickname = localStorage.getItem("coffee-nickname");
+            const nickname = getActiveNickname();
             if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
             // 기존 모달 제거 후 새로 생성

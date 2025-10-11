@@ -161,6 +161,17 @@
             cursor: pointer;
         }
 
+        #backBtn {
+            padding: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
         .start-btn, .reset-btn {
             margin-top: 8px;
             padding: 8px;
@@ -366,7 +377,10 @@
     <div class="head-line">
         <div class="title">작업대 배치도</div>
         <div id="coord-box" style="margin-left:8px;font-size:14px;color:#333;">좌표 : -</div>
-        <div id="help" class="help" title="배치 규칙 도움말">?</div>
+        <div style="display: flex; gap: 8px">
+            <button id="backBtn">뒤로가기</button>
+            <div id="help" class="help" title="배치 규칙 도움말">?</div>
+        </div>
     </div>
     <div class="box">
         <div class="wrap">

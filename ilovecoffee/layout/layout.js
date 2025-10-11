@@ -1,5 +1,10 @@
 // 파일명 : layout.js
 
+function goToPage() {
+    const basePath = window.location.pathname.split("/layout")[0];
+    location.href = `${basePath}/levelup/levelup.html`;
+}
+
 $(function () {
     // ===================== 화면/보드 초기화 =====================
     function checkOrientation() {
@@ -789,4 +794,7 @@ $(function () {
 
         if (value > 0) $display.text(value - 1);
     });
+
+    // ✅ 뒤로가기
+    $("#backBtn").on("click", () => goToPage());
 });

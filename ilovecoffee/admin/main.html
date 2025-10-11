@@ -120,6 +120,61 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
+
+        /* ✅ 모달 스타일 */
+        #userModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .modal-content button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .move-btn {
+            background: #5a4398;
+            color: #fff;
+        }
+
+        .delete-btn {
+            background: #ff5e5e;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: #ccc;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -141,13 +196,13 @@
 
 <div id="colorGuide">
     <div class="legend-item">
-        <span class="color-box" style="background:#fff8d1;"></span>1일
+        <span class="color-box" style="background:#fff8d1;"></span>2일
     </div>
     <div class="legend-item">
-        <span class="color-box" style="background:#ffd6d6;"></span>7일
+        <span class="color-box" style="background:#ffd6d6;"></span>5일
     </div>
     <div class="legend-item">
-        <span class="color-box" style="background:#f0f0f0;"></span>15일
+        <span class="color-box" style="background:#f0f0f0;"></span>7일
     </div>
     <div class="legend-item">
         <span class="color-box" style="background:#cfcfcf;"></span>미기록
@@ -168,6 +223,16 @@
 
 <div id="loading">불러오는 중...</div>
 
+<!-- 유저 모달 -->
+<div id="userModal">
+    <div class="modal-content">
+        <h3 id="modalNickname"></h3>
+        <button class="move-btn">이동하기</button>
+        <button class="delete-btn">삭제</button>
+        <button class="close-btn">닫기</button>
+    </div>
+</div>
+
 <script type="module">
     // ✅ 레벨 경험치 테이블
     const levelExp = [
@@ -184,7 +249,7 @@
     ];
 
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {getDatabase, ref, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {getDatabase, ref, get, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -207,6 +272,11 @@
         return Math.floor((toDateOnly(b) - toDateOnly(a)) / (1000 * 60 * 60 * 24));
     }
 
+    function goToPage() {
+        const basePath = window.location.pathname.split("/admin")[0];
+        location.href = `${basePath}/levelup/levelup.html`;
+    }
+
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
         if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
@@ -215,7 +285,7 @@
         get(ref(db, `coffeeUsers/${nickname}`)).then(async snap => {
             if (!snap.exists() || !snap.val().isAdmin) {
                 alert("관리자만 접근할 수 있습니다.");
-                location.href = "/ilovecoffee/levelup/levelup.html";
+                goToPage();
                 return;
             }
 
@@ -345,20 +415,20 @@
 
                         const diffDays = Math.floor((todayDateOnly - lastDateOnly) / (1000 * 60 * 60 * 24));
 
-                        if (diffDays >= 15) {
-                            bgColor = "#f0f0f0"; // 15일 이상 → 연한 회색
-                        } else if (diffDays >= 7) {
-                            bgColor = "#ffd6d6"; // 7일 이상 → 빨간색
-                        } else if (diffDays >= 1) {
-                            bgColor = "#fff8d1"; // 오늘 미입력 → 연노랑
+                        if (diffDays >= 7) {
+                            bgColor = "#f0f0f0"; // 연한 회색
+                        } else if (diffDays >= 5) {
+                            bgColor = "#ffd6d6"; // 빨간색
+                        } else if (diffDays >= 2) {
+                            bgColor = "#fff8d1"; // 연노랑
                         }
                     } else {
                         // ✅ 기록 없음
-                        bgColor = "#cfcfcf"; // 가입 7일 이상 지남 → 회색
+                        bgColor = "#cfcfcf"; // 회색
                     }
 
                     $tbody.append(`
-                        <tr style="background:${bgColor}">
+                        <tr data-nick="${u.key}" style="background:${bgColor}">
                             <td>${u.key}</td>
                             <td>${u.level || "-"}</td>
                             <td>${avgExp ? (avgExp >= 10000 ? `${Math.floor(avgExp / 10000)}만` : avgExp.toLocaleString()) : "-"}</td>
@@ -408,9 +478,46 @@
                 renderTable(sorted);
             });
 
+            let selectedNick="";
+            $(document).on("click","#userTable tbody tr",function(){
+                selectedNick=$(this).data("nick");
+                $("#modalNickname").text(selectedNick);
+                $("#userModal").css("display", "flex").hide().fadeIn(200);
+            });
+
+            // ✅ 이동하기 버튼
+            $(".move-btn").on("click",function(){
+                if(!selectedNick) return;
+                localStorage.setItem("coffee-subnick",selectedNick);
+                goToPage();
+            });
+
+            // ✅ 삭제 버튼
+            $(".delete-btn").on("click",async function(){
+                if(!selectedNick) return;
+                if(!confirm(`${selectedNick} 계정을 정말 삭제할까요?`)) return;
+                try{
+                    await remove(ref(db,`coffeeUsers/${selectedNick}`));
+                    alert("삭제되었습니다.");
+                    $("#userModal").fadeOut(200);
+                    // 테이블에서 즉시 제거
+                    $(`#userTable tr[data-nick="${selectedNick}"]`).remove();
+                }catch(e){
+                    alert("삭제 중 오류가 발생했습니다.");
+                    console.error(e);
+                }
+            });
+
+            // ✅ 닫기 버튼
+            $(".close-btn, #userModal").on("click",function(e){
+                if(e.target.id==="userModal" || $(this).hasClass("close-btn")){
+                    $("#userModal").fadeOut(200);
+                }
+            });
+
             // 뒤로가기
             $("#backBtn").on("click", () => {
-                location.href = "/ilovecoffee/levelup/levelup.html";
+                goToPage();
             });
         });
     });
