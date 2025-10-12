@@ -413,7 +413,7 @@
             top: 2px;
             left: 2px;
             transition: all 0.25s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         /* ON 상태 */
@@ -452,7 +452,7 @@
             top: calc(100% + 6px);
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             z-index: 100;
             min-width: 140px;
@@ -518,8 +518,12 @@
 
         /* ===== 회전 애니메이션 ===== */
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -664,7 +668,7 @@
 
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {getDatabase, ref, set, get, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { getDatabase, ref, set, get, remove, query, orderByKey, limitToLast, endAt } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -1086,14 +1090,16 @@
 
             if (!validateNickname(nickname)) return;
 
-            if(!validatePassword(password)) return;
+            if (!validatePassword(password)) return;
 
-            const userRef = ref(db, `coffeeUsers/${nickname}`);
-            const snapshot = await get(userRef);
+            const passwordRef = ref(db, `coffeeUsers/${nickname}/password`);
+            const snapshot = await get(passwordRef);
+
+            console.log(`snapshot : ${snapshot.val()}`);
+            console.log(`password : ${password}`);
 
             if (snapshot.exists()) {
-                const userData = snapshot.val();
-                if (userData.password === password) {
+                if (snapshot.val() === password) {
                     $msg.css("color", "green").text("로그인 성공!");
                     localStorage.setItem("coffee-nickname", nickname);
                     setTimeout(() => {
@@ -1106,7 +1112,7 @@
                         .html("이미 존재하는 닉네임이거나<br>비밀번호가 틀렸습니다.");
                 }
             } else {
-                await set(userRef, {
+                await set(ref(db, `coffeeUsers/${nickname}`), {
                     password,
                     signupDate: getKoreanTimestamp(),   // 가입일 저장
                 });
@@ -1229,16 +1235,17 @@
                 const nickname = getActiveNickname();
                 if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
-                const userRef = ref(db, `coffeeUsers/${nickname}`);
-                const snapshot = await get(userRef);
+                // 1️⃣ 공개 여부만 가져오기
+                const publicRef = ref(db, `coffeeUsers/${nickname}/rankingPublic`);
+                const publicSnap = await get(publicRef);
+                const rankingPublic = publicSnap.exists() && publicSnap.val();
 
-                if (!snapshot.exists()) return showAlert("계정 정보를 불러오지 못했습니다.");
+                if (!rankingPublic) {
+                    showAlert("아카이브 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
+                    return;
+                }
 
-                const userData = snapshot.val();
-                const records = userData.expRecords || {};
-                const rankingPublic = !!userData.rankingPublic;
-
-                // 🔹 오늘 / 어제 날짜 문자열 구하기
+                // 2️⃣ 오늘 / 어제 기록만 확인 (전체 expRecords 안 불러옴)
                 const today = getKoreanDate();
                 const yesterday = (() => {
                     const d = new Date();
@@ -1246,16 +1253,13 @@
                     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                 })();
 
-                const recordKeys = Object.keys(records);
-                const hasRecentRecord = records[today] || records[yesterday];
+                const todayRef = ref(db, `coffeeUsers/${nickname}/expRecords/${today}`);
+                const yestRef = ref(db, `coffeeUsers/${nickname}/expRecords/${yesterday}`);
 
-                // ✅ 조건 확인
-                if (!rankingPublic) {
-                    showAlert("아카이브 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
-                    return;
-                }
+                const [todaySnap, yestSnap] = await Promise.all([get(todayRef), get(yestRef)]);
+                const hasRecentRecord = todaySnap.exists() || yestSnap.exists();
 
-                if (recordKeys.length === 0 || !hasRecentRecord) {
+                if (!hasRecentRecord) {
                     showAlert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
                     return;
                 }
@@ -1352,6 +1356,11 @@
                     const sorted = Object.keys(records).sort();
                     const $tbody = $("#expTable tbody");
                     $tbody.empty();
+
+                    const pageSize = 10;
+                    const totalRecords = sorted.length;
+                    const totalPages = Math.ceil(totalRecords / pageSize);
+                    let currentPage = 1;
 
                     let prevExp = null;
                     let prevLevel = null;
@@ -1780,12 +1789,12 @@
                 });
 
                 // 닫기 버튼
-                $(document).off("click", "#closeGoalModal").on("click", "#closeGoalModal", function() {
+                $(document).off("click", "#closeGoalModal").on("click", "#closeGoalModal", function () {
                     $("#goalModal").remove();
                 });
 
                 // 저장 버튼 클릭
-                $(document).off("click", "#saveGoalBtn").on("click", "#saveGoalBtn", async function() {
+                $(document).off("click", "#saveGoalBtn").on("click", "#saveGoalBtn", async function () {
                     const values = $(".goalInput").map((_, el) => {
                         const raw = $(el).val().replace(/,/g, ""); // 쉼표 제거
                         const num = parseInt(raw);
@@ -1811,24 +1820,22 @@
             });
         }
 
-        // ✅ (추가) 만렙이면 목표 등록 버튼 활성화
+        // ✅ 만렙이면 목표 등록 버튼 활성화
         async function checkGoalButtonCondition(nickname) {
-            const userRef = ref(db, `coffeeUsers/${nickname}`);
-            const snapshot = await get(userRef);
+            const levelRef = ref(db, `coffeeUsers/${nickname}/level`);
+            const snapshot = await get(levelRef);
             if (!snapshot.exists()) return;
 
-            const userData = snapshot.val();
-            const currentLevel = userData.level || 1;
+            const currentLevel = snapshot.val() || 1;
+            const maxLevel = levelExp.length; // levelExp 배열 길이 기준으로 계산
 
-            // 만렙이면 추가 (유동적으로 levelExp 길이 사용)
-            const maxLevel = levelExp.length;
             if (currentLevel >= maxLevel) {
                 addGoalButton();
             }
         }
 
         // ✅ 로그인 또는 데이터 로드 시 호출
-        $(document).on("dataLoaded", function(e, nickname) {
+        $(document).on("dataLoaded", function (e, nickname) {
             checkGoalButtonCondition(nickname);
         });
 
@@ -1924,7 +1931,7 @@
             $(document).off("click", "#savePasswordBtn").on("click", "#savePasswordBtn", async function () {
                 const newPassword = $("#newPasswordInput").val().trim();
                 if (!newPassword) return showAlert("새 비밀번호를 입력해주세요.");
-                if(!validatePassword(newPassword)) return;
+                if (!validatePassword(newPassword)) return;
 
                 await set(ref(db, `coffeeUsers/${nickname}/password`), newPassword);
                 showAlert("비밀번호가 변경되었습니다!");
