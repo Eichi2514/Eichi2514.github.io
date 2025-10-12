@@ -187,9 +187,9 @@
 <div id="controlBar">
     <input type="text" id="searchInput" placeholder="닉네임 검색">
     <select id="sortSelect">
+        <option value="dday">D-day</option>
         <option value="nickname">닉네임</option>
         <option value="level">레벨</option>
-        <option value="dday">D-day</option>
         <option value="avgexp">경험치</option>
     </select>
 </div>
@@ -326,20 +326,47 @@
                     let lastDate = null;
 
                     if (records.length > 0) {
-                        // 날짜 오름차순 정렬 후 첫/마지막 날짜 구함
                         records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
-                        const firstDate = new Date(records[0][0]);
-                        const lastDateObj = new Date(records[records.length - 1][0]);
-                        lastDate = records[records.length - 1][0];
+
+                        const today = new Date();
+                        const recentRecords = records.filter(([date]) => {
+                            const recordDate = new Date(date);
+                            const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
+                            return diffDays <= 11;
+                        });
+
+                        const firstDate = new Date(recentRecords[0][0]);
+                        const lastDateObj = new Date(recentRecords[recentRecords.length - 1][0]);
+                        lastDate = recentRecords[recentRecords.length - 1][0];
+
+                        // ✅ 구간별 획득 경험치 계산 (최근 10개 기준)
+                        const recentDiffs = [];
+                        for (let i = 1; i < recentRecords.length; i++) {
+                            const prev = recentRecords[i - 1][1];
+                            const cur = recentRecords[i][1];
+                            let diff = 0;
+
+                            if (cur.level > prev.level) {
+                                diff += (levelExp[prev.level] - prev.exp);
+                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
+                                    diff += levelExp[lv];
+                                }
+                                diff += cur.exp;
+                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
+                                diff = cur.exp - prev.exp;
+                            }
+
+                            if (diff > 0) recentDiffs.push(diff);
+                        }
 
                         // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
                         const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
 
                         // ✅ 구간별 총 획득 경험치 합산
                         let totalGain = 0;
-                        for (let i = 1; i < records.length; i++) {
-                            const prev = records[i - 1][1];
-                            const cur = records[i][1];
+                        for (let i = 1; i < recentRecords.length; i++) {
+                            const prev = recentRecords[i - 1][1];
+                            const cur  = recentRecords[i][1];
                             let diff = 0;
 
                             if (cur.level > prev.level) {
@@ -355,7 +382,7 @@
                             if (diff > 0) totalGain += diff;
                         }
 
-                        // ✅ 평균 = 총획득 / 총일수(빈 날 포함)
+                        // ✅ 평균 경험치 (전체 기간 기준)
                         avgExp = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
 
                         // ✅ D-day 계산 (마지막 기록 기준)
@@ -375,6 +402,8 @@
                                     const days = Math.ceil(remain / avgExp);
                                     dDayValue = days;
                                     dDayText = days > 0 ? `D-${days}` : "D-day";
+                                } else {
+                                    dDayText = "D-day";
                                 }
                             } else {
                                 // ✅ 만렙일 경우 (목표 기반 계산)
@@ -438,9 +467,13 @@
                 });
             }
 
-            // ✅ 첫 렌더링 (닉네임순)
-            users.sort((a, b) => a.key.localeCompare(b.key));
+            // ✅ 첫 렌더링 (D-day 짧은 순)
             renderTable(users);
+            users.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
+            renderTable(users);
+
+            // ✅ 정렬 셀렉트도 D-day로 초기값 맞추기
+            $("#sortSelect").val("dday");
 
             // ======================
             // 🔹 검색 기능

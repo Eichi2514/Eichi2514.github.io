@@ -1427,14 +1427,53 @@
                     });
 
                     // 🔸 평균 계산 및 전체 레벨업 예정일 표시 (레벨업 시 경험치 0으로 초기화 구조)
-                    if (diffs.length > 0 && userData.level) {
-                        const avgGain = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+                    if (Object.keys(records).length > 1 && userData.level) {
+                        const today = new Date();
+
+                        // ✅ 최근 10일 이내 기록만 필터링
+                        const recentDates = Object.keys(records)
+                            .filter(date => {
+                                const recordDate = new Date(date);
+                                const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
+                                return diffDays <= 11; // 최근 10일 이내만
+                            })
+                            .sort();
+
+                        // ✅ 연속된 날짜 간의 경험치 차이 계산
+                        let diffs = [];
+                        for (let i = 1; i < recentDates.length; i++) {
+                            const prevDate = new Date(recentDates[i - 1]);
+                            const curDate = new Date(recentDates[i]);
+                            const prev = records[recentDates[i - 1]];
+                            const cur = records[recentDates[i]];
+
+                            let diff = 0;
+                            if (cur.level > prev.level) {
+                                diff += (levelExp[prev.level] - prev.exp);
+                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
+                                    diff += levelExp[lv];
+                                }
+                                diff += cur.exp;
+                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
+                                diff = cur.exp - prev.exp;
+                            }
+
+                            if (diff > 0) diffs.push(diff);
+
+                            // 🔹 빠진 날짜만큼 0 추가
+                            const dayGap = Math.floor((curDate - prevDate) / (1000 * 60 * 60 * 24));
+                            if (dayGap > 1) {
+                                for (let j = 1; j < dayGap; j++) {
+                                    diffs.push(0);
+                                }
+                            }
+                        }
+
+                        const avgGain = diffs.length > 0 ? diffs.reduce((a, b) => a + b, 0) / diffs.length : 0;
                         const currentLevel = userData.level;
-                        const records = userData.expRecords;
                         const sortedDates = Object.keys(records).sort();
                         const latestDate = sortedDates[sortedDates.length - 1];
-                        const currentExp = records[latestDate].exp || 0; // 🔸 현재 경험치
-                        const today = new Date();
+                        const currentExp = records[latestDate].exp || 0;
                         const koreaNow = new Date(today.getTime());
 
                         if (avgGain < 10000) {

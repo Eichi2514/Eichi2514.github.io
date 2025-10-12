@@ -247,7 +247,6 @@
             if (u.rankingPublic && u.expRecords) users.push({key: child.key, ...u});
         });
 
-        // ✅ 경험치 평균 계산 로직 (레벨업 포함)
         // ✅ 경험치 평균 계산 로직 (빈 날짜 포함)
         users.forEach(u => {
             const records = Object.entries(u.expRecords);
@@ -255,17 +254,25 @@
 
             // 날짜 오름차순 정렬
             records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
-            const firstDate = new Date(records[0][0]);
-            const lastDateObj = new Date(records[records.length - 1][0]);
+            // ✅ 오늘 기준 최근 데이터만 남기기
+            const today = new Date();
+            const recentRecords = records.filter(([date]) => {
+                const recordDate = new Date(date);
+                const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
+                return diffDays <= 11; // 최근 기록만 포함
+            });
+
+            const firstDate = new Date(recentRecords[0][0]);
+            const lastDateObj = new Date(recentRecords[recentRecords.length - 1][0]);
 
             // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
             const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
 
             // ✅ 구간별 총 획득 경험치 합산
             let totalGain = 0;
-            for (let i = 1; i < records.length; i++) {
-                const prev = records[i - 1][1];
-                const cur  = records[i][1];
+            for (let i = 1; i < recentRecords.length; i++) {
+                const prev = recentRecords[i - 1][1];
+                const cur  = recentRecords[i][1];
                 let diff = 0;
 
                 if (cur.level > prev.level) {
