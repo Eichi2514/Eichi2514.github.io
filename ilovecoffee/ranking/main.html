@@ -142,15 +142,11 @@
 <div id="loading">불러오는 중...</div>
 
 <script type="module">
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {
-        getDatabase,
-        ref,
-        get,
-        query,
-        orderByChild,
-        equalTo
-    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // ✅ 공통 유틸
+    import { calcAvgExp, calcDDay } from "../common/expUtils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -162,27 +158,8 @@
         appId: ".env/appId"
     };
 
-    const levelExp = [
-        0, 25, 60, 70, 80, 90, 100, 160, 250, 380, 520, 880, 1210, 1750, 2500, 3639, 4790, 5999, 7392, 9102, 10992, 13100,
-        14800, 15800, 18100, 19841, 22000, 23500, 26000, 29000, 30800, 33800, 36000, 39000, 41800, 45700, 49000,
-        53000, 58000, 63000, 67810, 73500, 79000, 86000, 92000, 99800, 107000, 117000, 131000, 150000, 160000,
-        175000, 191000, 209000, 228000, 249000, 271000, 295000, 321000, 350000, 382000, 417000, 455000, 496000,
-        540000, 587000, 637000, 690000, 746000, 805000, 867000, 932000, 1000000, 1071000, 1145000, 1222000,
-        1302000, 1385000, 1471000, 1560000, 1800000, 2200000, 2700000, 3200000, 3900000, 4700000, 5600000,
-        6800000, 8100000, 15000000, 19500000, 25350000, 32960000, 42850000, 55710000, 72990000, 96350000,
-        128150000, 171730000, 240430000
-    ];
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    function toDateOnly(d) {
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    }
-
-    function dayDiff(a, b) {
-        return Math.floor((toDateOnly(b) - toDateOnly(a)) / (1000 * 60 * 60 * 24));
-    }
 
     function goToPage() {
         const basePath = window.location.pathname.split("/ranking")[0];
@@ -191,7 +168,7 @@
 
     $(async function () {
         const nickname = localStorage.getItem("coffee-nickname");
-        if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
+        if (!nickname) return alert("로그인이 필요합니다."), goToPage();
 
         // ✅ 내 계정 먼저 확인
         const mySnap = await get(ref(db, `coffeeUsers/${nickname}`));
@@ -213,14 +190,10 @@
         // ✅ 오늘 또는 어제 기록 확인
         const records = myData.expRecords || {};
         const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, "0");
-        const day = String(today.getDate()).padStart(2, "0");
-        const todayStr = `${year}-${month}-${day}`;
-
+        const todayStr = today.toISOString().split("T")[0];
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const yesterStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+        const yesterStr = yesterday.toISOString().split("T")[0];
 
         if (!records[todayStr] && !records[yesterStr]) {
             alert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
@@ -235,7 +208,6 @@
         const allSnap = await get(rankingRef);
         $("#loading").hide();
 
-
         if (!allSnap.exists()) {
             $("#rankingTable tbody").html("<tr><td colspan='4'>등록된 사용자가 없습니다.</td></tr>");
             return;
@@ -244,7 +216,7 @@
         const users = [];
         allSnap.forEach(child => {
             const u = child.val();
-            if (u.rankingPublic && u.expRecords) users.push({key: child.key, ...u});
+            if (u.rankingPublic && u.expRecords) users.push({ key: child.key, ...u });
         });
 
         // ✅ 경험치 평균 계산 로직 (빈 날짜 포함)
@@ -252,95 +224,30 @@
             const records = Object.entries(u.expRecords);
             if (records.length === 0) return;
 
-            // 날짜 오름차순 정렬
-            records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
-            // ✅ 오늘 기준 최근 데이터만 남기기
-            const today = new Date();
-            const recentRecords = records.filter(([date]) => {
-                const recordDate = new Date(date);
-                const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
-                return diffDays <= 11; // 최근 기록만 포함
-            });
+            const avgExp = calcAvgExp(records);
 
-            const firstDate = new Date(recentRecords[0][0]);
-            const lastDateObj = new Date(recentRecords[recentRecords.length - 1][0]);
-
-            // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
-            const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
-
-            // ✅ 구간별 총 획득 경험치 합산
-            let totalGain = 0;
-            for (let i = 1; i < recentRecords.length; i++) {
-                const prev = recentRecords[i - 1][1];
-                const cur  = recentRecords[i][1];
-                let diff = 0;
-
-                if (cur.level > prev.level) {
-                    diff += (levelExp[prev.level] - prev.exp);
-                    for (let lv = prev.level + 1; lv < cur.level; lv++) {
-                        diff += levelExp[lv];
-                    }
-                    diff += cur.exp;
-                } else if (cur.level === prev.level && cur.exp >= prev.exp) {
-                    diff = cur.exp - prev.exp;
-                }
-
-                if (diff > 0) totalGain += diff;
-            }
-
-            // ✅ 평균 = 총획득 / 총일수(빈 날 포함)
-            const avgExp = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
-
-            // ✅ D-day 계산 (마지막 기록 기준)
-            const last = records[records.length - 1][1];
-            const level = u.level || 1;
-            const curExp = last.exp || 0;
-            const need = levelExp[level] || 0;
-            const remain = Math.max(need - curExp, 0);
-            let dDay = avgExp > 0 ? Math.ceil(remain / avgExp) : 9999;
-            let dDayText = dDay < 9999 ? `D-${dDay}` : "-";
-
-            // ✅ 최대 레벨(만렙) 자동 계산
-            const maxLevel = levelExp.length;
-
-            // ✅ 만렙일 경우 → 현재 경험치보다 높은 목표 중 가장 가까운 목표까지 남은 일수 표시
-            if (level >= maxLevel && u.goalTargets && u.goalTargets.length > 0 && avgExp > 0) {
-                // 🔹 현재 경험치보다 높은 목표만 필터링 후 오름차순 정렬
-                const higherGoals = u.goalTargets.filter(g => g > curExp).sort((a, b) => a - b);
-
-                if (higherGoals.length > 0) {
-                    const nextGoal = higherGoals[0];
-                    const remainGoalExp = nextGoal - curExp;
-
-                    // 🔹 남은 경험치가 0보다 커야만 계산
-                    if (remainGoalExp > 0) {
-                        const goalDays = Math.ceil(remainGoalExp / avgExp);
-                        dDay = goalDays;
-                        dDayText = `D-${goalDays}`;
-                    } else {
-                        dDayText = "D-day";
-                    }
-                } else {
-                    // 🔹 남은 목표가 없을 경우
-                    dDayText = "-";
-                }
-            } else if (level >= maxLevel) {
-                // 🔹 목표 자체가 없을 경우
-                dDayText = "-";
-            }
+            // ✅ 마지막 기록을 기반으로 D-day 계산
+            const lastRecord = records[records.length - 1][1];
+            const dDay = calcDDay({ ...u, exp: lastRecord.exp || 0 }, avgExp);
 
             u.avgExp = avgExp;
-            u.dDayValue = dDay;
-            u.dDayText = dDayText;
+            u.dDayValue = dDay.value;
+            u.dDayText = dDay.text;
         });
 
         // ✅ 기본 정렬: D-day 짧은 순
         users.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
 
-        // ✅ 렌더링
         const $tbody = $("#rankingTable tbody");
-        users.forEach(u => {
-            $tbody.append(`
+        function renderTable(list) {
+            $tbody.empty();
+            if (list.length === 0) {
+                $tbody.html("<tr><td colspan='4'>검색 결과가 없습니다.</td></tr>");
+                return;
+            }
+
+            list.forEach(u => {
+                $tbody.append(`
                     <tr>
                         <td>${u.key}</td>
                         <td>${u.level || "-"}</td>
@@ -348,21 +255,20 @@
                         <td>${u.dDayText}</td>
                     </tr>
                 `);
-        });
+            });
+        }
 
-        // ✅ 내 위치 계산
+        renderTable(users);
+
+        // ✅ 내 순위 계산 및 강조
         const totalCount = users.length;
         const myIndex = users.findIndex(u => u.key === nickname);
         const myRank = myIndex >= 0 ? myIndex + 1 : "-";
-
-        // ✅ 상단 표시
         $("#totalCountText").text(`총 ${totalCount}명`);
         $("#myRankText").text(`내 위치 : ${myRank}번째`);
-
-
         $(`#rankingTable tbody tr`).eq(myIndex).css("background", "#ede7ff");
 
-        // ✅ 검색
+        // ✅ 검색 기능
         $("#searchInput").on("input", function () {
             const keyword = $(this).val().toLowerCase();
             $tbody.find("tr").each(function () {
@@ -371,7 +277,7 @@
             });
         });
 
-        // ✅ 정렬 선택
+        // ✅ 정렬 기능
         $("#sortSelect").on("change", function () {
             const mode = $(this).val();
             let sorted = [...users];
@@ -381,17 +287,7 @@
             else if (mode === "avgexp") sorted.sort((a, b) => (b.avgExp || 0) - (a.avgExp || 0));
             else if (mode === "nickname") sorted.sort((a, b) => a.key.localeCompare(b.key));
 
-            $tbody.empty();
-            sorted.forEach(u => {
-                $tbody.append(`
-                        <tr>
-                            <td>${u.key}</td>
-                            <td>${u.level || "-"}</td>
-                            <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
-                            <td>${u.dDayText}</td>
-                        </tr>
-                    `);
-            });
+            renderTable(sorted);
 
             // ✅ 정렬 후 내 위치 다시 계산 & 강조
             const myIndex = sorted.findIndex(u => u.key === nickname);

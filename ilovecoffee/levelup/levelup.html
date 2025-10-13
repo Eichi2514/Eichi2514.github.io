@@ -668,7 +668,36 @@
 
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getDatabase, ref, set, get, remove, query, orderByKey, limitToLast, endAt } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {
+        getDatabase,
+        ref,
+        set,
+        get,
+        remove,
+        query,
+        orderByKey,
+        limitToLast,
+        endAt
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // ✅ 공통 유틸 모듈
+    import {calcAvgExp, calcDDay} from "../common/expUtils.js";
+    import {levelExp} from "../common/levelExp.js";
+    import {
+        getKoreanDate,
+        getKoreanTimestamp,
+        validateNickname,
+        validatePassword,
+        validateDateNotFuture,
+        validateUniqueGoals,
+        addComma,
+        removeComma,
+        bindNumericCommaFormatter,
+        getActiveNickname,
+        goToPage,
+        showAlert,
+        showConfirm
+    } from "../common/utils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -681,213 +710,8 @@
         measurementId: ".env/measurementId"
     };
 
-    const levelExp = [
-        0,       // 1레벨
-        25,      // 2레벨
-        60,      // 3레벨
-        70,
-        80,
-        90,
-        100,
-        160,
-        250,
-        380,      // 10레벨
-        520,
-        880,
-        1210,
-        1750,
-        2500,
-        3639,
-        4790,
-        5999,
-        7392,
-        9102,      // 20레벨
-        10992,
-        13100,
-        14800,
-        15800,
-        18100,
-        19841,
-        22000,
-        23500,
-        26000,
-        29000,      // 30레벨
-        30800,
-        33800,
-        36000,
-        39000,
-        41800,
-        45700,
-        49000,
-        53000,
-        58000,
-        63000,      // 40레벨
-        67810,
-        73500,
-        79000,
-        86000,
-        92000,
-        99800,
-        107000,
-        117000,
-        131000,
-        150000,      // 50레벨
-        160000,
-        175000,
-        191000,
-        209000,
-        228000,
-        249000,
-        271000,
-        295000,
-        321000,
-        350000,      // 60레벨
-        382000,
-        417000,
-        455000,
-        496000,
-        540000,
-        587000,
-        637000,
-        690000,
-        746000,
-        805000,      // 70레벨
-        867000,
-        932000,
-        1000000,
-        1071000,
-        1145000,
-        1222000,
-        1302000,
-        1385000,
-        1471000,
-        1560000,      // 80레벨
-        1800000,
-        2200000,
-        2700000,
-        3200000,
-        3900000,
-        4700000,
-        5600000,
-        6800000,
-        8100000,
-        15000000,      // 90레벨
-        19500000,
-        25350000,
-        32960000,
-        42850000,
-        55710000,
-        72990000,
-        96350000,
-        128150000,
-        171730000,
-        240430000,      // 100레벨
-    ];
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    // ✅ 로그인 닉네임 가져오기 (coffee-subnick → coffee-nickname 순서)
-    function getActiveNickname() {
-        const subNick = localStorage.getItem("coffee-subnick");
-        if (subNick) {
-            // 사용 즉시 삭제 (1회용)
-            localStorage.removeItem("coffee-subnick");
-            return subNick;
-        }
-        return localStorage.getItem("coffee-nickname") || null;
-    }
-
-    function goToPage(target = "levelup") {
-        const basePath = window.location.pathname.split("/levelup")[0];
-
-        const pageMap = {
-            admin: `${basePath}/admin/main.html`,
-            ranking: `${basePath}/ranking/main.html`,
-            levelup: `${basePath}/levelup/levelup.html`,
-            layout: `${basePath}/layout/layout.html`
-        };
-
-        const targetUrl = pageMap[target] || pageMap.levelup;
-        location.href = targetUrl;
-    }
-
-    function getKoreanDate() {
-        const koreaTime = new Date();
-
-        // 직접 문자열로 포맷 (UTC 문제 완벽 차단)
-        const year = koreaTime.getFullYear();
-        const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
-        const day = String(koreaTime.getDate()).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    // ✅ 한국시간 타임스탬프 함수 추가
-    function getKoreanTimestamp() {
-        const koreaTime = new Date();
-        const yy = String(koreaTime.getFullYear()).slice(2);
-        const mm = String(koreaTime.getMonth() + 1).padStart(2, "0");
-        const dd = String(koreaTime.getDate()).padStart(2, "0");
-        const hh = String(koreaTime.getHours()).padStart(2, "0");
-        const mi = String(koreaTime.getMinutes()).padStart(2, "0");
-        const ss = String(koreaTime.getSeconds()).padStart(2, "0");
-        return `${yy}.${mm}.${dd}-${hh}:${mi}:${ss}`;
-    }
-
-    function validateNickname(nickname) {
-        if (!nickname || nickname.trim().length < 2) {
-            showAlert("닉네임은 2자 이상이어야 합니다.");
-            return false;
-        }
-        if (nickname.length > 12) {
-            showAlert("닉네임은 12자 이하로 입력해주세요.");
-            return false;
-        }
-        if (!/^[가-힣a-zA-Z0-9_]+$/.test(nickname)) {
-            showAlert("닉네임은 한글, 영문, 숫자, 밑줄(_)만 사용할 수 있습니다.");
-            return false;
-        }
-        return true;
-    }
-
-    function validatePassword(password) {
-        if (!password || password.trim().length < 4) {
-            showAlert("비밀번호는 4자 이상이어야 합니다.");
-            return false;
-        }
-        if (password.length > 20) {
-            showAlert("비밀번호는 최대 20자까지 가능합니다.");
-            return false;
-        }
-        if (!/^[a-zA-Z0-9!@#$%^&*]+$/.test(password)) {
-            showAlert("비밀번호는 영문, 숫자, 특수문자(!@#$%^&*)만 가능합니다.");
-            return false;
-        }
-        return true;
-    }
-
-    function validateDateNotFuture(inputDate) {
-        if (!inputDate) {
-            showAlert("날짜를 선택해주세요.");
-            return false;
-        }
-        const today = getKoreanDate();
-        if (inputDate > today) {
-            showAlert("미래 날짜는 입력할 수 없습니다.");
-            return false;
-        }
-        return true;
-    }
-
-    function validateUniqueGoals(goals) {
-        const unique = [...new Set(goals)];
-        if (unique.length !== goals.length) {
-            showAlert("중복된 목표값이 있습니다.");
-            return false;
-        }
-        return true;
-    }
 
     $("#logoutBtn").on("click", function () {
         showConfirm("정말 로그아웃할까요?", async (ok) => {
@@ -982,58 +806,15 @@
         $("#editModal").hide();
     });
 
-    // ✅ 커스텀 알림 함수
-    function showAlert(message) {
-        $("#customAlert .alert-text").html(message);
-        $("#customAlert").fadeIn(150);
-    }
-
     // 닫기 버튼
     $(document).on("click", "#alertConfirmBtn", function () {
         $("#customAlert").fadeOut(150);
     });
 
-    // ✅ 커스텀 컨펌 함수
-    function showConfirm(message, onConfirm) {
-        $("#customConfirm .alert-text").html(message);
-        $("#customConfirm").fadeIn(150);
-
-        // 기존 핸들러 제거 후 다시 등록 (중복 방지)
-        $(document).off("click", "#confirmYesBtn").on("click", "#confirmYesBtn", function () {
-            $("#customConfirm").fadeOut(150);
-            if (typeof onConfirm === "function") onConfirm(true);
-        });
-
-        $(document).off("click", "#confirmNoBtn").on("click", "#confirmNoBtn", function () {
-            $("#customConfirm").fadeOut(150);
-            if (typeof onConfirm === "function") onConfirm(false);
-        });
-    }
-
     // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
     $(document).on("input", "#todayExp, #editExpValue", function () {
         bindNumericCommaFormatter("#todayExp, #editExpValue", 1_000_000_000_000, "경험치는 최대 1조까지 입력할 수 있어요.");
     });
-
-    // ✅ 숫자 입력 시 실시간 쉼표 포맷 + 상한 체크 공용 함수
-    function bindNumericCommaFormatter(selector, maxValue = 1_000_000_000_000, maxMsg = "최대 1조까지 입력할 수 있어요.") {
-        $(document).off("input", selector).on("input", selector, function () {
-            let value = $(this).val().replace(/[^0-9]/g, ""); // 숫자만 추출
-            if (!value) {
-                $(this).val("");
-                return;
-            }
-
-            let num = parseInt(value, 10);
-
-            if (num > maxValue) {
-                showAlert(maxMsg);
-                num = maxValue;
-            }
-
-            $(this).val(num.toLocaleString()); // 3자리마다 쉼표 표시
-        });
-    }
 
     $(function () {
         const $popup = $("#loginPopup");
@@ -1430,52 +1211,27 @@
                     if (Object.keys(records).length > 1 && userData.level) {
                         const today = new Date();
 
-                        // ✅ 최근 10일 이내 기록만 필터링
-                        const recentDates = Object.keys(records)
-                            .filter(date => {
-                                const recordDate = new Date(date);
-                                const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
-                                return diffDays <= 11; // 최근 10일 이내만
-                            })
-                            .sort();
+                        // ✅ 평균 경험치 계산 (유틸 사용)
+                        const recordArray = Object.keys(records)
+                            .sort()
+                            .map(date => [date, records[date]]); // [날짜, {level, exp}] 형태로 변환
 
-                        // ✅ 연속된 날짜 간의 경험치 차이 계산
-                        let diffs = [];
-                        for (let i = 1; i < recentDates.length; i++) {
-                            const prevDate = new Date(recentDates[i - 1]);
-                            const curDate = new Date(recentDates[i]);
-                            const prev = records[recentDates[i - 1]];
-                            const cur = records[recentDates[i]];
+                        const avgGain = calcAvgExp(recordArray);
 
-                            let diff = 0;
-                            if (cur.level > prev.level) {
-                                diff += (levelExp[prev.level] - prev.exp);
-                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
-                                    diff += levelExp[lv];
-                                }
-                                diff += cur.exp;
-                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
-                                diff = cur.exp - prev.exp;
-                            }
-
-                            if (diff > 0) diffs.push(diff);
-
-                            // 🔹 빠진 날짜만큼 0 추가
-                            const dayGap = Math.floor((curDate - prevDate) / (1000 * 60 * 60 * 24));
-                            if (dayGap > 1) {
-                                for (let j = 1; j < dayGap; j++) {
-                                    diffs.push(0);
-                                }
-                            }
+                        if (!avgGain || avgGain <= 0 || isNaN(avgGain)) {
+                            $("#levelUpBox").html(`<p style="color:#999;">최근 경험치 기록이 없습니다.</p>`);
+                            return;
                         }
 
-                        const avgGain = diffs.length > 0 ? diffs.reduce((a, b) => a + b, 0) / diffs.length : 0;
-                        const currentLevel = userData.level;
+                        // ✅ 최근 기록 및 현재 상태 계산
                         const sortedDates = Object.keys(records).sort();
                         const latestDate = sortedDates[sortedDates.length - 1];
-                        const currentExp = records[latestDate].exp || 0;
-                        const koreaNow = new Date(today.getTime());
+                        const latestRecord = records[latestDate];
+                        const currentLevel = userData.level;
+                        const currentExp = latestRecord.exp || 0;
+                        const koreaNow = new Date();
 
+                        // ✅ 평균값 출력
                         if (avgGain < 10000) {
                             $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()}`);
                         } else {
@@ -1483,126 +1239,97 @@
                             $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()} ( 약 ${man}만 )`);
                         }
 
-                        let tableHTML = `
-                            <table style="width:100%; border-collapse:collapse; font-size:14px;">
-                                <thead>
-                                    <tr style="background:#f6f4fc; color:#5a4398;">
-                                        <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
-                                        <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                                        <th style="padding:8px; border:1px solid #e0dff2;">레벨업 예정일</th>
-                                    </tr>
-                                </thead>
-                            <tbody>
-                        `;
+// ✅ D-day 계산 (유틸 사용)
+                        const {value: dValue, text: dText} = calcDDay({
+                            level: userData.level,
+                            exp: currentExp,
+                            goalTargets: userData.goalTargets || []
+                        }, avgGain);
 
-                        let accumulatedExp = 0;
-                        let accumulatedDays = 0;
-                        let curExp = currentExp;
-
-                        const maxLevel = currentLevel >= 90 ? 100 : currentLevel + 10;
-
-                        for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
-                            const needExp = levelExp[lvl]; // 이번 레벨에서 다음 레벨까지 필요한 양
-                            if (!needExp) break;
-
-                            // 이번 레벨에서 다음 레벨까지 필요한 경험치
-                            const remainExp = Math.max(needExp - curExp, 0);
-                            accumulatedExp += remainExp;
-
-
-                            // ✅ 총 누적 경험치를 평균으로 나눠서 필요한 일수 계산
-                            const daysNeeded = Math.ceil(accumulatedExp / avgGain);
-
-                            // ✅ 도달일 계산 (오늘 기준 + 필요 일수)
-                            const estDate = new Date(koreaNow);
-                            estDate.setDate(koreaNow.getDate() + daysNeeded);
-
-                            const yyyy = estDate.getFullYear();
-                            const mm = String(estDate.getMonth() + 1).padStart(2, '0');
-                            const dd = String(estDate.getDate()).padStart(2, '0');
-
-                            // ✅ D-day는 오늘 포함 표시만 별도로 (표시용 +1)
-                            const dDay = daysNeeded > 0 ? `D-${daysNeeded}` : "D-day";
-
-
-                            // 출력 부분 수정
-                            tableHTML += `
-                                <tr>
-                                    <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
-                                    <td style="padding:8px; border:1px solid #e0dff2;">${dDay}</td>
-                                    <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-                                </tr>
-                            `;
-
-                            // 다음 루프부터는 경험치 0부터 시작
-                            curExp = 0;
-                        }
-
-                        tableHTML += `
-                                </tbody>
-                            </table>
-                        `;
-
-                        $("#levelUpBox").html(tableHTML);
-
-                        // ✅ 목표 경험치 도달 예상일 표 추가
-                        if (userData.goalTargets && avgGain > 0) {
+// ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
+                        if (userData.level >= levelExp.length && userData.goalTargets?.length > 0 && avgGain > 0) {
                             $("#levelUpBox").empty();
                             const goalTargets = userData.goalTargets.sort((a, b) => a - b);
-                            const currentExp = records[latestDate].exp || 0;
 
                             let goalTable = `
-                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
-                                    <thead>
-                                        <tr style="background:#f6f4fc; color:#5a4398;">
-                                            <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
-                                        </tr>
-                                    </thead>
-                                <tbody>
-                            `;
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+            <thead>
+                <tr style="background:#f6f4fc; color:#5a4398;">
+                    <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
+                    <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                    <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                </tr>
+            </thead>
+        <tbody>
+    `;
 
-                            goalTargets.forEach(goal => {
-                                const remainExp = Math.max(goal - currentExp, 0);
-                                if (remainExp <= 0) return; // 이미 달성한 목표는 표시 안 함
+                            goalTargets
+                                .filter(goal => goal > currentExp)
+                                .forEach(goal => {
+                                    const remainExp = Math.max(goal - currentExp, 0);
+                                    const daysNeeded = Math.ceil(remainExp / avgGain);
+                                    const estDate = new Date(koreaNow);
+                                    estDate.setDate(koreaNow.getDate() + daysNeeded);
+                                    const yyyy = estDate.getFullYear();
+                                    const mm = String(estDate.getMonth() + 1).padStart(2, "0");
+                                    const dd = String(estDate.getDate()).padStart(2, "0");
 
-                                const daysNeeded = Math.ceil(remainExp / avgGain);
+                                    let formattedGoal = goal < 10000
+                                        ? goal.toLocaleString()
+                                        : goal < 100000000
+                                            ? `${Math.floor(goal / 10000)}만`
+                                            : `${Math.floor(goal / 100000000)}억`;
+
+                                    goalTable += `
+                <tr>
+                    <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
+                    <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
+                    <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                </tr>`;
+                                });
+
+                            goalTable += `</tbody></table>`;
+                            $("#levelUpBox").append(goalTable);
+
+                        } else {
+                            // 🔹 일반 레벨업 테이블 (기존 구조 유지)
+                            let tableHTML = `
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+            <thead>
+                <tr style="background:#f6f4fc; color:#5a4398;">
+                    <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
+                    <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                    <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                </tr>
+            </thead>
+        <tbody>
+    `;
+
+                            let accumulatedExp = 0;
+                            let curExp = currentExp;
+                            const maxLevel = Math.min(currentLevel + 10, levelExp.length);
+
+                            for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
+                                const needExp = levelExp[lvl];
+                                if (!needExp) break;
+                                accumulatedExp += Math.max(needExp - curExp, 0);
+                                const daysNeeded = Math.ceil(accumulatedExp / avgGain);
                                 const estDate = new Date(koreaNow);
                                 estDate.setDate(koreaNow.getDate() + daysNeeded);
-
                                 const yyyy = estDate.getFullYear();
-                                const mm = String(estDate.getMonth() + 1).padStart(2, '0');
-                                const dd = String(estDate.getDate()).padStart(2, '0');
-                                const dDay = daysNeeded > 0 ? `D-${daysNeeded}` : "D-day";
+                                const mm = String(estDate.getMonth() + 1).padStart(2, "0");
+                                const dd = String(estDate.getDate()).padStart(2, "0");
 
-                                // ✅ 숫자 단위 변환
-                                let formattedGoal = "";
-                                if (goal < 10000) {
-                                    formattedGoal = goal.toLocaleString();
-                                } else if (goal < 100000000) {
-                                    formattedGoal = `${Math.floor(goal / 10000)}만`;
-                                } else {
-                                    formattedGoal = `${Math.floor(goal / 100000000)}억`;
-                                }
-
-                                goalTable += `
-                                    <tr>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal.toLocaleString()}</td>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${dDay}</td>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-                                    </tr>
-                                `;
-                            });
-
-                            goalTable += `
-                                    </tbody>
-                                </table>
-                            `;
-
-                            $("#levelUpBox").append(`
-                                ${goalTable}
-                            `);
+                                tableHTML += `
+            <tr>
+                <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
+                <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
+                <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+            </tr>`;
+                                curExp = 0;
+                            }
+                            tableHTML += `</tbody></table>`;
+                            $("#levelUpBox").html(tableHTML);
                         }
 
                     } else {
@@ -1772,8 +1499,13 @@
 
             showAlert(`레벨 ${newLevel}\n경험치 ${newExp.toLocaleString()}(으)로 수정되었습니다!`);
 
-            // 🔹 현재 회원의 레벨도 업데이트
-            await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
+            // 🔹 현재 표시 중인 레벨 가져오기
+            const currentLevelVal = parseInt($("#currentLevelDisplay").text()) || 1;
+
+            // 🔹 새로 입력한 레벨이 기존보다 높을 때만 갱신
+            if (newLevel > currentLevelVal) {
+                await set(ref(db, `coffeeUsers/${nickname}/level`), newLevel);
+            }
 
             $("#editModal").hide();
             await loadUserData(nickname);

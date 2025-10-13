@@ -188,9 +188,9 @@
     <input type="text" id="searchInput" placeholder="닉네임 검색">
     <select id="sortSelect">
         <option value="dday">D-day</option>
-        <option value="nickname">닉네임</option>
-        <option value="level">레벨</option>
         <option value="avgexp">경험치</option>
+        <option value="level">레벨</option>
+        <option value="nickname">닉네임</option>
     </select>
 </div>
 
@@ -234,22 +234,12 @@
 </div>
 
 <script type="module">
-    // ✅ 레벨 경험치 테이블
-    const levelExp = [
-        0, 25, 60, 70, 80, 90, 100, 160, 250, 380, 520, 880, 1210, 1750, 2500, 3639, 4790, 5999,
-        7392, 9102, 10992, 13100, 14800, 15800, 18100, 19841, 22000, 23500, 26000, 29000,
-        30800, 33800, 36000, 39000, 41800, 45700, 49000, 53000, 58000, 63000, 67810, 73500,
-        79000, 86000, 92000, 99800, 107000, 117000, 131000, 150000, 160000, 175000, 191000,
-        209000, 228000, 249000, 271000, 295000, 321000, 350000, 382000, 417000, 455000,
-        496000, 540000, 587000, 637000, 690000, 746000, 805000, 867000, 932000, 1000000,
-        1071000, 1145000, 1222000, 1302000, 1385000, 1471000, 1560000, 1800000, 2200000,
-        2700000, 3200000, 3900000, 4700000, 5600000, 6800000, 8100000, 15000000, 19500000,
-        25350000, 32960000, 42850000, 55710000, 72990000, 96350000, 128150000, 171730000,
-        240430000
-    ];
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {getDatabase, ref, get, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    // ✅ 공통 유틸 모듈
+    import { calcAvgExp, calcDDay } from "../common/expUtils.js";
+    import { dayDiff } from "../common/dateUtils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -264,14 +254,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    function toDateOnly(d) {
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    }
-
-    function dayDiff(a, b) {
-        return Math.floor((toDateOnly(b) - toDateOnly(a)) / (1000 * 60 * 60 * 24));
-    }
-
     function goToPage() {
         const basePath = window.location.pathname.split("/admin")[0];
         location.href = `${basePath}/levelup/levelup.html`;
@@ -279,7 +261,7 @@
 
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
-        if (!nickname) return alert("로그인이 필요합니다."), location.href = "/ilovecoffee/levelup/levelup.html";
+        if (!nickname) return alert("로그인이 필요합니다."), goToPage();
 
         // 관리자 권한 확인
         get(ref(db, `coffeeUsers/${nickname}`)).then(async snap => {
@@ -320,129 +302,22 @@
                 list.forEach(u => {
                     const records = u.expRecords ? Object.entries(u.expRecords) : [];
 
-                    let avgExp = 0;
-                    let dDayText = "-";
-                    let dDayValue = 99999;
-                    let lastDate = null;
+                    // ✅ 유저별 평균 경험치 계산
+                    const avgExp = calcAvgExp(records);
 
-                    if (records.length > 0) {
-                        records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
-
-                        const today = new Date();
-                        const recentRecords = records.filter(([date]) => {
-                            const recordDate = new Date(date);
-                            const diffDays = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
-                            return diffDays <= 11;
-                        });
-
-                        const firstDate = new Date(recentRecords[0][0]);
-                        const lastDateObj = new Date(recentRecords[recentRecords.length - 1][0]);
-                        lastDate = recentRecords[recentRecords.length - 1][0];
-
-                        // ✅ 구간별 획득 경험치 계산 (최근 10개 기준)
-                        const recentDiffs = [];
-                        for (let i = 1; i < recentRecords.length; i++) {
-                            const prev = recentRecords[i - 1][1];
-                            const cur = recentRecords[i][1];
-                            let diff = 0;
-
-                            if (cur.level > prev.level) {
-                                diff += (levelExp[prev.level] - prev.exp);
-                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
-                                    diff += levelExp[lv];
-                                }
-                                diff += cur.exp;
-                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
-                                diff = cur.exp - prev.exp;
-                            }
-
-                            if (diff > 0) recentDiffs.push(diff);
-                        }
-
-                        // ✅ 총 경과 일수(빈 날 포함) = 첫날~마지막날
-                        const totalDays = Math.max(dayDiff(firstDate, lastDateObj), 1);
-
-                        // ✅ 구간별 총 획득 경험치 합산
-                        let totalGain = 0;
-                        for (let i = 1; i < recentRecords.length; i++) {
-                            const prev = recentRecords[i - 1][1];
-                            const cur  = recentRecords[i][1];
-                            let diff = 0;
-
-                            if (cur.level > prev.level) {
-                                diff += (levelExp[prev.level] - prev.exp);
-                                for (let lv = prev.level + 1; lv < cur.level; lv++) {
-                                    diff += levelExp[lv];
-                                }
-                                diff += cur.exp;
-                            } else if (cur.level === prev.level && cur.exp >= prev.exp) {
-                                diff = cur.exp - prev.exp;
-                            }
-
-                            if (diff > 0) totalGain += diff;
-                        }
-
-                        // ✅ 평균 경험치 (전체 기간 기준)
-                        avgExp = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
-
-                        // ✅ D-day 계산 (마지막 기록 기준)
-                        const last = records[records.length - 1][1];
-                        const level = u.level || 1;
-                        const curExp = last.exp || 0;
-                        const need = levelExp[level] || 0;
-                        const remain = Math.max(need - curExp, 0);
-
-                        // ✅ 최대 레벨 계산
-                        const maxLevel = levelExp.length;
-
-                        if (avgExp > 0) {
-                            if (level < maxLevel) {
-                                // 일반 레벨 구간
-                                if (remain > 0) {
-                                    const days = Math.ceil(remain / avgExp);
-                                    dDayValue = days;
-                                    dDayText = days > 0 ? `D-${days}` : "D-day";
-                                } else {
-                                    dDayText = "D-day";
-                                }
-                            } else {
-                                // ✅ 만렙일 경우 (목표 기반 계산)
-                                if (u.goalTargets && u.goalTargets.length > 0) {
-                                    const higherGoals = u.goalTargets.filter(g => g > curExp).sort((a, b) => a - b);
-                                    if (higherGoals.length > 0) {
-                                        const nextGoal = higherGoals[0];
-                                        const remainGoalExp = nextGoal - curExp;
-                                        if (remainGoalExp > 0) {
-                                            const goalDays = Math.ceil(remainGoalExp / avgExp);
-                                            dDayValue = goalDays;
-                                            dDayText = `D-${goalDays}`;
-                                        } else {
-                                            dDayText = "D-day";
-                                        }
-                                    } else {
-                                        dDayText = "-"; // 남은 목표 없음
-                                    }
-                                } else {
-                                    dDayText = "-"; // 목표 자체 없음
-                                }
-                            }
-                        }
-                    }
+                    // ✅ 유저별 D-day 계산
+                    const lastRecord = records.length ? records[records.length - 1][1] : {};
+                    const dDay = calcDDay({ ...u, exp: lastRecord.exp || 0 }, avgExp);
 
                     u.avgExp = avgExp;
-                    u.dDayValue = dDayValue;
-                    u.dDayText = dDayText;
+                    u.dDayValue = dDay.value;
+                    u.dDayText = dDay.text;
 
                     // ✅ 날짜 차이 계산
                     let bgColor = "";
-                    if (lastDate) {
-                        const last = new Date(lastDate);
-
-                        // 🔹 시분초를 제거한 ‘순수 날짜’ 기준으로 계산
-                        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                        const lastDateOnly = new Date(last.getFullYear(), last.getMonth(), last.getDate());
-
-                        const diffDays = Math.floor((todayDateOnly - lastDateOnly) / (1000 * 60 * 60 * 24));
+                    if (records.length > 0) {
+                        const lastDate = new Date(records[records.length - 1][0]);
+                        const diffDays = dayDiff(lastDate, today);
 
                         if (diffDays >= 7) {
                             bgColor = "#f0f0f0"; // 연한 회색
@@ -460,15 +335,25 @@
                         <tr data-nick="${u.key}" style="background:${bgColor}">
                             <td>${u.key}</td>
                             <td>${u.level || "-"}</td>
-                            <td>${avgExp ? (avgExp >= 10000 ? `${Math.floor(avgExp / 10000)}만` : avgExp.toLocaleString()) : "-"}</td>
-                            <td>${dDayText}</td>
+                            <td>${avgExp ? (avgExp >= 10000 ? Math.floor(avgExp / 10000) + "만" : avgExp.toLocaleString()) : "-"}</td>
+                            <td>${dDay.text}</td>
                         </tr>
                     `);
                 });
             }
 
+            // ✅ 모든 유저별 평균 경험치 / D-day 계산
+            users.forEach(u => {
+                const records = u.expRecords ? Object.entries(u.expRecords) : [];
+                const avgExp = calcAvgExp(records);
+                const lastRecord = records.length ? records[records.length - 1][1] : {};
+                const dDay = calcDDay({ ...u, exp: lastRecord.exp || 0 }, avgExp);
+                u.avgExp = avgExp;
+                u.dDayValue = dDay.value;
+                u.dDayText = dDay.text;
+            });
+
             // ✅ 첫 렌더링 (D-day 짧은 순)
-            renderTable(users);
             users.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
             renderTable(users);
 
@@ -511,39 +396,42 @@
                 renderTable(sorted);
             });
 
-            let selectedNick="";
-            $(document).on("click","#userTable tbody tr",function(){
-                selectedNick=$(this).data("nick");
+            // ======================
+            // 🔹 모달 기능
+            // ======================
+            let selectedNick = "";
+            $(document).on("click", "#userTable tbody tr", function () {
+                selectedNick = $(this).data("nick");
                 $("#modalNickname").text(selectedNick);
                 $("#userModal").css("display", "flex").hide().fadeIn(200);
             });
 
             // ✅ 이동하기 버튼
-            $(".move-btn").on("click",function(){
-                if(!selectedNick) return;
-                localStorage.setItem("coffee-subnick",selectedNick);
+            $(".move-btn").on("click", function () {
+                if (!selectedNick) return;
+                localStorage.setItem("coffee-subnick", selectedNick);
                 goToPage();
             });
 
             // ✅ 삭제 버튼
-            $(".delete-btn").on("click",async function(){
-                if(!selectedNick) return;
-                if(!confirm(`${selectedNick} 계정을 정말 삭제할까요?`)) return;
-                try{
-                    await remove(ref(db,`coffeeUsers/${selectedNick}`));
+            $(".delete-btn").on("click", async function () {
+                if (!selectedNick) return;
+                if (!confirm(`${selectedNick} 계정을 정말 삭제할까요?`)) return;
+                try {
+                    await remove(ref(db, `coffeeUsers/${selectedNick}`));
                     alert("삭제되었습니다.");
                     $("#userModal").fadeOut(200);
                     // 테이블에서 즉시 제거
                     $(`#userTable tr[data-nick="${selectedNick}"]`).remove();
-                }catch(e){
+                } catch (e) {
                     alert("삭제 중 오류가 발생했습니다.");
                     console.error(e);
                 }
             });
 
             // ✅ 닫기 버튼
-            $(".close-btn, #userModal").on("click",function(e){
-                if(e.target.id==="userModal" || $(this).hasClass("close-btn")){
+            $(".close-btn, #userModal").on("click", function (e) {
+                if (e.target.id === "userModal" || $(this).hasClass("close-btn")) {
                     $("#userModal").fadeOut(200);
                 }
             });
