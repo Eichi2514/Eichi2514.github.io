@@ -1,4 +1,7 @@
 // 파일 경로 : worklog/main/main.js
+// ========= 유틸 =========
+import { extractSortedCategories, renderCategoryFilter, bindModalEvents } from '../common/modalUtils.js';
+
 // ====== 상태 & 캐시 ======
 let chart = null;
 let currentDate = todayStr();
@@ -211,21 +214,31 @@ function closeEdit() {
     $('#edit-backdrop').hide();
 }
 
+let selectedCats = []; // ✅ 선택된 카테고리 상태
 // ====== 표 렌더 & 차트 ======
 function render() {
-    const rawData = [...getData(currentDate)];
-    const viewData = rawData.filter(e => e.type !== 'break'); // 휴식 무시
-    viewData.sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+    const viewData = [...getData(currentDate)];
+
+    // ✅ 카테고리 필터 적용
+    const filtered = selectedCats.length === 0
+        ? viewData
+        : viewData.filter(e => {
+            const desc = e.desc || '';
+            const idx = desc.indexOf(')');
+            const cat = idx >= 0 ? desc.slice(0, idx).trim() : '기타';
+            return selectedCats.includes(cat);
+        });
+
+    filtered.sort((a, b) => (a.start || '').localeCompare(b.start || ''));
 
     $tbody.empty();
-    if (viewData.length === 0) {
+    if (filtered.length === 0) {
         $tbody.append(`<tr><td colspan="5" class="py-8 text-gray-400 text-center">일정 없음</td></tr>`);
     } else {
-        $.each(viewData, function (_, entry) {
+        $.each(filtered, function (_, entry) {
             const timeCell = entry.end ? `${formatHHMM(entry.start)} ~ ${formatHHMM(entry.end)}`
                 : `${formatHHMM(entry.start)} <span class="text-xs text-gray-400">(진행중)</span>`;
 
-            // ✅ desc에서 카테고리와 제목 분리
             let category = '';
             let title = entry.desc || '';
             const idx = title.indexOf(')');
@@ -236,10 +249,8 @@ function render() {
 
             let dur;
             if (entry.end) {
-                // 종료된 일정
                 dur = entry.duration ? minutesToHM(entry.duration) : '0분';
             } else {
-                // 진행 중 일정 → 현재 시각과 start 차이 계산
                 const now = new Date();
                 const nowMin = now.getHours() * 60 + now.getMinutes();
                 const startMin = parseHHMM(entry.start);
@@ -247,7 +258,7 @@ function render() {
                 dur = `(${minutesToHM(diff)} 경과)`;
             }
 
-            const $tr = $('<tr/>').addClass('data-row').append(
+            const $tr = $('<tr/>').append(
                 $('<td/>').addClass('time cell-nowrap').html(timeCell),
                 $('<td/>').addClass('text-left cell-nowrap').text(category || '-'),
                 $('<td/>').addClass('text-left font-semibold cell-nowrap').text(title || '-'),
@@ -294,8 +305,15 @@ function render() {
         });
     }
 
-    renderSummary(viewData)
-    draw24hPie(viewData);
+    // ✅ 요약 & 차트도 필터된 데이터로 표시
+    renderSummary(filtered);
+    draw24hPie(filtered);
+
+    const allCategories = extractSortedCategories(viewData);
+    renderCategoryFilter('#category-filter', allCategories, selectedCats, (newCats) => {
+        selectedCats = newCats;
+        render(); // 변경 시 다시 렌더
+    });
 }
 
 // ====== 시간 포맷 함수 ======
@@ -327,6 +345,32 @@ function draw24hPie(entries) {
     if (chart) chart.destroy();
 
     const ctxEl = $chartCanvas[0];
+
+    // ✅ 카테고리별 고유 색상 매핑
+    const categoryColors = {};
+    const baseColors = [
+        '#5a4398', // 메인 보라 (기준)
+        '#7b5ae8', // 선명한 퍼플
+        '#a855f7', // 보라핑크
+        '#c084fc', // 연보라핑크
+        '#d946ef', // 핫핑크 보라
+        '#9333ea', // 진한 퍼플
+        '#6d28d9', // 짙은 보라블루
+        '#8b5cf6', // 보라+블루
+        '#9b84f1', // 라벤더
+        '#c6a6ff'  // 밝은 라벤더
+    ];
+
+    // 🔹 entries에 등장하는 순서대로 색상 부여
+    let colorIndex = 0;
+    entries.forEach(e => {
+        const cat = e.desc?.includes(')') ? e.desc.split(')')[0].trim() : '기타';
+        if (!categoryColors[cat]) {
+            categoryColors[cat] = baseColors[colorIndex % baseColors.length];
+            colorIndex++;
+        }
+    });
+
     chart = new Chart(ctxEl, {
         type: 'pie',
         data: {labels: [], datasets: [{data: [1], backgroundColor: ['rgba(0,0,0,0)'], borderWidth: 0}]},
@@ -343,28 +387,37 @@ function draw24hPie(entries) {
                 const cx = (area.left + area.right) / 2, cy = (area.top + area.bottom) / 2;
                 const R = Math.min(area.width, area.height) / 2;
                 ctx.save();
-                // 배경원
+
+                // ✅ 배경원
                 ctx.fillStyle = '#f3f4f6';
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
                 ctx.arc(cx, cy, R, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.fill();
-                // 종료된 일정만 채우기
+
+                // ✅ 종료된 일정만 채우기
                 const finished = entries.filter(e => e.end && e.duration > 0);
-                const colorOf = () => 'rgba(30,58,138,0.9)';
                 $.each(finished, function (_, e) {
                     const sMin = parseHHMM(e.start), eMin = parseHHMM(e.end);
                     const sAng = -Math.PI / 2 + (sMin / 1440) * Math.PI * 2;
                     const eAng = -Math.PI / 2 + (eMin / 1440) * Math.PI * 2;
-                    ctx.fillStyle = colorOf(e.type);
+                    const cat = e.desc?.includes(')') ? e.desc.split(')')[0].trim() : '기타';
+                    const color = categoryColors[cat] || '#999999';
+                    ctx.fillStyle = color;
                     ctx.beginPath();
                     ctx.moveTo(cx, cy);
                     ctx.arc(cx, cy, R, sAng, eAng, false);
                     ctx.closePath();
                     ctx.fill();
+
+                    // ✅ 각 호(arc) 사이에 테두리 추가
+                    ctx.strokeStyle = '#ffffff';   // 테두리 색
+                    ctx.lineWidth = 0.2;           // 두께
+                    ctx.stroke();
                 });
-                // 눈금
+
+                // ✅ 눈금
                 ctx.strokeStyle = '#d1d5db';
                 ctx.lineWidth = 1;
                 const tickOuter = R, tickInner = R * 0.96;
@@ -384,7 +437,8 @@ function draw24hPie(entries) {
                         ctx.fillText(String(h).padStart(2, '0'), tx, ty);
                     }
                 }
-                // 섹터 라벨
+
+                // ✅ 섹터 라벨
                 ctx.fillStyle = '#ffffff';
                 $.each(finished, function (_, e) {
                     const sMin = parseHHMM(e.start), eMin = parseHHMM(e.end);
@@ -509,6 +563,15 @@ $(function () {
     $datePicker.val(currentDate);
     $currentDateLabel.text(formatDateKorean(currentDate));
 
+    // ✅ 초기 카테고리 목록 구성
+    const todayData = getData(currentDate);
+    const allCategories = extractSortedCategories(todayData);
+
+    renderCategoryFilter('#category-filter', allCategories, selectedCats, (newCats) => {
+        selectedCats = newCats;
+        render(); // ✅ 필터 변경 시 다시 렌더
+    });
+
     // 날짜 변경
     $('.date-bar .btn.btn-ghost[data-delta]').on('click', function () {
         changeDate(parseInt($(this).data('delta'), 10));
@@ -544,7 +607,7 @@ $(function () {
         if (!category || !title) return window.alert('카테고리와 제목을 모두 입력하세요.');
 
         // ✅ desc는 "카테고리)제목" 형태로 저장
-        const desc = `${category})${title}`;
+        const desc = `${category}) ${title}`;
 
         // ✅ 시작 시간 자동 세팅
         const startRaw = nowHHMM();
@@ -747,4 +810,7 @@ $(function () {
         if (!$(e.target).closest('#entry-title, #title-suggestions').length)
             $titleSuggestions.hide();
     });
+
+    // ========= 모달 관련 =========
+    bindModalEvents('#btn-filter', ['#btn-filter-close', '#btn-filter-apply'], '#filter-modal');
 });

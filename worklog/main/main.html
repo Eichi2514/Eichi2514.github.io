@@ -13,7 +13,10 @@
 <body>
 <div class="container">
     <div class="flex items-center justify-between mb-3">
-        <h1 class="text-2xl flex items-center gap-2">작업일지</h1>
+        <div class="flex gap-4 flex-nowrap">
+            <h1 class="text-2xl flex items-center">작업일지</h1>
+            <button id="btn-filter" class="btn btn-outline">카테고리 선택</button>
+        </div>
         <div class="flex gap-2">
             <a href="../summary/summary.html" class="btn btn-outline no-wrap">일정 요약</a>
         </div>
@@ -146,8 +149,22 @@
     </div>
 </div>
 
+<!-- 🔽 카테고리 필터 모달 -->
+<div id="filter-modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col" style="min-width: 320px; max-height: 60vh">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="font-semibold text-lg">카테고리</h2>
+            <button id="btn-filter-close" class="text-2xl leading-none text-gray-500 hover:text-black">&times;</button>
+        </div>
+        <div id="category-filter" class="border rounded p-2 overflow-y-auto flex-1 space-y-1">
+            <div class="text-gray-400 text-sm text-center">로딩 중...</div>
+        </div>
+        <button id="btn-filter-apply" class="btn btn-outline w-full mt-3">닫기</button>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="main.js" defer></script>
+<script src="main.js" type="module" defer></script>
 <script src="../../utils/getLocalStorageSize.js" defer></script>
 </body>
 </html>

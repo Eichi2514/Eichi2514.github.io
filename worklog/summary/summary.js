@@ -1,5 +1,7 @@
 // 파일 경로 : worklog/summary/summary.js
 // ========= 유틸 =========
+import { extractSortedCategories, renderCategoryFilter, bindModalEvents } from '../common/modalUtils.js';
+
 const pad2 = n => String(n).padStart(2, '0');
 const formatDateKorean = (s) => {
     const [y, m, d] = s.split('-').map(Number);
@@ -309,69 +311,10 @@ function renderGrid(from, to) {
     $sumTaske.append(tasksHtml);
 
     // ✅ 카테고리 자동 추출 + 글자순 정렬
-    const allCategories = [...new Set(
-        tasks.map(t => (t.title.includes(')') ? t.title.split(')')[0] : '기타'))
-    )].sort((a, b) => a.localeCompare(b, 'ko')); // ← 가나다/알파벳 순 정렬
+    const allCategories = extractSortedCategories(tasks);
 
-    // ✅ 체크박스 목록 갱신
-    const $catBox = $('#category-filter');
-    $catBox.empty();
-
-    if (allCategories.length === 0) {
-        $catBox.append(`<div class="text-gray-400 text-sm text-center">카테고리 없음</div>`);
-    } else {
-        // ✅ 전체선택 체크박스 (맨 위에 표시)
-        const allChecked = selectedCats.length === allCategories.length;
-        const partialChecked = selectedCats.length > 0 && !allChecked;
-        const checkedAttr = allChecked ? 'checked' : '';
-        const indeterminateClass = partialChecked ? 'opacity-70' : '';
-
-        $catBox.append(`
-        <label class="flex items-center gap-2 cursor-pointer text-sm mb-2">
-            <input type="checkbox" id="chk-all" class="accent-indigo-600 ${indeterminateClass}" ${checkedAttr}>
-            <span>전체</span>
-        </label>
-    `);
-
-        // ✅ 개별 카테고리 목록
-        allCategories.forEach(cat => {
-            const safeId = cat.replace(/[^\w가-힣]/g, '');
-            const checked = selectedCats.includes(cat) ? 'checked' : '';
-            $catBox.append(`
-            <label class="flex items-center gap-2 cursor-pointer text-sm">
-                <input type="checkbox" class="cat-check accent-indigo-600" value="${cat}" id="chk-${safeId}" ${checked}>
-                <span>${cat}</span>
-            </label>
-        `);
-        });
-    }
-
-    // ✅ 체크박스 이벤트 처리
-    $catBox.off('change').on('change', '.cat-check, #chk-all', function () {
-        const $checks = $('.cat-check');
-        const allCats = $checks.map(function () { return $(this).val(); }).get();
-
-        if (this.id === 'chk-all') {
-            // 전체 선택 체크 시 → 모두 선택 / 해제
-            if (this.checked) {
-                selectedCats = allCats;
-            } else {
-                selectedCats = [];
-            }
-        } else {
-            // 개별 체크박스 변경 시
-            selectedCats = $('.cat-check:checked').map(function () {
-                return $(this).val();
-            }).get();
-        }
-
-        // 전체선택 체크박스 상태 갱신
-        const allChecked = selectedCats.length === allCats.length;
-        const partialChecked = selectedCats.length > 0 && !allChecked;
-        const $allBox = $('#chk-all');
-        $allBox.prop('checked', allChecked);
-        $allBox.css('opacity', partialChecked ? '0.7' : '1');
-
+    renderCategoryFilter('#category-filter', allCategories, selectedCats, (newCats) => {
+        selectedCats = newCats;
         renderGrid($('#date-from').val(), $('#date-to').val());
     });
 
@@ -472,15 +415,5 @@ $(function () {
     });
 
     // ========= 모달 관련 =========
-    function openFilterModal() {
-        $('#filter-modal').removeClass('hidden').addClass('flex');
-    }
-
-    function closeFilterModal() {
-        $('#filter-modal').addClass('hidden').removeClass('flex');
-    }
-
-    // 버튼 이벤트 등록
-    $(document).on('click', '#btn-filter', openFilterModal);
-    $(document).on('click', '#btn-filter-close, #btn-filter-apply', closeFilterModal);
+    bindModalEvents('#btn-filter', ['#btn-filter-close', '#btn-filter-apply'], '#filter-modal');
 });
