@@ -638,7 +638,7 @@ $(function () {
         const category = $('#edit-category').val().trim();
         const title = $('#edit-title').val().trim();
         if (!category || !title) return window.alert('카테고리와 제목을 모두 입력하세요.');
-        const desc = `${category})${title}`;
+        const desc = `${category}) ${title}`;
         const memo = $('#edit-memo').val().trim();
         const start = $('#edit-start').val().trim();
         const end = $('#edit-end').val().trim();
