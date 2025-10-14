@@ -50,35 +50,6 @@
             padding: 0 8px;
         }
 
-        .level-input label {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        #currentLevel {
-            width: 80px;
-            text-align: center;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        #saveLevelBtn {
-            background: #5a4398;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            padding: 8px 16px;
-            font-size: 15px;
-            transition: 0.2s;
-        }
-
-        #saveLevelBtn:hover {
-            background: #47327a;
-        }
-
         /* ===== 제목 / 버튼 ===== */
         h1 {
             text-align: center;
@@ -113,20 +84,6 @@
             margin: 0;
         }
 
-        .levelup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 40px;
-            margin-bottom: 10px;
-        }
-
-        .levelup-header h3 {
-            margin: 0;
-            color: #444;
-            font-size: 17px;
-        }
-
         #expButton {
             background: transparent; /* 배경 투명 */
             color: #5a4398; /* 글자 보라색 */
@@ -146,7 +103,7 @@
 
         /* ===== 섹션 제목 ===== */
         h3 {
-            margin-top: 40px;
+            margin-top: 30px;
             margin-bottom: 10px;
             color: #444;
             text-align: left;
@@ -525,6 +482,36 @@
                 transform: rotate(360deg);
             }
         }
+
+        .status-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 10px;
+            background: #f6f4fc;
+            border: 1px solid #e0dff2;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #5a4398;
+        }
+
     </style>
 </head>
 <body>
@@ -558,8 +545,15 @@
         <div id="rankingToggle" class="toggle-switch"></div>
     </div>
 
-    <div class="levelup-header">
-        <span id="avgExp" style="font-size:15px; color:#5a4398; font-weight:600;"></span>
+    <div class="status-card">
+        <div class="status-item">
+            <div class="status-label">평균 경험치</div>
+            <div class="status-value" id="avgExp">-</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">남은 경험치</div>
+            <div class="status-value" id="curExp">-</div>
+        </div>
     </div>
 
     <div id="levelUpBox" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;"></div>
@@ -1233,35 +1227,74 @@
 
                         // ✅ 평균값 출력
                         if (avgGain < 10000) {
-                            $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()}`);
+                            $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}`);
                         } else {
                             const man = Math.floor(avgGain / 10000);
-                            $("#avgExp").text(`평균 경험치 : ${Math.floor(avgGain).toLocaleString()} ( 약 ${man}만 )`);
+                            $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}<br>( 약 ${man}만 )`);
                         }
 
-// ✅ D-day 계산 (유틸 사용)
+                        // ✅ 남은 경험치 계산 및 표시
+                        if (userData.level < levelExp.length) {
+                            // 일반 레벨업 모드
+                            const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
+                            const remainExp = Math.max(nextNeedExp - currentExp, 0);
+
+                            let approx = "";
+                            if (remainExp >= 100000000) { // 1억 이상
+                                const eok = Math.floor(remainExp / 100000000);
+                                approx = `( 약 ${eok.toLocaleString()}억 )`;
+                            } else if (remainExp >= 10000) { // 1만 이상
+                                const man = Math.floor(remainExp / 10000);
+                                approx = `( 약 ${man.toLocaleString()}만 )`;
+                            }
+
+                            $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
+                        } else if (userData.goalTargets?.length > 0) {
+                            // 만렙 + 목표 경험치 모드
+                            const goalTargets = userData.goalTargets.sort((a, b) => a - b);
+                            const nextGoal = goalTargets.find(g => g > currentExp);
+
+                            if (nextGoal) {
+                                const remainExp = Math.max(nextGoal - currentExp, 0);
+
+                                let approx = "";
+                                if (remainExp >= 100000000) {
+                                    const eok = Math.floor(remainExp / 100000000);
+                                    approx = `( 약 ${eok.toLocaleString()}억 )`;
+                                } else if (remainExp >= 10000) {
+                                    const man = Math.floor(remainExp / 10000);
+                                    approx = `( 약 ${man.toLocaleString()}만 )`;
+                                }
+
+                                $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
+                            } else {
+                                $("#curExp").html("달성완료");
+                            }
+                        }
+
+                        // ✅ D-day 계산 (유틸 사용)
                         const {value: dValue, text: dText} = calcDDay({
                             level: userData.level,
                             exp: currentExp,
                             goalTargets: userData.goalTargets || []
                         }, avgGain);
 
-// ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
+                        // ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
                         if (userData.level >= levelExp.length && userData.goalTargets?.length > 0 && avgGain > 0) {
                             $("#levelUpBox").empty();
                             const goalTargets = userData.goalTargets.sort((a, b) => a - b);
 
                             let goalTable = `
-        <table style="width:100%; border-collapse:collapse; font-size:14px;">
-            <thead>
-                <tr style="background:#f6f4fc; color:#5a4398;">
-                    <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
-                    <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                    <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
-                </tr>
-            </thead>
-        <tbody>
-    `;
+                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                    <thead>
+                                        <tr style="background:#f6f4fc; color:#5a4398;">
+                                            <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
+                            `;
 
                             goalTargets
                                 .filter(goal => goal > currentExp)
@@ -1281,12 +1314,12 @@
                                             : `${Math.floor(goal / 100000000)}억`;
 
                                     goalTable += `
-                <tr>
-                    <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
-                    <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
-                    <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-                </tr>`;
-                                });
+                                        <tr>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                        </tr>`;
+                                    });
 
                             goalTable += `</tbody></table>`;
                             $("#levelUpBox").append(goalTable);
@@ -1294,16 +1327,16 @@
                         } else {
                             // 🔹 일반 레벨업 테이블 (기존 구조 유지)
                             let tableHTML = `
-        <table style="width:100%; border-collapse:collapse; font-size:14px;">
-            <thead>
-                <tr style="background:#f6f4fc; color:#5a4398;">
-                    <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
-                    <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                    <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
-                </tr>
-            </thead>
-        <tbody>
-    `;
+                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                    <thead>
+                                        <tr style="background:#f6f4fc; color:#5a4398;">
+                                            <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
+                            `;
 
                             let accumulatedExp = 0;
                             let curExp = currentExp;
@@ -1321,11 +1354,12 @@
                                 const dd = String(estDate.getDate()).padStart(2, "0");
 
                                 tableHTML += `
-            <tr>
-                <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
-                <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
-                <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-            </tr>`;
+                                    <tr>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                    </tr>
+                                `;
                                 curExp = 0;
                             }
                             tableHTML += `</tbody></table>`;
