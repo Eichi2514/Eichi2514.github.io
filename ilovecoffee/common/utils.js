@@ -134,7 +134,8 @@ export function goToPage(target = "levelup") {
         admin: `${basePath}/admin/main.html`,
         ranking: `${basePath}/ranking/main.html`,
         levelup: `${basePath}/levelup/levelup.html`,
-        layout: `${basePath}/layout/layout.html`
+        layout: `${basePath}/layout/layout.html`,
+        barista: `${basePath}/barista/barista.html`
     };
     location.href = pageMap[target] || pageMap.levelup;
 }

@@ -20,6 +20,13 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
         body {
             margin: 0;
             background: #f4f3f9;
@@ -520,9 +527,11 @@
     <div class="level-row header-bar">
         <h1>그럴수이치</h1>
         <div class="settings-menu">
-            <button id="settingsBtn">설정</button>
+            <button id="settingsBtn">메뉴</button>
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
                 <button id="layoutBtn">배치도</button>
+                <button id="baristaBtn">바리스타</button>
+                <button id="expTableBtn">경험치표</button>
                 <button id="changeNicknameBtn">닉네임 변경</button>
                 <button id="changePasswordBtn">비밀번호 변경</button>
                 <button id="logoutBtn">로그아웃</button>
@@ -617,6 +626,30 @@
         </div>
 
         <button id="saveExpBtn">저장</button>
+    </div>
+</div>
+
+<!-- 경험치표 모달 -->
+<div id="expTableModal" class="login-overlay" style="display:none;">
+    <div class="login-modal" style="position: relative;">
+        <button id="closeExpTableModal" class="closeBtn">✕</button>
+        <h2 style="margin-bottom:10px;">경험치표</h2>
+        <div style="border-top:1px solid #e0dff2; border-bottom:1px solid #e0dff2;">
+            <table id="expChartTable"
+                   style="width:100%; border-collapse:collapse; margin-top:0; font-size:14px;">
+                <thead style="position:sticky; top:0; background:#f6f4fc; z-index:2;">
+                <tr style="color:#5a4398;">
+                    <th style="padding:8px; border:1px solid #e0dff2; width: 80px">레벨</th>
+                    <th style="padding:8px; border:1px solid #e0dff2;">경험치</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="expTableNav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap: 8px">
+            <button id="prevExpPage" style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">〈 이전</button>
+            <button id="nextExpPage" style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">다음 〉</button>
+        </div>
     </div>
 </div>
 
@@ -724,6 +757,17 @@
         });
     });
 
+    $("#baristaBtn").on("click", function () {
+        showAlert('준비중입니다.\n기대하지마세요...');
+        /*
+        showConfirm("바리스타 페이지로 이동 할까요?", async (ok) => {
+            if (ok) {
+                goToPage("barista");
+            }
+        });
+         */
+    });
+
     // ✅ 설정 버튼 클릭 시 드롭다운 토글
     $("#settingsBtn").on("click", function (e) {
         e.stopPropagation();
@@ -745,6 +789,71 @@
     // ✅ 경험치 입력 모달 닫기 버튼
     $("#closeExpModal").on("click", function () {
         $("#expModal").hide();
+    });
+
+    // ================================
+    // ✅ 경험치표 페이지네이션 기능
+    // ================================
+    let currentExpPage = 0;
+    const levelsPerPage = 10;
+
+    // ✅ 테이블 페이지 렌더링 함수
+    function renderExpTablePage(userLevel) {
+        const totalLevels = levelExp.length;
+        const $tbody = $("#expChartTable tbody");
+        $tbody.empty();
+
+        const start = currentExpPage * levelsPerPage;
+        const end = Math.min(start + levelsPerPage, totalLevels);
+
+        for (let i = start; i < end; i++) {
+            const need = levelExp[i];
+            const isMyLevel = i === userLevel;
+            const bg = isMyLevel ? "#ede8ff" : i % 2 === 0 ? "#fff" : "#faf9fd";
+            const color = isMyLevel ? "#5a4398" : "#333";
+            const fontWeight = isMyLevel ? "700" : "500";
+
+            $("#expChartTable tbody").append(`
+            <tr style="background:${bg}; color:${color}; font-weight:${fontWeight};">
+                <td style="padding:8px; border:1px solid #e0dff2;">
+                    ${i} -> ${i + 1}
+                </td>
+                <td style="padding:8px; border:1px solid #e0dff2;">
+                    ${need ? need.toLocaleString() : '-'}
+                </td>
+            </tr>
+        `);
+        }
+    }
+
+    // ✅ 모달 열 때 현재 구간부터 표시
+    $("#expTableBtn").off("click").on("click", function () {
+        const userLevel = parseInt($("#currentLevelDisplay").text()) || 1;
+        currentExpPage = Math.floor((userLevel - 1) / levelsPerPage);
+        $("#expTableModal").css("display", "flex");
+        renderExpTablePage(userLevel);
+    });
+
+    // ✅ 이전 / 다음 버튼 기능
+    $("#prevExpPage").on("click", function () {
+        const userLevel = parseInt($("#currentLevelDisplay").text()) || 1;
+        if (currentExpPage > 0) {
+            currentExpPage--;
+            renderExpTablePage(userLevel);
+        }
+    });
+
+    $("#nextExpPage").on("click", function () {
+        const userLevel = parseInt($("#currentLevelDisplay").text()) || 1;
+        const totalPages = Math.ceil(levelExp.length / levelsPerPage);
+        if (currentExpPage < totalPages - 1) {
+            currentExpPage++;
+            renderExpTablePage(userLevel);
+        }
+    });
+
+    $("#closeExpTableModal").on("click", function () {
+        $("#expTableModal").hide();
     });
 
     // 🔹 모든 버튼의 빠른 연속 클릭(더블클릭) 방지
@@ -1060,6 +1169,7 @@
                 const userData = snapshot.val();
 
                 // 🔹 오래된 기록(1년 초과)은 자동 삭제
+                /*
                 if (userData.expRecords) {
                     // 🔹 현재 한국 날짜를 기준으로 계산
                     const now = new Date();
@@ -1080,6 +1190,7 @@
                         showAlert(`1년 이상 지난 기록 ${deletedCount}건이 자동 삭제되었습니다.`);
                     }
                 }
+                 */
 
                 // 🔹 레벨 없을 때 레벨 입력 모달 표시
                 if (!userData.level) {
@@ -1319,7 +1430,7 @@
                                             <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
                                             <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                         </tr>`;
-                                    });
+                                });
 
                             goalTable += `</tbody></table>`;
                             $("#levelUpBox").append(goalTable);
