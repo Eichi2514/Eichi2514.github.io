@@ -1333,7 +1333,10 @@
                         const latestRecord = records[latestDate];
                         const currentLevel = userData.level;
                         const currentExp = latestRecord.exp || 0;
-                        const koreaNow = new Date();
+
+                        // ✅ 마지막 경험치 입력일 기준으로 계산하도록 수정
+                        const latestDateObj = new Date(latestDate);
+                        const koreaNow = new Date(latestDateObj.getTime());
 
                         // ✅ 평균값 출력
                         if (avgGain < 10000) {
@@ -1382,12 +1385,8 @@
                             }
                         }
 
-                        // ✅ D-day 계산 (유틸 사용)
-                        const {value: dValue, text: dText} = calcDDay({
-                            level: userData.level,
-                            exp: currentExp,
-                            goalTargets: userData.goalTargets || []
-                        }, avgGain);
+                        const toDay = new Date();
+                        toDay.setHours(0, 0, 0, 0); // 오늘 00:00:00 으로 고정
 
                         // ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
                         if (userData.level >= levelExp.length && userData.goalTargets?.length > 0 && avgGain > 0) {
@@ -1416,6 +1415,8 @@
                                     const yyyy = estDate.getFullYear();
                                     const mm = String(estDate.getMonth() + 1).padStart(2, "0");
                                     const dd = String(estDate.getDate()).padStart(2, "0");
+                                    estDate.setHours(0, 0, 0, 0);
+                                    const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
                                     let formattedGoal = goal < 10000
                                         ? goal.toLocaleString()
@@ -1425,10 +1426,11 @@
 
                                     goalTable += `
                                         <tr>
-                                            <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
-                                            <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
-                                            <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                           <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
+                                           <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
+                                           <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                         </tr>`;
+
                                 });
 
                             goalTable += `</tbody></table>`;
@@ -1462,11 +1464,13 @@
                                 const yyyy = estDate.getFullYear();
                                 const mm = String(estDate.getMonth() + 1).padStart(2, "0");
                                 const dd = String(estDate.getDate()).padStart(2, "0");
+                                estDate.setHours(0, 0, 0, 0);
+                                const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
                                 tableHTML += `
                                     <tr>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">D-${daysNeeded}</td>
+                                        <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                     </tr>
                                 `;

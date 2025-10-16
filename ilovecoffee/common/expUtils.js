@@ -2,8 +2,8 @@
 // ✅ 경험치 및 레벨 계산 유틸 (common/expUtils.js)
 // ==============================
 
-import { levelExp } from "./levelExp.js";
-import { dayDiff } from "./dateUtils.js";
+import {levelExp} from "./levelExp.js";
+import {dayDiff} from "./dateUtils.js";
 
 /** ✅ 두 기록 간 경험치 차이 계산 */
 export function calcDiffExp(prev, cur) {
@@ -54,28 +54,39 @@ export function calcAvgExp(records) {
 export function calcDDay(user, avgExp) {
     const level = user.level || 1;
     const curExp = user.exp || 0;
+    const lastDateStr = user.lastDate || null;
     const maxLevel = levelExp.length;
     const need = levelExp[level] || 0;
 
-    if (avgExp <= 0) return { value: 99999, text: "-" };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // 일반 구간
+    if (avgExp <= 0) return {value: 99999, text: "-"};
+
+    const baseDate = lastDateStr ? new Date(lastDateStr) : new Date();
+    baseDate.setHours(0, 0, 0, 0);
+
+    const targetDate = new Date(baseDate);
+
     if (level < maxLevel) {
+        // 일반 구간
         const remain = Math.max(need - curExp, 0);
         const days = Math.ceil(remain / avgExp);
-        return { value: days, text: days > 0 ? `D-${days}` : "D-day" };
-    }
 
-    // 만렙 구간
-    if (user.goalTargets && user.goalTargets.length > 0) {
+        targetDate.setDate(baseDate.getDate() + days);
+    } else if (user.goalTargets && user.goalTargets.length > 0) {
+        // 만렙 구간
         const higherGoals = user.goalTargets.filter(g => g > curExp).sort((a, b) => a - b);
         if (higherGoals.length > 0) {
             const nextGoal = higherGoals[0];
             const remainGoalExp = nextGoal - curExp;
             const goalDays = Math.ceil(remainGoalExp / avgExp);
-            return { value: goalDays, text: `D-${goalDays}` };
+
+            targetDate.setDate(baseDate.getDate() + goalDays);
         }
     }
 
-    return { value: 99999, text: "-" };
+    const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+    const diffDaysValue = diffDays >= 0 ? diffDays : 9999;
+    return {value: diffDaysValue, text: `${diffDays > 0 ? 'D-' + diffDays : diffDays === 0 ? 'D-day' : '-'}`};
 }

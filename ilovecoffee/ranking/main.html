@@ -240,7 +240,8 @@
 
             // ✅ 마지막 기록을 기반으로 D-day 계산
             const lastRecord = records[records.length - 1][1];
-            const dDay = calcDDay({ ...u, exp: lastRecord.exp || 0 }, avgExp);
+            const lastDateStr = records[records.length - 1][0];
+            const dDay = calcDDay({ ...u, exp: lastRecord.exp || 0 , lastDate: lastDateStr}, avgExp);
 
             u.avgExp = avgExp;
             u.dDayValue = dDay.value;
@@ -248,7 +249,16 @@
         });
 
         // ✅ 기본 정렬: D-day 짧은 순
-        users.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
+        users.sort((a, b) => {
+            const valA = typeof a.dDayValue === "number" ? a.dDayValue : 99999;
+            const valB = typeof b.dDayValue === "number" ? b.dDayValue : 99999;
+
+            // D-day(0일)는 최우선
+            if (valA === 0 && valB !== 0) return -1;
+            if (valB === 0 && valA !== 0) return 1;
+
+            return valA - valB;
+        });
 
         const $tbody = $("#rankingTable tbody");
         function renderTable(list) {
@@ -294,7 +304,19 @@
             const mode = $(this).val();
             let sorted = [...users];
 
-            if (mode === "dday") sorted.sort((a, b) => (a.dDayValue || 99999) - (b.dDayValue || 99999));
+            if (mode === "dday") {
+                sorted.sort((a, b) => {
+                    const valA = typeof a.dDayValue === "number" ? a.dDayValue : 99999;
+                    const valB = typeof b.dDayValue === "number" ? b.dDayValue : 99999;
+
+                    // ✅ D-day(0일)는 항상 최상단
+                    if (valA === 0 && valB !== 0) return -1;
+                    if (valB === 0 && valA !== 0) return 1;
+
+                    return valA - valB;
+                });
+            }
+
             else if (mode === "level") sorted.sort((a, b) => (b.level || 0) - (a.level || 0));
             else if (mode === "avgexp") sorted.sort((a, b) => (b.avgExp || 0) - (a.avgExp || 0));
             else if (mode === "nickname") sorted.sort((a, b) => a.key.localeCompare(b.key));
