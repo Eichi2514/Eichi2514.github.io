@@ -562,7 +562,7 @@
             <div class="status-value" id="avgExp">-</div>
         </div>
         <div class="status-item">
-            <div class="status-label">남은 경험치</div>
+            <div class="status-label">남은 경험치 <span class="status-percent"></span></div>
             <div class="status-value" id="curExp">-</div>
         </div>
     </div>
@@ -1351,6 +1351,10 @@
                             // 일반 레벨업 모드
                             const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
                             const remainExp = Math.max(nextNeedExp - currentExp, 0);
+
+                            // ✅ 남은 경험치 퍼센트 계산
+                            const percent = ((remainExp / nextNeedExp) * 100).toFixed(1);
+                            $(".status-percent").text(`( ${percent}% )`);
 
                             let approx = "";
                             if (remainExp >= 100000000) { // 1억 이상
