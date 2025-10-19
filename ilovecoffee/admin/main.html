@@ -203,11 +203,11 @@
 <div id="controlBar">
     <input type="text" id="searchInput" placeholder="닉네임 검색">
     <select id="sortSelect">
-        <option value="recent">기록순</option>
         <option value="dday">D-day</option>
         <option value="avgexp">경험치</option>
         <option value="level">레벨</option>
         <option value="nickname">닉네임</option>
+        <option value="recent">기록순</option>
     </select>
 </div>
 
@@ -399,7 +399,7 @@
             renderTable(users);
 
             // ✅ 정렬 셀렉트도 D-day로 초기값 맞추기
-            $("#sortSelect").val("dday");
+            $("#sortSelect").val("recent");
 
             // ======================
             // 🔹 검색 기능
