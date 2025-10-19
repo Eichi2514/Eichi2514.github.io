@@ -129,7 +129,9 @@ export function getActiveNickname() {
 
 // 🔹 페이지 이동
 export function goToPage(target = "levelup") {
-    const basePath = window.location.pathname.split("/levelup")[0];
+    // 현재 경로에서 마지막 슬래시 이전까지만 추출 → 프로젝트 루트 경로
+    const basePath = window.location.pathname.split("/").slice(0, -2).join("/");
+
     const pageMap = {
         admin: `${basePath}/admin/main.html`,
         ranking: `${basePath}/ranking/main.html`,
@@ -137,6 +139,8 @@ export function goToPage(target = "levelup") {
         layout: `${basePath}/layout/layout.html`,
         barista: `${basePath}/barista/barista.html`
     };
+
+    // target이 잘못된 경우 기본값 levelup으로 이동
     location.href = pageMap[target] || pageMap.levelup;
 }
 

@@ -156,6 +156,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { goToPage } from "../common/utils.js";
 
     // ✅ 공통 유틸
     import { calcAvgExp, calcDDay } from "../common/expUtils.js";
@@ -172,11 +173,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    function goToPage() {
-        const basePath = window.location.pathname.split("/ranking")[0];
-        location.href = `${basePath}/levelup/levelup.html`;
-    }
 
     $(async function () {
         const nickname = localStorage.getItem("coffee-nickname");

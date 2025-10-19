@@ -1,9 +1,5 @@
 // 파일명 : layout.js
-
-function goToPage() {
-    const basePath = window.location.pathname.split("/layout")[0];
-    location.href = `${basePath}/levelup/levelup.html`;
-}
+import { goToPage } from "../common/utils.js";
 
 $(function () {
     // ===================== 화면/보드 초기화 =====================

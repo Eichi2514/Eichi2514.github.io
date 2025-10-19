@@ -347,6 +347,7 @@
 
 <script type="module">
     import { menuData } from "../common/menuData.js";
+    import { goToPage } from "../common/utils.js";
 
     const STORAGE_KEYS = {
         SPEED: "coffeeSpeed",
@@ -398,11 +399,6 @@
             showCoffeeInfo(selected);
             showCoffeeTable(selected);
         }
-    }
-
-    function goToPage() {
-        const basePath = window.location.pathname.split("/barista")[0];
-        location.href = `${basePath}/levelup/levelup.html`;
     }
 
     function renderCoffeeList(keyword = "") {

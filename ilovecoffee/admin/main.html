@@ -187,6 +187,10 @@
             background: #ccc;
             color: #333;
         }
+
+        #userTable th, #userTable td {
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -199,6 +203,7 @@
 <div id="controlBar">
     <input type="text" id="searchInput" placeholder="닉네임 검색">
     <select id="sortSelect">
+        <option value="recent">기록순</option>
         <option value="dday">D-day</option>
         <option value="avgexp">경험치</option>
         <option value="level">레벨</option>
@@ -226,8 +231,9 @@
     <tr>
         <th>닉네임</th>
         <th>Lv</th>
-        <th>평균 경험치</th>
+        <th>경험치</th>
         <th>D-day</th>
+        <th>기록</th>
     </tr>
     </thead>
     <tbody></tbody>
@@ -239,6 +245,7 @@
 <div id="userModal">
     <div class="modal-content">
         <h3 id="modalNickname"></h3>
+        <p id="modalSignupDate"></p>
         <button class="move-btn">이동하기</button>
         <button class="delete-btn">삭제</button>
         <button class="close-btn">닫기</button>
@@ -252,6 +259,7 @@
     // ✅ 공통 유틸 모듈
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
     import {dayDiff} from "../common/dateUtils.js";
+    import { goToPage } from "../common/utils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -265,11 +273,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    function goToPage() {
-        const basePath = window.location.pathname.split("/admin")[0];
-        location.href = `${basePath}/levelup/levelup.html`;
-    }
 
     $(function () {
         const nickname = localStorage.getItem("coffee-nickname");
@@ -332,7 +335,9 @@
                         const lastDate = new Date(records[records.length - 1][0]);
                         const diffDays = dayDiff(lastDate, today);
 
-                        if (diffDays >= 7) {
+                        if (diffDays >= 15) {
+                            bgColor = "#cfcfcf"; // 회색
+                        } else if (diffDays >= 7) {
                             bgColor = "#f0f0f0"; // 연한 회색
                         } else if (diffDays >= 5) {
                             bgColor = "#ffd6d6"; // 빨간색
@@ -345,11 +350,24 @@
                     }
 
                     $tbody.append(`
-                        <tr data-nick="${u.key}" style="background:${bgColor}">
+                        <tr data-nick="${u.key}" data-date="${u.signupDate}" style="background:${bgColor}">
                             <td>${u.key}</td>
                             <td>${u.level || "-"}</td>
                             <td>${avgExp ? (avgExp >= 10000 ? Math.floor(avgExp / 10000) + "만" : avgExp.toLocaleString()) : "-"}</td>
                             <td>${dDay.text}</td>
+                            <td>
+                                ${
+                                    lastDateStr ? (() => {
+                                        const parts = lastDateStr.split("-");
+                                        if (parts.length === 3) {
+                                            const month = parts[1].padStart(2, "0");
+                                            const day = parts[2].padStart(2, "0");
+                                            return `${month}/${day}`;
+                                        }
+                                        return "-";
+                                    })() : "-"
+                                }
+                            </td>
                         </tr>
                     `);
                 });
@@ -367,16 +385,16 @@
                 u.dDayText = dDay.text;
             });
 
-            // ✅ 첫 렌더링 (D-day 짧은 순)
+            // ✅ 첫 렌더링
             users.sort((a, b) => {
-                const valA = typeof a.dDayValue === "number" ? a.dDayValue : 99999;
-                const valB = typeof b.dDayValue === "number" ? b.dDayValue : 99999;
+                const aDate = a.expRecords ? Object.keys(a.expRecords).pop() : null;
+                const bDate = b.expRecords ? Object.keys(b.expRecords).pop() : null;
 
-                // D-day(0일)는 최우선
-                if (valA === 0 && valB !== 0) return -1;
-                if (valB === 0 && valA !== 0) return 1;
+                if (!aDate && !bDate) return 0;
+                if (!aDate) return 1;
+                if (!bDate) return -1;
 
-                return valA - valB;
+                return new Date(bDate) - new Date(aDate); // 최신이 위로
             });
             renderTable(users);
 
@@ -423,6 +441,17 @@
                     });
                 } else if (mode === "avgexp") { // ✅ 평균 경험치 높은순 추가
                     sorted.sort((a, b) => (b.avgExp || 0) - (a.avgExp || 0));
+                } else if (mode === "recent") { // ✅ 최근 기록 날짜순
+                    sorted.sort((a, b) => {
+                        const aDate = a.expRecords ? Object.keys(a.expRecords).pop() : null;
+                        const bDate = b.expRecords ? Object.keys(b.expRecords).pop() : null;
+
+                        if (!aDate && !bDate) return 0;
+                        if (!aDate) return 1;
+                        if (!bDate) return -1;
+
+                        return new Date(bDate) - new Date(aDate); // 최신이 위로
+                    });
                 }
 
                 renderTable(sorted);
@@ -432,9 +461,12 @@
             // 🔹 모달 기능
             // ======================
             let selectedNick = "";
+            let selectedDate = "";
             $(document).on("click", "#userTable tbody tr", function () {
                 selectedNick = $(this).data("nick");
+                selectedDate = $(this).data("date");
                 $("#modalNickname").text(selectedNick);
+                $("#modalSignupDate").text(selectedDate);
                 $("#userModal").css("display", "flex").hide().fadeIn(200);
             });
 
