@@ -87,7 +87,7 @@
             border: 1px solid #e0dff2;
             padding: 10px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         #rankingTable th {
@@ -117,12 +117,27 @@
             font-size: 15px;
         }
 
+        .nick-cell {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .nick-cell img {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
         /* 🔍 모달 정렬 및 스타일 */
         #imgModal {
             display: none;
             position: fixed;
             top: 0; left: 0;
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.7);
             justify-content: center;
             align-items: center;
@@ -149,6 +164,8 @@
 
         #modalNickname {
             position: absolute;
+            width: 100%;
+            text-align: center;
             top: 8px;
             left: 50%;
             transform: translateX(-50%);
@@ -247,10 +264,22 @@
         // ✅ 오늘 또는 어제 기록 확인
         const records = myData.expRecords || {};
         const today = new Date();
-        const todayStr = today.toISOString().split("T")[0];
+        const todayStr = [
+            today.getFullYear(),
+            String(today.getMonth() + 1).padStart(2, "0"),
+            String(today.getDate()).padStart(2, "0")
+        ].join("-");
+
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const yesterStr = yesterday.toISOString().split("T")[0];
+        const yesterStr = [
+            yesterday.getFullYear(),
+            String(yesterday.getMonth() + 1).padStart(2, "0"),
+            String(yesterday.getDate()).padStart(2, "0")
+        ].join("-");
+
+        console.log(`todayStr ${todayStr}`);
+        console.log(`yesterStr ${yesterStr}`);
 
         if (!records[todayStr] && !records[yesterStr]) {
             alert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
@@ -319,17 +348,18 @@
                 const profileSrc = `../image/profile${profileNum}.jpg`;
 
                 $tbody.append(`
-            <tr>
-                <td style="display:flex;align-items:center;gap:8px;">
-                    <img src="${profileSrc}" alt="profile"
-                         style="width:20px;height:20px;border-radius:5px;object-fit:cover;">
-                    <span>${u.key}</span>
-                </td>
-                <td>${u.level || "-"}</td>
-                <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
-                <td>${u.dDayText}</td>
-            </tr>
-        `);
+                    <tr>
+                        <td>
+                            <div class="nick-cell">
+                                <img src="${profileSrc}" alt="profile">
+                                <span>${u.key}</span>
+                            </div>
+                        </td>
+                        <td>${u.level || "-"}</td>
+                        <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
+                        <td>${u.dDayText}</td>
+                    </tr>
+                `);
             });
         }
 

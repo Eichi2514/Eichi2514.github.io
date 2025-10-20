@@ -1130,11 +1130,11 @@
                     // ✅ 정상 계정이면 페이지 표시
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
-                    const todayValue = "v2";
+                    const todayValue = "v3";
                     const lastUpdate = localStorage.getItem("LU-update");
 
                     if (lastUpdate !== todayValue) {
-                        showAlert("! New !\n부캐 등록 기능이 추가되었습니다.\n설정을 확인해주세요!");
+                        showAlert("! New !\n닉네임 옆에 전교1등을 터치해보세요!");
                         localStorage.setItem("LU-update", todayValue);
                     }
                     loadUserData(savedNick);
