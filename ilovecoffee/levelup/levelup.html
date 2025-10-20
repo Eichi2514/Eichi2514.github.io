@@ -2195,7 +2195,7 @@
                     });
                 } else {
                     img.on("click", function () {
-                        const nextUnlockThreshold = (p.id - 1) * 10; // 다음 해금 조건
+                        const nextUnlockThreshold = (p.id - 2) * 10; // 다음 해금 조건
                         const remain = Math.max(nextUnlockThreshold - progressValue, 0); // 남은 개수
                         const remainText = remain > 0
                             ? `현재 기록 : ${progressValue}개\n${remain}개 더 입력하면 해금돼요!`
