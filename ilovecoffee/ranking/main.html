@@ -116,6 +116,47 @@
             color: #5a4398;
             font-size: 15px;
         }
+
+        /* 🔍 모달 정렬 및 스타일 */
+        #imgModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #imgModal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modalImg {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        #modalNickname {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFC90E;
+            font-weight: 600;
+            font-size: 30px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -152,6 +193,14 @@
 </table>
 
 <div id="loading">불러오는 중...</div>
+
+<!-- 🔍 프로필 이미지 확대 모달 -->
+<div id="imgModal">
+    <div class="modal-content">
+        <img id="modalImg" src="" alt="profile">
+        <div id="modalNickname"></div>
+    </div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -265,14 +314,22 @@
             }
 
             list.forEach(u => {
+                // ✅ 프로필 번호 (없으면 기본값 1)
+                const profileNum = u.profileImg || 1;
+                const profileSrc = `../image/profile${profileNum}.jpg`;
+
                 $tbody.append(`
-                    <tr>
-                        <td>${u.key}</td>
-                        <td>${u.level || "-"}</td>
-                        <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
-                        <td>${u.dDayText}</td>
-                    </tr>
-                `);
+            <tr>
+                <td style="display:flex;align-items:center;gap:8px;">
+                    <img src="${profileSrc}" alt="profile"
+                         style="width:20px;height:20px;border-radius:5px;object-fit:cover;">
+                    <span>${u.key}</span>
+                </td>
+                <td>${u.level || "-"}</td>
+                <td>${u.avgExp ? (u.avgExp >= 10000 ? `${Math.floor(u.avgExp / 10000)}만` : u.avgExp.toLocaleString()) : "-"}</td>
+                <td>${u.dDayText}</td>
+            </tr>
+        `);
             });
         }
 
@@ -324,6 +381,20 @@
             const myRank = myIndex >= 0 ? myIndex + 1 : "-";
             $("#myRankText").text(`내 위치 : ${myRank}번째`);
             $(`#rankingTable tbody tr`).eq(myIndex).css("background", "#ede7ff");
+        });
+
+        // ✅ 프로필 이미지 클릭 시 확대
+        $(document).on("click", "td img", function () {
+            const src = $(this).attr("src");
+            const nickname = $(this).siblings("span").text();
+            $("#modalImg").attr("src", src);
+            $("#modalNickname").text(nickname);
+            $("#imgModal").addClass("active").hide().fadeIn(200);
+        });
+
+        // ✅ 모달 클릭 시 닫기
+        $("#imgModal").on("click", function () {
+            $(this).fadeOut(200, () => $(this).removeClass("active"));
         });
 
         // ✅ 뒤로가기

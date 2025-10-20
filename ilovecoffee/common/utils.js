@@ -32,18 +32,53 @@ export function formatShortDate(dateStr) {
 
 // 🔹 닉네임 유효성 검사
 export function validateNickname(nickname) {
-    if (!nickname || nickname.trim().length < 2) {
-        showAlert("닉네임은 2자 이상이어야 합니다.");
-        return false;
-    }
-    if (nickname.length > 12) {
-        showAlert("닉네임은 12자 이하로 입력해주세요.");
-        return false;
-    }
+    nickname = nickname.trim();
+
+    // ✅ 허용 문자 확인
     if (!/^[가-힣a-zA-Z0-9_]+$/.test(nickname)) {
-        showAlert("닉네임은 한글, 영문, 숫자, 밑줄(_)만 사용할 수 있습니다.");
+        showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
         return false;
     }
+
+    const koreanCount = (nickname.match(/[가-힣]/g) || []).length;
+    const totalLength = nickname.length;
+    const isKorean = /[가-힣]/.test(nickname);
+
+    // ✅ 한글 포함된 경우
+    if (isKorean) {
+        // 한글 2~6자 제한
+        if (koreanCount < 2 || koreanCount > 6) {
+            showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
+            return false;
+        }
+
+        // 전체 길이 3~9자 제한
+        if (totalLength < 3 || totalLength > 9) {
+            showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
+            return false;
+        }
+
+        // 한글 5자 이상인데 다른 문자가 포함된 경우 ❌ (예: 이이이이이ee)
+        if (koreanCount >= 5 && totalLength > koreanCount) {
+            showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
+            return false;
+        }
+
+        // 한글 1자 + 영문 1자 (예: 이e) ❌
+        if (totalLength === 2) {
+            showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
+            return false;
+        }
+
+        return true;
+    }
+
+    // ✅ 한글 없는 경우 → 영문/숫자 3~9자
+    if (totalLength < 3 || totalLength > 9) {
+        showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
+        return false;
+    }
+
     return true;
 }
 
