@@ -207,7 +207,8 @@
         <option value="avgexp">경험치</option>
         <option value="level">레벨</option>
         <option value="nickname">닉네임</option>
-        <option value="recent">기록순</option>
+        <option value="recent">기록일</option>
+        <option value="lastlogin">접속</option>
     </select>
 </div>
 
@@ -260,7 +261,7 @@
     // ✅ 공통 유틸 모듈
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
     import {dayDiff} from "../common/dateUtils.js";
-    import { goToPage } from "../common/utils.js";
+    import {goToPage} from "../common/utils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -358,16 +359,16 @@
                             <td>${dDay.text}</td>
                             <td>
                                 ${
-                                    lastDateStr ? (() => {
-                                        const parts = lastDateStr.split("-");
-                                        if (parts.length === 3) {
-                                            const month = parts[1].padStart(2, "0");
-                                            const day = parts[2].padStart(2, "0");
-                                            return `${month}/${day}`;
-                                        }
-                                        return "-";
-                                    })() : "-"
-                                }
+                        lastDateStr ? (() => {
+                            const parts = lastDateStr.split("-");
+                            if (parts.length === 3) {
+                                const month = parts[1].padStart(2, "0");
+                                const day = parts[2].padStart(2, "0");
+                                return `${month}/${day}`;
+                            }
+                            return "-";
+                        })() : "-"
+                    }
                             </td>
                         </tr>
                     `);
@@ -388,19 +389,24 @@
 
             // ✅ 첫 렌더링
             users.sort((a, b) => {
-                const aDate = a.expRecords ? Object.keys(a.expRecords).pop() : null;
-                const bDate = b.expRecords ? Object.keys(b.expRecords).pop() : null;
+                // ✅ lastLogin이 문자열이거나 없을 수 있으니 안전하게 처리
+                const parseDate = (str) => {
+                    if (!str || typeof str !== "string") return 0;
+                    // "25.10.22-00:55:13" → "2025-10-22T00:55:13"
+                    const match = str.match(/^(\d{2})\.(\d{2})\.(\d{2})-(\d{2}):(\d{2}):(\d{2})$/);
+                    if (!match) return 0;
+                    const [_, yy, mm, dd, hh, mi, ss] = match;
+                    return new Date(`20${yy}-${mm}-${dd}T${hh}:${mi}:${ss}`).getTime();
+                };
 
-                if (!aDate && !bDate) return 0;
-                if (!aDate) return 1;
-                if (!bDate) return -1;
-
-                return new Date(bDate) - new Date(aDate); // 최신이 위로
+                const aTime = parseDate(a.lastLogin);
+                const bTime = parseDate(b.lastLogin);
+                return bTime - aTime; // ✅ 최신 로그인순 (최근이 위로)
             });
             renderTable(users);
 
             // ✅ 정렬 셀렉트도 D-day로 초기값 맞추기
-            $("#sortSelect").val("recent");
+            $("#sortSelect").val("lastlogin");
 
             // ======================
             // 🔹 검색 기능
@@ -452,6 +458,22 @@
                         if (!bDate) return -1;
 
                         return new Date(bDate) - new Date(aDate); // 최신이 위로
+                    });
+                } else if (mode === "lastlogin") {
+                    sorted.sort((a, b) => {
+                        // ✅ lastLogin이 문자열이거나 없을 수 있으니 안전하게 처리
+                        const parseDate = (str) => {
+                            if (!str || typeof str !== "string") return 0;
+                            // "25.10.22-00:55:13" → "2025-10-22T00:55:13"
+                            const match = str.match(/^(\d{2})\.(\d{2})\.(\d{2})-(\d{2}):(\d{2}):(\d{2})$/);
+                            if (!match) return 0;
+                            const [_, yy, mm, dd, hh, mi, ss] = match;
+                            return new Date(`20${yy}-${mm}-${dd}T${hh}:${mi}:${ss}`).getTime();
+                        };
+
+                        const aTime = parseDate(a.lastLogin);
+                        const bTime = parseDate(b.lastLogin);
+                        return bTime - aTime; // ✅ 최신 로그인순 (최근이 위로)
                     });
                 }
 
