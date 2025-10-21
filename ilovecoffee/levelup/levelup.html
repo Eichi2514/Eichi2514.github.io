@@ -1125,9 +1125,10 @@
         const savedNick = getActiveNickname();
         if (savedNick) {
             const userRef = ref(db, `coffeeUsers/${savedNick}`);
-            get(userRef).then(snapshot => {
+            get(userRef).then(async snapshot => {
                 if (snapshot.exists()) {
                     // ✅ 정상 계정이면 페이지 표시
+                    await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
                     const todayValue = "v3";
@@ -1174,8 +1175,10 @@
             const passwordRef = ref(db, `coffeeUsers/${nickname}/password`);
             const snapshot = await get(passwordRef);
 
+            /*
             console.log(`snapshot : ${snapshot.val()}`);
             console.log(`password : ${password}`);
+             */
 
             if (snapshot.exists()) {
                 if (snapshot.val() === password) {

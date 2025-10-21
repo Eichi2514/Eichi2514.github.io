@@ -246,6 +246,7 @@
     <div class="modal-content">
         <h3 id="modalNickname"></h3>
         <p id="modalSignupDate"></p>
+        <p id="modalLastLogin"></p>
         <button class="move-btn">이동하기</button>
         <button class="delete-btn">삭제</button>
         <button class="close-btn">닫기</button>
@@ -350,7 +351,7 @@
                     }
 
                     $tbody.append(`
-                        <tr data-nick="${u.key}" data-date="${u.signupDate}" style="background:${bgColor}">
+                        <tr data-nick="${u.key}" data-date="${u.signupDate}" data-lastlogin="${u.lastLogin}" style="background:${bgColor}">
                             <td>${u.key}</td>
                             <td>${u.level || "-"}</td>
                             <td>${avgExp ? (avgExp >= 10000 ? Math.floor(avgExp / 10000) + "만" : avgExp.toLocaleString()) : "-"}</td>
@@ -462,11 +463,14 @@
             // ======================
             let selectedNick = "";
             let selectedDate = "";
+            let selectedLastLogin = "";
             $(document).on("click", "#userTable tbody tr", function () {
                 selectedNick = $(this).data("nick");
                 selectedDate = $(this).data("date");
-                $("#modalNickname").text(selectedNick);
-                $("#modalSignupDate").text(selectedDate);
+                selectedLastLogin = $(this).data("lastlogin");
+                $("#modalNickname").text(`${selectedNick}`);
+                $("#modalSignupDate").text(`생성일 : ${selectedDate}`);
+                $("#modalLastLogin").text(`로그인 : ${selectedLastLogin}`);
                 $("#userModal").css("display", "flex").hide().fadeIn(200);
             });
 
