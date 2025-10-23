@@ -416,4 +416,79 @@ $(function () {
 
     // ========= 모달 관련 =========
     bindModalEvents('#btn-filter', ['#btn-filter-close', '#btn-filter-apply'], '#filter-modal');
+
+    // ========= 검색 =========
+    $('#btn-title-search').on('click', function () {
+        const keyword = $('#search-title').val().trim();
+        if (!keyword) {
+            alert('검색할 제목을 입력하세요.');
+            return;
+        }
+
+        refreshScheduleCache();
+
+        // 모든 날짜 순회
+        const dates = Object.keys(scheduleMap).sort();
+        const matches = [];
+
+        for (const date of dates) {
+            const entries = getEntriesForDate(date);
+            for (const e of entries) {
+                if (!e) continue;
+                // ✅ 제목 + 내용 등 모든 텍스트 필드에서 검색
+                const textFields = [e.desc, e.text, e.note, e.memo, e.title, e.content];
+                const combined = textFields.filter(Boolean).join(' ').toLowerCase();
+                if (combined.includes(keyword.toLowerCase())) {
+                    matches.push(date);
+                    break; // 날짜 중복 방지
+                }
+            }
+        }
+
+        if (matches.length === 0) {
+            alert(`"${keyword}"가 포함된 작업이 없습니다.`);
+            return;
+        }
+
+        // 여러 개면 선택 목록 모달 표시
+        const modalHtml = `
+            <div id="search-modal-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col" style="min-width: 320px; max-height: 60vh;">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="font-semibold text-lg">검색 결과 (${matches.length}개)</h2>
+                        <button id="search-modal-close" class="text-2xl leading-none text-gray-500 hover:text-black">&times;</button>
+                    </div>
+                    <div class="border rounded p-2 overflow-y-auto flex-1 space-y-1">
+                        ${matches.map(d => `
+                            <a href="../main/main.html?date=${d}" 
+                            class="modal-date-item flex justify-between py-1 px-2 border-b last:border-0 rounded transition-colors">
+                                <span>${formatDateKorean(d)} (${dayOfWeek(d)})</span>
+                                <span class="text-sm text-blue-700">${d}</span>
+                            </a>
+                        `).join('')}
+                    </div>
+                    <button id="search-modal-apply" class="btn btn-outline w-full mt-3">닫기</button>
+                </div>
+            </div>
+        `;
+
+        // 기존 모달 제거 후 새로 추가
+        $('#search-modal-overlay').remove();
+        $('body').append(modalHtml);
+
+        // 닫기 이벤트
+        $('#search-modal-close, #search-modal-apply, #search-modal-overlay').on('click', function (e) {
+            if (
+                e.target.id === 'search-modal-overlay' ||
+                e.target.id === 'search-modal-close' ||
+                e.target.id === 'search-modal-apply'
+            ) {
+                $('#search-modal-overlay').remove();
+            }
+        });
+    });
+
+    $('#search-title').on('keypress', e => {
+        if (e.key === 'Enter') $('#btn-title-search').click();
+    });
 });
