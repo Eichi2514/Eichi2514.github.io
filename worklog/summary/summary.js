@@ -453,19 +453,49 @@ $(function () {
         // 여러 개면 선택 목록 모달 표시
         const modalHtml = `
             <div id="search-modal-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col" style="min-width: 320px; max-height: 60vh;">
+                <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col" style="min-width: 340px; max-height: 70vh;">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="font-semibold text-lg">검색 결과 (${matches.length}개)</h2>
                         <button id="search-modal-close" class="text-2xl leading-none text-gray-500 hover:text-black">&times;</button>
                     </div>
-                    <div class="border rounded p-2 overflow-y-auto flex-1 space-y-1">
-                        ${matches.map(d => `
-                            <a href="../main/main.html?date=${d}" 
-                            class="modal-date-item flex justify-between py-1 px-2 border-b last:border-0 rounded transition-colors">
-                                <span>${formatDateKorean(d)} (${dayOfWeek(d)})</span>
-                                <span class="text-sm text-blue-700">${d}</span>
-                            </a>
-                        `).join('')}
+                    <div class="border rounded p-2 overflow-y-auto flex-1 space-y-2">
+                        ${matches.map(d => {
+                           const entries = getEntriesForDate(d);
+                            // 날짜별로 keyword가 포함된 항목들만 추출
+                            const matchedEntries = entries.filter(e => {
+                                if (!e) return false;
+                                const textFields = [e.desc, e.text, e.note, e.memo, e.title, e.content];
+                                const combined = textFields.filter(Boolean).join(' ').toLowerCase();
+                                return combined.includes(keyword.toLowerCase());
+                            });
+        
+                            // 날짜별 블록
+                            return matchedEntries.map(e => {
+                                const fullTitle = e.desc || e.title || '(제목 없음)';
+                                const displayTitle = fullTitle.includes(')')
+                                    ? fullTitle.split(')').slice(1).join(')').trim()
+                                    : fullTitle;
+                                const category = fullTitle.includes(')')
+                                    ? fullTitle.split(')')[0].replace('(', '').trim()
+                                    : '';
+                                const contentPreview = [e.text, e.note, e.memo, e.content]
+                                    .filter(Boolean)[0] || '';
+                
+                                return `
+                                        <a href="../main/main.html?date=${d}" 
+                                           class="block px-2 py-1.5 border-b last:border-0 rounded hover:bg-gray-50 transition-colors">
+                                            <div class="text-sm font-medium truncate">
+                                                ${formatDateKorean(d)} (${dayOfWeek(d)}) 
+                                                ${category ? `<span class="text-gray-500">[${category}]</span>` : ''} 
+                                                ${displayTitle}
+                                            </div>
+                                            <div class="text-xs text-gray-600 truncate">
+                                                ${contentPreview}
+                                            </div>
+                                        </a>
+                                    `;
+                            }).join('');
+                        }).join('')}
                     </div>
                     <button id="search-modal-apply" class="btn btn-outline w-full mt-3">닫기</button>
                 </div>
