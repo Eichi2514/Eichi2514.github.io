@@ -309,7 +309,7 @@
         </div>
         <div class="input-group">
             <span>커피머신</span>
-            <input type="number" id="countInput" placeholder="수량" min="1" max="20">
+            <input type="number" id="countInput" placeholder="수량" min="1" max="25">
         </div>
     </div>
     <div>
@@ -366,11 +366,29 @@
     const $favoriteList = $("#favoriteList");
     const $favoriteItems = $("#favoriteItems");
 
-    // ✅ 판매속도 복원
-    const savedSpeed = localStorage.getItem(STORAGE_KEYS.SPEED);
-    if (savedSpeed) $speedInput.val(savedSpeed);
+    const MAX_SPEED = 10000;
+    const MAX_COUNT = 25;
 
-    const savedCount = localStorage.getItem(STORAGE_KEYS.COUNT);
+    // ✅ 판매속도 / 머신수량 복원
+    let savedSpeed = parseInt(localStorage.getItem(STORAGE_KEYS.SPEED)) || "";
+    let savedCount = parseInt(localStorage.getItem(STORAGE_KEYS.COUNT)) || "";
+
+    if (savedSpeed > MAX_SPEED) {
+        savedSpeed = MAX_SPEED;
+        localStorage.setItem(STORAGE_KEYS.SPEED, savedSpeed);
+    } else if (savedSpeed < 0) {
+        savedSpeed = 0;
+        localStorage.setItem(STORAGE_KEYS.SPEED, savedSpeed);
+    }
+    if (savedCount > MAX_COUNT) {
+        savedCount = MAX_COUNT;
+        localStorage.setItem(STORAGE_KEYS.COUNT, savedCount);
+    } else if (savedCount < 0) {
+        savedCount = 0;
+        localStorage.setItem(STORAGE_KEYS.COUNT, savedCount);
+    }
+
+    if (savedSpeed) $speedInput.val(savedSpeed);
     if (savedCount) $countInput.val(savedCount);
 
     const savedCoffee = getSavedCoffee();
@@ -392,8 +410,29 @@
     });
 
     function updateAndRefresh() {
-        localStorage.setItem(STORAGE_KEYS.SPEED, $speedInput.val());
-        localStorage.setItem(STORAGE_KEYS.COUNT, $countInput.val());
+        let speed = Number($speedInput.val()) || 0;
+        let count = Number($countInput.val()) || 0;
+
+        // ✅ 상한값 초과 시 자동 교정
+        if (speed > MAX_SPEED) {
+            speed = MAX_SPEED;
+            $speedInput.val(speed);
+        } else if (speed < 0) {
+            speed = 0;
+            $speedInput.val(speed);
+        }
+        if (count > MAX_COUNT) {
+            count = MAX_COUNT;
+            $countInput.val(count);
+        } else if (count < 0) {
+            count = 0;
+            $countInput.val(count);
+        }
+
+        // ✅ 로컬스토리지에도 정정된 값 저장
+        localStorage.setItem(STORAGE_KEYS.SPEED, speed + "");
+        localStorage.setItem(STORAGE_KEYS.COUNT, count + "");
+
         const selected = getSavedCoffee();
         if (selected) {
             showCoffeeInfo(selected);
