@@ -2148,9 +2148,11 @@
                 }
             }
 
+            // 🔹 프로필 해금 비율 (예: 기록 n개당 1개 해금)
+            const UNLOCK_PER_RECORDS = 7; // 나중에 5나 8로 바꾸면 즉시 반영됨
             // 🔸 기록 수와 가입일 기준 중 낮은 값 사용
             const progressValue = Math.min(recordCount, daysSinceSignup);
-            let unlockLimit = Math.floor(2 + (progressValue / 10));
+            let unlockLimit = Math.floor(2 + (progressValue / UNLOCK_PER_RECORDS));
             /*
             console.log(`recordCount : ${recordCount}`);
             console.log(`daysSinceSignup : ${daysSinceSignup}`);
@@ -2200,7 +2202,7 @@
                     });
                 } else {
                     img.on("click", function () {
-                        const nextUnlockThreshold = (p.id - 2) * 10; // 다음 해금 조건
+                        const nextUnlockThreshold = (p.id - 2) * UNLOCK_PER_RECORDS; // 다음 해금 조건
                         const remain = Math.max(nextUnlockThreshold - progressValue, 0); // 남은 개수
                         const remainText = remain > 0
                             ? `현재 기록 : ${progressValue}개\n${remain}개 더 입력하면 해금돼요!`

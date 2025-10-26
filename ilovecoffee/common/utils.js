@@ -44,28 +44,28 @@ export function validateNickname(nickname) {
     const totalLength = nickname.length;
     const isKorean = /[가-힣]/.test(nickname);
 
-    // ✅ 한글 포함된 경우
-    if (isKorean) {
+    // ✅ 전부 한글인 경우
+    if (totalLength === koreanCount) {
         // 한글 2~6자 제한
-        if (koreanCount < 2 || koreanCount > 6) {
+        if (totalLength < 2 || totalLength > 6) {
+            console.log(1);
             showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
             return false;
         }
+    }
 
-        // 전체 길이 3~9자 제한
-        if (totalLength < 3 || totalLength > 9) {
+    // ✅ 한글 포함된 경우
+    if (isKorean) {
+        // 한글 1자 + 영문 1자 (예: 이e) ❌
+        if (totalLength <= 2 && koreanCount === 1) {
+            console.log(5);
             showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
             return false;
         }
 
         // 한글 5자 이상인데 다른 문자가 포함된 경우 ❌ (예: 이이이이이ee)
-        if (koreanCount >= 5 && totalLength > koreanCount) {
-            showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
-            return false;
-        }
-
-        // 한글 1자 + 영문 1자 (예: 이e) ❌
-        if (totalLength === 2) {
+        if (koreanCount >= 5 && totalLength > 6) {
+            console.log(4);
             showAlert("이름 길이가 맞지 않습니다.\n(한글 2~6자, 영문 3~9자)");
             return false;
         }
