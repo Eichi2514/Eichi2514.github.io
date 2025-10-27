@@ -427,6 +427,13 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
+        /* ✅ 다크모드용 랭킹 토글 스위치 보정 */
+        @media (prefers-color-scheme: dark) {
+            .toggle-switch {
+                background: #fff; /* 기본 OFF 배경을 어둡게 */
+            }
+        }
+
         /* ON 상태 */
         .toggle-switch.on {
             background: #5a4398;
@@ -564,14 +571,18 @@
             font-weight: 700;
             color: #5a4398;
         }
-
     </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
 </head>
 <body>
 
 <div id="mainPage" style="display:none;">
     <div class="level-row header-bar">
-        <h1>그럴수이치</h1>
+        <div style="display: flex; gap: 4px; align-items: center">
+            <h1>그럴수이치</h1>
+            <button id="helpBtn">?</button>
+        </div>
+
         <div class="settings-menu">
             <button id="settingsBtn">설정</button>
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
@@ -795,6 +806,72 @@
                 style="width:100%; background:#5a4398; color:#fff; border:none; border-radius:8px; padding:8px 0; font-size:16px; font-weight:600; cursor:pointer;">
             변경
         </button>
+    </div>
+</div>
+
+<!-- ✅ 도움말 모달 -->
+<div id="helpModal" class="login-overlay" style="display:none;">
+    <div class="login-modal help-modal">
+        <button id="closeHelpModal" class="closeBtn">✕</button>
+        <h2 class="help-title">그럴수이치 사용 가이드</h2>
+
+        <div id="helpPages" class="help-content">
+            <div class="help-page page1">
+                <b>로그인</b><br>
+                1) 닉네임과 비밀번호를 입력하면, 첫 로그인 시 자동으로 회원가입이 완료됩니다.<br>
+                - 이미 존재하는 닉네임에 다른 비밀번호를 입력하면 로그인할 수 없습니다.<br>
+                - 닉네임은 고유 식별자로 사용되므로, 인게임 닉으로 설정해주세요.
+            </div>
+
+            <div class="help-page page2" style="display:none;">
+                <b>설정 메뉴</b><br>
+                2) 우측 상단의 설정 버튼을 눌러 설정 메뉴를 열 수 있습니다.<br>
+                - <b>부캐 등록</b>: 다른 캐릭터를 추가로 생성해 관리할 수 있습니다.<br>
+                - <b>닉네임 변경</b> 및 <b>비밀번호 변경</b> 가능.<br>
+                - <b>로그아웃</b> 시 현재 계정이 해제되며, 다음 로그인 때 다시 닉네임과 비밀번호를 입력해야 합니다.
+            </div>
+
+            <div class="help-page page3" style="display:none;">
+                <b>경험치 입력</b><br>
+                3) 매일 일정한 시간대(예: 원기옥 전후)에 ‘입력’ 버튼을 눌러 오늘의 경험치를 기록하세요.<br>
+                - 경험치는 최근 10일간의 기록을 기준으로 평균이 계산되어 반영됩니다.<br>
+                - 입력 시점이 일정할수록 D-day 계산이 정확해집니다.<br>
+            </div>
+
+            <div class="help-page page4" style="display:none;">
+                <b>아카이브</b><br>
+                4) 우측 상단의 ‘공개’ 스위치를 켜면 아카이브 기능이 활성화됩니다.<br>
+                - 다른 유저들의 경험치 기록을 함께 볼 수 있습니다.<br>
+                - 오늘 또는 어제의 기록이 있어야만 공개가 가능합니다.<br>
+                - 비공개 상태에서는 아카이브 페이지로 이동이 불가능합니다.
+            </div>
+
+            <div class="help-page page5" style="display:none;">
+                <b>프로필 변경</b><br>
+                5) 닉네임 왼쪽의 프로필 이미지를 누르면 변경할 수 있습니다.<br>
+                - 가입 후 일정 조건(7일 이상 기록 달성)을 만족하면 새로운 이미지가 해금됩니다.<br>
+                - 해금된 이미지는 자유롭게 교체할 수 있습니다.
+            </div>
+
+            <div class="help-page page6" style="display:none;">
+                <b>기록 수정</b><br>
+                6) 화면 하단의 일자별 기록표에서 항목을 눌러 수정하거나 삭제할 수 있습니다.<br>
+                - 실수로 잘못 입력한 경험치나 레벨은 이곳에서 바로 수정 가능합니다.<br>
+                - 수정 내역은 자동으로 저장됩니다.
+            </div>
+        </div>
+
+        <div>
+            <div id="helpDots" class="help-dots"></div>
+        </div>
+
+        <!-- ✅ 페이지네이션 -->
+        <div id="helpPagination" class="help-pagination">
+            <button id="prevHelpPage" class="help-btn">〈 이전</button>
+            <button id="nextHelpPage" class="help-btn">다음 〉</button>
+        </div>
+
+        <div class="help-tip">다시 보고 싶을 땐, 화면 상단의 <b>?</b> 버튼을 눌러주세요.</div>
     </div>
 </div>
 
@@ -1133,11 +1210,11 @@
                     }
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
-                    const todayValue = "v3";
+                    const todayValue = "v4";
                     const lastUpdate = localStorage.getItem("LU-update");
 
                     if (lastUpdate !== todayValue) {
-                        showAlert("! New !\n닉네임 옆에 전교1등을 터치해보세요!");
+                        showAlert("! New !\n각 페이지 화면 상단의 ?를 터치해보세요!");
                         localStorage.setItem("LU-update", todayValue);
                     }
                     loadUserData(savedNick);
@@ -1461,12 +1538,14 @@
                     // 🔹 비공개 상태면 버튼 제거
                     removeRankingButton();
                 }
+                console.log(`1`);
 
                 if (userData.expRecords) {
                     const records = userData.expRecords;
                     const sorted = Object.keys(records).sort();
                     const $tbody = $("#expTable tbody");
                     $tbody.empty();
+                    console.log(`2`);
 
                     const pageSize = 10;
                     const totalRecords = sorted.length;
@@ -1477,7 +1556,7 @@
                     let prevLevel = null;
                     let prevDate = null;
                     let diffs = []; // 🔸 획득 경험치 저장용
-
+                    console.log(`3`);
                     sorted.forEach(date => {
                         const currentExp = records[date].exp || 0;
                         const currentLevel = records[date].level || userData.level;
@@ -1536,6 +1615,7 @@
                         prevLevel = currentLevel;
                         prevDate = date; // ✅ 이전 날짜 저장
                     });
+                    console.log(`4`);
 
                     // 🔸 평균 계산 및 전체 레벨업 예정일 표시 (레벨업 시 경험치 0으로 초기화 구조)
                     if (Object.keys(records).length > 1 && userData.level) {
@@ -1550,80 +1630,79 @@
 
                         if (!avgGain || avgGain <= 0 || isNaN(avgGain)) {
                             $("#levelUpBox").html(`<p style="color:#999;">최근 경험치 기록이 없습니다.</p>`);
-                            return;
-                        }
-
-                        // ✅ 최근 기록 및 현재 상태 계산
-                        const sortedDates = Object.keys(records).sort();
-                        const latestDate = sortedDates[sortedDates.length - 1];
-                        const latestRecord = records[latestDate];
-                        const currentLevel = userData.level;
-                        const currentExp = latestRecord.exp || 0;
-
-                        // ✅ 마지막 경험치 입력일 기준으로 계산하도록 수정
-                        const latestDateObj = new Date(latestDate);
-                        const koreaNow = new Date(latestDateObj.getTime());
-
-                        // ✅ 평균값 출력
-                        if (avgGain < 10000) {
-                            $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}`);
                         } else {
-                            const man = Math.floor(avgGain / 10000);
-                            $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}<br>( 약 ${man}만 )`);
-                        }
+                            // ✅ 최근 기록 및 현재 상태 계산
+                            const sortedDates = Object.keys(records).sort();
+                            const latestDate = sortedDates[sortedDates.length - 1];
+                            const latestRecord = records[latestDate];
+                            const currentLevel = userData.level;
+                            const currentExp = latestRecord.exp || 0;
 
-                        // ✅ 남은 경험치 계산 및 표시
-                        if (userData.level < levelExp.length) {
-                            // 일반 레벨업 모드
-                            const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
-                            const remainExp = Math.max(nextNeedExp - currentExp, 0);
+                            // ✅ 마지막 경험치 입력일 기준으로 계산하도록 수정
+                            const latestDateObj = new Date(latestDate);
+                            const koreaNow = new Date(latestDateObj.getTime());
 
-                            // ✅ 남은 경험치 퍼센트 계산
-                            const percent = ((remainExp / nextNeedExp) * 100).toFixed(1);
-                            $(".status-percent").text(`( ${percent}% )`);
-
-                            let approx = "";
-                            if (remainExp >= 100000000) { // 1억 이상
-                                const eok = Math.floor(remainExp / 100000000);
-                                approx = `( 약 ${eok.toLocaleString()}억 )`;
-                            } else if (remainExp >= 10000) { // 1만 이상
-                                const man = Math.floor(remainExp / 10000);
-                                approx = `( 약 ${man.toLocaleString()}만 )`;
+                            // ✅ 평균값 출력
+                            if (avgGain < 10000) {
+                                $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}`);
+                            } else {
+                                const man = Math.floor(avgGain / 10000);
+                                $("#avgExp").html(`${Math.floor(avgGain).toLocaleString()}<br>( 약 ${man}만 )`);
                             }
 
-                            $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
-                        } else if (userData.goalTargets?.length > 0) {
-                            // 만렙 + 목표 경험치 모드
-                            const goalTargets = userData.goalTargets.sort((a, b) => a - b);
-                            const nextGoal = goalTargets.find(g => g > currentExp);
+                            // ✅ 남은 경험치 계산 및 표시
+                            if (userData.level < levelExp.length) {
+                                // 일반 레벨업 모드
+                                const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
+                                const remainExp = Math.max(nextNeedExp - currentExp, 0);
 
-                            if (nextGoal) {
-                                const remainExp = Math.max(nextGoal - currentExp, 0);
+                                // ✅ 남은 경험치 퍼센트 계산
+                                const percent = ((remainExp / nextNeedExp) * 100).toFixed(1);
+                                $(".status-percent").text(`( ${percent}% )`);
 
                                 let approx = "";
-                                if (remainExp >= 100000000) {
+                                if (remainExp >= 100000000) { // 1억 이상
                                     const eok = Math.floor(remainExp / 100000000);
                                     approx = `( 약 ${eok.toLocaleString()}억 )`;
-                                } else if (remainExp >= 10000) {
+                                } else if (remainExp >= 10000) { // 1만 이상
                                     const man = Math.floor(remainExp / 10000);
                                     approx = `( 약 ${man.toLocaleString()}만 )`;
                                 }
 
                                 $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
-                            } else {
-                                $("#curExp").html("달성완료");
+                            } else if (userData.goalTargets?.length > 0) {
+                                // 만렙 + 목표 경험치 모드
+                                const goalTargets = userData.goalTargets.sort((a, b) => a - b);
+                                const nextGoal = goalTargets.find(g => g > currentExp);
+
+                                if (nextGoal) {
+                                    const remainExp = Math.max(nextGoal - currentExp, 0);
+
+                                    let approx = "";
+                                    if (remainExp >= 100000000) {
+                                        const eok = Math.floor(remainExp / 100000000);
+                                        approx = `( 약 ${eok.toLocaleString()}억 )`;
+                                    } else if (remainExp >= 10000) {
+                                        const man = Math.floor(remainExp / 10000);
+                                        approx = `( 약 ${man.toLocaleString()}만 )`;
+                                    }
+
+                                    $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
+                                } else {
+                                    $("#curExp").html("달성완료");
+                                }
                             }
-                        }
+                            console.log(`5`);
 
-                        const toDay = new Date();
-                        toDay.setHours(0, 0, 0, 0); // 오늘 00:00:00 으로 고정
+                            const toDay = new Date();
+                            toDay.setHours(0, 0, 0, 0); // 오늘 00:00:00 으로 고정
 
-                        // ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
-                        if (userData.level >= levelExp.length && userData.goalTargets?.length > 0 && avgGain > 0) {
-                            $("#levelUpBox").empty();
-                            const goalTargets = userData.goalTargets.sort((a, b) => a - b);
+                            // ✅ 만렙이면 목표 기준 테이블, 아니면 레벨업 테이블
+                            if (userData.level >= levelExp.length && userData.goalTargets?.length > 0 && avgGain > 0) {
+                                $("#levelUpBox").empty();
+                                const goalTargets = userData.goalTargets.sort((a, b) => a - b);
 
-                            let goalTable = `
+                                let goalTable = `
                                 <table style="width:100%; border-collapse:collapse; font-size:14px;">
                                     <thead>
                                         <tr style="background:#f6f4fc; color:#5a4398;">
@@ -1635,40 +1714,40 @@
                                 <tbody>
                             `;
 
-                            goalTargets
-                                .filter(goal => goal > currentExp)
-                                .forEach(goal => {
-                                    const remainExp = Math.max(goal - currentExp, 0);
-                                    const daysNeeded = Math.ceil(remainExp / avgGain);
-                                    const estDate = new Date(koreaNow);
-                                    estDate.setDate(koreaNow.getDate() + daysNeeded);
-                                    const yyyy = estDate.getFullYear();
-                                    const mm = String(estDate.getMonth() + 1).padStart(2, "0");
-                                    const dd = String(estDate.getDate()).padStart(2, "0");
-                                    estDate.setHours(0, 0, 0, 0);
-                                    const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
+                                goalTargets
+                                    .filter(goal => goal > currentExp)
+                                    .forEach(goal => {
+                                        const remainExp = Math.max(goal - currentExp, 0);
+                                        const daysNeeded = Math.ceil(remainExp / avgGain);
+                                        const estDate = new Date(koreaNow);
+                                        estDate.setDate(koreaNow.getDate() + daysNeeded);
+                                        const yyyy = estDate.getFullYear();
+                                        const mm = String(estDate.getMonth() + 1).padStart(2, "0");
+                                        const dd = String(estDate.getDate()).padStart(2, "0");
+                                        estDate.setHours(0, 0, 0, 0);
+                                        const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
-                                    let formattedGoal = goal < 10000
-                                        ? goal.toLocaleString()
-                                        : goal < 100000000
-                                            ? `${Math.floor(goal / 10000)}만`
-                                            : `${Math.floor(goal / 100000000)}억`;
+                                        let formattedGoal = goal < 10000
+                                            ? goal.toLocaleString()
+                                            : goal < 100000000
+                                                ? `${Math.floor(goal / 10000)}만`
+                                                : `${Math.floor(goal / 100000000)}억`;
 
-                                    goalTable += `
+                                        goalTable += `
                                         <tr>
                                            <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
                                            <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
                                            <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                         </tr>`;
 
-                                });
+                                    });
 
-                            goalTable += `</tbody></table>`;
-                            $("#levelUpBox").append(goalTable);
+                                goalTable += `</tbody></table>`;
+                                $("#levelUpBox").append(goalTable);
 
-                        } else {
-                            // 🔹 일반 레벨업 테이블 (기존 구조 유지)
-                            let tableHTML = `
+                            } else {
+                                // 🔹 일반 레벨업 테이블 (기존 구조 유지)
+                                let tableHTML = `
                                 <table style="width:100%; border-collapse:collapse; font-size:14px;">
                                     <thead>
                                         <tr style="background:#f6f4fc; color:#5a4398;">
@@ -1680,39 +1759,40 @@
                                 <tbody>
                             `;
 
-                            let accumulatedExp = 0;
-                            let curExp = currentExp;
-                            const maxLevel = Math.min(currentLevel + 10, levelExp.length);
+                                let accumulatedExp = 0;
+                                let curExp = currentExp;
+                                const maxLevel = Math.min(currentLevel + 10, levelExp.length);
 
-                            for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
-                                const needExp = levelExp[lvl];
-                                if (!needExp) break;
-                                accumulatedExp += Math.max(needExp - curExp, 0);
-                                const daysNeeded = Math.ceil(accumulatedExp / avgGain);
-                                const estDate = new Date(koreaNow);
-                                estDate.setDate(koreaNow.getDate() + daysNeeded);
-                                const yyyy = estDate.getFullYear();
-                                const mm = String(estDate.getMonth() + 1).padStart(2, "0");
-                                const dd = String(estDate.getDate()).padStart(2, "0");
-                                estDate.setHours(0, 0, 0, 0);
-                                const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
+                                for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
+                                    const needExp = levelExp[lvl];
+                                    if (!needExp) break;
+                                    accumulatedExp += Math.max(needExp - curExp, 0);
+                                    const daysNeeded = Math.ceil(accumulatedExp / avgGain);
+                                    const estDate = new Date(koreaNow);
+                                    estDate.setDate(koreaNow.getDate() + daysNeeded);
+                                    const yyyy = estDate.getFullYear();
+                                    const mm = String(estDate.getMonth() + 1).padStart(2, "0");
+                                    const dd = String(estDate.getDate()).padStart(2, "0");
+                                    estDate.setHours(0, 0, 0, 0);
+                                    const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
-                                tableHTML += `
+                                    tableHTML += `
                                     <tr>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
                                     </tr>
                                 `;
-                                curExp = 0;
+                                    curExp = 0;
+                                }
+                                tableHTML += `</tbody></table>`;
+                                $("#levelUpBox").html(tableHTML);
                             }
-                            tableHTML += `</tbody></table>`;
-                            $("#levelUpBox").html(tableHTML);
                         }
-
                     } else {
                         $("#levelUpBox").html(`<p style="color:#999;">계산할 데이터가 부족합니다.</p>`);
                     }
+                    console.log(`6`);
 
                     // ============================
                     // ✅ (1) 옵션 선택 모달 추가
@@ -1729,6 +1809,7 @@
                     `);
 
                     $("body").append(optionModal);
+                    console.log(`7`);
 
                     // ============================
                     // ✅ (2) 수정 모달 추가
@@ -1755,6 +1836,7 @@
 
                 // ✅ 아카이브 공개 토글 스위치 상태 반영
                 const $toggle = $("#rankingToggle");
+                console.log(`8`);
                 if (userData.rankingPublic) {
                     $toggle.addClass("on");
                 } else {
@@ -2246,5 +2328,6 @@
         });
     });
 </script>
+<script src="../helpModal/helpModal.js" defer></script>
 </body>
 </html>

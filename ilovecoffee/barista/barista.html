@@ -293,11 +293,15 @@
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
 </head>
 <body>
 
 <div class="header-bar">
-    <h1>바리스타</h1>
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>바리스타</h1>
+        <button id="helpBtn">?</button>
+    </div>
     <button id="backBtn">뒤로가기</button>
 </div>
 
@@ -344,6 +348,69 @@
 </table>
 
 <div id="loading">불러오는 중...</div>
+
+<!-- ✅ 도움말 모달 -->
+<div id="helpModal" class="login-overlay" style="display:none;">
+    <div class="login-modal help-modal">
+        <button id="closeHelpModal" class="closeBtn">✕</button>
+        <h2 class="help-title">바리스타 사용 가이드</h2>
+
+        <div id="helpPages" class="help-content">
+            <div class="help-page page1">
+                <b>기본 설정</b><br>
+                1) 상단 입력칸에서 <b>커피판매 속도</b>와 <b>커피머신 수량</b>을 입력하세요.<br>
+                - 판매속도: 1시간 동안 커피를 몇 잔 판매할 수 있는지를 의미합니다.<br>
+                - 커피머신 수량: 동시에 커피를 내릴 수 있는 기계의 개수입니다.<br>
+                - 입력한 값은 자동으로 저장되어 다음 접속 시에도 유지됩니다.
+            </div>
+
+            <div class="help-page page2" style="display:none;">
+                <b>커피 검색</b><br>
+                2) 검색창에 커피 이름이나 줄임말을 입력하면 해당 메뉴를 바로 찾을 수 있습니다.<br>
+                - 예시: ‘아이스 아메리카노’ → “아아” 또는 “아이스”로 검색 가능<br>
+                - 일치하는 커피가 없으면 안내 문구가 표시됩니다.<br>
+                - 커피를 클릭하면 상세정보 카드가 열립니다.
+            </div>
+
+            <div class="help-page page3" style="display:none;">
+                <b>커피 정보 확인</b><br>
+                3) 선택한 커피의 <b>원두 소모량</b>, <b>경험치</b>, <b>골드</b> 정보를 한눈에 확인할 수 있습니다.<br>
+                - 각 항목은 잔 수에 따라 자동 계산됩니다.<br>
+                - 판매속도 또는 머신 수량을 수정하면 즉시 다시 계산됩니다.<br>
+                - 화면 하단의 표에는 다양한 판매 조건에 따른 결과가 표시됩니다.
+            </div>
+
+            <div class="help-page page4" style="display:none;">
+                <b>즐겨찾기</b><br>
+                4) 커피 이름 오른쪽의 별(★)을 눌러 즐겨찾기에 등록하세요.<br>
+                - 최대 5개까지 등록 가능하며, 목록은 상단에 따로 표시됩니다.<br>
+                - 자주 계산하는 커피를 등록해두면 검색 없이 바로 선택할 수 있습니다.<br>
+                - 즐겨찾기 항목의 별(★)을 다시 누르면 해제됩니다.
+            </div>
+
+            <div class="help-page page5" style="display:none;">
+                <b>표 보기</b><br>
+                5) 하단의 표에서는 선택한 커피를 기준으로<br>
+                머신 수 × 커피 판매 속도에 따라 예상되는 결과를 계산합니다.<br>
+                - 각 행은 판매 횟수별로 소요시간, 원두 소모량, 경험치, 골드 획득량을 보여줍니다.<br>
+                - 판매 속도나 머신 수를 변경하면 표도 즉시 갱신됩니다.<br>
+                - 마스터레벨이나 추가 경험치는 반영되지 않습니다.
+            </div>
+        </div>
+
+        <div>
+            <div id="helpDots" class="help-dots"></div>
+        </div>
+
+        <!-- ✅ 페이지네이션 -->
+        <div id="helpPagination" class="help-pagination">
+            <button id="prevHelpPage" class="help-btn">〈 이전</button>
+            <button id="nextHelpPage" class="help-btn">다음 〉</button>
+        </div>
+
+        <div class="help-tip">다시 보고 싶을 땐, 화면 상단의 <b>?</b> 버튼을 눌러주세요.</div>
+    </div>
+</div>
 
 <script type="module">
     import { menuData } from "../common/menuData.js";
@@ -632,5 +699,6 @@
     // ✅ 뒤로가기
     $("#backBtn").on("click", () => goToPage());
 </script>
+<script src="../helpModal/helpModal.js" defer></script>
 </body>
 </html>
