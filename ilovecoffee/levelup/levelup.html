@@ -613,6 +613,65 @@
             }
         }
 
+        /* 🎇 폭죽 + 축하문구 애니메이션 */
+        .firework-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 150;
+            animation: fadeOut 3s forwards 2s;
+        }
+
+        .firework-text {
+            position: relative;
+            text-align: center;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.6;
+            text-shadow: 0 0 20px #5a4398, 0 0 30px #c6a6ff, 0 0 50px #fff;
+            margin-top: 20px;
+            z-index: 200; /* ✅ 폭죽보다 위로 */
+            animation: popIn 0.8s ease;
+        }
+
+        /* 폭죽 점 애니메이션 */
+        .firework {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            animation: explode 1.5s ease-out infinite;
+        }
+
+        .firework {
+            --tx: 0;
+            --ty: 0;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0) translate(0, 0); opacity: 1; }
+            100% {
+                transform: scale(1.2)
+                translate(calc(var(--tx) * 1px), calc(var(--ty) * 1px));
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
 </head>
@@ -1824,6 +1883,7 @@
                                     estDate.setHours(0, 0, 0, 0);
                                     const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
+                                    if(dDay === 0) await showFireworkCelebration();
                                     if (dDay === 0 || dDay === 1) {
                                         const targetDate = new Date();
                                         targetDate.setDate(targetDate.getDate() + dDay);
@@ -2434,6 +2494,43 @@
         }
     }
 
+    // 🎆 폭죽 애니메이션 + 축하 문구 함수
+    function showFireworkCelebration() {
+        // 중복 방지
+        if ($(".firework-container").length > 0) return;
+
+        const nickname = getActiveNickname();
+        const container = $('<div class="firework-container"></div>');
+        const message = $(`<div class="firework-text">🎉 ${nickname}님 🎉<br>레벨업 춬하드려요~!</div>`);
+
+        container.append(message);
+        $("body").append(container);
+
+        // 폭죽 30개 랜덤 생성
+        for (let i = 0; i < 30; i++) {
+            const fw = $('<div class="firework"></div>');
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = 100 + Math.random() * 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            const color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+            const delay = Math.random() * 1;
+
+            fw.css({
+                "--tx": tx,
+                "--ty": ty,
+                background: color,
+                left: "50%",
+                top: "50%",
+                animationDelay: `${delay}s`
+            });
+
+            container.append(fw);
+        }
+
+        // 일정 시간 뒤 제거
+        setTimeout(() => container.remove(), 5000);
+    }
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 </body>
