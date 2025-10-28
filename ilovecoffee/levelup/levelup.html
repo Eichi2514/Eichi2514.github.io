@@ -571,6 +571,48 @@
             font-weight: 700;
             color: #5a4398;
         }
+
+        /* ===== 흘러가는 문장 (애니메이션) ===== */
+        .scrolling-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .scrolling-text {
+            display: inline-block;
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 600;
+            background: #fff;
+            color: #5a4398;
+            animation: scrollText 14s linear infinite;
+        }
+
+        /* 좌 → 우 방향 스크롤 애니메이션 */
+        @keyframes scrollText {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* 다크모드용 보정 */
+        @media (prefers-color-scheme: dark) {
+            .scrolling-text-container {
+                background: #2c2c3a;
+                border-color: #444;
+            }
+            .scrolling-text {
+                color: #c6a6ff;
+            }
+        }
+
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
 </head>
@@ -607,6 +649,11 @@
             <img src="../image/expTableBtnImg.png" alt="" class="quickBtnImg">
             <span>경험치표</span>
         </div>
+    </div>
+
+    <!-- 🔹 흘러가는 문장 영역 -->
+    <div class="scrolling-text-container">
+        <div class="scrolling-text"></div>
     </div>
 
     <div class="level-input">
@@ -1218,6 +1265,7 @@
                         localStorage.setItem("LU-update", todayValue);
                     }
                     loadUserData(savedNick);
+                    await loadTodayLevelUpUsers();
                 } else {
                     // ❌ DB에 없는 닉네임일 경우 자동 제거
                     console.warn("저장된 닉네임이 유효하지 않아 초기화합니다.");
@@ -1776,6 +1824,30 @@
                                     estDate.setHours(0, 0, 0, 0);
                                     const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
+                                    if (dDay === 0 || dDay === 1) {
+                                        const targetDate = new Date();
+                                        targetDate.setDate(targetDate.getDate() + dDay);
+                                        const y = targetDate.getFullYear();
+                                        const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+                                        const d = String(targetDate.getDate()).padStart(2, '0');
+                                        const targetStr = `${y}-${m}-${d}`;
+                                        const nickname = $('#nicknameDisplay').text().trim();
+
+                                        const dateRef = ref(db, `coffeeLevelUpToday/${targetStr}`);
+                                        try {
+                                            const snap = await get(dateRef);
+                                            let list = snap.exists() ? snap.val() : [];
+                                            if (!Array.isArray(list)) list = Object.values(list);
+                                            if (!list.includes(nickname)) {
+                                                list.push(nickname);
+                                                await set(dateRef, list);
+                                                console.log(`✅ D-day 목록 저장 완료: ${targetStr} / ${nickname}`);
+                                            }
+                                        } catch (err) {
+                                            console.error("레벨업 D-day 저장 중 오류:", err);
+                                        }
+                                    }
+
                                     tableHTML += `
                                     <tr>
                                         <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
@@ -2212,10 +2284,10 @@
                 if (signupDateStr) {
                     // 🔸 "25.10.07-00:00:00" → "2025-10-07T00:00:00"
                     const normalized = signupDateStr
-                            .replace("-", "T")               // 첫 '-' (날짜-시간 구분) → 'T'
-                            .replace(/^(\d{2})\./, "20$1-")  // 25. → 2025-
-                            .replace(/\./g, "-")             // 나머지 점(.) → -
-                            .replace(/T.*/, "T00:00:00");    // ✅ T 뒤 전부 제거 후 00:00:00으로 고정
+                        .replace("-", "T")               // 첫 '-' (날짜-시간 구분) → 'T'
+                        .replace(/^(\d{2})\./, "20$1-")  // 25. → 2025-
+                        .replace(/\./g, "-")             // 나머지 점(.) → -
+                        .replace(/T.*/, "T00:00:00");    // ✅ T 뒤 전부 제거 후 00:00:00으로 고정
 
 
                     const signupDate = new Date(normalized);
@@ -2327,6 +2399,41 @@
             }
         });
     });
+
+    // ✅ 오늘의 D-day 유저 목록 불러오기 → scrolling-text 표시
+    async function loadTodayLevelUpUsers() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        const listRef = ref(db, `coffeeLevelUpToday/${todayStr}`);
+
+        try {
+            const snap = await get(listRef);
+            if (!snap.exists()) {
+                return;
+            }
+
+            let list = snap.val();
+            // 배열이 아니고 객체면 값만 추출
+            if (!Array.isArray(list)) list = Object.values(list);
+            if (!list.length) {
+                return;
+            }
+
+            // 닉네임 나열 문장 생성
+            const nickText = list.map(name => `${name}님`).join(", ");
+            const message = `🎉LEVEL UP🎉 오늘은 ${nickText} 레벨업 D-day에요🦊 다들 축하해주세요~🌟`;
+
+            $(".scrolling-text").text(message);
+        } catch (err) {
+            console.error("🔥 D-day 유저 목록 로드 중 오류:", err);
+            $(".scrolling-text").text("D-day 정보를 불러오지 못했어요.");
+        }
+    }
+
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 </body>
