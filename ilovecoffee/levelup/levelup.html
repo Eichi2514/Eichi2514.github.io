@@ -612,7 +612,6 @@
             text-align: center;
             background: rgba(0, 0, 0, 0.4);
             z-index: 150;
-            animation: fadeOut 3s forwards 2s;
         }
 
         .firework-text {
@@ -1633,14 +1632,12 @@
                     // 🔹 비공개 상태면 버튼 제거
                     removeRankingButton();
                 }
-                console.log(`1`);
 
                 if (userData.expRecords) {
                     const records = userData.expRecords;
                     const sorted = Object.keys(records).sort();
                     const $tbody = $("#expTable tbody");
                     $tbody.empty();
-                    console.log(`2`);
 
                     const pageSize = 10;
                     const totalRecords = sorted.length;
@@ -1651,7 +1648,7 @@
                     let prevLevel = null;
                     let prevDate = null;
                     let diffs = []; // 🔸 획득 경험치 저장용
-                    console.log(`3`);
+
                     sorted.forEach(date => {
                         const currentExp = records[date].exp || 0;
                         const currentLevel = records[date].level || userData.level;
@@ -1710,7 +1707,6 @@
                         prevLevel = currentLevel;
                         prevDate = date; // ✅ 이전 날짜 저장
                     });
-                    console.log(`4`);
 
                     // 🔸 평균 계산 및 전체 레벨업 예정일 표시 (레벨업 시 경험치 0으로 초기화 구조)
                     if (Object.keys(records).length > 1 && userData.level) {
@@ -1787,7 +1783,6 @@
                                     $("#curExp").html("달성완료");
                                 }
                             }
-                            console.log(`5`);
 
                             const toDay = new Date();
                             toDay.setHours(0, 0, 0, 0); // 오늘 00:00:00 으로 고정
@@ -1912,7 +1907,6 @@
                     } else {
                         $("#levelUpBox").html(`<p style="color:#999;">계산할 데이터가 부족합니다.</p>`);
                     }
-                    console.log(`6`);
 
                     // ============================
                     // ✅ (1) 옵션 선택 모달 추가
@@ -1929,7 +1923,6 @@
                     `);
 
                     $("body").append(optionModal);
-                    console.log(`7`);
 
                     // ============================
                     // ✅ (2) 수정 모달 추가
@@ -1956,7 +1949,6 @@
 
                 // ✅ 아카이브 공개 토글 스위치 상태 반영
                 const $toggle = $("#rankingToggle");
-                console.log(`8`);
                 if (userData.rankingPublic) {
                     $toggle.addClass("on");
                 } else {
@@ -2494,6 +2486,11 @@
         container.append(message);
         $("body").append(container);
 
+        // ✅ 클릭 시 즉시 닫기
+        container.on("click", function () {
+            container.fadeOut(300, () => container.remove());
+        });
+
         // 폭죽 30개 랜덤 생성
         for (let i = 0; i < 30; i++) {
             const fw = $('<div class="firework"></div>');
@@ -2517,7 +2514,7 @@
         }
 
         // 일정 시간 뒤 제거
-        setTimeout(() => container.remove(), 5000);
+        setTimeout(() => container.remove(), 15000);
     }
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
