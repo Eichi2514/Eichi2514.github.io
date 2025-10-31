@@ -675,6 +675,7 @@
             <button id="settingsBtn">설정</button>
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
                 <button class="addSubCharacterBtn">부캐 등록</button>
+                <button class="expTableBtn">경험치표</button>
                 <button class="changeNicknameBtn">닉네임 변경</button>
                 <button class="changePasswordBtn">비밀번호 변경</button>
                 <button class="logoutBtn">로그아웃</button>
@@ -695,6 +696,12 @@
             <img src="../image/expTableBtnImg.png" alt="" class="quickBtnImg">
             <span>경험치표</span>
         </div>
+        <!--
+        <div class="quickBtn memoryBtn">
+            <img src="../image/memoryBtnImg.jpg" alt="" class="quickBtnImg">
+            <span>추억수집</span>
+        </div>
+        -->
     </div>
 
     <!-- 🔹 흘러가는 문장 영역 -->
@@ -1041,6 +1048,10 @@
 
     $(".baristaBtn").on("click", function () {
         goToPage("barista");
+    });
+
+    $(".memoryBtn").on("click", function () {
+        goToPage("memory");
     });
 
     // ✅ 부캐 등록 모달 열기

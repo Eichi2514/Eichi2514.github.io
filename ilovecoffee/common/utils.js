@@ -172,7 +172,8 @@ export function goToPage(target = "levelup") {
         ranking: `${basePath}/ranking/main.html`,
         levelup: `${basePath}/levelup/levelup.html`,
         layout: `${basePath}/layout/layout.html`,
-        barista: `${basePath}/barista/barista.html`
+        barista: `${basePath}/barista/barista.html`,
+        memory: `${basePath}/memory/memory.html`
     };
 
     // target이 잘못된 경우 기본값 levelup으로 이동
