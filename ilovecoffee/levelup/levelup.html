@@ -665,6 +665,12 @@
 <body>
 
 <div id="mainPage" style="display:none;">
+
+    <!-- 🔹 흘러가는 문장 영역 -->
+    <div class="scrolling-text-container">
+        <div class="scrolling-text"></div>
+    </div>
+
     <div class="level-row header-bar">
         <div style="display: flex; gap: 4px; align-items: center">
             <h1>그럴수이치</h1>
@@ -692,21 +698,10 @@
             <img src="../image/baristaBtnImg.jpg" alt="" class="quickBtnImg">
             <span>바리스타</span>
         </div>
-        <div class="quickBtn expTableBtn">
-            <img src="../image/expTableBtnImg.png" alt="" class="quickBtnImg">
-            <span>경험치표</span>
-        </div>
-        <!--
         <div class="quickBtn memoryBtn">
             <img src="../image/memoryBtnImg.jpg" alt="" class="quickBtnImg">
             <span>추억수집</span>
         </div>
-        -->
-    </div>
-
-    <!-- 🔹 흘러가는 문장 영역 -->
-    <div class="scrolling-text-container">
-        <div class="scrolling-text"></div>
     </div>
 
     <div class="level-input">
@@ -1015,6 +1010,7 @@
         getActiveNickname,
         goToPage,
         showAlert,
+        closeAlert,
         showConfirm
     } from "../common/utils.js";
 
@@ -1294,9 +1290,9 @@
         $("#editModal").hide();
     });
 
-    // 닫기 버튼
+    // ✅ 알림 모달 닫기 버튼
     $(document).on("click", "#alertConfirmBtn", function () {
-        $("#customAlert").fadeOut(150);
+        closeAlert();
     });
 
     // ✅ 경험치 입력 시 자동으로 쉼표 추가 (입력할 때마다 포맷 적용)
@@ -1324,11 +1320,11 @@
                     }
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
-                    const todayValue = "v4";
+                    const todayValue = "v5";
                     const lastUpdate = localStorage.getItem("LU-update");
 
                     if (lastUpdate !== todayValue) {
-                        showAlert("! New !\n각 페이지 화면 상단의 ?를 터치해보세요!");
+                        showAlert("! New !\n무언가 바뀌었어요! 무엇일까요!");
                         localStorage.setItem("LU-update", todayValue);
                     }
                     loadUserData(savedNick);
@@ -2321,6 +2317,9 @@
             {id: 14, name: "소공녀", src: "../image/profile14.jpg"},
             {id: 15, name: "엄친아", src: "../image/profile15.jpg"},
             {id: 16, name: "포카리걸", src: "../image/profile16.jpg"},
+            {id: 17, name: "가브리엘", src: "../image/profile17.jpg"},
+            {id: 18, name: "제이", src: "../image/profile18.jpg"},
+            {id: 19, name: "케이트", src: "../image/profile19.jpg"},
         ];
 
         // ✅ 닉네임 앞의 프로필 클릭 시 모달 열기

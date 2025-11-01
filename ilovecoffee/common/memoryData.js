@@ -897,7 +897,7 @@ export const memoryData = [{
         }, {
             "id": 357, "item": "아이스크림 샌드위치", "theme": "", "color": "", "machine": "3호점 아이스크림 메이커", "attribute": "디저트", "price": "", "note": ""
         }, {
-            "id": 358, "item": "키위(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "키위 샌드위치"
+            "id": 358, "item": "키위(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "키위 샌드위치 판매"
         }, {
             "id": 359, "item": "열대 과일 가득한 바구니", "theme": "", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }, {
@@ -917,9 +917,9 @@ export const memoryData = [{
         }, {
             "id": 366, "item": "만개한 연꽃파이", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": "체리상점 레시피"
         }, {
-            "id": 367, "item": "오렌지맛 솜사탕(20개)", "theme": "", "color": "", "machine": "솜사탕 머신", "attribute": "디저트 토큰", "price": "", "note": "오렌지맛 솜사탕"
+            "id": 367, "item": "오렌지맛 솜사탕(20개)", "theme": "", "color": "", "machine": "솜사탕 머신", "attribute": "디저트 토큰", "price": "", "note": "오렌지맛 솜사탕 판매"
         }, {
-            "id": 368, "item": "연꽃(20개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "만개한 연꽃파이"
+            "id": 368, "item": "연꽃(20개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "만개한 연꽃파이 판매"
         }, {
             "id": 369, "item": "과자나라 스페셜 디저트", "theme": "과자나라", "color": "몽블랑", "machine": "", "attribute": "캐시", "price": "27 C", "note": ""
         }, {
@@ -935,9 +935,9 @@ export const memoryData = [{
         }, {
             "id": 374, "item": "티하우스 말차 파르페", "theme": "티하우스", "color": "", "machine": "티하우스 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
         }, {
-            "id": 375, "item": "요거트(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "요거트 과일 퐁듀"
+            "id": 375, "item": "요거트(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "요거트 과일 퐁듀 판매"
         }, {
-            "id": 376, "item": "말차파우더(70개)", "theme": "티하우스", "color": "", "machine": "티하우스 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "티하우스 말차 파르페"
+            "id": 376, "item": "말차파우더(70개)", "theme": "티하우스", "color": "", "machine": "티하우스 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "티하우스 말차 파르페 판매"
         }, {
             "id": 377, "item": "할로윈 마법의 솥", "theme": "할로윈", "color": "", "machine": "", "attribute": "캐시", "price": "40 C", "note": ""
         }, {
@@ -959,7 +959,7 @@ export const memoryData = [{
         }, {
             "id": 385, "item": "자허토르테", "theme": "러블리", "color": "", "machine": "러블리 하트 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
         }, {
-            "id": 386, "item": "공주인형(70개)", "theme": "러블리", "color": "", "machine": "러블리 하트 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "5성달성 자허토르테 판매"
+            "id": 386, "item": "공주인형(70개)", "theme": "러블리", "color": "", "machine": "러블리 하트 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "자허토르테 판매"
         }, {
             "id": 387, "item": "키즈카페 공주가 사는 집", "theme": "키즈 카페", "color": "", "machine": "", "attribute": "골드", "price": "374,500 G", "note": ""
         }, {
@@ -971,9 +971,9 @@ export const memoryData = [{
         }, {
             "id": 390, "item": "추억의 한과", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": "체리상점 레시피"
         }, {
-            "id": 391, "item": "도넛(70개)", "theme": "3호점", "color": "", "machine": "3호점 제빵기", "attribute": "디저트 토큰", "price": "", "note": "도너츠"
+            "id": 391, "item": "도넛(70개)", "theme": "3호점", "color": "", "machine": "3호점 제빵기", "attribute": "디저트 토큰", "price": "", "note": "도너츠 판매"
         }, {
-            "id": 392, "item": "한과(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "추억의 한과"
+            "id": 392, "item": "한과(70개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "추억의 한과 판매"
         }, {
             "id": 393, "item": "아이러브빵집 튀김 솥", "theme": "아이러브빵집", "color": "갈색", "machine": "", "attribute": "캐시", "price": "37 C", "note": ""
         }, {

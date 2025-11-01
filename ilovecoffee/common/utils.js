@@ -188,6 +188,10 @@ export function showAlert(message) {
     $("#customAlert").fadeIn(150);
 }
 
+export function closeAlert() {
+    $("#customAlert").fadeOut(150);
+}
+
 export function showConfirm(message, onConfirm) {
     $("#customConfirm .alert-text").html(message);
     $("#customConfirm").fadeIn(150);

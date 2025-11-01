@@ -30,9 +30,10 @@
         }
 
         body {
-            background: #f4f3f9;
+            background: #fff;
             margin: 0;
             color: #333;
+            padding-bottom: 120px;
         }
 
         .header-bar {
@@ -61,6 +62,645 @@
             font-weight: 600;
         }
 
+        /* ===== 모달 공통 ===== */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        /* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
+        #customAlert,
+        #customConfirm {
+            z-index: 100; /* 다른 모든 모달보다 앞 */
+        }
+
+        #customAlert .alert-box,
+        #customConfirm .alert-box {
+            position: relative;
+            z-index: 101; /* 내부 콘텐츠도 최상단 */
+        }
+
+        #customAlert .alert-box, #customConfirm .alert-box {
+            background: #ffbcae;
+            padding: 25px 25px 20px;
+            border-radius: 12px;
+            width: 360px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            position: relative;
+        }
+
+        #customAlert .alert-content, #customConfirm .alert-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #customAlert .alert-text, #customConfirm .alert-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 10px;
+
+            white-space: pre-line; /* \n 줄바꿈 인식 */
+            word-break: keep-all; /* 단어 기준 줄바꿈 */
+            overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+        }
+
+
+        #customAlert .alert-img, #customConfirm .alert-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        #alertConfirmBtn {
+            display: block;
+            width: 100%;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        #alertConfirmBtn:hover {
+            background: #47327a;
+        }
+
+        /* ✅ 캐릭터 선택 영역 */
+        .character-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px; /* 버튼 간 간격 */
+            padding: 0 24px;
+        }
+
+        .character-tab {
+            width: calc((100% / 3)); /* 버튼 크기 */
+            background: #f6f4fc;
+            border: 1px solid #e0dff2;
+            color: #5a4398;
+            border-radius: 8px;
+            padding: 5px 0;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden; /* ✅ 이미지가 버튼 밖으로 삐져나오지 않게 */
+        }
+
+        .character-tab span {
+            position: relative;
+            z-index: 2; /* ✅ 글자 앞으로 */
+            display: block;
+            width: calc(100% - 35px);
+            text-align: center;
+            margin-left: auto;
+            margin-right: 5px;
+        }
+
+        .characterImg {
+            width: 20px; /* 버튼 크기 */
+            height: 20px;
+            border-radius: 50%; /* 완전한 원형 */
+            object-fit: cover; /* 이미지 꽉 채우기 */
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 0; /* ✅ 글자보다 아래 */
+        }
+
+        .character-tab.active {
+            background: #5a4398;
+            color: #fff;
+        }
+
+        .level-input {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0 24px;
+            margin: 20px 0 8px;
+            width: 100%;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+
+        .toggle-switch::after {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ✅ 다크모드용 랭킹 토글 스위치 보정 */
+        @media (prefers-color-scheme: dark) {
+            .toggle-switch {
+                background: #f2f2f2; /* 기본 OFF 배경을 어둡게 */
+            }
+        }
+
+        /* ON 상태 */
+        .toggle-switch.on {
+            background: #5a4398;
+        }
+
+        .toggle-switch.on::after {
+            left: 26px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 0 16px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #searchBtn {
+            flex-shrink: 0;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        /* ✅ 2차 카테고리 목록 */
+        .subcategories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 16px;
+            word-break: keep-all;
+        }
+
+        .subcategory {
+            position: relative;
+            background: #f6f4fc;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 14px;
+            width: calc(50% - 4px);
+            height: 54px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* ✅ 서브카테고리 이름 */
+        .sub-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* ✅ 진행률 - 오른쪽 상단 */
+        .sub-progress {
+            position: absolute;
+            bottom: 3px;
+            right: 8px;
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+        }
+
+        /* ✅ 모든 아이템 수집 완료된 서브카테고리 */
+        .subcategory.collected {
+            position: relative;
+            background: #f0eaff; /* 밝은 보라색 강조 */
+            border-color: #b7a8f0;
+            color: #5a4398;
+            font-weight: 700;
+        }
+
+        /* ✅ 오른쪽 위에 체크 아이콘 이미지 표시 */
+        .subcategory.collected::after {
+            content: "";
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: url("../../favicon/MyCharacter2.png") no-repeat center center;
+            background-size: contain;
+        }
+
+        .subcategory.active {
+            background: #5a4398;
+            color: #fff;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        /* 선택된 서브카테고리 + X 버튼을 나란히 정렬 */
+        .selected-subcategory {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .close-subcategory {
+            background: #f6f4fc;
+            border: 1px solid #e0dff2;
+            color: #5a4398;
+            border-radius: 8px;
+            font-weight: 700;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        /* ✅ 보상 + 아이템 카드 */
+        .reward-section {
+            padding: 0 16px 16px;
+        }
+
+        .reward-box {
+            background: #fff7d6;
+            border: 2px solid #f1e1a5; /* ✅ 밝은 노랑 테두리 */
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #5a4398;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* 살짝 입체감 */
+        }
+
+        .item-list {
+            display: flex;
+            flex-wrap: wrap; /* ✅ 여러 줄 허용 */
+            gap: 10px;
+            justify-content: space-between; /* ✅ 좌우 여백 균등 */
+        }
+
+        .item-card {
+            background: #fff;
+            border: 1.5px solid #e5e3f0; /* ✅ 은은한 보라빛 테두리 */
+            border-radius: 10px;
+            padding: 10px 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: calc(50% - 5px);
+            box-sizing: border-box;
+            transition: transform 0.1s ease, border-color 0.2s ease;
+        }
+
+        .item-name {
+            word-break: keep-all;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-detail {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .subcategory {
+                font-size: 14px;
+            }
+
+            .item-card {
+                padding: 8px 10px;
+            }
+        }
+
+        /* ✅ 검색 결과 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 85%;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .result-list {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .result-item {
+            background: #f6f4fc;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .result-item-name {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        #closeSearchModal {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-top: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* ✅ 수집 완료 아이템 오버레이 표시 */
+        .item-card {
+            position: relative; /* 오버레이 기준 */
+            overflow: hidden; /* 넘치는 부분 숨김 */
+        }
+
+        .item-card.collected::after {
+            content: "";
+            position: absolute;
+            inset: 0; /* 배경 전체 덮기 */
+            background-color: rgba(90, 67, 152, 0.15);
+            background-image: url("../../favicon/MyCharacter2.png");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 54px 54px; /* ✅ 이미지 크기 고정 */
+            border-radius: 10px;
+            pointer-events: none; /* 클릭 방해 안 함 */
+        }
+
+        /* ✅ 오른쪽 아래 고정 버튼 영역 */
+        .floating-btn-area {
+            position: fixed;
+            right: 18px;
+            bottom: 22px;
+            display: flex;
+            flex-direction: column; /* 위아래로 배치 (원하면 row로 바꿔도 됨) */
+            gap: 10px;
+            z-index: 100;
+        }
+
+        /* ✅ 개별 버튼 스타일 */
+        .floating-btn {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .floating-btn:hover {
+            background: #47327a;
+            transform: translateY(-2px);
+        }
+
+        /* ===== 필터모드 필터 및 정렬 영역 ===== */
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 0 24px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* ✅ 항상 3등분 고정 (화면 크기와 무관하게) */
+        .filter-select {
+            flex: 0 0 33.3333%;
+            max-width: 33.3333%;
+            background: #f6f4fc;
+            border: 1px solid #e0dff2;
+            color: #5a4398;
+            border-radius: 8px;
+            padding: 4px 2px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ✅ 모바일에서도 줄바꿈 금지 */
+        @media (max-width: 480px) {
+            .filter-container {
+                flex-wrap: nowrap;
+            }
+
+            .filter-select {
+                flex: 0 0 33.3333%;
+                max-width: 33.3333%;
+            }
+        }
+
+        /* ===== 범례 ===== */
+        #colorGuide {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: right;
+            font-size: 14px;
+            color: #555;
+            padding: 0 24px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        /* ===== 아이템 테이블 ===== */
+        #tableSection {
+            padding: 0 16px;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .item-table td {
+            border: 1px solid #ddd;
+            text-align: left;
+            word-break: keep-all;
+            padding: 4px 8px;
+        }
+
+        /* ✅ 필터모드 표 - 획득 아이템 스타일 */
+        .collected-item td {
+            position: relative; /* ::after 기준 */
+            background: #f0eaff !important;
+            color: #5a4398;
+            font-weight: 700;
+        }
+
+        /* ✅ 획득 이미지 오버레이 */
+        .collected-item td::before {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 2px;
+            vertical-align: middle;
+            background: url("../../favicon/MyCharacter2.png") no-repeat center center;
+            background-size: contain;
+            opacity: 0.9;
+        }
+
+        /* ✅ 획득된 아이템의 두 번째 줄(tag-text)도 같은 배경색으로 */
+        .collected-item + .tag-text td {
+            background: #f0eaff !important;
+            color: #5a4398;
+            font-weight: 700;
+        }
+
+        /* ✅ 스티커(태그) 스타일 */
+        .tag {
+            display: inline-block;
+            padding: 2px 2px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.4;
+            border: 1px solid transparent;
+        }
+
+        /* ✅ 종류별 색상 */
+        .tag-theme {
+            background: #f3eaff;
+            color: #5a4398;
+            border-color: #c9b8f8;
+        }
+
+        .tag-attr {
+            background: #e6f9f3;
+            color: #2c7a55;
+            border-color: #9be0c3;
+        }
+
+        .tag-price {
+            background: #fff7d6;
+            color: #8c7000;
+            border-color: #f1e1a5;
+        }
+
+        .tag-color {
+            background: #e7f0ff;
+            color: #205295;
+            border-color: #a8c7ff;
+        }
+
+        .tag-machine {
+            background: #fff0e6;
+            color: #a44d00;
+            border-color: #ffd0a8;
+        }
+
+        .tag-text {
+            color: #555;
+            border-color: #ddd;
+        }
+
+        /* ✅ 아이템명 */
+        .item-name {
+            font-weight: 600;
+        }
+
+        /* ✅ 첫줄과 두번째줄을 하나처럼 붙이기 */
+        .item-table tr.tag-text td {
+            border-top: none; /* 윗줄 경계 제거 */
+        }
+
+        .item-table tr td {
+            border-bottom: none; /* 첫줄의 아랫선 제거 */
+        }
+
+        /* ✅ 마지막 아이템만 아래쪽 테두리 남기기 */
+        .item-table tr:last-child td {
+            border-bottom: 1px solid #ddd;
+        }
+
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
 </head>
@@ -74,42 +714,602 @@
     <button id="backBtn">뒤로가기</button>
 </div>
 
+<!-- ✅ 상단 캐릭터 -->
+<div class="character-tabs mainPage" id="characterTabs"></div>
+
+<!-- ✅ 필터모드 : 상단 필터 및 정렬 -->
+<div class="subPage" id="filterSection" style="display: none;"></div>
+
+<div class="level-input">
+    <div style="display:flex; align-items:center; gap:10px;">
+            <span id="nicknameDisplay"
+                  style="display:inline-block; padding:8px 0;
+                  font-size:16px; font-weight:600; color:#5a4398;">
+            </span>
+        <span id="currentLevelDisplay"
+              style="display:inline-block; padding:8px 0;
+                  font-size:16px; font-weight:600; color:#5a4398;">
+            </span>
+    </div>
+    <div id="memoryRoomToggle" class="toggle-switch"></div>
+</div>
+
+<div class="search-box mainPage">
+    <input type="text" id="searchInput" placeholder="검색">
+    <button id="searchBtn">검색</button>
+</div>
+
+<!-- ✅ 중간 2차 카테고리 -->
+<div class="subcategories mainPage" id="subcategoryList"></div>
+
+<!-- ✅ 하단 보상 및 아이템 -->
+<div class="reward-section mainPage" id="rewardSection"></div>
+
+<!-- ✅ 필터모드 : 범례 -->
+<div class="subPage" id="colorGuide" style="display: none;">
+    <div class="legend-item">
+        <span class="color-box tag-attr"></span>옵션
+    </div>
+    <div class="legend-item">
+        <span class="color-box tag-color"></span>색상
+    </div>
+    <div class="legend-item">
+        <span class="color-box tag-theme"></span>테마
+    </div>
+    <div class="legend-item">
+        <span class="color-box tag-machine"></span>머신
+    </div>
+    <div class="legend-item">
+        <span class="color-box tag-text"></span>기타
+    </div>
+</div>
+
+<!-- ✅ 필터모드 : 아이템 표 -->
+<div class="subPage" id="tableSection" style="display: none;"></div>
+
+<!-- 커스텀 알림 모달 -->
+<div id="customAlert" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div class="alert-content">
+            <div class="alert-text"></div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+        <button id="alertConfirmBtn">확인</button>
+    </div>
+</div>
+
+<!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
+<div class="floating-btn-area">
+    <button class="floating-btn advancedSettingBtn">필터모드</button>
+    <button class="floating-btn memoryRoomBtn" style="display:none;">메모리룸</button>
+</div>
+
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
-        getDatabase,
-        ref,
-        get
+        getDatabase, ref, get, update, remove
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-    import {goToPage, getActiveNickname} from "../common/utils.js";
+
+    import {memoryData} from "../common/memoryData.js";
+    import {goToPage, showAlert, closeAlert, getActiveNickname} from "../common/utils.js";
 
     const firebaseConfig = {
-        apiKey: ".env/apiKey",
-        authDomain: ".env/authDomain",
-        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
-        projectId: ".env/projectId",
-        storageBucket: ".env/storageBucket",
-        messagingSenderId: ".env/messagingSenderId",
-        appId: ".env/appId"
+        apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    $(async function () {
-        const nickname = getActiveNickname();
-        if (!nickname) return alert("로그인이 필요합니다."), goToPage();
+    // ✅ 알림 모달 닫기 버튼
+    $(document).on("click", "#alertConfirmBtn", function () {
+        closeAlert();
+    });
 
-        // ✅ 내 계정 먼저 확인
-        const mySnap = await get(ref(db, `coffeeUsers/${nickname}`));
-        if (!mySnap.exists()) {
-            alert("계정을 찾을 수 없습니다.");
+    const $nicknameDisplay = $("#nicknameDisplay");
+    const $currentLevelDisplay = $("#currentLevelDisplay");
+
+    $(function () {
+        const savedNick = getActiveNickname();
+        if (!savedNick) {
             goToPage();
             return;
         }
 
-        // ✅ 뒤로가기
+        // ✅ 필요한 필드만 병렬로 가져오기
+        Promise.all([get(ref(db, `coffeeUsers/${savedNick}/profileImg`)), get(ref(db, `coffeeUsers/${savedNick}/level`)), get(ref(db, `coffeeMemory/${savedNick}/memoryRoomPublic`))])
+            .then(([profileSnap, levelSnap, memorySnap]) => {
+                // 프로필 / 레벨 / 공개여부 값 추출
+                const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
+                const level = levelSnap.exists() ? levelSnap.val() : 1;
+                const memoryRoomPublic = memorySnap.exists() ? memorySnap.val() : false;
+
+                // ✅ 프로필 이미지 표시 (닉네임 앞)
+                const profileSrc = `../image/profile${profileNum}.jpg`;
+                if ($nicknameDisplay.prev(".profile-img").length > 0) {
+                    $nicknameDisplay.prev(".profile-img").attr("src", profileSrc);
+                } else {
+                    $("<img>")
+                        .attr("src", profileSrc)
+                        .attr("alt", "프로필 이미지")
+                        .addClass("profile-img")
+                        .css({
+                            width: "28px", height: "28px", borderRadius: "5px", objectFit: "cover"
+                        })
+                        .insertBefore("#nicknameDisplay");
+                }
+
+                // ✅ 닉네임 / 레벨 표시
+                $nicknameDisplay.text(savedNick);
+                $currentLevelDisplay.text(level);
+
+                // ✅ 토글 초기상태 반영
+                const $toggle = $("#memoryRoomToggle");
+                if (memoryRoomPublic) {
+                    $toggle.addClass("on").css("background", "#5a4398");
+                    $(".memoryRoomBtn").show();
+                } else {
+                    $toggle.removeClass("on").css("background", "#ccc");
+                    $(".memoryRoomBtn").hide();
+                }
+
+                // ✅ 캐릭터 탭 생성
+                memoryData.forEach((cat, i) => {
+                    const imgSrc = `../image/profile${i + 17}.jpg`;
+                    $("#characterTabs").append(`
+                    <div class="character-tab ${i === 0 ? 'active' : ''}" data-cat="${cat.category1}">
+                        <img src="${imgSrc}" alt="${cat.category1}" class="characterImg">
+                        <span>${cat.category1}</span>
+                    </div>
+                `);
+                });
+
+                // ✅ 첫 번째 캐릭터 표시
+                renderSubcategories(memoryData[0]);
+            })
+            .catch(err => {
+                console.error("데이터 로드 오류:", err);
+                localStorage.removeItem("coffee-nickname");
+                goToPage();
+            });
+
+        // 캐릭터 클릭
+        $(document).on("click", ".character-tab", function () {
+            $(".character-tab").removeClass("active");
+            $(this).addClass("active");
+            const selected = $(this).data("cat");
+            const category = memoryData.find(c => c.category1 === selected);
+            renderSubcategories(category);
+            $("#rewardSection").empty();
+        });
+
+        // 2차 카테고리 클릭
+        $(document).on("click", ".subcategory", function () {
+            const cat = $(this).data("cat");
+            const sub = $(this).data("sub");
+            const category = memoryData.find(c => c.category1 === cat);
+            const subData = category.categories2.find(s => s.name === sub);
+
+            renderReward(subData);
+            renderSelectedSubcategory(cat, sub); // ✅ 선택한 것만 표시
+        });
+
+        // X 버튼 클릭 시 다시 전체 목록으로 복귀
+        $(document).on("click", ".close-subcategory", function () {
+            const activeCat = $(".character-tab.active").data("cat");
+            const category = memoryData.find(c => c.category1 === activeCat);
+            renderSubcategories(category); // ✅ 다시 전체 카테고리 표시
+            $("#rewardSection").empty();    // ✅ 보상영역 초기화
+        });
+
+        // 뒤로가기
         $("#backBtn").on("click", () => goToPage());
+    });
+
+    $(document).on("click", ".memoryRoomBtn", function () {
+        showAlert("아직 준비중입니다!");
+        return
+        goToPage("memoryRoom");
+    });
+
+    // ✅ 수집된 아이템 초기 표시
+    async function markCollectedItems(savedNick) {
+        try {
+            const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+            const snap = await get(memoryRef);
+            if (!snap.exists()) return;
+
+            const collected = snap.val(); // { id1: true, id2: true, ... }
+
+            // 화면에 렌더링된 item-card 중 해당 ID가 true면 표시
+            $(".item-card").each(function () {
+                const itemId = $(this).data("id");
+                if (collected[itemId]) {
+                    $(this).addClass("collected");
+                }
+            });
+        } catch (err) {
+            console.error("수집된 아이템 표시 오류:", err);
+        }
+    }
+
+    async function renderSubcategories(cat) {
+        $("#subcategoryList").empty();
+
+        const savedNick = getActiveNickname();
+        if (!savedNick) return;
+
+        // ✅ 현재 유저의 수집 아이템 데이터 불러오기
+        const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+        const snap = await get(memoryRef);
+        const collected = snap.exists() ? snap.val() : {};
+
+        // ✅ 각 서브카테고리 렌더링
+        cat.categories2.forEach(sub => {
+            const totalItems = sub.items.length;
+            const collectedCount = sub.items.filter(i => collected[i.id]).length;
+
+            const isAllCollected = totalItems > 0 && collectedCount === totalItems;
+            const collectedClass = isAllCollected ? 'collected' : '';
+
+            // ✅ 진행률 텍스트 (완료가 아니면 표시)
+            const progressHTML = !isAllCollected ? `<span class="sub-progress">${collectedCount}/${totalItems}</span>` : '';
+
+            $("#subcategoryList").append(`
+                <div class="subcategory ${collectedClass}" data-cat="${cat.category1}" data-sub="${sub.name}">
+                    ${progressHTML}
+                    <span class="sub-name">${sub.name}</span>
+                </div>
+            `);
+        });
+    }
+
+    // ✅ 선택된 서브카테고리만 표시 + X 버튼 생성
+    function renderSelectedSubcategory(catName, subName) {
+        $("#subcategoryList").html(`
+        <div class="selected-subcategory">
+            <div class="subcategory active" data-cat="${catName}" data-sub="${subName}">
+                ${subName}
+            </div>
+            <div class="close-subcategory">✕</div>
+        </div>
+    `);
+    }
+
+    function renderReward(sub) {
+        const $area = $("#rewardSection");
+        $area.empty();
+
+        $area.append(`<div class="reward-box">🎁 보상 : ${sub.reward || '없음'}</div>`);
+        const itemsHTML = sub.items.map(i => `
+            <div class="item-card" data-id="${i.id}">
+                <div class="item-name">${i.item}</div>
+                <div class="item-detail">
+                    ${i.theme ? `테마 : ${i.theme}<br>` : ''}
+                    ${i.color ? `색상 : ${i.color}<br>` : ''}
+                    ${i.machine ? `머신 : ${i.machine}<br>` : ''}
+                    ${i.attribute ? `속성 : ${i.attribute}<br>` : ''}
+                    ${i.price ? `가격 : ${i.price}<br>` : ''}
+                    ${i.note ? `비고 : ${i.note}` : ''}
+                </div>
+            </div>
+        `).join('');
+        $area.append(`<div class="item-list">${itemsHTML}</div>`);
+
+        markCollectedItems(getActiveNickname());
+    }
+
+    // ✅ 검색 기능
+    $(document).on("click", "#searchBtn", function () {
+        const keyword = $("#searchInput").val().trim();
+        if (!keyword) return showAlert("검색어를 입력해주세요!");
+
+        const results = [];
+
+        memoryData.forEach(cat => {
+            cat.categories2.forEach(sub => {
+                sub.items.forEach(item => {
+                    if (item.item.includes(keyword)) {
+                        results.push({
+                            category1: cat.category1, category2: sub.name, item: item.item
+                        });
+                    }
+                });
+            });
+        });
+
+        if (results.length === 0) {
+            showAlert("검색 결과가 없어요...");
+            return;
+        }
+
+        // ✅ 검색 결과 모달 생성
+        const modalHtml = `
+                <div class="modal-overlay" id="searchModal">
+                    <div class="modal-content">
+                        <div style="position: relative; padding: 12px 0;">
+                            <div>검색 결과 (${results.length}개)</div>
+                            <button id="closeSearchModalX" class="closeBtn">✕</button>
+                        </div>
+                        <div class="result-list">
+                            ${results.map(r => `
+                                <div class="result-item" data-cat="${r.category1}" data-sub="${r.category2}">
+                                    <b>${r.category1}</b> > ${r.category2}
+                                    <div class="result-item-name">${r.item}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button id="closeSearchModal">닫기</button>
+                    </div>
+                </div>
+            `;
+        $("body").append(modalHtml);
+    });
+
+    // ✅ 검색창에서 엔터 눌러도 검색되게
+    $(document).on("keypress", "#searchInput", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); // 폼 전송 방지
+            $("#searchBtn").click(); // 검색 버튼 클릭과 동일하게 실행
+        }
+    });
+
+    // ✅ 검색 모달 닫기
+    $(document).on("click", "#closeSearchModal, #closeSearchModalX", function () {
+        $("#searchModal").remove();
+    });
+
+    // ✅ 검색 결과 클릭 시 해당 위치로 이동
+    $(document).on("click", ".result-item", function () {
+        const cat = $(this).data("cat");
+        const sub = $(this).data("sub");
+        $("#searchModal").remove();
+
+        // 해당 캐릭터 탭 활성화
+        $(".character-tab").removeClass("active");
+        $(`.character-tab[data-cat="${cat}"]`).addClass("active");
+
+        const category = memoryData.find(c => c.category1 === cat);
+        const subData = category.categories2.find(s => s.name === sub);
+
+        renderSelectedSubcategory(cat, sub);
+        renderReward(subData);
+    });
+
+    // ✅ 아이템 클릭 시 추억 토글 저장/삭제
+    $(document).on("click", ".item-card, .item-table tr", async function () {
+        const savedNick = getActiveNickname();
+        if (!savedNick) {
+            showAlert("로그인이 필요해요!");
+            return;
+        }
+
+        const itemId = $(this).data("id");
+        if (!itemId) {
+            console.warn("❗ item에 data-id 속성이 없습니다.");
+            return;
+        }
+
+        const itemRef = ref(db, `coffeeMemory/${savedNick}/${itemId}`);
+
+        try {
+            const snap = await get(itemRef);
+            const isTableRow = $(this).closest(".item-table").length > 0;
+
+            if (snap.exists()) {
+                // ✅ 이미 저장된 경우 → 삭제
+                await remove(itemRef);
+                if (isTableRow) {
+                    $(this).removeClass("collected-item").css("background", ""); // 테이블용
+                } else {
+                    $(this).removeClass("collected"); // 카드용
+                }
+            } else {
+                // ✅ 아직 없는 경우 → 저장
+                await update(ref(db, `coffeeMemory/${savedNick}`), {[itemId]: true});
+                if (isTableRow) {
+                    $(this).addClass("collected-item").css("background", "#f0eaff"); // 테이블용
+                } else {
+                    $(this).addClass("collected"); // 카드용
+                }
+            }
+        } catch (err) {
+            console.error("추억 토글 중 오류:", err);
+            showAlert("오류가 발생했어요...");
+        }
+    });
+
+    // ✅ 필터모드 버튼 클릭 시 메인 화면 숨기기 / 다시 보이기 토글
+    $(document).on("click", ".advancedSettingBtn", function () {
+        const $main = $(".mainPage");
+        const $sub = $(".subPage");
+        const isHidden = $main.is(":hidden");
+
+        if (isHidden) {
+            // 이미 숨겨져 있으면 다시 보이게
+            $sub.hide();
+            $main.show();
+            $(this).text("필터모드");
+        } else {
+            // 보이는 중이면 숨김
+            $main.hide();
+            $sub.show();
+            renderAdvancedSettings();
+            $(this).text("일반모드");
+        }
+    });
+
+    // ✅ 필터모드 초기 렌더링
+    function renderAdvancedSettings() {
+        // 1️⃣ 전체 아이템을 수집하면서 고유 테마/옵션 값 추출
+        const allItems = [];
+        const themeSet = new Set();
+        const optionSet = new Set();
+
+        memoryData.forEach(cat => {
+            cat.categories2.forEach(sub => {
+                sub.items.forEach(item => {
+                    allItems.push({
+                        ...item, category1: cat.category1, category2: sub.name
+                    });
+
+                    if (item.theme) themeSet.add(item.theme.trim());
+                    if (item.attribute) optionSet.add(item.attribute.trim());
+                });
+            });
+        });
+
+        // ✅ 1️⃣ 로컬 저장된 필터모드값 불러오기 (없으면 기본값)
+        const savedFilter = JSON.parse(localStorage.getItem("coffee-advancedFilter") || "{}");
+        const defaultFilter = {
+            theme: savedFilter.theme || "", option: savedFilter.option || "", sort: savedFilter.sort || "nameAsc" // 기본값: 이름 오름차순
+        };
+
+        // 2️⃣ select 옵션 HTML 자동 생성
+        const themeOptions = ['<option value="">테마 전체</option>']
+            .concat([...themeSet]
+                .sort((a, b) => a.localeCompare(b, "ko")) // ✅ 가나다순 정렬
+                .map(t => `<option value="${t}">${t}</option>`))
+            .join("");
+
+        const optionOptions = ['<option value="">옵션 전체</option>']
+            .concat([...optionSet]
+                .sort((a, b) => a.localeCompare(b, "ko")) // ✅ 가나다순 정렬
+                .map(o => `<option value="${o}">${o}</option>`))
+            .join("");
+
+        // 3️⃣ 필터모드 영역 구성
+        const filterHTML = `
+            <div class="filter-container">
+                <select id="themeFilter" class="filter-select">${themeOptions}</select>
+                <select id="optionFilter" class="filter-select">${optionOptions}</select>
+
+                <select id="sortOption" class="filter-select" style="flex:1 1 100%;">
+                    <option value="nameAsc">이름 ▲</option>
+                    <option value="nameDesc">이름 ▼</option>
+                    <option value="priceAsc">가격 ▲</option>
+                    <option value="priceDesc">가격 ▼</option>
+                </select>
+            </div>
+        `;
+
+        $("#filterSection").html(filterHTML);
+        $("#themeFilter").val(defaultFilter.theme);
+        $("#optionFilter").val(defaultFilter.option);
+        $("#sortOption").val(defaultFilter.sort);
+
+        // ✅ 2️⃣ 로컬 필터값 반영해서 테이블 렌더링
+        applyAndRenderFilter(allItems, defaultFilter);
+
+        // ✅ 3️⃣ 필터 변경 시 로컬 저장 및 즉시 반영
+        $(document).off("change", ".filter-select").on("change", ".filter-select", function () {
+            const theme = $("#themeFilter").val();
+            const option = $("#optionFilter").val();
+            const sort = $("#sortOption").val();
+
+            // 변경된 값 저장
+            localStorage.setItem("coffee-advancedFilter", JSON.stringify({theme, option, sort}));
+
+            applyAndRenderFilter(allItems, {theme, option, sort});
+        });
+    }
+
+    // ✅ 필터 및 정렬 적용 후 렌더링
+    function applyAndRenderFilter(allItems, {theme, option, sort}) {
+        let filtered = [...allItems];
+
+        if (theme) filtered = filtered.filter(i => i.theme && i.theme.includes(theme));
+        if (option) filtered = filtered.filter(i => i.attribute && i.attribute.includes(option));
+
+        // ✅ 가격 문자열을 숫자로 변환하는 헬퍼 함수
+        const parsePrice = (val) => {
+            if (!val) return 0;
+            // 쉼표, 공백, 단위(G, C 등) 제거 후 숫자만 추출
+            const num = val.toString().replace(/[^\d]/g, "");
+            return Number(num) || 0;
+        };
+
+        if (sort === "priceAsc") filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        if (sort === "priceDesc") filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        if (sort === "nameAsc") filtered.sort((a, b) => a.item.localeCompare(b.item, "ko"));
+        if (sort === "nameDesc") filtered.sort((a, b) => b.item.localeCompare(a.item, "ko"));
+
+        renderItemTable(filtered);
+    }
+
+    // ✅ 아이템 테이블 렌더링 (획득 여부 표시 포함)
+    async function renderItemTable(items) {
+        const savedNick = getActiveNickname();
+        const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+        const snap = await get(memoryRef);
+        const collected = snap.exists() ? snap.val() : {};
+
+        const tableHTML = `
+            <table class="item-table">
+                <tbody>
+                    ${items.map(i => {
+            const isCollected = collected[i.id]; // ✅ 획득 여부 체크
+
+            // 1️⃣ 첫줄: 이름 + 속성 + 가격
+            const tags = [];
+            if (i.attribute || i.price) tags.push(`<span class="tag tag-attr">${i.attribute} ${i.price ? " : " + i.price : ""}</span>`);
+            if (i.color) tags.push(`<span class="tag tag-color">${i.color}</span>`);
+            if (i.theme) tags.push(`<span class="tag tag-theme">${i.theme}</span>`);
+            if (i.machine) tags.push(`<span class="tag tag-machine">${i.machine}</span>`);
+            if (i.note) tags.push(`<span class="tag tag-text">${i.note}</span>`);
+
+            // ✅ 획득된 경우 이름 앞에 이미지 추가
+            const nameHTML = `
+                            <span class="item-name">${i.item}</span>
+                        `;
+
+            // ✅ 획득된 아이템은 배경 강조
+            const rowClass = isCollected ? "collected-item" : "";
+
+            return `
+                            <tr class="${rowClass}" data-id="${i.id}">
+                                <td>${nameHTML}<br>${tags.join(" ")}</td>
+                            </tr>
+                        `;
+        }).join("")}
+                </tbody>
+            </table>
+        `;
+
+        $("#tableSection").html(tableHTML);
+    }
+
+    // ✅ 클릭 시 DB 반영 (coffeeMemory에 저장)
+    $(document).on("click", "#memoryRoomToggle", async function () {
+        const savedNick = getActiveNickname();
+        if (!savedNick) {
+            showAlert("로그인이 필요해요!");
+            return;
+        }
+
+        const $toggle = $(this);
+        const isCurrentlyOn = $toggle.hasClass("on");
+        const newStatus = !isCurrentlyOn;
+
+        try {
+            // 🔹 Firebase DB에 상태 저장
+            await update(ref(db, `coffeeMemory/${savedNick}`), {
+                memoryRoomPublic: newStatus
+            });
+
+            // 🔹 UI 갱신
+            if (newStatus) {
+                $toggle.addClass("on").css("background", "#5a4398");
+                $(".memoryRoomBtn").show();
+            } else {
+                $toggle.removeClass("on").css("background", "#ccc");
+                $(".memoryRoomBtn").hide();
+            }
+
+            console.log(`✅ 메모리룸 공개 상태: ${newStatus}`);
+        } catch (err) {
+            console.error("메모리룸 상태 저장 오류:", err);
+            showAlert("상태 저장 중 오류가 발생했어요...");
+        }
     });
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
