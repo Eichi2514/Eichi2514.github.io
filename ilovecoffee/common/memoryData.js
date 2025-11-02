@@ -979,7 +979,7 @@ export const memoryData = [{
         }, {
             "id": 394, "item": "사랑당 자개 거울", "theme": "사랑당", "color": "검정", "machine": "", "attribute": "골드", "price": "443,000 G", "note": ""
         }, {
-            "id": 395, "item": "베르사이유 풍 평화 액자", "theme": "베르사이유", "color": "브라운", "machine": "", "attribute": "캐시", "price": "70 C", "note": ""
+            "id": 395, "item": "베르사이유 풍 명화액자", "theme": "베르사이유", "color": "브라운", "machine": "", "attribute": "캐시", "price": "70 C", "note": ""
         }, {
             "id": 396, "item": "전통다원 윷놀이 공간", "theme": "전통 다원", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }]

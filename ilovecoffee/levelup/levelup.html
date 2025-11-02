@@ -104,11 +104,6 @@
             transition: all 0.2s ease;
         }
 
-        #expButton:hover {
-            background: #5a4398; /* hover 시 배경 채워짐 */
-            color: #fff; /* 글자색 반전 */
-        }
-
         /* ===== 섹션 제목 ===== */
         h3 {
             margin-top: 30px;
@@ -205,10 +200,6 @@
             transition: 0.2s;
         }
 
-        .login-modal button:hover {
-            background: #47327a;
-        }
-
         .msg {
             margin-top: 10px;
             font-size: 20px;
@@ -228,10 +219,6 @@
             padding: 0;
             margin: 0;
             width: max-content !important;
-        }
-
-        .closeBtn:hover {
-            color: #5a4398; /* hover 시 포인트 색 */
         }
 
         /* ===== 옵션 선택 모달 ===== */
@@ -279,23 +266,6 @@
         #closeOptionBtn {
             color: #777;
             border: 2px solid #777;
-        }
-
-        /* hover 효과 (색 반전) */
-        #optionModal button:hover {
-            color: #fff;
-        }
-
-        #editExpBtn:hover {
-            background: #5a4398;
-        }
-
-        #deleteExpBtn:hover {
-            background: #d9534f;
-        }
-
-        #closeOptionBtn:hover {
-            background: #777;
         }
 
         #customAlert .alert-box, #customConfirm .alert-box {
@@ -349,10 +319,6 @@
             transition: background 0.2s;
         }
 
-        #alertConfirmBtn:hover {
-            background: #47327a;
-        }
-
         /* ===== 퀵버튼 바 ===== */
         #quickBtn-bar {
             display: flex;
@@ -401,6 +367,41 @@
 
         #adminBtn-bar {
             text-align: right;
+        }
+
+        .barBtn {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            height: 35px;
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+
+        /* ✅ 오른쪽 아래 고정 버튼 영역 */
+        .floating-btn-area {
+            position: fixed;
+            right: 18px;
+            bottom: 22px;
+            display: flex;
+            flex-direction: column; /* 위아래로 배치 (원하면 row로 바꿔도 됨) */
+            gap: 10px;
+            z-index: 100;
+        }
+
+        /* ✅ 개별 버튼 스타일 */
+        .floating-btn {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         /* ===== 아카이브 공개 토글 스위치 ===== */
@@ -460,10 +461,6 @@
             transition: background 0.2s;
         }
 
-        #settingsBtn:hover {
-            background: rgba(255, 255, 255, 0.35);
-        }
-
         .dropdown-menu {
             position: absolute;
             right: 0;
@@ -495,13 +492,6 @@
         /* 마지막 버튼은 구분선 제거 */
         .dropdown-menu button:last-child {
             border-bottom: none;
-        }
-
-        /* ✅ hover 시 강조 */
-        .dropdown-menu button:hover {
-            background: #f6f4fc;
-            color: #5a4398;
-            font-weight: 600;
         }
 
         /* ===== 로딩 스크린 ===== */
@@ -732,7 +722,10 @@
 
     <div id="levelUpBox" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;"></div>
 
-    <div id="adminBtn-bar"></div>
+    <div id="adminBtn-bar">
+        <button class="subCharacterBtn barBtn" style="display: none;">부캐</button>
+        <button class="rankingBtn barBtn" style="display: none;">아카이브</button>
+    </div>
 
     <h3>일자별 경험치</h3>
     <table id="expTable">
@@ -980,6 +973,33 @@
     </div>
 </div>
 
+<!-- ✅ 관리자 메뉴 모달 -->
+<div id="adminOptionModal" class="login-overlay" style="display:none;">
+    <div class="login-modal" style="width:260px; text-align:center; position:relative;">
+        <button id="closeAdminOptionModal" class="closeBtn">✕</button>
+        <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
+
+        <button id="adminArchiveBtn"
+                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                   border-radius:8px; font-size:16px; font-weight:600; margin-bottom:10px;
+                   background:transparent; transition:0.2s;">
+            아카이브
+        </button>
+
+        <button id="adminMemoryBtn"
+                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                   border-radius:8px; font-size:16px; font-weight:600;
+                   background:transparent; transition:0.2s;">
+            메모리룸
+        </button>
+    </div>
+</div>
+
+<!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
+<div class="floating-btn-area">
+    <button class="floating-btn adminBtn" style="display:none;">관리자</button>
+</div>
+
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -1092,8 +1112,7 @@
         } else {
             // 새 부캐 생성
             await set(ref(db, `coffeeUsers/${nickname}`), {
-                password,
-                signupDate: getKoreanTimestamp(),
+                password, signupDate: getKoreanTimestamp(),
             });
             localStorage.setItem("coffee-subnickname", nickname);
             $msg.css("color", "green").text("새 부캐 계정이 등록되었습니다!");
@@ -1110,35 +1129,14 @@
         const subNick = localStorage.getItem("coffee-subnickname");
         if (!subNick) return; // 부캐 없으면 중단
 
-        // 버튼이 이미 존재하면 텍스트만 업데이트하고 종료
-        if ($("#subCharacterBtn").length > 0) {
-            $("#subCharacterBtn").text(subNick);
-            return;
-        }
+        const $subCharacterBtn = $(".subCharacterBtn");
 
-        // 버튼 생성
-        const subBtn = $(`<button id="subCharacterBtn">${subNick}</button>`).css({
-            background: '#5a4398',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '8px',
-            height: '35px',
-            padding: '8px 16px',
-            marginLeft: '8px',
-            cursor: 'pointer',
-            fontWeight: '600'
-        });
-
-        // ✅ 아카이브 버튼 앞에 추가 (있으면 prepend, 없으면 adminBtn-bar에 추가)
-        const $rankingBtn = $("#rankingBtn");
-        if ($rankingBtn.length > 0) {
-            $rankingBtn.before(subBtn);
-        } else {
-            $("#adminBtn-bar").append(subBtn);
-        }
+        // 버튼이 이미 존재하면 텍스트 교체
+        $subCharacterBtn.show();
+        $subCharacterBtn.text(subNick);
 
         // 클릭 시 부캐로 전환
-        subBtn.on("click", () => {
+        $subCharacterBtn.on("click", () => {
             const originNick = localStorage.getItem("coffee-nickname");
             const subNick = localStorage.getItem("coffee-subnickname");
             if (!subNick) return showAlert("등록된 부캐가 없습니다.");
@@ -1315,7 +1313,7 @@
             get(userRef).then(async snapshot => {
                 if (snapshot.exists()) {
                     // ✅ 정상 계정이면 페이지 표시
-                    if(savedNick == getActiveNickname()) {
+                    if (savedNick == getActiveNickname()) {
                         await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     }
                     $loadingScreen.hide();
@@ -1385,8 +1383,7 @@
                 }
             } else {
                 await set(ref(db, `coffeeUsers/${nickname}`), {
-                    password,
-                    signupDate: getKoreanTimestamp(),   // 가입일 저장
+                    password, signupDate: getKoreanTimestamp(),   // 가입일 저장
                 });
                 $msg.css("color", "green").text("새 계정이 등록되었습니다.");
                 localStorage.setItem("coffee-nickname", nickname);
@@ -1464,9 +1461,7 @@
 
             // ✅ 새 기록 저장 (쉼표 없는 정수 저장)
             await set(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`), {
-                level,
-                exp,
-                savedAt: getKoreanTimestamp(),
+                level, exp, savedAt: getKoreanTimestamp(),
             });
 
             // 🔹 현재 표시 중인 레벨 가져오기
@@ -1486,24 +1481,12 @@
 
         // ✅ 아카이브 버튼 추가 함수
         function addRankingButton() {
-            if ($("#rankingBtn").length > 0) return; // 중복 방지
+            const $rankingBtn = $(".rankingBtn");
 
-            const rankingBtn = $('<button id="rankingBtn">아카이브</button>').css({
-                background: '#5a4398',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                height: '35px',
-                padding: '8px 16px',
-                marginLeft: '8px',
-                cursor: 'pointer',
-                fontWeight: '600'
-            });
-
-            $("#adminBtn-bar").append(rankingBtn);
+            $rankingBtn.show();
 
             // ✅ 클릭 시 아카이브 접근 조건 검증
-            rankingBtn.on("click", async () => {
+            $rankingBtn.on("click", async () => {
                 const nickname = getActiveNickname();
                 if (!nickname) return showAlert("로그인 후 이용해주세요.");
 
@@ -1543,7 +1526,7 @@
 
         // ✅ 아카이브 버튼 제거 함수
         function removeRankingButton() {
-            $("#rankingBtn").remove();
+            $(".rankingBtn").hide();
         }
 
         // ✅ 사용자 전체 데이터 불러오기
@@ -1598,10 +1581,7 @@
                             .attr("alt", "프로필 이미지")
                             .addClass("profile-img")
                             .css({
-                                width: "28px",
-                                height: "28px",
-                                borderRadius: "5px",
-                                objectFit: "cover",
+                                width: "28px", height: "28px", borderRadius: "5px", objectFit: "cover",
                             })
                             .insertBefore("#nicknameDisplay");
                     }
@@ -1613,38 +1593,17 @@
 
                 // 🔹 관리자일 경우 관리자 페이지 버튼 표시
                 if (userData.isAdmin) {
-                    if ($("#adminBtn").length === 0) { // 중복 방지
-                        const adminBtn = $('<button id="adminBtn">관리자</button>').css({
-                            background: '#5a4398',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            height: '35px',
-                            padding: '8px 16px',
-                            cursor: 'pointer',
-                            fontWeight: '600'
-                        });
-                        $("#adminBtn-bar").append(adminBtn);
+                    const $adminBtn = $('.adminBtn');
 
-                        // 클릭 시 관리자 페이지 이동
-                        adminBtn.on("click", () => {
-                            goToPage("admin");
-                        });
-                    }
+                    $adminBtn.show();
                 }
 
                 // ✅ 로드 시 부캐 버튼 검사
                 addSubCharacterButton();
 
-                // ✅ 아카이브 공개 여부에 따라 아카이브 페이지 버튼 동적 제어
-                const $rankingBtnBar = $("#adminBtn-bar");
-                const existingRankingBtn = $("#rankingBtn");
-
                 // 🔹 공개 상태일 때 버튼 없으면 추가
                 if (userData.rankingPublic) {
-                    if (existingRankingBtn.length === 0) {
-                        addRankingButton();
-                    }
+                    addRankingButton();
                 } else {
                     // 🔹 비공개 상태면 버튼 제거
                     removeRankingButton();
@@ -1883,7 +1842,7 @@
                                     estDate.setHours(0, 0, 0, 0);
                                     const dDay = Math.ceil((estDate - toDay) / (1000 * 60 * 60 * 24));
 
-                                    if(dDay === 0) await showFireworkCelebration();
+                                    if (dDay === 0) await showFireworkCelebration();
                                     if (dDay === 0 || dDay === 1) {
                                         const targetDate = new Date();
                                         targetDate.setDate(targetDate.getDate() + dDay);
@@ -2539,6 +2498,29 @@
         // 일정 시간 뒤 제거
         setTimeout(() => container.remove(), 15000);
     }
+
+    // ✅ 관리자 버튼 클릭 시 관리자 메뉴 모달 열기
+    $(document).on("click", ".adminBtn", function () {
+        $("#adminOptionModal").css("display", "flex");
+    });
+
+    // ✅ 닫기 버튼
+    $(document).on("click", "#closeAdminOptionModal", function () {
+        $("#adminOptionModal").hide();
+    });
+
+    // ✅ 아카이브 버튼 클릭
+    $(document).on("click", "#adminArchiveBtn", function () {
+        $("#adminOptionModal").hide();
+        goToPage("admin");
+    });
+
+    // ✅ 메모리룸 버튼 클릭
+    $(document).on("click", "#adminMemoryBtn", function () {
+        $("#adminOptionModal").hide();
+        goToPage("aMemory");
+    });
+
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 </body>

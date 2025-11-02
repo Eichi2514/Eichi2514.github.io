@@ -73,6 +73,44 @@
             z-index: 50;
         }
 
+        .login-modal {
+            position: relative;
+            background: #fff;
+            padding: 30px 25px 50px 25px;
+            border-radius: 12px;
+            width: 360px;
+            min-height: max-content;
+            text-align: center;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-modal h2 {
+            margin-bottom: 15px;
+            color: #5a4398;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .login-modal button {
+            width: 100%;
+            padding: 10px;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
         /* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
         #customAlert,
         #customConfirm {
@@ -134,10 +172,6 @@
             cursor: pointer;
             margin-top: 20px;
             transition: background 0.2s;
-        }
-
-        #alertConfirmBtn:hover {
-            background: #47327a;
         }
 
         /* ✅ 캐릭터 선택 영역 */
@@ -518,11 +552,6 @@
             transition: all 0.2s ease;
         }
 
-        .floating-btn:hover {
-            background: #47327a;
-            transform: translateY(-2px);
-        }
-
         /* ===== 필터모드 필터 및 정렬 영역 ===== */
         .filter-container {
             display: flex;
@@ -778,10 +807,33 @@
     </div>
 </div>
 
+<!-- ✅ 관리자 메뉴 모달 -->
+<div id="adminOptionModal" class="login-overlay" style="display:none;">
+    <div class="login-modal" style="width:260px; text-align:center; position:relative;">
+        <button id="closeAdminOptionModal" class="closeBtn">✕</button>
+        <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
+
+        <button id="adminArchiveBtn"
+                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                   border-radius:8px; font-size:16px; font-weight:600; margin-bottom:10px;
+                   background:transparent; transition:0.2s;">
+            아카이브
+        </button>
+
+        <button id="adminMemoryBtn"
+                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                   border-radius:8px; font-size:16px; font-weight:600;
+                   background:transparent; transition:0.2s;">
+            메모리룸
+        </button>
+    </div>
+</div>
+
 <!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
 <div class="floating-btn-area">
     <button class="floating-btn advancedSettingBtn">필터모드</button>
     <button class="floating-btn memoryRoomBtn" style="display:none;">메모리룸</button>
+    <button class="floating-btn adminBtn" style="display:none;">관리자</button>
 </div>
 
 <script type="module">
@@ -816,12 +868,17 @@
         }
 
         // ✅ 필요한 필드만 병렬로 가져오기
-        Promise.all([get(ref(db, `coffeeUsers/${savedNick}/profileImg`)), get(ref(db, `coffeeUsers/${savedNick}/level`)), get(ref(db, `coffeeMemory/${savedNick}/memoryRoomPublic`))])
-            .then(([profileSnap, levelSnap, memorySnap]) => {
-                // 프로필 / 레벨 / 공개여부 값 추출
+        Promise.all([
+            get(ref(db, `coffeeUsers/${savedNick}/profileImg`)),
+            get(ref(db, `coffeeUsers/${savedNick}/level`)),
+            get(ref(db, `coffeeUsers/${savedNick}/memoryRoomPublic`)),
+            get(ref(db, `coffeeUsers/${savedNick}/isAdmin`))
+        ])
+            .then(([profileSnap, levelSnap, memorySnap, adminSnap]) => {
                 const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
                 const level = levelSnap.exists() ? levelSnap.val() : 1;
                 const memoryRoomPublic = memorySnap.exists() ? memorySnap.val() : false;
+                const isAdmin = adminSnap.exists() ? adminSnap.val() : false; // ✅ 관리자 여부
 
                 // ✅ 프로필 이미지 표시 (닉네임 앞)
                 const profileSrc = `../image/profile${profileNum}.jpg`;
@@ -852,15 +909,20 @@
                     $(".memoryRoomBtn").hide();
                 }
 
+                // ✅ 관리자라면 어드민 버튼 표시
+                if (isAdmin === true) {
+                    $(".adminBtn").show();
+                }
+
                 // ✅ 캐릭터 탭 생성
                 memoryData.forEach((cat, i) => {
                     const imgSrc = `../image/profile${i + 17}.jpg`;
                     $("#characterTabs").append(`
-                    <div class="character-tab ${i === 0 ? 'active' : ''}" data-cat="${cat.category1}">
-                        <img src="${imgSrc}" alt="${cat.category1}" class="characterImg">
-                        <span>${cat.category1}</span>
-                    </div>
-                `);
+                        <div class="character-tab ${i === 0 ? 'active' : ''}" data-cat="${cat.category1}">
+                            <img src="${imgSrc}" alt="${cat.category1}" class="characterImg">
+                            <span>${cat.category1}</span>
+                        </div>
+                    `);
                 });
 
                 // ✅ 첫 번째 캐릭터 표시
@@ -966,13 +1028,13 @@
     // ✅ 선택된 서브카테고리만 표시 + X 버튼 생성
     function renderSelectedSubcategory(catName, subName) {
         $("#subcategoryList").html(`
-        <div class="selected-subcategory">
-            <div class="subcategory active" data-cat="${catName}" data-sub="${subName}">
-                ${subName}
+            <div class="selected-subcategory">
+                <div class="subcategory active" data-cat="${catName}" data-sub="${subName}">
+                    ${subName}
+                </div>
+                <div class="close-subcategory">✕</div>
             </div>
-            <div class="close-subcategory">✕</div>
-        </div>
-    `);
+        `);
     }
 
     function renderReward(sub) {
@@ -1292,7 +1354,7 @@
 
         try {
             // 🔹 Firebase DB에 상태 저장
-            await update(ref(db, `coffeeMemory/${savedNick}`), {
+            await update(ref(db, `coffeeUsers/${savedNick}`), {
                 memoryRoomPublic: newStatus
             });
 
@@ -1310,6 +1372,28 @@
             console.error("메모리룸 상태 저장 오류:", err);
             showAlert("상태 저장 중 오류가 발생했어요...");
         }
+    });
+
+    // ✅ 관리자 버튼 클릭 시 관리자 메뉴 모달 열기
+    $(document).on("click", ".adminBtn", function () {
+        $("#adminOptionModal").css("display", "flex");
+    });
+
+    // ✅ 닫기 버튼
+    $(document).on("click", "#closeAdminOptionModal", function () {
+        $("#adminOptionModal").hide();
+    });
+
+    // ✅ 아카이브 버튼 클릭
+    $(document).on("click", "#adminArchiveBtn", function () {
+        $("#adminOptionModal").hide();
+        goToPage("admin");
+    });
+
+    // ✅ 메모리룸 버튼 클릭
+    $(document).on("click", "#adminMemoryBtn", function () {
+        $("#adminOptionModal").hide();
+        goToPage("aMemory");
     });
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
