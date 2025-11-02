@@ -859,20 +859,21 @@
 
     const $nicknameDisplay = $("#nicknameDisplay");
     const $currentLevelDisplay = $("#currentLevelDisplay");
+    let activeNickname = null;
 
     $(function () {
-        const savedNick = getActiveNickname();
-        if (!savedNick) {
+        activeNickname = getActiveNickname();
+        if (!activeNickname) {
             goToPage();
             return;
         }
 
         // ✅ 필요한 필드만 병렬로 가져오기
         Promise.all([
-            get(ref(db, `coffeeUsers/${savedNick}/profileImg`)),
-            get(ref(db, `coffeeUsers/${savedNick}/level`)),
-            get(ref(db, `coffeeUsers/${savedNick}/memoryRoomPublic`)),
-            get(ref(db, `coffeeUsers/${savedNick}/isAdmin`))
+            get(ref(db, `coffeeUsers/${activeNickname}/profileImg`)),
+            get(ref(db, `coffeeUsers/${activeNickname}/level`)),
+            get(ref(db, `coffeeUsers/${activeNickname}/memoryRoomPublic`)),
+            get(ref(db, `coffeeUsers/${activeNickname}/isAdmin`))
         ])
             .then(([profileSnap, levelSnap, memorySnap, adminSnap]) => {
                 const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
@@ -896,7 +897,7 @@
                 }
 
                 // ✅ 닉네임 / 레벨 표시
-                $nicknameDisplay.text(savedNick);
+                $nicknameDisplay.text(activeNickname);
                 $currentLevelDisplay.text(level);
 
                 // ✅ 토글 초기상태 반영
@@ -974,9 +975,9 @@
     });
 
     // ✅ 수집된 아이템 초기 표시
-    async function markCollectedItems(savedNick) {
+    async function markCollectedItems(activeNickname) {
         try {
-            const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+            const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
             const snap = await get(memoryRef);
             if (!snap.exists()) return;
 
@@ -996,12 +997,10 @@
 
     async function renderSubcategories(cat) {
         $("#subcategoryList").empty();
-
-        const savedNick = getActiveNickname();
-        if (!savedNick) return;
+        if (!activeNickname) return;
 
         // ✅ 현재 유저의 수집 아이템 데이터 불러오기
-        const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+        const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
         const snap = await get(memoryRef);
         const collected = snap.exists() ? snap.val() : {};
 
@@ -1057,7 +1056,7 @@
         `).join('');
         $area.append(`<div class="item-list">${itemsHTML}</div>`);
 
-        markCollectedItems(getActiveNickname());
+        markCollectedItems(activeNickname);
     }
 
     // ✅ 검색 기능
@@ -1139,8 +1138,7 @@
 
     // ✅ 아이템 클릭 시 추억 토글 저장/삭제
     $(document).on("click", ".item-card, .item-table tr", async function () {
-        const savedNick = getActiveNickname();
-        if (!savedNick) {
+        if (!activeNickname) {
             showAlert("로그인이 필요해요!");
             return;
         }
@@ -1151,7 +1149,7 @@
             return;
         }
 
-        const itemRef = ref(db, `coffeeMemory/${savedNick}/${itemId}`);
+        const itemRef = ref(db, `coffeeMemory/${activeNickname}/${itemId}`);
 
         try {
             const snap = await get(itemRef);
@@ -1167,7 +1165,7 @@
                 }
             } else {
                 // ✅ 아직 없는 경우 → 저장
-                await update(ref(db, `coffeeMemory/${savedNick}`), {[itemId]: true});
+                await update(ref(db, `coffeeMemory/${activeNickname}`), {[itemId]: true});
                 if (isTableRow) {
                     $(this).addClass("collected-item").css("background", "#f0eaff"); // 테이블용
                 } else {
@@ -1300,8 +1298,7 @@
 
     // ✅ 아이템 테이블 렌더링 (획득 여부 표시 포함)
     async function renderItemTable(items) {
-        const savedNick = getActiveNickname();
-        const memoryRef = ref(db, `coffeeMemory/${savedNick}`);
+        const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
         const snap = await get(memoryRef);
         const collected = snap.exists() ? snap.val() : {};
 
@@ -1342,8 +1339,7 @@
 
     // ✅ 클릭 시 DB 반영 (coffeeMemory에 저장)
     $(document).on("click", "#memoryRoomToggle", async function () {
-        const savedNick = getActiveNickname();
-        if (!savedNick) {
+        if (!activeNickname) {
             showAlert("로그인이 필요해요!");
             return;
         }
@@ -1354,7 +1350,7 @@
 
         try {
             // 🔹 Firebase DB에 상태 저장
-            await update(ref(db, `coffeeUsers/${savedNick}`), {
+            await update(ref(db, `coffeeUsers/${activeNickname}`), {
                 memoryRoomPublic: newStatus
             });
 
