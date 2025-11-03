@@ -1347,6 +1347,8 @@
             // 로컬스토리지에 닉네임이 없으면 로그인 팝업 유지
             $loadingScreen.hide();
             $popup.show();
+            localStorage.removeItem("coffee-nickname");
+            localStorage.removeItem("coffee-subnickname");
         }
 
         // ✅ 로그인 처리

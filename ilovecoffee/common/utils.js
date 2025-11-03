@@ -154,22 +154,32 @@ export function bindNumericCommaFormatter(selector, maxValue = 1_000_000_000_000
 
 function obscureText(text, key = "EichiKey2025") {
     if (!text) return "";
-    const t = Array.from(new TextEncoder().encode(text));
-    const k = Array.from(key).map(ch => ch.charCodeAt(0));
-    const mixed = t.map((c, i) => c ^ k[i % k.length]); // XOR
-    return btoa(String.fromCharCode(...mixed))
-        .replace(/\+/g, "@")
-        .replace(/\//g, "#")
-        .replace(/=/g, "*");
+
+    try {
+        const t = Array.from(new TextEncoder().encode(text));
+        const k = Array.from(key).map(ch => ch.charCodeAt(0));
+        const mixed = t.map((c, i) => c ^ k[i % k.length]); // XOR
+        return btoa(String.fromCharCode(...mixed))
+            .replace(/\+/g, "@")
+            .replace(/\//g, "#")
+            .replace(/=/g, "*");
+    } catch (err) {
+        return text;
+    }
 }
 
 function revealText(obscured, key = "EichiKey2025") {
     if (!obscured) return null;
-    const b64 = obscured.replace(/@/g, "+").replace(/#/g, "/").replace(/\*/g, "=");
-    const bytes = Array.from(atob(b64)).map(ch => ch.charCodeAt(0));
-    const k = Array.from(key).map(ch => ch.charCodeAt(0));
-    const decoded = bytes.map((b, i) => b ^ k[i % k.length]);
-    return new TextDecoder().decode(new Uint8Array(decoded));
+
+    try {
+        const b64 = obscured.replace(/@/g, "+").replace(/#/g, "/").replace(/\*/g, "=");
+        const bytes = Array.from(atob(b64)).map(ch => ch.charCodeAt(0));
+        const k = Array.from(key).map(ch => ch.charCodeAt(0));
+        const decoded = bytes.map((b, i) => b ^ k[i % k.length]);
+        return new TextDecoder().decode(new Uint8Array(decoded));
+    } catch (err) {
+        return null;
+    }
 }
 
 // 🔹 닉네임 저장
