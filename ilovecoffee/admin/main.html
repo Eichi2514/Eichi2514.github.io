@@ -277,7 +277,7 @@
     // ✅ 공통 유틸 모듈
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
     import {dayDiff} from "../common/dateUtils.js";
-    import {goToPage} from "../common/utils.js";
+    import {goToPage, getActiveNickname, setActiveNickname} from "../common/utils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey",
@@ -293,7 +293,7 @@
     const db = getDatabase(app);
 
     $(function () {
-        const nickname = localStorage.getItem("coffee-nickname");
+        const nickname = getActiveNickname();
         if (!nickname) return alert("로그인이 필요합니다."), goToPage();
 
         // 관리자 권한 확인
@@ -520,7 +520,7 @@
             // ✅ 이동하기 버튼
             $(".move-btn").on("click", function () {
                 if (!selectedNick) return;
-                localStorage.setItem("coffee-subnick", selectedNick);
+                setActiveNickname(selectedNick, "coffee-subnick");
                 goToPage();
             });
 

@@ -99,6 +99,7 @@
         }
 
         /* ✅ 게이지 셀만 남은 폭 전부 차지하게 */
+        #userTable th:nth-child(1),
         #userTable td:nth-child(1),
         #userTable td:nth-child(2),
         #userTable td:nth-child(3) {
@@ -310,7 +311,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-    import { goToPage } from "../common/utils.js";
+    import { goToPage, getActiveNickname, setActiveNickname } from "../common/utils.js";
     import {memoryData} from "../common/memoryData.js";
 
     const firebaseConfig = {
@@ -327,7 +328,7 @@
     const db = getDatabase(app);
 
     $(function () {
-        const nickname = localStorage.getItem("coffee-nickname");
+        const nickname = getActiveNickname();
         if (!nickname) return alert("로그인이 필요합니다."), goToPage();
 
         // ✅ 관리자 권한 확인
@@ -346,7 +347,7 @@
 
             $("#loading").hide();
 
-            if (!usersSnap.exists() || !memorySnap.exists()) {
+            if (!usersSnap.exists() && !memorySnap.exists()) {
                 $("#userTable tbody").html("<tr><td colspan='4'>데이터가 없습니다.</td></tr>");
                 $("#userCount").text("총 0명");
                 return;
@@ -378,7 +379,7 @@
             });
 
             // ✅ 메모리(추억) 0개인 유저는 제외
-            users = users.filter(u => u.collectedCount > 0);
+            // users = users.filter(u => u.collectedCount > 0);
 
             $("#userCount").text(`총 ${users.length}명`);
 
@@ -482,7 +483,7 @@
 
             $(".move-btn").on("click", function () {
                 if (!selectedNick) return;
-                localStorage.setItem("coffee-subnick", selectedNick);
+                setActiveNickname(selectedNick, "coffee-subnick");
                 goToPage("memory");
             });
 

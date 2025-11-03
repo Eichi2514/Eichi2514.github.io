@@ -1028,6 +1028,8 @@
         removeComma,
         bindNumericCommaFormatter,
         getActiveNickname,
+        getActiveSubNickname,
+        setActiveNickname,
         goToPage,
         showAlert,
         closeAlert,
@@ -1100,7 +1102,7 @@
         if (snapshot.exists()) {
             if (snapshot.val() === password) {
                 $msg.css("color", "green").text("부캐 로그인 성공!");
-                localStorage.setItem("coffee-subnickname", nickname);
+                setActiveNickname(nickname, "coffee-subnickname");
                 setTimeout(() => {
                     $("#subLoginPopup").hide();
                     showAlert(`부캐 "${nickname}" 등록 완료!`);
@@ -1114,7 +1116,7 @@
             await set(ref(db, `coffeeUsers/${nickname}`), {
                 password, signupDate: getKoreanTimestamp(),
             });
-            localStorage.setItem("coffee-subnickname", nickname);
+            setActiveNickname(nickname, "coffee-subnickname");
             $msg.css("color", "green").text("새 부캐 계정이 등록되었습니다!");
             setTimeout(() => {
                 $("#subLoginPopup").hide();
@@ -1126,7 +1128,7 @@
 
     // ✅ 부캐 전환 버튼 추가 함수
     function addSubCharacterButton() {
-        const subNick = localStorage.getItem("coffee-subnickname");
+        const subNick = getActiveSubNickname();
         if (!subNick) return; // 부캐 없으면 중단
 
         const $subCharacterBtn = $(".subCharacterBtn");
@@ -1300,6 +1302,14 @@
 
     let profileNum = 1;
     $(function () {
+        const todayValue = "v6";
+        const lastUpdate = localStorage.getItem("LU-update");
+
+        if (lastUpdate !== todayValue) {
+            showAlert("! 보안 강화 안내 !\n모든 계정이 로그아웃 되었습니다.\n비밀번호를 잊은 경우 알려주세요!");
+            localStorage.setItem("LU-update", todayValue);
+        }
+
         const $popup = $("#loginPopup");
         const $mainPage = $("#mainPage");
         const $loadingScreen = $("#loadingScreen");
@@ -1318,13 +1328,6 @@
                     }
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
-                    const todayValue = "v5";
-                    const lastUpdate = localStorage.getItem("LU-update");
-
-                    if (lastUpdate !== todayValue) {
-                        showAlert("! New !\n무언가 바뀌었어요! 무엇일까요!");
-                        localStorage.setItem("LU-update", todayValue);
-                    }
                     loadUserData(savedNick);
                     await loadTodayLevelUpUsers();
                 } else {
@@ -1371,7 +1374,7 @@
             if (snapshot.exists()) {
                 if (snapshot.val() === password) {
                     $msg.css("color", "green").text("로그인 성공!");
-                    localStorage.setItem("coffee-nickname", nickname);
+                    setActiveNickname(nickname);
                     setTimeout(() => {
                         $popup.hide();
                         $mainPage.css("display", "flex");
@@ -1386,7 +1389,7 @@
                     password, signupDate: getKoreanTimestamp(),   // 가입일 저장
                 });
                 $msg.css("color", "green").text("새 계정이 등록되었습니다.");
-                localStorage.setItem("coffee-nickname", nickname);
+                setActiveNickname(nickname);
                 setTimeout(() => {
                     $popup.hide();
                     $mainPage.css("display", "flex");
@@ -2213,7 +2216,7 @@
 
                 await set(newRef, userData);
                 await remove(dbRef);
-                localStorage.setItem("coffee-nickname", newNick);
+                setActiveNickname(newNick);
                 showAlert("닉네임이 변경되었습니다!");
                 $("#nicknameModal").remove();
                 location.reload();
@@ -2509,13 +2512,13 @@
         $("#adminOptionModal").hide();
     });
 
-    // ✅ 아카이브 버튼 클릭
+    // ✅ 아카이브(관리자) 버튼 클릭
     $(document).on("click", "#adminArchiveBtn", function () {
         $("#adminOptionModal").hide();
         goToPage("admin");
     });
 
-    // ✅ 메모리룸 버튼 클릭
+    // ✅ 메모리룸(관리자) 버튼 클릭
     $(document).on("click", "#adminMemoryBtn", function () {
         $("#adminOptionModal").hide();
         goToPage("aMemory");

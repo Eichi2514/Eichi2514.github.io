@@ -738,7 +738,9 @@
 <div class="header-bar">
     <div style="display: flex; gap: 4px; align-items: center">
         <h1>추억수집</h1>
+        <!--
         <button id="helpBtn">?</button>
+        -->
     </div>
     <button id="backBtn">뒤로가기</button>
 </div>
@@ -1068,13 +1070,33 @@
 
         memoryData.forEach(cat => {
             cat.categories2.forEach(sub => {
+                const rewardMatch = sub.reward && sub.reward.includes(keyword);
+                const addedItems = new Set(); // 중복 방지용
+
                 sub.items.forEach(item => {
-                    if (item.item.includes(keyword)) {
+                    const itemMatch = item.item.includes(keyword);
+
+                    // ✅ 아이템 이름이 일치할 경우
+                    if (itemMatch && !addedItems.has(item.item)) {
                         results.push({
-                            category1: cat.category1, category2: sub.name, item: item.item
+                            category1: cat.category1,
+                            category2: sub.name,
+                            item: item.item,
+                            type: "item" // 아이템 결과임을 표시
                         });
+                        addedItems.add(item.item);
                     }
                 });
+
+                // ✅ 보상 이름이 일치할 경우
+                if (rewardMatch) {
+                    results.push({
+                        category1: cat.category1,
+                        category2: sub.name,
+                        item: sub.reward,
+                        type: "reward" // 보상 결과임을 표시
+                    });
+                }
             });
         });
 
@@ -1095,7 +1117,9 @@
                             ${results.map(r => `
                                 <div class="result-item" data-cat="${r.category1}" data-sub="${r.category2}">
                                     <b>${r.category1}</b> > ${r.category2}
-                                    <div class="result-item-name">${r.item}</div>
+                                    <div class="result-item-name">
+                                        ${r.type === "reward" ? `🎁 ${r.item}` : r.item}
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1380,13 +1404,13 @@
         $("#adminOptionModal").hide();
     });
 
-    // ✅ 아카이브 버튼 클릭
+    // ✅ 아카이브(관리자) 버튼 클릭
     $(document).on("click", "#adminArchiveBtn", function () {
         $("#adminOptionModal").hide();
         goToPage("admin");
     });
 
-    // ✅ 메모리룸 버튼 클릭
+    // ✅ 메모리룸(관리자) 버튼 클릭
     $(document).on("click", "#adminMemoryBtn", function () {
         $("#adminOptionModal").hide();
         goToPage("aMemory");

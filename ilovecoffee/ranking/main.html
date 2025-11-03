@@ -277,7 +277,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-    import { goToPage } from "../common/utils.js";
+    import { goToPage, getActiveNickname, setActiveNickname } from "../common/utils.js";
 
     // ✅ 공통 유틸
     import { calcAvgExp, calcDDay } from "../common/expUtils.js";
@@ -296,7 +296,7 @@
     const db = getDatabase(app);
 
     $(async function () {
-        const nickname = localStorage.getItem("coffee-nickname");
+        const nickname = getActiveNickname();
         if (!nickname) return alert("로그인이 필요합니다."), goToPage();
 
         // ✅ 내 계정 먼저 확인

@@ -152,14 +152,47 @@ export function bindNumericCommaFormatter(selector, maxValue = 1_000_000_000_000
     });
 }
 
+function obscureText(text, key = "EichiKey2025") {
+    if (!text) return "";
+    const t = Array.from(new TextEncoder().encode(text));
+    const k = Array.from(key).map(ch => ch.charCodeAt(0));
+    const mixed = t.map((c, i) => c ^ k[i % k.length]); // XOR
+    return btoa(String.fromCharCode(...mixed))
+        .replace(/\+/g, "@")
+        .replace(/\//g, "#")
+        .replace(/=/g, "*");
+}
+
+function revealText(obscured, key = "EichiKey2025") {
+    if (!obscured) return null;
+    const b64 = obscured.replace(/@/g, "+").replace(/#/g, "/").replace(/\*/g, "=");
+    const bytes = Array.from(atob(b64)).map(ch => ch.charCodeAt(0));
+    const k = Array.from(key).map(ch => ch.charCodeAt(0));
+    const decoded = bytes.map((b, i) => b ^ k[i % k.length]);
+    return new TextDecoder().decode(new Uint8Array(decoded));
+}
+
+// 🔹 닉네임 저장
+export function setActiveNickname(nickname, key = "coffee-nickname") {
+    if (!nickname) return;
+    const encrypted = obscureText(nickname);
+    localStorage.setItem(key, encrypted);
+}
+
 // 🔹 로그인 닉네임 (subnick → nickname)
 export function getActiveNickname() {
     const subNick = localStorage.getItem("coffee-subnick");
     if (subNick) {
         localStorage.removeItem("coffee-subnick");
-        return subNick;
+        return revealText(subNick);
     }
-    return localStorage.getItem("coffee-nickname") || null;
+    const raw = localStorage.getItem("coffee-nickname");
+    return revealText(raw);
+}
+
+export function getActiveSubNickname() {
+    const raw = localStorage.getItem("coffee-subnickname");
+    return revealText(raw);
 }
 
 // 🔹 페이지 이동
@@ -174,6 +207,7 @@ export function goToPage(target = "levelup") {
         layout: `${basePath}/layout/layout.html`,
         barista: `${basePath}/barista/barista.html`,
         memory: `${basePath}/memory/memory.html`,
+        memoryRoom: `${basePath}/memory/memoryRoom.html`,
         aMemory: `${basePath}/admin/memory.html`,
     };
 

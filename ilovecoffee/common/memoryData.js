@@ -345,7 +345,7 @@ export const memoryData = [{
         }, {
             "id": 419, "item": "티하우스 등나무 향에 취한 판다", "theme": "티하우스", "color": "블랙", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }, {
-            "id": 420, "item": "티하우스 대나무 벽걸이 장식", "theme": "티하우스", "color": "흰색", "machine": "", "attribute": "골드", "price": "1,120,000 G", "note": ""
+            "id": 420, "item": "티하우스 대나무 벽걸이 장식", "theme": "티하우스", "color": "블랙", "machine": "", "attribute": "골드", "price": "1,120,000 G", "note": ""
         }, {
             "id": 421, "item": "고요한 아침 서랍장", "theme": "고요한 아침", "color": "흰색", "machine": "", "attribute": "캐시", "price": "24 C", "note": ""
         }, {
@@ -635,7 +635,7 @@ export const memoryData = [{
         }, {
             "id": 240, "item": "와인 (100개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "추억의 베리 퐁당 요거트 판매"
         }, {
-            "id": 241, "item": "북유럽 풍 대형 화병", "theme": "북유럽", "color": "", "machine": "", "attribute": "골드", "price": "325,500 G", "note": ""
+            "id": 241, "item": "북유럽 풍 대형 화병", "theme": "북유럽", "color": "화이트", "machine": "", "attribute": "골드", "price": "325,500 G", "note": ""
         }, {
             "id": 242, "item": "스테인드 글라스 화병에 장미", "theme": "스테인드 글라스", "color": "빨강", "machine": "", "attribute": "캐시", "price": "24 C", "note": ""
         }, {
