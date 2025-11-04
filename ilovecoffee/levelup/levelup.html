@@ -2216,8 +2216,20 @@
                 const logText = `${nickname}가 ${newNick}로 변경되었습니다`;
                 await set(logRef, logText);
 
+                // ✅ coffeeUsers 이동
                 await set(newRef, userData);
                 await remove(dbRef);
+
+                // ✅ coffeeMemory 데이터도 같이 이동
+                const memoryRef = ref(db, `coffeeMemory/${nickname}`);
+                const memorySnap = await get(memoryRef);
+                if (memorySnap.exists()) {
+                    const memoryData = memorySnap.val();
+                    const newMemoryRef = ref(db, `coffeeMemory/${newNick}`);
+                    await set(newMemoryRef, memoryData);
+                    await remove(memoryRef);
+                }
+
                 setActiveNickname(newNick);
                 showAlert("닉네임이 변경되었습니다!");
                 $("#nicknameModal").remove();
