@@ -367,21 +367,33 @@ let currentMonthOffset = 0; // 오늘 기준 offset (0=이번 달, -1=이전 달
 
 // ========= 초기화 =========
 function setMonth(offsetChange) {
-    const d = new Date();
-    currentMonthOffset += offsetChange; // 버튼 클릭 시마다 +1, -1 누적
+    const today = new Date();
+    const BASE_DAY = 25;
 
-    const target = new Date(d.getFullYear(), d.getMonth() + currentMonthOffset, 1);
+    // ✅ 기준일(오늘이 25일 전인지 후인지 판단)
+    let baseStart, baseEnd;
 
-    // 해당 달 1일
-    const first = new Date(target.getFullYear(), target.getMonth(), 1);
-    const firstStr = `${first.getFullYear()}-${pad2(first.getMonth() + 1)}-${pad2(first.getDate())}`;
+    if (today.getDate() < BASE_DAY) {
+        // 예: 11월 4일 → 10/25 ~ 11/24
+        baseStart = new Date(today.getFullYear(), today.getMonth() - 1, BASE_DAY);
+        baseEnd = new Date(today.getFullYear(), today.getMonth(), BASE_DAY - 1);
+    } else {
+        // 예: 11월 25일 → 11/25 ~ 12/24
+        baseStart = new Date(today.getFullYear(), today.getMonth(), BASE_DAY);
+        baseEnd = new Date(today.getFullYear(), today.getMonth() + 1, BASE_DAY - 1);
+    }
 
-    // 해당 달 마지막 날
-    const last = new Date(target.getFullYear(), target.getMonth() + 1, 0);
-    const lastStr = `${last.getFullYear()}-${pad2(last.getMonth() + 1)}-${pad2(last.getDate())}`;
+    // ✅ 누적 offset 적용 (1회만)
+    currentMonthOffset += offsetChange;
+    baseStart.setMonth(baseStart.getMonth() + currentMonthOffset);
+    baseEnd.setMonth(baseEnd.getMonth() + currentMonthOffset);
 
-    $('#date-from').val(firstStr);
-    $('#date-to').val(lastStr);
+    // ✅ yyyy-MM-dd 포맷 변환
+    const fromStr = `${baseStart.getFullYear()}-${pad2(baseStart.getMonth() + 1)}-${pad2(baseStart.getDate())}`;
+    const toStr = `${baseEnd.getFullYear()}-${pad2(baseEnd.getMonth() + 1)}-${pad2(baseEnd.getDate())}`;
+
+    $('#date-from').val(fromStr);
+    $('#date-to').val(toStr);
 }
 
 $(function () {
