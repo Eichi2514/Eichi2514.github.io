@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>메모리룸</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            background: #f4f3f9;
+            margin: 0;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #controlBar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #controlBar input, #controlBar select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #userTable {
+            width: calc(100% - 40px);
+            margin: 10px 20px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #userTable th, #userTable td {
+            border: 1px solid #e0dff2;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #userTable td:nth-child(1) {
+            padding: 4px;
+        }
+
+        #userTable th {
+            background: #f6f4fc;
+            color: #5a4398;
+        }
+
+        /* ✅ 게이지 셀만 남은 폭 전부 차지하게 */
+        #userTable th:nth-child(1),
+        #userTable td:nth-child(1),
+        #userTable td:nth-child(2),
+        #userTable td:nth-child(3) {
+            white-space: nowrap; /* 닉네임, Lv, 획득수는 내용 크기만큼 */
+            width: 1%;
+        }
+
+        #userTable td:nth-child(4) {
+            width: 100%; /* 게이지가 남은 공간 전부 차지 */
+        }
+
+        /* ✅ 게이지 셀 전체 스타일 */
+        .gauge-cell {
+            width: 100%;
+        }
+
+        /* ✅ 게이지 박스 */
+        .gauge-bar {
+            position: relative;
+            height: 14px;
+            background: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+            text-align: center;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 300;
+        }
+
+        /* ✅ 게이지 채워지는 부분 */
+        .gauge-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #a997e9;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        /* ✅ 게이지 안쪽 숫자 텍스트 */
+        .gauge-text {
+            position: relative;
+            z-index: 2;
+            line-height: 14px;
+            mix-blend-mode: difference; /* 진한색/연한색 배경 모두 대비 좋게 */
+        }
+
+        /* ✅ 내 줄 강조 */
+        .my-row {
+            background: #f3edff; /* 은은한 연보라 배경 */
+        }
+
+        .my-row .gauge-bar {
+            background: #d8c8ff !important; /* 라이트 퍼플 */
+        }
+
+        .my-row .gauge-fill {
+            background: #5a4398 !important; /* 시그니처 진보라 */
+        }
+
+        .my-row .gauge-text {
+            color: #fff !important;
+            mix-blend-mode: normal !important;
+        }
+
+        /* ✅ 100% 게이지 색 강조 */
+        .gauge-fill[data-full="true"] {
+            background: #5a4398;
+        }
+
+        #loading {
+            text-align: center;
+            color: #5a4398;
+            font-weight: 600;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #searchInput {
+            width: 140px;
+        }
+
+        #myRoomInfo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 30px 10px;
+            font-weight: 600;
+            color: #5a4398;
+            font-size: 15px;
+        }
+
+        .nick-cell {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .nick-cell img {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .modal-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modalImg {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #modalNickname {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFC90E;
+            font-weight: 600;
+            font-size: 30px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        #userTable th, #userTable td {
+            font-size: 12px;
+        }
+
+        /* 🔍 모달 정렬 및 스타일 */
+        #imgModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #imgModal.active {
+            display: flex;
+        }
+    </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+</head>
+
+<body>
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>메모리룸</h1>
+        <!--
+        <button id="helpBtn">?</button>
+        -->
+    </div>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<div id="controlBar">
+    <input type="text" id="searchInput" placeholder="닉네임 검색">
+    <select id="sortSelect">
+        <option value="level">레벨</option>
+        <option value="nickname">닉네임</option>
+        <option value="collected">획득수</option>
+    </select>
+</div>
+
+<div id="myRoomInfo">
+    <span id="totalCountText"></span>
+    <span id="myRoomText"></span>
+</div>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>닉네임</th>
+        <th>Lv</th>
+        <th>획득수</th>
+        <th>게이지</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="loading">불러오는 중...</div>
+
+<!-- 🔍 프로필 이미지 확대 모달 -->
+<div id="imgModal">
+    <div class="modal-content">
+        <img id="modalImg" src="" alt="profile">
+        <div id="modalNickname"></div>
+    </div>
+</div>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, get, remove, query, orderByChild, equalTo} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {goToPage, getActiveNickname, setActiveNickname} from "../common/utils.js";
+    import {memoryData} from "../common/memoryData.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    $(async function () {
+        const nickname = getActiveNickname();
+        if (!nickname) return alert("로그인이 필요합니다."), goToPage();
+
+        // ✅ 내 계정 정보 1회만 불러오기
+        const mySnap = await get(ref(db, `coffeeUsers/${nickname}`));
+        if (!mySnap.exists()) {
+            alert("계정을 찾을 수 없습니다.");
+            goToPage();
+            return;
+        }
+
+        const myData = mySnap.val();
+
+        // ✅ 메모리룸 공개여부 확인
+        if (!myData.memoryRoomPublic) {
+            alert("메모리룸 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
+            goToPage("memory");
+            return;
+        }
+
+        // ✅ 이제 본격적으로 전체 데이터 불러오기
+        $("#loading").show();
+
+        // const usersSnap = await get(ref(db, "coffeeUsers"));
+        const usersSnap = await get(query(ref(db, "coffeeUsers"), orderByChild("memoryRoomPublic"), equalTo(true)));
+        const memorySnap = await get(ref(db, "coffeeMemory"));
+
+        $("#loading").hide();
+
+        if (!usersSnap.exists() && !memorySnap.exists()) {
+            $("#userTable tbody").html("<tr><td colspan='4'>데이터가 없습니다.</td></tr>");
+            $("#userCount").text("총 0명");
+            return;
+        }
+
+        // ✅ 전체 메모리(아이템) 갯수 계산
+        const totalMemories = memoryData.reduce((sum1, cat1) => {
+            return sum1 + cat1.categories2.reduce((sum2, cat2) => {
+                return sum2 + (cat2.items?.length || 0);
+            }, 0);
+        }, 0);
+
+        // ✅ 유저 목록 구성
+        let users = [];
+        const memoryDataAll = memorySnap.val() || {};
+        usersSnap.forEach(child => {
+            const val = child.val();
+            const userMemories = memoryDataAll[child.key] || {};
+            const collectedCount = Object.keys(userMemories).length;
+
+            users.push({
+                key: child.key, level: val.level || 0, collectedCount, gauge: totalMemories > 0 ? Math.round((collectedCount / totalMemories) * 100) : 0, profileImg: val.profileImg, memoryRoomPublic: val.memoryRoomPublic
+            });
+        });
+
+        // users = users.filter(u => u.memoryRoomPublic);
+
+        $("#userCount").text(`총 ${users.length}명`);
+
+        // ✅ 렌더링 함수
+        function renderTable(list) {
+            const $tbody = $("#userTable tbody");
+            $tbody.empty();
+
+            if (list.length === 0) {
+                $tbody.html("<tr><td colspan='4'>검색 결과가 없습니다.</td></tr>");
+                return;
+            }
+
+            list.forEach(u => {
+                const profileNum = u.profileImg || 1;
+                const profileSrc = `../image/profile${profileNum}.jpg`;
+
+                $tbody.append(`
+                        <tr>
+                            <td>
+                                <div class="nick-cell">
+                                    <img src="${profileSrc}" alt="profile">
+                                    <span>${u.key}</span>
+                                </div>
+                            </td>
+                            <td>${u.level}</td>
+                            <td>${u.collectedCount} / ${totalMemories}</td>
+                            <td class="gauge-cell">
+                                <div class="gauge-bar">
+                                    <div class="gauge-fill" style="width: ${u.gauge}%;"></div>
+                                    <span class="gauge-text">${u.gauge}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+            });
+        }
+
+        users.sort((a, b) => (b.collectedCount || 0) - (a.collectedCount || 0));
+        renderTable(users);
+
+        $("#sortSelect").val("collected");
+
+        // ✅ 내 순위 계산 및 강조
+        const totalCount = users.length;
+        const myIndex = users.findIndex(u => u.key === nickname);
+        const myRoom = myIndex >= 0 ? myIndex + 1 : "-";
+        $("#totalCountText").text(`총 ${totalCount}명`);
+        $("#myRoomText").text(`내 위치 : ${myRoom}번째`);
+
+        if (myIndex >= 0) {
+            const $myRow = $(`#userTable tbody tr`).eq(myIndex);
+            $myRow.addClass("my-row");
+        }
+
+        // ✅ 검색
+        let searchTimer;
+        $("#searchInput").on("input", function () {
+            clearTimeout(searchTimer);
+            const keyword = $(this).val().trim().toLowerCase();
+            searchTimer = setTimeout(() => {
+                const filtered = users.filter(u => u.key.toLowerCase().includes(keyword));
+                renderTable(filtered);
+            }, 300);
+        });
+
+        // ✅ 정렬
+        $("#sortSelect").on("change", function () {
+            const mode = $(this).val();
+            let sorted = [...users];
+
+            if (mode === "nickname") {
+                sorted.sort((a, b) => a.key.localeCompare(b.key));
+            } else if (mode === "level") {
+                sorted.sort((a, b) => (b.level || 0) - (a.level || 0));
+            } else if (mode === "collected") {
+                sorted.sort((a, b) => (b.collectedCount || 0) - (a.collectedCount || 0));
+            }
+
+            renderTable(sorted);
+        });
+
+        $("#backBtn").on("click", () => {
+            goToPage("memory");
+        });
+    });
+
+    // ✅ 프로필 이미지 클릭 시 확대
+    $(document).on("click", "td img", function () {
+        const src = $(this).attr("src");
+        const nickname = $(this).siblings("span").text();
+        $("#modalImg").attr("src", src);
+        $("#modalNickname").text(nickname);
+        $("#imgModal").addClass("active").hide().fadeIn(200);
+    });
+
+    // ✅ 모달 클릭 시 닫기
+    $("#imgModal").on("click", function () {
+        $(this).fadeOut(200, () => $(this).removeClass("active"));
+    });
+</script>
+<script src="../helpModal/helpModal.js" defer></script>
+</body>
+</html>
