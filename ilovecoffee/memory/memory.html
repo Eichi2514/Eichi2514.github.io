@@ -1211,12 +1211,14 @@
             $sub.hide();
             $main.show();
             $(this).text("필터모드");
+            localStorage.setItem("coffeeMemory-mode", "normal");
         } else {
             // 보이는 중이면 숨김
             $main.hide();
             $sub.show();
             renderAdvancedSettings();
             $(this).text("일반모드");
+            localStorage.setItem("coffeeMemory-mode", "filter");
         }
     });
 
@@ -1413,6 +1415,20 @@
         $("#adminOptionModal").hide();
         goToPage("aMemory");
     });
+
+    // ✅ 마지막 모드 불러오기
+    const savedMode = localStorage.getItem("coffeeMemory-mode") || "normal";
+    if (savedMode === "filter") {
+        $(".mainPage").hide();
+        $(".subPage").show();
+        $(".advancedSettingBtn").text("일반모드");
+        renderAdvancedSettings();
+    } else {
+        $(".mainPage").show();
+        $(".subPage").hide();
+        $(".advancedSettingBtn").text("필터모드");
+    }
+
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 </body>
