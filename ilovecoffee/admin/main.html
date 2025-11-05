@@ -222,6 +222,7 @@
         <option value="nickname">닉네임</option>
         <option value="recent">기록일</option>
         <option value="lastlogin">접속</option>
+        <option value="signup">가입순</option>
     </select>
 </div>
 
@@ -495,6 +496,24 @@
                         const aTime = parseDate(a.lastLogin);
                         const bTime = parseDate(b.lastLogin);
                         return bTime - aTime; // ✅ 최신 로그인순 (최근이 위로)
+                    });
+                } else if (mode === "signup") {
+                    // ✅ 가입일 문자열 파싱 함수
+                    const parseSignupDate = (str) => {
+                        if (!str || typeof str !== "string") return 0;
+
+                        // 🔹 포맷 예시: "25.10.28-23:15:45" → "2025-10-28T23:15:45"
+                        const match = str.match(/^(\d{2})\.(\d{2})\.(\d{2})-(\d{2}):(\d{2}):(\d{2})$/);
+                        if (!match) return 0;
+                        const [_, yy, mm, dd, hh, mi, ss] = match;
+                        return new Date(`20${yy}-${mm}-${dd}T${hh}:${mi}:${ss}`).getTime();
+                    };
+
+                    // ✅ 최신 가입순 정렬 (최근 가입이 위로)
+                    sorted.sort((a, b) => {
+                        const aTime = parseSignupDate(a.signupDate);
+                        const bTime = parseSignupDate(b.signupDate);
+                        return bTime - aTime;
                     });
                 }
 
