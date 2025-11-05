@@ -905,7 +905,7 @@ export const memoryData = [{
         }]
     }, {
         "name": "눈이 즐거우면 맛도 2배", "reward": "무궁화 원두통", "items": [{
-            "id": 361, "item": "셀라", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
+            "id": 361, "item": "셈라", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
         }, {
             "id": 362, "item": "과일 빙수", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
         }, {
