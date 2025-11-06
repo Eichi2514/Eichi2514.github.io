@@ -211,14 +211,17 @@ export function goToPage(target = "levelup") {
     const basePath = window.location.pathname.split("/").slice(0, -2).join("/");
 
     const pageMap = {
-        admin: `${basePath}/admin/main.html`,
-        ranking: `${basePath}/ranking/main.html`,
         levelup: `${basePath}/levelup/levelup.html`,
-        layout: `${basePath}/layout/layout.html`,
-        barista: `${basePath}/barista/barista.html`,
+        ranking: `${basePath}/ranking/main.html`,
+
         memory: `${basePath}/memory/memory.html`,
         memoryRoom: `${basePath}/memory/memoryRoom.html`,
+
+        admin: `${basePath}/admin/main.html`,
         aMemory: `${basePath}/admin/memory.html`,
+
+        layout: `${basePath}/layout/layout.html`,
+        barista: `${basePath}/barista/barista.html`,
     };
 
     // target이 잘못된 경우 기본값 levelup으로 이동

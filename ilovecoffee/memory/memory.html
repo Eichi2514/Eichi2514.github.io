@@ -33,7 +33,7 @@
             background: #fff;
             margin: 0;
             color: #333;
-            padding-bottom: 120px;
+            padding-bottom: 300px;
         }
 
         .header-bar {
@@ -552,6 +552,25 @@
             transition: all 0.2s ease;
         }
 
+        /* ✅ 접기/펼치기 토글 버튼 */
+        .floating-toggle {
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* ✅ 접힌 상태에서 다른 버튼 숨김 */
+        .floating-btn-area.collapsed .floating-btn:not(.floating-toggle) {
+            display: none !important;
+        }
+
         /* ===== 필터모드 필터 및 정렬 영역 ===== */
         .filter-container {
             display: flex;
@@ -896,7 +915,9 @@
 
 <!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
 <div class="floating-btn-area">
+    <button class="floating-toggle">▼ 메뉴 닫기</button>
     <button class="floating-btn advancedSettingBtn">필터모드</button>
+    <button class="floating-btn rankingBtn" style="display:none;">아카이브</button>
     <button class="floating-btn memoryRoomBtn" style="display:none;">메모리룸</button>
     <button class="floating-btn adminBtn" style="display:none;">관리자</button>
 </div>
@@ -938,12 +959,14 @@
             get(ref(db, `coffeeUsers/${activeNickname}/profileImg`)),
             get(ref(db, `coffeeUsers/${activeNickname}/level`)),
             get(ref(db, `coffeeUsers/${activeNickname}/memoryRoomPublic`)),
+            get(ref(db, `coffeeUsers/${activeNickname}/rankingPublic`)),
             get(ref(db, `coffeeUsers/${activeNickname}/isAdmin`))
         ])
-            .then(([profileSnap, levelSnap, memorySnap, adminSnap]) => {
+            .then(([profileSnap, levelSnap, memorySnap, rankingSnap, adminSnap]) => {
                 const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
                 const level = levelSnap.exists() ? levelSnap.val() : 1;
                 const memoryRoomPublic = memorySnap.exists() ? memorySnap.val() : false;
+                const rankingPublic = rankingSnap.exists() ? rankingSnap.val() : false;
                 const isAdmin = adminSnap.exists() ? adminSnap.val() : false; // ✅ 관리자 여부
 
                 // ✅ 프로필 이미지 표시 (닉네임 앞)
@@ -973,6 +996,10 @@
                 } else {
                     $toggle.removeClass("on").css("background", "#ccc");
                     $(".memoryRoomBtn").hide();
+                }
+
+                if (rankingPublic) {
+                    $(".rankingBtn").show();
                 }
 
                 // ✅ 관리자라면 어드민 버튼 표시
@@ -1031,10 +1058,45 @@
 
         // 뒤로가기
         $("#backBtn").on("click", () => goToPage());
+
+        const $area = $(".floating-btn-area");
+        const $toggle = $(".floating-toggle");
+
+        // 🔹 저장된 상태 불러오기
+        const isOpen = localStorage.getItem("floatingMenuOpen") === "true";
+
+        if (!isOpen) {
+            $area.addClass("collapsed");
+            $toggle.text("▲ 메뉴 열기");
+        } else {
+            $area.removeClass("collapsed");
+            $toggle.text("▼ 메뉴 닫기");
+        }
+
+        // 🔹 버튼 클릭 시 토글
+        $toggle.on("click", function() {
+            const nowCollapsed = $area.hasClass("collapsed");
+
+            if (nowCollapsed) {
+                // 펼치기
+                $area.removeClass("collapsed");
+                $toggle.text("▼ 메뉴 닫기");
+                localStorage.setItem("floatingMenuOpen", "true");
+            } else {
+                // 접기
+                $area.addClass("collapsed");
+                $toggle.text("▲ 메뉴 열기");
+                localStorage.setItem("floatingMenuOpen", "false");
+            }
+        });
     });
 
     $(document).on("click", ".memoryRoomBtn", function () {
         goToPage("memoryRoom");
+    });
+
+    $(document).on("click", ".rankingBtn", function () {
+        goToPage("ranking");
     });
 
     // ✅ 수집된 아이템 초기 표시

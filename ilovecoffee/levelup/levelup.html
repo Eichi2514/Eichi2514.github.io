@@ -725,6 +725,7 @@
     <div id="adminBtn-bar">
         <button class="subCharacterBtn barBtn" style="display: none;">부캐</button>
         <button class="rankingBtn barBtn" style="display: none;">아카이브</button>
+        <button class="memoryRoomBtn barBtn" style="display: none;">메모리룸</button>
     </div>
 
     <h3>일자별 경험치</h3>
@@ -1070,6 +1071,10 @@
 
     $(".memoryBtn").on("click", function () {
         goToPage("memory");
+    });
+
+    $(".memoryRoomBtn").on("click", function () {
+        goToPage("memoryRoom");
     });
 
     // ✅ 부캐 등록 모달 열기
@@ -1612,6 +1617,10 @@
                 } else {
                     // 🔹 비공개 상태면 버튼 제거
                     removeRankingButton();
+                }
+
+                if (userData.memoryRoomPublic) {
+                    $(".memoryRoomBtn").show();
                 }
 
                 if (userData.expRecords) {
