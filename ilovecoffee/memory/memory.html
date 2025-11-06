@@ -1364,8 +1364,9 @@
     function applyAndRenderFilter(allItems, {theme, option, sort}) {
         let filtered = [...allItems];
 
-        if (theme) filtered = filtered.filter(i => i.theme && i.theme.includes(theme));
-        if (option) filtered = filtered.filter(i => i.attribute && i.attribute.includes(option));
+        // ✅ 완전 일치로 변경
+        if (theme) filtered = filtered.filter(i => i.theme && i.theme === theme);
+        if (option) filtered = filtered.filter(i => i.attribute && i.attribute === option);
 
         // ✅ 가격 문자열을 숫자로 변환하는 헬퍼 함수
         const parsePrice = (val) => {

@@ -31,7 +31,7 @@ export const memoryData = [{
         }, {
             "id": 14, "item": "망치 (30개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "카라멜더블샷 판매"
         }, {
-            "id": 15, "item": "기본 로스팅머신", "theme": "", "color": "", "machine": "", "attribute": "골드", "price": "3,000 G", "note": ""
+            "id": 15, "item": "기본 로스팅 머신", "theme": "", "color": "", "machine": "", "attribute": "골드", "price": "3,000 G", "note": ""
         }, {
             "id": 16, "item": "럭셔리 구스또", "theme": "", "color": "코발트블루", "machine": "", "attribute": "골드", "price": "99,100 G", "note": ""
         }, {
@@ -125,9 +125,9 @@ export const memoryData = [{
         }]
     }, {
         "name": "케이트를 위한 선물", "reward": "목마 스노우볼", "items": [{
-            "id": 57, "item": "스윗 피치 에이드", "theme": "스프링가든", "color": "", "machine": "스프링가든 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 57, "item": "스윗 피치 에이드", "theme": "스프링가든", "color": "", "machine": "스프링가든 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 58, "item": "낡은 오르골 (50개)", "theme": "스프링가든", "color": "", "machine": "스프링가든 커피머신", "attribute": "음료 토큰", "price": "", "note": "스윗 피치 에이드 판매"
+            "id": 58, "item": "낡은 오르골 (50개)", "theme": "스프링가든", "color": "", "machine": "스프링가든 커피 머신", "attribute": "음료 토큰", "price": "", "note": "스윗 피치 에이드 판매"
         }, {
             "id": 59, "item": "퀼트 장식 세트", "theme": "퀼트", "color": "", "machine": "", "attribute": "골드", "price": "42,200 G", "note": ""
         }, {
@@ -219,7 +219,7 @@ export const memoryData = [{
         }, {
             "id": 98, "item": "플랜테리어 조형 화분", "theme": "플랜테리어", "color": "화이트", "machine": "", "attribute": "캐시", "price": "16 C", "note": ""
         }, {
-            "id": 99, "item": "플랜테리어 철제 벽 선반", "theme": "플랜테리어", "color": "", "machine": "", "attribute": "골드", "price": "350,000 G", "note": ""
+            "id": 99, "item": "플랜테리어 철제 벽 선반", "theme": "플랜테리어", "color": "화이트", "machine": "", "attribute": "골드", "price": "350,000 G", "note": ""
         }, {
             "id": 100, "item": "플랜테리어 협탁 화분", "theme": "플랜테리어", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }, {
@@ -251,11 +251,11 @@ export const memoryData = [{
         }]
     }, {
         "name": "고양이 간식 지참", "reward": "캣타워 원두통", "items": [{
-            "id": 113, "item": "추억의 우유", "theme": "아이러브빵집", "color": "", "machine": "아이러브빵집 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 113, "item": "추억의 우유", "theme": "아이러브빵집", "color": "", "machine": "아이러브빵집 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
             "id": 114, "item": "추억의 군고구마", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": "체리상점 레시피"
         }, {
-            "id": 115, "item": "간식 접시 (50개)", "theme": "아이러브빵집", "color": "", "machine": "아이러브빵집 커피머신", "attribute": "음료 토큰", "price": "", "note": "추억의 우유 판매"
+            "id": 115, "item": "간식 접시 (50개)", "theme": "아이러브빵집", "color": "", "machine": "아이러브빵집 커피 머신", "attribute": "음료 토큰", "price": "", "note": "추억의 우유 판매"
         }, {
             "id": 116, "item": "고양이 간식 (30개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "추억의 군고구마 판매"
         }, {
@@ -413,7 +413,7 @@ export const memoryData = [{
         }, {
             "id": 141, "item": "원두 디스플레이", "theme": "", "color": "베이지", "machine": "", "attribute": "골드", "price": "223,000 G", "note": ""
         }, {
-            "id": 142, "item": "심플 럭셔리 로스팅머신", "theme": "", "color": "스노우화이트", "machine": "", "attribute": "캐시", "price": "26 C", "note": ""
+            "id": 142, "item": "심플 럭셔리 로스팅 머신", "theme": "", "color": "스노우화이트", "machine": "", "attribute": "캐시", "price": "26 C", "note": ""
         }, {
             "id": 143, "item": "북유럽 풍 원목 작업대", "theme": "북유럽", "color": "브라운포인트", "machine": "", "attribute": "캐시", "price": "26 C", "note": "골드아이템 믹서기"
         }, {
@@ -441,11 +441,11 @@ export const memoryData = [{
         "name": "쉿 케이트에겐 비밀이야", "reward": "빈티지 쥬크박스", "items": [{
             "id": 153, "item": "블랙티라떼", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 154, "item": "쌍화차", "theme": "사랑당", "color": "", "machine": "사랑당 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 154, "item": "쌍화차", "theme": "사랑당", "color": "", "machine": "사랑당 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
             "id": 155, "item": "LP판 (30개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "블랙티라떼 판매"
         }, {
-            "id": 156, "item": "고서 (30개)", "theme": "사랑당", "color": "", "machine": "사랑당 커피머신", "attribute": "음료 토큰", "price": "", "note": "쌍화차 판매"
+            "id": 156, "item": "고서 (30개)", "theme": "사랑당", "color": "", "machine": "사랑당 커피 머신", "attribute": "음료 토큰", "price": "", "note": "쌍화차 판매"
         }, {
             "id": 157, "item": "사랑당 자개 책장", "theme": "사랑당", "color": "갈색", "machine": "", "attribute": "캐시", "price": "16 C", "note": ""
         }, {
@@ -465,9 +465,9 @@ export const memoryData = [{
         }, {
             "id": 164, "item": "바닐라라떼", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 165, "item": "선인장 라떼", "theme": "", "color": "", "machine": "플랜테리어 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 165, "item": "선인장 라떼", "theme": "", "color": "", "machine": "플랜테리어 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 166, "item": "우유 (40개)", "theme": "", "color": "", "machine": "플랜테리어 커피머신", "attribute": "음료 토큰", "price": "", "note": "선인장 라떼 판매"
+            "id": 166, "item": "우유 (40개)", "theme": "", "color": "", "machine": "플랜테리어 커피 머신", "attribute": "음료 토큰", "price": "", "note": "선인장 라떼 판매"
         }, {
             "id": 167, "item": "엄친아의 베이직 책상", "theme": "", "color": "", "machine": "", "attribute": "커피트럭", "price": "", "note": "단골손님의 컬렉션"
         }, {
@@ -475,13 +475,13 @@ export const memoryData = [{
         }]
     }, {
         "name": "향에 민감해", "reward": "향긋한 꽃 장식 간판", "items": [{
-            "id": 169, "item": "봄꽃차", "theme": "", "color": "", "machine": "봄꽃 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 169, "item": "봄꽃차", "theme": "", "color": "", "machine": "봄꽃 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 170, "item": "라벤더 티", "theme": "라벤더레이디", "color": "", "machine": "라벤더레이디 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 170, "item": "라벤더 티", "theme": "라벤더레이디", "color": "", "machine": "라벤더레이디 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 171, "item": "꽃송이 (50개)", "theme": "", "color": "", "machine": "봄꽃 커피머신", "attribute": "음료 토큰", "price": "", "note": "봄꽃차 판매"
+            "id": 171, "item": "꽃송이 (50개)", "theme": "", "color": "", "machine": "봄꽃 커피 머신", "attribute": "음료 토큰", "price": "", "note": "봄꽃차 판매"
         }, {
-            "id": 172, "item": "디퓨저 (50개)", "theme": "라벤더레이디", "color": "", "machine": "라벤더레이디 커피머신", "attribute": "음료 토큰", "price": "", "note": "라벤더 티 판매"
+            "id": 172, "item": "디퓨저 (50개)", "theme": "라벤더레이디", "color": "", "machine": "라벤더레이디 커피 머신", "attribute": "음료 토큰", "price": "", "note": "라벤더 티 판매"
         }, {
             "id": 173, "item": "포켓포레스트 꽃잎 벽 조명", "theme": "포켓포레스트", "color": "핑크", "machine": "", "attribute": "골드", "price": "360,000 G", "note": ""
         }, {
@@ -511,13 +511,13 @@ export const memoryData = [{
         }]
     }, {
         "name": "왜 하필 우리 집 정원이었나", "reward": "바캉스 미니 풀장", "items": [{
-            "id": 185, "item": "코튼 캔디 에이드", "theme": "", "color": "", "machine": "놀이공원 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 185, "item": "코튼 캔디 에이드", "theme": "", "color": "", "machine": "놀이공원 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 186, "item": "메론 셰이크", "theme": "레트로", "color": "", "machine": "레트로 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 186, "item": "메론 셰이크", "theme": "레트로", "color": "", "machine": "레트로 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 187, "item": "물총 (70개)", "theme": "", "color": "", "machine": "놀이공원 커피머신", "attribute": "음료 토큰", "price": "", "note": "코튼 캔디 에이드 판매"
+            "id": 187, "item": "물총 (70개)", "theme": "", "color": "", "machine": "놀이공원 커피 머신", "attribute": "음료 토큰", "price": "", "note": "코튼 캔디 에이드 판매"
         }, {
-            "id": 188, "item": "물오리 (70개)", "theme": "레트로", "color": "", "machine": "레트로 커피머신", "attribute": "음료 토큰", "price": "", "note": "메론 셰이크 판매"
+            "id": 188, "item": "물오리 (70개)", "theme": "레트로", "color": "", "machine": "레트로 커피 머신", "attribute": "음료 토큰", "price": "", "note": "메론 셰이크 판매"
         }, {
             "id": 189, "item": "펭귄의 여름 휴가", "theme": "오션", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "42 C", "note": "이벤트 아이템"
         }, {
@@ -549,7 +549,7 @@ export const memoryData = [{
         "name": "두 번째 리폼", "reward": "리폼 알록달록 원두 궤짝", "items": [{
             "id": 201, "item": "니트로 아메리카노", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 202, "item": "피라미드 라떼", "theme": "이집트", "color": "", "machine": "이집트 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 202, "item": "피라미드 라떼", "theme": "이집트", "color": "", "machine": "이집트 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
             "id": 203, "item": "스페셜 아메리카노", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": "레시피 필요"
         }, {
@@ -559,7 +559,7 @@ export const memoryData = [{
         }, {
             "id": 206, "item": "수박 생과일주스", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": "트럭 상점 레시피 필요"
         }, {
-            "id": 207, "item": "궤짝 (90개)", "theme": "이집트", "color": "", "machine": "이집트 커피머신", "attribute": "음료 토큰", "price": "", "note": "피라미드 라떼 판매"
+            "id": 207, "item": "궤짝 (90개)", "theme": "이집트", "color": "", "machine": "이집트 커피 머신", "attribute": "음료 토큰", "price": "", "note": "피라미드 라떼 판매"
         }, {
             "id": 208, "item": "시침핀 (90개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "수박 생과일주스 판매"
         }, {
@@ -591,17 +591,17 @@ export const memoryData = [{
         }]
     }, {
         "name": "더치커피", "reward": "원두 프레임", "items": [{
-            "id": 221, "item": "더치 아메리카노", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료", "price": "", "note": ""
+            "id": 221, "item": "더치 아메리카노", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 222, "item": "더치 라떼", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료", "price": "", "note": ""
+            "id": 222, "item": "더치 라떼", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 223, "item": "바닐라 더치라떼", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료", "price": "", "note": ""
+            "id": 223, "item": "바닐라 더치라떼", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 224, "item": "카라멜 더치라떼", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료", "price": "", "note": ""
+            "id": 224, "item": "카라멜 더치라떼", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 225, "item": "더치 아이스 아메리카노", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료", "price": "", "note": ""
+            "id": 225, "item": "더치 아이스 아메리카노", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 226, "item": "더치원액 (30개)", "theme": "3호점", "color": "", "machine": "3호점 더치머신", "attribute": "음료 토큰", "price": "", "note": "더치 아이스 아메리카노 판매"
+            "id": 226, "item": "더치원액 (30개)", "theme": "3호점", "color": "", "machine": "3호점 더치 머신", "attribute": "음료 토큰", "price": "", "note": "더치 아이스 아메리카노 판매"
         }, {
             "id": 227, "item": "책방 높은 곳을 향한 사다리", "theme": "책방", "color": "", "machine": "", "attribute": "3호점", "price": "", "note": "3호점 책방 인수 보상"
         }, {
@@ -627,11 +627,11 @@ export const memoryData = [{
         }]
     }, {
         "name": "발렌타이 데이", "reward": "사랑을 담은 초콜릿 기관차", "items": [{
-            "id": 237, "item": "딸기차", "theme": "", "color": "", "machine": "목화 커피머신", "attribute": "음료", "price": "", "note": ""
+            "id": 237, "item": "딸기차", "theme": "", "color": "", "machine": "목화 커피 머신", "attribute": "음료", "price": "", "note": ""
         }, {
             "id": 238, "item": "추억의 베리 퐁당 요거트", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": "트럭 상점 레시피 필요"
         }, {
-            "id": 239, "item": "수제 초콜릿 (100개)", "theme": "", "color": "", "machine": "목화 커피머신", "attribute": "음료 토큰", "price": "", "note": "딸기차 판매"
+            "id": 239, "item": "수제 초콜릿 (100개)", "theme": "", "color": "", "machine": "목화 커피 머신", "attribute": "음료 토큰", "price": "", "note": "딸기차 판매"
         }, {
             "id": 240, "item": "와인 (100개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "추억의 베리 퐁당 요거트 판매"
         }, {
@@ -737,11 +737,11 @@ export const memoryData = [{
         "name": "그 비서의 단골 카페", "reward": "향긋한 꽃 램프 테이블", "items": [{
             "id": 285, "item": "티라미스케익", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
         }, {
-            "id": 286, "item": "꽃카롱", "theme": "스프링가든", "color": "", "machine": "스프링가능 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
+            "id": 286, "item": "꽃카롱", "theme": "스프링가든", "color": "", "machine": "스프링가든 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
         }, {
             "id": 287, "item": "소파 쿠션 (30개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "티라미스케익 판매"
         }, {
-            "id": 288, "item": "꽃장식 (30개)", "theme": "스프링가든", "color": "", "machine": "스프링가능 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "꽃카롱 판매"
+            "id": 288, "item": "꽃장식 (30개)", "theme": "스프링가든", "color": "", "machine": "스프링가든 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "꽃카롱 판매"
         }, {
             "id": 289, "item": "스프링가든 한련화", "theme": "스프링가든", "color": "화이트", "machine": "", "attribute": "골드", "price": "350,000 G", "note": ""
         }, {
@@ -977,7 +977,7 @@ export const memoryData = [{
         }, {
             "id": 393, "item": "아이러브빵집 튀김 솥", "theme": "아이러브빵집", "color": "갈색", "machine": "", "attribute": "캐시", "price": "37 C", "note": ""
         }, {
-            "id": 394, "item": "사랑당 자개 거울", "theme": "사랑당", "color": "검정", "machine": "", "attribute": "골드", "price": "443,000 G", "note": ""
+            "id": 394, "item": "사랑당 자개 거울", "theme": "사랑당", "color": "진한 갈색", "machine": "", "attribute": "골드", "price": "443,000 G", "note": ""
         }, {
             "id": 395, "item": "베르사이유 풍 명화액자", "theme": "베르사이유", "color": "브라운", "machine": "", "attribute": "캐시", "price": "70 C", "note": ""
         }, {
