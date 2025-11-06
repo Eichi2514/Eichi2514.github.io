@@ -705,7 +705,7 @@ export const memoryData = [{
         }, {
             "id": 271, "item": "머그컵 (10개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "클래식파니니 판매"
         }, {
-            "id": 272, "item": "커피 캡슐 (10개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "햄&치즈베이글 판매"
+            "id": 272, "item": "커피 캡슐 (10개)", "theme": "", "color": "", "machine": "", "attribute": "디저트 토큰", "price": "", "note": "스페셜 햄&치즈베이글 판매"
         }, {
             "id": 273, "item": "라탄 화병 캐셔", "theme": "라탄", "color": "밝은 갈색", "machine": "", "attribute": "골드", "price": "127,500 G", "note": ""
         }, {
@@ -925,7 +925,7 @@ export const memoryData = [{
         }, {
             "id": 370, "item": "산토리니 플라워 케이지", "theme": "산토리니", "color": "핑크", "machine": "", "attribute": "골드", "price": "215,000 G", "note": ""
         }, {
-            "id": 371, "item": "달콤 샐콤 딸기 창문", "theme": "", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
+            "id": 371, "item": "달콤 새콤 딸기 창문", "theme": "", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }, {
             "id": 372, "item": "크리스탈 작은 새 둥지", "theme": "", "color": "", "machine": "", "attribute": "골드", "price": "10,000,000 G", "note": ""
         }]
