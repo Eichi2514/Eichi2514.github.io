@@ -1905,23 +1905,36 @@
 
                 // 🔹 증가량 계산
                 sortedDates.forEach(date => {
-                    const rec = records[date];
-                    const currentExp = rec.exp;
-                    const currentLevel = rec.level;
+                    const cur = records[date];
+                    const curExp = cur.exp || 0;
+                    const curLevel = cur.level || 1;
 
                     let gained = 0;
+
                     if (prevExp !== null && prevLevel !== null) {
-                        if (currentLevel > prevLevel) {
-                            gained = (levelExp[prevLevel] - prevExp) + currentExp;
+                        if (curLevel > prevLevel) {
+                            // ✅ 레벨업한 경우
+                            gained += (levelExp[prevLevel] - prevExp);
+                            for (let lv = prevLevel + 1; lv < curLevel; lv++) {
+                                gained += levelExp[lv];
+                            }
+                            gained += curExp;
+                        } else if (curLevel === prevLevel && curExp >= prevExp) {
+                            // ✅ 같은 레벨 내 증가
+                            gained = curExp - prevExp;
                         } else {
-                            gained = Math.max(currentExp - prevExp, 0);
+                            // ✅ 경험치가 줄거나 예외 상황은 0 처리
+                            gained = 0;
                         }
                     }
 
-                    if (prevExp !== null) expMap[date.slice(5)] = gained; // "MM-DD" 키 저장
+                    if (prevExp !== null) {
+                        const mmdd = date.slice(5); // YYYY-MM-DD → MM-DD
+                        expMap[mmdd] = Math.max(gained, 0);
+                    }
 
-                    prevExp = currentExp;
-                    prevLevel = currentLevel;
+                    prevExp = curExp;
+                    prevLevel = curLevel;
                 });
 
                 // 🔹 모든 날짜에 대해 값이 없으면 0으로 채움
