@@ -260,6 +260,8 @@
             font-size: 12px;
         }
     </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
 </head>
 
 <body>
@@ -506,13 +508,16 @@
                 goToPage("memory");
             });
 
+            // ✅ 삭제 버튼
             $(".delete-btn").on("click", async function () {
                 if (!selectedNick) return;
-                if (!confirm(`${selectedNick}의 추억 데이터를 정말 삭제할까요?`)) return;
+                if (!confirm(`${selectedNick} 계정을 정말 삭제할까요?`)) return;
                 try {
+                    await remove(ref(db, `coffeeUsers/${selectedNick}`));
                     await remove(ref(db, `coffeeMemory/${selectedNick}`));
                     alert("삭제되었습니다.");
                     $("#userModal").fadeOut(200);
+                    // 테이블에서 즉시 제거
                     $(`#userTable tr[data-nick="${selectedNick}"]`).remove();
                 } catch (e) {
                     alert("삭제 중 오류가 발생했습니다.");
@@ -532,5 +537,6 @@
         });
     });
 </script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
 </body>
 </html>

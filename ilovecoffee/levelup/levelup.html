@@ -31,7 +31,7 @@
 
         body {
             margin: 0;
-            background: #f4f3f9;
+            background: #fff;
             color: #333;
         }
 
@@ -47,7 +47,6 @@
             padding: 20px 16px 60px;
             margin: 0 auto;
             border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
             position: relative;
             text-align: center;
         }
@@ -379,31 +378,6 @@
             font-weight: 600;
         }
 
-        /* ✅ 오른쪽 아래 고정 버튼 영역 */
-        .floating-btn-area {
-            position: fixed;
-            right: 18px;
-            bottom: 22px;
-            display: flex;
-            flex-direction: column; /* 위아래로 배치 (원하면 row로 바꿔도 됨) */
-            gap: 10px;
-            z-index: 100;
-        }
-
-        /* ✅ 개별 버튼 스타일 */
-        .floating-btn {
-            background: #5a4398;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
         /* ===== 아카이브 공개 토글 스위치 ===== */
         .toggle-switch {
             width: 50px;
@@ -651,6 +625,7 @@
         }
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
 </head>
 <body>
 
@@ -722,10 +697,8 @@
 
     <div id="levelUpBox" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;"></div>
 
-    <div id="adminBtn-bar">
-        <button class="subCharacterBtn barBtn" style="display: none;">부캐</button>
-        <button class="rankingBtn barBtn" style="display: none;">아카이브</button>
-        <button class="memoryRoomBtn barBtn" style="display: none;">메모리룸</button>
+    <div style="max-height: 400px;">
+        <canvas id="expChart" width="100%" height="100"></canvas>
     </div>
 
     <h3>일자별 경험치</h3>
@@ -974,33 +947,6 @@
     </div>
 </div>
 
-<!-- ✅ 관리자 메뉴 모달 -->
-<div id="adminOptionModal" class="login-overlay" style="display:none;">
-    <div class="login-modal" style="width:260px; text-align:center; position:relative;">
-        <button id="closeAdminOptionModal" class="closeBtn">✕</button>
-        <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
-
-        <button id="adminArchiveBtn"
-                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
-                   border-radius:8px; font-size:16px; font-weight:600; margin-bottom:10px;
-                   background:transparent; transition:0.2s;">
-            아카이브
-        </button>
-
-        <button id="adminMemoryBtn"
-                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
-                   border-radius:8px; font-size:16px; font-weight:600;
-                   background:transparent; transition:0.2s;">
-            메모리룸
-        </button>
-    </div>
-</div>
-
-<!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
-<div class="floating-btn-area">
-    <button class="floating-btn adminBtn" style="display:none;">관리자</button>
-</div>
-
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -1071,10 +1017,6 @@
 
     $(".memoryBtn").on("click", function () {
         goToPage("memory");
-    });
-
-    $(".memoryRoomBtn").on("click", function () {
-        goToPage("memoryRoom");
     });
 
     // ✅ 부캐 등록 모달 열기
@@ -1491,47 +1433,7 @@
 
         // ✅ 아카이브 버튼 추가 함수
         function addRankingButton() {
-            const $rankingBtn = $(".rankingBtn");
-
-            $rankingBtn.show();
-
-            // ✅ 클릭 시 아카이브 접근 조건 검증
-            $rankingBtn.on("click", async () => {
-                const nickname = getActiveNickname();
-                if (!nickname) return showAlert("로그인 후 이용해주세요.");
-
-                // 1️⃣ 공개 여부만 가져오기
-                const publicRef = ref(db, `coffeeUsers/${nickname}/rankingPublic`);
-                const publicSnap = await get(publicRef);
-                const rankingPublic = publicSnap.exists() && publicSnap.val();
-
-                if (!rankingPublic) {
-                    showAlert("아카이브 공개 설정이 꺼져 있습니다.\n설정 후 이용해주세요.");
-                    return;
-                }
-
-                // 2️⃣ 오늘 / 어제 기록만 확인 (전체 expRecords 안 불러옴)
-                const today = getKoreanDate();
-                const yesterday = (() => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - 1);
-                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-                })();
-
-                const todayRef = ref(db, `coffeeUsers/${nickname}/expRecords/${today}`);
-                const yestRef = ref(db, `coffeeUsers/${nickname}/expRecords/${yesterday}`);
-
-                const [todaySnap, yestSnap] = await Promise.all([get(todayRef), get(yestRef)]);
-                const hasRecentRecord = todaySnap.exists() || yestSnap.exists();
-
-                if (!hasRecentRecord) {
-                    showAlert("최근 경험치 기록이 없습니다.\n입력 후 이용해주세요.");
-                    return;
-                }
-
-                // ✅ 통과 시 페이지 이동
-                goToPage("ranking");
-            });
+            $(".rankingBtn").show();
         }
 
         // ✅ 아카이브 버튼 제거 함수
@@ -1610,14 +1512,6 @@
 
                 // ✅ 로드 시 부캐 버튼 검사
                 addSubCharacterButton();
-
-                // 🔹 공개 상태일 때 버튼 없으면 추가
-                if (userData.rankingPublic) {
-                    addRankingButton();
-                } else {
-                    // 🔹 비공개 상태면 버튼 제거
-                    removeRankingButton();
-                }
 
                 if (userData.memoryRoomPublic) {
                     $(".memoryRoomBtn").show();
@@ -1841,7 +1735,7 @@
 
                                 let accumulatedExp = 0;
                                 let curExp = currentExp;
-                                const maxLevel = Math.min(currentLevel + 10, levelExp.length);
+                                const maxLevel = Math.min(currentLevel + 5, levelExp.length);
 
                                 for (let lvl = currentLevel; lvl < maxLevel; lvl++) {
                                     const needExp = levelExp[lvl];
@@ -1933,6 +1827,8 @@
                         </div>
                     `);
                     $("body").append(editModal);
+
+                    renderExpChart(userData.expRecords); // ✅ 최근 10일 그래프 표시
                 } else {
                     $("#levelUpBox").html(`<p style="color:#999;">상단의 입력 버튼을 눌러<br>오늘의 경험치를 기록해보세요..!</p>`);
                 }
@@ -1981,6 +1877,128 @@
                 $(document).trigger("dataLoaded", [nickname]);
             } else {
                 console.log("불러올 데이터가 없습니다.");
+            }
+
+            // ✅ 최근 10일 꺾은선 그래프 렌더링
+            function renderExpChart(records) {
+                // 🔹 기준일 계산: 오늘 데이터가 있으면 오늘, 없으면 어제
+                const today = new Date();
+                const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                const hasTodayRecord = !!records[`2025-${todayStr.replace('-', '-')}`] || !!records[todayStr];
+                // 혹시 'YYYY-MM-DD' 형식일 수도 있으니 둘 다 체크
+                const baseDate = hasTodayRecord ? today : new Date(today.setDate(today.getDate() - 1));
+
+                const allDates = [];
+                for (let i = 9; i >= 0; i--) {
+                    const d = new Date(baseDate);
+                    d.setDate(baseDate.getDate() - i);
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    allDates.push(`${mm}-${dd}`);
+                }
+
+                // 🔹 기존 기록 정렬
+                const sortedDates = Object.keys(records).sort();
+                const expMap = {};
+                let prevExp = null;
+                let prevLevel = null;
+
+                // 🔹 증가량 계산
+                sortedDates.forEach(date => {
+                    const rec = records[date];
+                    const currentExp = rec.exp;
+                    const currentLevel = rec.level;
+
+                    let gained = 0;
+                    if (prevExp !== null && prevLevel !== null) {
+                        if (currentLevel > prevLevel) {
+                            gained = (levelExp[prevLevel] - prevExp) + currentExp;
+                        } else {
+                            gained = Math.max(currentExp - prevExp, 0);
+                        }
+                    }
+
+                    if (prevExp !== null) expMap[date.slice(5)] = gained; // "MM-DD" 키 저장
+
+                    prevExp = currentExp;
+                    prevLevel = currentLevel;
+                });
+
+                // 🔹 모든 날짜에 대해 값이 없으면 0으로 채움
+                const labels = allDates;
+                const values = allDates.map(d => expMap[d] || 0);
+
+                // 🔹 Chart.js 그리기
+                const ctx = document.getElementById('expChart');
+                if (!ctx) return;
+                if (window.expChartInstance) window.expChartInstance.destroy();
+
+                // 🔹 최소/최대 계산 + 자동 눈금 단위
+                const minValue = Math.min(...values);
+                const maxValue = Math.max(...values);
+                const range = maxValue - minValue;
+                let step;
+                if (range > 5_000_000) step = 1_000_000;
+                else if (range > 2_000_000) step = 500_000;
+                else if (range > 500_000) step = 100_000;
+                else if (range > 100_000) step = 50_000;
+                else if (range > 10_000) step = 10_000;
+                else step = 1_000;
+
+                const minRounded = Math.floor(minValue / step) * step;
+
+                window.expChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels.map(d => d.split('-')[1]),
+                        datasets: [{
+                            label: '일별 획득 경험치',
+                            data: values,
+                            borderColor: '#5a4398',
+                            backgroundColor: 'rgba(90, 67, 152, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#5a4398'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: minRounded,
+                                ticks: {
+                                    color: '#5a4398',
+                                    stepSize: step,
+                                    callback: function (value) {
+                                        if (value >= 10000) {
+                                            return (value / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+                                        }
+                                        return value.toLocaleString();
+                                    },
+                                    font: { size: 11 }
+                                },
+                                grid: { color: '#eee' }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#333',
+                                    font: { size: 10 }
+                                },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.parsed.y.toLocaleString()} EXP`
+                                }
+                            }
+                        }
+                    }
+                });
             }
         }
 
@@ -2524,30 +2542,9 @@
         // 일정 시간 뒤 제거
         setTimeout(() => container.remove(), 15000);
     }
-
-    // ✅ 관리자 버튼 클릭 시 관리자 메뉴 모달 열기
-    $(document).on("click", ".adminBtn", function () {
-        $("#adminOptionModal").css("display", "flex");
-    });
-
-    // ✅ 닫기 버튼
-    $(document).on("click", "#closeAdminOptionModal", function () {
-        $("#adminOptionModal").hide();
-    });
-
-    // ✅ 아카이브(관리자) 버튼 클릭
-    $(document).on("click", "#adminArchiveBtn", function () {
-        $("#adminOptionModal").hide();
-        goToPage("admin");
-    });
-
-    // ✅ 메모리룸(관리자) 버튼 클릭
-    $(document).on("click", "#adminMemoryBtn", function () {
-        $("#adminOptionModal").hide();
-        goToPage("aMemory");
-    });
-
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

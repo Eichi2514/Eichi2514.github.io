@@ -33,7 +33,6 @@
             background: #fff;
             margin: 0;
             color: #333;
-            padding-bottom: 300px;
         }
 
         .header-bar {
@@ -527,50 +526,6 @@
             pointer-events: none; /* 클릭 방해 안 함 */
         }
 
-        /* ✅ 오른쪽 아래 고정 버튼 영역 */
-        .floating-btn-area {
-            position: fixed;
-            right: 18px;
-            bottom: 22px;
-            display: flex;
-            flex-direction: column; /* 위아래로 배치 (원하면 row로 바꿔도 됨) */
-            gap: 10px;
-            z-index: 100;
-        }
-
-        /* ✅ 개별 버튼 스타일 */
-        .floating-btn {
-            background: #5a4398;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        /* ✅ 접기/펼치기 토글 버튼 */
-        .floating-toggle {
-            background: #5a4398;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        /* ✅ 접힌 상태에서 다른 버튼 숨김 */
-        .floating-btn-area.collapsed .floating-btn:not(.floating-toggle) {
-            display: none !important;
-        }
-
         /* ===== 필터모드 필터 및 정렬 영역 ===== */
         .filter-container {
             display: flex;
@@ -751,6 +706,7 @@
 
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
 </head>
 <body>
 
@@ -826,29 +782,6 @@
     </div>
 </div>
 
-<!-- ✅ 관리자 메뉴 모달 -->
-<div id="adminOptionModal" class="login-overlay" style="display:none;">
-    <div class="login-modal" style="width:260px; text-align:center; position:relative;">
-        <button id="closeAdminOptionModal" class="closeBtn">✕</button>
-        <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
-
-        <button id="adminArchiveBtn"
-                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
-                   border-radius:8px; font-size:16px; font-weight:600; margin-bottom:10px;
-                   background:transparent; transition:0.2s;">
-            아카이브
-        </button>
-
-        <button id="adminMemoryBtn"
-                style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
-                   border-radius:8px; font-size:16px; font-weight:600;
-                   background:transparent; transition:0.2s;">
-            메모리룸
-        </button>
-    </div>
-</div>
-
-
 <!-- ✅ 도움말 모달 -->
 <div id="helpModal" class="login-overlay" style="display:none;">
     <div class="login-modal help-modal">
@@ -913,15 +846,6 @@
     </div>
 </div>
 
-<!-- ✅ 오른쪽 아래 고정 버튼 영역 -->
-<div class="floating-btn-area">
-    <button class="floating-toggle">▼ 메뉴 닫기</button>
-    <button class="floating-btn advancedSettingBtn">필터모드</button>
-    <button class="floating-btn rankingBtn" style="display:none;">아카이브</button>
-    <button class="floating-btn memoryRoomBtn" style="display:none;">메모리룸</button>
-    <button class="floating-btn adminBtn" style="display:none;">관리자</button>
-</div>
-
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -958,16 +882,12 @@
         Promise.all([
             get(ref(db, `coffeeUsers/${activeNickname}/profileImg`)),
             get(ref(db, `coffeeUsers/${activeNickname}/level`)),
-            get(ref(db, `coffeeUsers/${activeNickname}/memoryRoomPublic`)),
-            get(ref(db, `coffeeUsers/${activeNickname}/rankingPublic`)),
-            get(ref(db, `coffeeUsers/${activeNickname}/isAdmin`))
+            get(ref(db, `coffeeUsers/${activeNickname}/memoryRoomPublic`))
         ])
             .then(([profileSnap, levelSnap, memorySnap, rankingSnap, adminSnap]) => {
                 const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
                 const level = levelSnap.exists() ? levelSnap.val() : 1;
                 const memoryRoomPublic = memorySnap.exists() ? memorySnap.val() : false;
-                const rankingPublic = rankingSnap.exists() ? rankingSnap.val() : false;
-                const isAdmin = adminSnap.exists() ? adminSnap.val() : false; // ✅ 관리자 여부
 
                 // ✅ 프로필 이미지 표시 (닉네임 앞)
                 const profileSrc = `../image/profile${profileNum}.jpg`;
@@ -992,19 +912,8 @@
                 const $toggle = $("#memoryRoomToggle");
                 if (memoryRoomPublic) {
                     $toggle.addClass("on").css("background", "#5a4398");
-                    $(".memoryRoomBtn").show();
                 } else {
                     $toggle.removeClass("on").css("background", "#ccc");
-                    $(".memoryRoomBtn").hide();
-                }
-
-                if (rankingPublic) {
-                    $(".rankingBtn").show();
-                }
-
-                // ✅ 관리자라면 어드민 버튼 표시
-                if (isAdmin === true) {
-                    $(".adminBtn").show();
                 }
 
                 // ✅ 캐릭터 탭 생성
@@ -1058,45 +967,6 @@
 
         // 뒤로가기
         $("#backBtn").on("click", () => goToPage());
-
-        const $area = $(".floating-btn-area");
-        const $toggle = $(".floating-toggle");
-
-        // 🔹 저장된 상태 불러오기
-        const isOpen = localStorage.getItem("floatingMenuOpen") === "true";
-
-        if (!isOpen) {
-            $area.addClass("collapsed");
-            $toggle.text("▲ 메뉴 열기");
-        } else {
-            $area.removeClass("collapsed");
-            $toggle.text("▼ 메뉴 닫기");
-        }
-
-        // 🔹 버튼 클릭 시 토글
-        $toggle.on("click", function() {
-            const nowCollapsed = $area.hasClass("collapsed");
-
-            if (nowCollapsed) {
-                // 펼치기
-                $area.removeClass("collapsed");
-                $toggle.text("▼ 메뉴 닫기");
-                localStorage.setItem("floatingMenuOpen", "true");
-            } else {
-                // 접기
-                $area.addClass("collapsed");
-                $toggle.text("▲ 메뉴 열기");
-                localStorage.setItem("floatingMenuOpen", "false");
-            }
-        });
-    });
-
-    $(document).on("click", ".memoryRoomBtn", function () {
-        goToPage("memoryRoom");
-    });
-
-    $(document).on("click", ".rankingBtn", function () {
-        goToPage("ranking");
     });
 
     // ✅ 수집된 아이템 초기 표시
@@ -1520,28 +1390,6 @@
         }
     });
 
-    // ✅ 관리자 버튼 클릭 시 관리자 메뉴 모달 열기
-    $(document).on("click", ".adminBtn", function () {
-        $("#adminOptionModal").css("display", "flex");
-    });
-
-    // ✅ 닫기 버튼
-    $(document).on("click", "#closeAdminOptionModal", function () {
-        $("#adminOptionModal").hide();
-    });
-
-    // ✅ 아카이브(관리자) 버튼 클릭
-    $(document).on("click", "#adminArchiveBtn", function () {
-        $("#adminOptionModal").hide();
-        goToPage("admin");
-    });
-
-    // ✅ 메모리룸(관리자) 버튼 클릭
-    $(document).on("click", "#adminMemoryBtn", function () {
-        $("#adminOptionModal").hide();
-        goToPage("aMemory");
-    });
-
     // ✅ 마지막 모드 불러오기
     const savedMode = localStorage.getItem("coffeeMemory-mode") || "normal";
     if (savedMode === "filter") {
@@ -1557,5 +1405,6 @@
 
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
 </body>
 </html>

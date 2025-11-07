@@ -1,0 +1,48 @@
+body {
+    padding-bottom: 300px;
+}
+
+.login-modal {
+    position: relative;
+    background: #fff;
+    padding: 30px 25px 50px 25px;
+    border-radius: 12px;
+    width: 360px;
+    min-height: max-content;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ 오른쪽 아래 고정 버튼 영역 */
+.floating-btn-area {
+    position: fixed;
+    right: 18px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column; /* 위아래로 배치 (원하면 row로 바꿔도 됨) */
+    gap: 5px;
+    z-index: 100;
+}
+
+/* ✅ 개별 버튼 스타일 */
+.floating-toggle, .floating-btn {
+    background: #5a4398;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    width: 97px;
+}
+
+/* ✅ 접힌 상태에서 다른 버튼 숨김 */
+.floating-btn-area.collapsed .floating-btn:not(.floating-toggle) {
+    display: none !important;
+}
+
+.floating-btn-area.collapsed > .floating-toggle {
+    padding: 5px 6px;
+    width: auto;
+}

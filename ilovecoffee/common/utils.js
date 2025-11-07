@@ -212,13 +212,13 @@ export function goToPage(target = "levelup") {
 
     const pageMap = {
         levelup: `${basePath}/levelup/levelup.html`,
-        ranking: `${basePath}/ranking/main.html`,
+        ranking: `${basePath}/ranking/ranking.html`,
 
         memory: `${basePath}/memory/memory.html`,
         memoryRoom: `${basePath}/memory/memoryRoom.html`,
 
         admin: `${basePath}/admin/main.html`,
-        aMemory: `${basePath}/admin/memory.html`,
+        aMemory: `${basePath}/admin/aMemory.html`,
 
         layout: `${basePath}/layout/layout.html`,
         barista: `${basePath}/barista/barista.html`,

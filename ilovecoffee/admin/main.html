@@ -205,6 +205,8 @@
             font-size: 12px;
         }
     </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
 </head>
 
 <body>
@@ -549,6 +551,7 @@
                 if (!confirm(`${selectedNick} 계정을 정말 삭제할까요?`)) return;
                 try {
                     await remove(ref(db, `coffeeUsers/${selectedNick}`));
+                    await remove(ref(db, `coffeeMemory/${selectedNick}`));
                     alert("삭제되었습니다.");
                     $("#userModal").fadeOut(200);
                     // 테이블에서 즉시 제거
@@ -573,5 +576,6 @@
         });
     });
 </script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
 </body>
 </html>
