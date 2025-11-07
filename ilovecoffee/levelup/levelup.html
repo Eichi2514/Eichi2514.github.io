@@ -702,12 +702,12 @@
     </div>
     <div style="text-align:right;">
         <button id="voteBtn"
-                style="background:#f6f4fc; color:#5a4398; border:1px solid #e0dff2;
+                style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
                        border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
             투표하기
         </button>
         <button id="toggleChartBtn"
-                style="background:#f6f4fc; color:#5a4398; border:1px solid #e0dff2;
+                style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
                  border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
         </button>
     </div>
@@ -1877,10 +1877,13 @@
                     latestExpRecords = userData.expRecords; // ✅ 최근 기록 캐싱
 
                     // ✅ 버튼 초기 텍스트 설정
-                    if (chartMode === 'gain') {
-                        $("#toggleChartBtn").text("🔁 누적 경험치");
+                    if (chartMode === 'total') {
+                        $("#toggleChartBtn").text("획득 경험치");
+                    } else if (chartMode === 'gain') {
+                        $("#toggleChartBtn").text("숨기기");
                     } else {
-                        $("#toggleChartBtn").text("🔁 획득 경험치");
+                        $("#toggleChartBtn").text("그래프");
+                        $("#expChart").closest("div").hide();
                     }
 
                     renderExpChart(userData.expRecords); // ✅ 최근 10일 그래프 표시
@@ -1969,7 +1972,7 @@
                 const labels = allDates;
                 const values = allDates.map(d => {
                     const rec = expMap[d];
-                    return rec ? (chartMode === 'gain' ? rec.gain : rec.total) : 0;
+                    return rec ? (chartMode === 'total' ? rec.total : rec.gain) : 0;
                 });
 
                 // 🔹 Chart.js
@@ -1977,7 +1980,7 @@
                 if (!ctx) return;
                 if (window.expChartInstance) window.expChartInstance.destroy();
 
-                const labelName = chartMode === 'gain' ? '일별 획득 경험치' : '누적 경험치';
+                const labelName = chartMode === 'gain' ? '획득 경험치' : '누적 경험치';
                 const color = chartMode === 'gain' ? '#5a4398' : '#3b2d7a';
 
                 window.expChartInstance = new Chart(ctx, {
@@ -2027,23 +2030,34 @@
                 });
             }
 
-            // ✅ 획득 ↔ 누적 경험치 전환 버튼
+            // ✅ 누적 ↔ 획득 ↔ 숨김 전환 버튼
             $(document).on("click", "#toggleChartBtn", function () {
                 if (!latestExpRecords) return;
 
-                // 🔹 모드 전환
-                if (chartMode === "gain") {
-                    chartMode = "total";
-                    $(this).text("🔁 획득 경험치");
-                } else {
-                    chartMode = "gain";
-                    $(this).text("🔁 누적 경험치");
-                }
+                const $chartCanvas = $("#expChart");
+                const $chartContainer = $chartCanvas.closest("div"); // 상위 div 같이 숨기기
 
-                // ✅ 변경된 모드 로컬스토리지에 저장
-                localStorage.setItem('chartMode', chartMode);
-                // 🔹 캐싱된 데이터로 바로 다시 렌더링
-                renderExpChart(latestExpRecords);
+                if (chartMode === "total") {
+                    chartMode = "gain";
+                    $(this).text("숨기기");
+                    localStorage.setItem("chartMode", chartMode);
+                    renderExpChart(latestExpRecords);
+                    $chartContainer.show();
+
+                } else if (chartMode === "gain") {
+                    chartMode = "hide";
+                    $(this).text("그래프");
+                    localStorage.setItem("chartMode", chartMode);
+                    if (window.expChartInstance) window.expChartInstance.destroy();
+                    $chartContainer.hide();
+
+                } else { // chartMode === "hide"
+                    chartMode = "total";
+                    $(this).text("획득 경험치");
+                    localStorage.setItem("chartMode", chartMode);
+                    $chartContainer.show();
+                    renderExpChart(latestExpRecords);
+                }
             });
         }
 
