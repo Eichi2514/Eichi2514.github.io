@@ -700,6 +700,17 @@
     <div style="max-height: 400px;">
         <canvas id="expChart" width="100%" height="100"></canvas>
     </div>
+    <div style="text-align:right;">
+        <button id="voteBtn"
+                style="background:#f6f4fc; color:#5a4398; border:1px solid #e0dff2;
+                       border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
+            투표하기
+        </button>
+        <button id="toggleChartBtn"
+                style="background:#f6f4fc; color:#5a4398; border:1px solid #e0dff2;
+                 border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
+        </button>
+    </div>
 
     <h3>일자별 경험치</h3>
     <table id="expTable">
@@ -962,7 +973,7 @@
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // ✅ 공통 유틸 모듈
-    import {calcAvgExp, calcDDay} from "../common/expUtils.js";
+    import {calcAvgExp, calcDDay, calcDiffExp} from "../common/expUtils.js";
     import {levelExp} from "../common/levelExp.js";
     import {
         getKoreanDate,
@@ -1247,13 +1258,48 @@
         bindNumericCommaFormatter("#todayExp, #editExpValue", 1_000_000_000_000, "경험치는 최대 1조까지 입력할 수 있어요.");
     });
 
+    // ✅ 투표 버튼 클릭 이벤트
+    $(document).on("click", "#voteBtn", async function () {
+        const nickname = getActiveNickname();
+        if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+        // 커스텀 컨펌 실행
+        showConfirm("그래프 기능을 계속 유지할까요?", async (ok) => {
+            const voteType = ok ? "반대" : "찬성";
+            const path = `coffeeVote/${voteType}/${nickname}`;
+            const voteRef = ref(db, path);
+
+            try {
+                // 🔹 현재 값 가져오기
+                const snap = await get(voteRef);
+                let currentCount = 0;
+                if (snap.exists()) {
+                    const val = snap.val();
+                    // 혹시 숫자 외 형식(타임스탬프 등)일 수도 있으므로 처리
+                    currentCount = typeof val === "number" ? val : 0;
+                }
+
+                // 🔹 기존 값 + 1 저장
+                const newCount = currentCount + 1;
+                await set(voteRef, newCount);
+
+                showAlert(`소중한 한표 감사합니다!`);
+            } catch (err) {
+                console.error("투표 저장 오류:", err);
+                showAlert("투표 중 오류가 발생했습니다.");
+            }
+        }, "반대", "찬성");
+    });
+
     let profileNum = 1;
+    let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
+    let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
     $(function () {
-        const todayValue = "v6";
+        const todayValue = "v7";
         const lastUpdate = localStorage.getItem("LU-update");
 
         if (lastUpdate !== todayValue) {
-            showAlert("! 보안 강화 안내 !\n모든 계정이 로그아웃 되었습니다.\n비밀번호를 잊은 경우 알려주세요!");
+            showAlert("! New !\n그래프 아래의 투표 버튼을 눌러 그래프 기능 찬반여부에 투표 부탁드립니다!");
             localStorage.setItem("LU-update", todayValue);
         }
 
@@ -1828,6 +1874,15 @@
                     `);
                     $("body").append(editModal);
 
+                    latestExpRecords = userData.expRecords; // ✅ 최근 기록 캐싱
+
+                    // ✅ 버튼 초기 텍스트 설정
+                    if (chartMode === 'gain') {
+                        $("#toggleChartBtn").text("🔁 누적 경험치");
+                    } else {
+                        $("#toggleChartBtn").text("🔁 획득 경험치");
+                    }
+
                     renderExpChart(userData.expRecords); // ✅ 최근 10일 그래프 표시
                 } else {
                     $("#levelUpBox").html(`<p style="color:#999;">상단의 입력 버튼을 눌러<br>오늘의 경험치를 기록해보세요..!</p>`);
@@ -1879,13 +1934,13 @@
                 console.log("불러올 데이터가 없습니다.");
             }
 
-            // ✅ 최근 10일 꺾은선 그래프 렌더링
+            // ================================
+            // ✅ 최근 10일 꺾은선 그래프 렌더링 (획득 ↔ 누적 토글 가능)
+            // ================================
             function renderExpChart(records) {
-                // 🔹 기준일 계산: 오늘 데이터가 있으면 오늘, 없으면 어제
                 const today = new Date();
                 const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                const hasTodayRecord = !!records[`2025-${todayStr.replace('-', '-')}`] || !!records[todayStr];
-                // 혹시 'YYYY-MM-DD' 형식일 수도 있으니 둘 다 체크
+                const hasTodayRecord = !!records[`2025-${todayStr}`] || !!records[todayStr];
                 const baseDate = hasTodayRecord ? today : new Date(today.setDate(today.getDate() - 1));
 
                 const allDates = [];
@@ -1897,122 +1952,99 @@
                     allDates.push(`${mm}-${dd}`);
                 }
 
-                // 🔹 기존 기록 정렬
-                const sortedDates = Object.keys(records).sort();
+                // 🔹 증가량 계산 (calcDiffExp와 동일)
                 const expMap = {};
-                let prevExp = null;
-                let prevLevel = null;
-
-                // 🔹 증가량 계산
+                const sortedDates = Object.keys(records).sort();
+                let prev = null;
+                let total = 0;
                 sortedDates.forEach(date => {
                     const cur = records[date];
-                    const curExp = cur.exp || 0;
-                    const curLevel = cur.level || 1;
-
-                    let gained = 0;
-
-                    if (prevExp !== null && prevLevel !== null) {
-                        if (curLevel > prevLevel) {
-                            // ✅ 레벨업한 경우
-                            gained += (levelExp[prevLevel] - prevExp);
-                            for (let lv = prevLevel + 1; lv < curLevel; lv++) {
-                                gained += levelExp[lv];
-                            }
-                            gained += curExp;
-                        } else if (curLevel === prevLevel && curExp >= prevExp) {
-                            // ✅ 같은 레벨 내 증가
-                            gained = curExp - prevExp;
-                        } else {
-                            // ✅ 경험치가 줄거나 예외 상황은 0 처리
-                            gained = 0;
-                        }
-                    }
-
-                    if (prevExp !== null) {
-                        const mmdd = date.slice(5); // YYYY-MM-DD → MM-DD
-                        expMap[mmdd] = Math.max(gained, 0);
-                    }
-
-                    prevExp = curExp;
-                    prevLevel = curLevel;
+                    const gained = prev ? calcDiffExp(prev, cur) : 0;
+                    total += gained;
+                    expMap[date.slice(5)] = { gain: gained, total: total };
+                    prev = cur;
                 });
 
-                // 🔹 모든 날짜에 대해 값이 없으면 0으로 채움
+                // 🔹 그래프 데이터
                 const labels = allDates;
-                const values = allDates.map(d => expMap[d] || 0);
+                const values = allDates.map(d => {
+                    const rec = expMap[d];
+                    return rec ? (chartMode === 'gain' ? rec.gain : rec.total) : 0;
+                });
 
-                // 🔹 Chart.js 그리기
+                // 🔹 Chart.js
                 const ctx = document.getElementById('expChart');
                 if (!ctx) return;
                 if (window.expChartInstance) window.expChartInstance.destroy();
 
-                // 🔹 최소/최대 계산 + 자동 눈금 단위
-                const minValue = Math.min(...values);
-                const maxValue = Math.max(...values);
-                const range = maxValue - minValue;
-                let step;
-                if (range > 5_000_000) step = 1_000_000;
-                else if (range > 2_000_000) step = 500_000;
-                else if (range > 500_000) step = 100_000;
-                else if (range > 100_000) step = 50_000;
-                else if (range > 10_000) step = 10_000;
-                else step = 1_000;
-
-                const minRounded = Math.floor(minValue / step) * step;
+                const labelName = chartMode === 'gain' ? '일별 획득 경험치' : '누적 경험치';
+                const color = chartMode === 'gain' ? '#5a4398' : '#3b2d7a';
 
                 window.expChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels.map(d => d.split('-')[1]),
                         datasets: [{
-                            label: '일별 획득 경험치',
+                            label: labelName,
                             data: values,
-                            borderColor: '#5a4398',
-                            backgroundColor: 'rgba(90, 67, 152, 0.1)',
+                            borderColor: color,
+                            backgroundColor: 'rgba(90,67,152,0.1)',
                             borderWidth: 2,
                             tension: 0.3,
                             pointRadius: 4,
-                            pointBackgroundColor: '#5a4398'
+                            pointBackgroundColor: color
                         }]
                     },
                     options: {
                         responsive: true,
+                        plugins: { legend: { display: false } },
                         scales: {
                             y: {
-                                beginAtZero: false,
-                                min: minRounded,
                                 ticks: {
-                                    color: '#5a4398',
-                                    stepSize: step,
-                                    callback: function (value) {
-                                        if (value >= 10000) {
-                                            return (value / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+                                    color: color,
+                                    callback: v => {
+                                        if (v >= 100000000) {
+                                            // 🔹 1억 이상이면 억 단위로 표시 (소수점 한 자리)
+                                            return (v / 100000000)
+                                                .toFixed(1)
+                                                .replace(/\.0$/, '') + '억';
+                                        } else if (v >= 10000) {
+                                            // 🔹 1만 이상이면 만 단위로 표시
+                                            return (v / 10000)
+                                                .toFixed(1)
+                                                .replace(/\.0$/, '') + '만';
+                                        } else {
+                                            // 🔹 그 외는 일반 숫자
+                                            return v.toLocaleString();
                                         }
-                                        return value.toLocaleString();
-                                    },
-                                    font: { size: 11 }
+                                    }
                                 },
                                 grid: { color: '#eee' }
                             },
-                            x: {
-                                ticks: {
-                                    color: '#333',
-                                    font: { size: 10 }
-                                },
-                                grid: { display: false }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => `${ctx.parsed.y.toLocaleString()} EXP`
-                                }
-                            }
+                            x: { grid: { display: false }, ticks: { color: '#333' } }
                         }
                     }
                 });
             }
+
+            // ✅ 획득 ↔ 누적 경험치 전환 버튼
+            $(document).on("click", "#toggleChartBtn", function () {
+                if (!latestExpRecords) return;
+
+                // 🔹 모드 전환
+                if (chartMode === "gain") {
+                    chartMode = "total";
+                    $(this).text("🔁 획득 경험치");
+                } else {
+                    chartMode = "gain";
+                    $(this).text("🔁 누적 경험치");
+                }
+
+                // ✅ 변경된 모드 로컬스토리지에 저장
+                localStorage.setItem('chartMode', chartMode);
+                // 🔹 캐싱된 데이터로 바로 다시 렌더링
+                renderExpChart(latestExpRecords);
+            });
         }
 
         // ✅ 레벨 입력 모달 저장 버튼

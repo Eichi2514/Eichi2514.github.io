@@ -240,8 +240,10 @@ export function closeAlert() {
     $("#customAlert").fadeOut(150);
 }
 
-export function showConfirm(message, onConfirm) {
+export function showConfirm(message, onConfirm, yesText = "확인", noText = "취소") {
     $("#customConfirm .alert-text").html(message);
+    $("#confirmYesBtn").text(yesText);
+    $("#confirmNoBtn").text(noText);
     $("#customConfirm").fadeIn(150);
 
     $(document)
