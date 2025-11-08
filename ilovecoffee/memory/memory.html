@@ -870,13 +870,18 @@
     const $nicknameDisplay = $("#nicknameDisplay");
     const $currentLevelDisplay = $("#currentLevelDisplay");
     let activeNickname = null;
+    let collected = {};
 
-    $(function () {
+    $(async function () {
         activeNickname = getActiveNickname();
         if (!activeNickname) {
             goToPage();
             return;
         }
+
+        const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
+        const snap = await get(memoryRef);
+        collected = snap.val();
 
         // ✅ 필요한 필드만 병렬로 가져오기
         Promise.all([
@@ -967,17 +972,24 @@
 
         // 뒤로가기
         $("#backBtn").on("click", () => goToPage());
+
+        // ✅ 마지막 모드 불러오기
+        const savedMode = localStorage.getItem("coffeeMemory-mode") || "normal";
+        if (savedMode === "filter") {
+            $(".mainPage").hide();
+            $(".subPage").show();
+            $(".advancedSettingBtn").text("일반모드");
+            renderAdvancedSettings();
+        } else {
+            $(".mainPage").show();
+            $(".subPage").hide();
+            $(".advancedSettingBtn").text("필터모드");
+        }
     });
 
     // ✅ 수집된 아이템 초기 표시
     async function markCollectedItems(activeNickname) {
         try {
-            const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
-            const snap = await get(memoryRef);
-            if (!snap.exists()) return;
-
-            const collected = snap.val(); // { id1: true, id2: true, ... }
-
             // 화면에 렌더링된 item-card 중 해당 ID가 true면 표시
             $(".item-card").each(function () {
                 const itemId = $(this).data("id");
@@ -993,11 +1005,6 @@
     async function renderSubcategories(cat) {
         $("#subcategoryList").empty();
         if (!activeNickname) return;
-
-        // ✅ 현재 유저의 수집 아이템 데이터 불러오기
-        const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
-        const snap = await get(memoryRef);
-        const collected = snap.exists() ? snap.val() : {};
 
         // ✅ 각 서브카테고리 렌더링
         cat.categories2.forEach(sub => {
@@ -1175,6 +1182,7 @@
             if (snap.exists()) {
                 // ✅ 이미 저장된 경우 → 삭제
                 await remove(itemRef);
+                collected[itemId] = false;
                 if (isTableRow) {
                     $(this).removeClass("collected-item").css("background", ""); // 테이블용
                 } else {
@@ -1183,6 +1191,7 @@
             } else {
                 // ✅ 아직 없는 경우 → 저장
                 await update(ref(db, `coffeeMemory/${activeNickname}`), {[itemId]: true});
+                collected[itemId] = true;
                 if (isTableRow) {
                     $(this).addClass("collected-item").css("background", "#f0eaff"); // 테이블용
                 } else {
@@ -1228,7 +1237,7 @@
             cat.categories2.forEach(sub => {
                 sub.items.forEach(item => {
                     allItems.push({
-                        ...item, category1: cat.category1, category2: sub.name
+                        ...item, id: item.id, category1: cat.category1, category2: sub.name
                     });
 
                     if (item.theme) themeSet.add(item.theme.trim());
@@ -1240,7 +1249,10 @@
         // ✅ 1️⃣ 로컬 저장된 필터모드값 불러오기 (없으면 기본값)
         const savedFilter = JSON.parse(localStorage.getItem("coffee-advancedFilter") || "{}");
         const defaultFilter = {
-            theme: savedFilter.theme || "", option: savedFilter.option || "", sort: savedFilter.sort || "nameAsc" // 기본값: 이름 오름차순
+            theme: savedFilter.theme || "",
+            collect: savedFilter.collect || "",
+            option: savedFilter.option || "",
+            sort: savedFilter.sort || "nameAsc"
         };
 
         // 2️⃣ select 옵션 HTML 자동 생성
@@ -1259,7 +1271,12 @@
         // 3️⃣ 필터모드 영역 구성
         const filterHTML = `
             <div class="filter-container">
-                <select id="themeFilter" class="filter-select">${themeOptions}</select>
+            <!-- <select id="themeFilter" class="filter-select">${themeOptions}</select> -->
+                <select id="collectFilter" class="filter-select">
+                    <option value="">전체 상태</option>
+                    <option value="collected">수집 완료</option>
+                    <option value="uncollected">미수집</option>
+                </select>
                 <select id="optionFilter" class="filter-select">${optionOptions}</select>
 
                 <select id="sortOption" class="filter-select" style="flex:1 1 100%;">
@@ -1272,7 +1289,8 @@
         `;
 
         $("#filterSection").html(filterHTML);
-        $("#themeFilter").val(defaultFilter.theme);
+        // $("#themeFilter").val(defaultFilter.theme);
+        $("#collectFilter").val(defaultFilter.collect);
         $("#optionFilter").val(defaultFilter.option);
         $("#sortOption").val(defaultFilter.sort);
 
@@ -1281,24 +1299,32 @@
 
         // ✅ 3️⃣ 필터 변경 시 로컬 저장 및 즉시 반영
         $(document).off("change", ".filter-select").on("change", ".filter-select", function () {
-            const theme = $("#themeFilter").val();
+            const theme = ""; // 현재는 비활성화
+            const collect = $("#collectFilter").val();
             const option = $("#optionFilter").val();
             const sort = $("#sortOption").val();
 
             // 변경된 값 저장
-            localStorage.setItem("coffee-advancedFilter", JSON.stringify({theme, option, sort}));
+            localStorage.setItem("coffee-advancedFilter", JSON.stringify({ theme, collect, option, sort }));
 
-            applyAndRenderFilter(allItems, {theme, option, sort});
+            applyAndRenderFilter(allItems, { theme, collect, option, sort });
         });
     }
 
     // ✅ 필터 및 정렬 적용 후 렌더링
-    function applyAndRenderFilter(allItems, {theme, option, sort}) {
+    async function applyAndRenderFilter(allItems, {theme, collect, option, sort}) {
         let filtered = [...allItems];
 
-        // ✅ 완전 일치로 변경
-        if (theme) filtered = filtered.filter(i => i.theme && i.theme === theme);
+        // ✅ 테마 (현재 주석용)
+        // if (theme) filtered = filtered.filter(i => i.theme && i.theme === theme);
         if (option) filtered = filtered.filter(i => i.attribute && i.attribute === option);
+
+        // ✅ 수집 여부 필터
+        if (collect === "collected") {
+            filtered = filtered.filter(i => collected[Number(i.id)] === true || collected[String(i.id)] === true);
+        } else if (collect === "uncollected") {
+            filtered = filtered.filter(i => !collected[Number(i.id)] && !collected[String(i.id)]);
+        }
 
         // ✅ 가격 문자열을 숫자로 변환하는 헬퍼 함수
         const parsePrice = (val) => {
@@ -1318,10 +1344,6 @@
 
     // ✅ 아이템 테이블 렌더링 (획득 여부 표시 포함)
     async function renderItemTable(items) {
-        const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
-        const snap = await get(memoryRef);
-        const collected = snap.exists() ? snap.val() : {};
-
         const tableHTML = `
             <table class="item-table">
                 <tbody>
@@ -1389,20 +1411,6 @@
             showAlert("상태 저장 중 오류가 발생했어요...");
         }
     });
-
-    // ✅ 마지막 모드 불러오기
-    const savedMode = localStorage.getItem("coffeeMemory-mode") || "normal";
-    if (savedMode === "filter") {
-        $(".mainPage").hide();
-        $(".subPage").show();
-        $(".advancedSettingBtn").text("일반모드");
-        renderAdvancedSettings();
-    } else {
-        $(".mainPage").show();
-        $(".subPage").hide();
-        $(".advancedSettingBtn").text("필터모드");
-    }
-
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 <script src="../menuToggle/menuToggle.js" type="module" defer></script>
