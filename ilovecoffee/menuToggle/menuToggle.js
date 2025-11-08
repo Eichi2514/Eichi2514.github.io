@@ -83,7 +83,7 @@ $(async function () {
     }*/
 
     const isToggle = localStorage.getItem("closeMenu") === "true";
-    console.log(isToggle);
+
     if (!isToggle) {
         $area.removeClass("collapsed");
     } else {
@@ -179,4 +179,31 @@ $(async function () {
     $(document).on("click", "#closeAdminOptionModal", () => $("#adminOptionModal").hide());
     $(document).on("click", "#adminArchiveBtn", () => { $("#adminOptionModal").hide(); goToPage("admin"); });
     $(document).on("click", "#adminMemoryBtn", () => { $("#adminOptionModal").hide(); goToPage("aMemory"); });
+
+    const $btn = $(".closeMenuBtn");
+    localStorage.removeItem("floatingMenuOpen");
+
+    // ✅ 페이지 로드 시 현재 상태 반영
+    const isActive = localStorage.getItem("closeMenu") === "true";
+    $btn.text(isActive ? "메뉴열기" : "메뉴닫기");
+
+    // ✅ 버튼 클릭 시 토글 + 새로고침
+    $btn.on("click", function () {
+        const nowActive = localStorage.getItem("closeMenu") === "true";
+        const nextState = !nowActive;
+
+        localStorage.setItem("closeMenu", nextState ? "true" : "false");
+        $btn.text(nextState ? "메뉴열기" : "메뉴닫기");
+
+        const $area = $(".floating-btn-area");
+        const $toggle = $(".floating-toggle");
+
+        if (nowActive) {
+            $area.removeClass("collapsed");
+            $toggle.hide();
+        } else {
+            $area.addClass("collapsed");
+            $toggle.show();
+        }
+    });
 });
