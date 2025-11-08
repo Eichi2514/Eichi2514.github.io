@@ -679,7 +679,7 @@ export const memoryData = [{
         }, {
             "id": 260, "item": "점성술 주사위 (100개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "망고 생과일주스 판매"
         }, {
-            "id": 261, "item": "라탄 쟈스민 수레", "theme": "라탄", "color": "밝은갈색", "machine": "", "attribute": "캐시", "price": "28 C", "note": ""
+            "id": 261, "item": "라탄 쟈스민 수레", "theme": "라탄", "color": "갈색", "machine": "", "attribute": "캐시", "price": "28 C", "note": ""
         }, {
             "id": 262, "item": "향기가득 차양 꽃 수레", "theme": "", "color": "그린", "machine": "", "attribute": "골드", "price": "1,580,000 G", "note": ""
         }, {

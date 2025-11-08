@@ -647,6 +647,7 @@
             <div id="settingsDropdown" class="dropdown-menu" style="display:none;">
                 <button class="addSubCharacterBtn">부캐 등록</button>
                 <button class="expTableBtn">경험치표</button>
+                <button class="closeMenuBtn">메뉴닫기</button>
                 <button class="changeNicknameBtn">닉네임 변경</button>
                 <button class="changePasswordBtn">비밀번호 변경</button>
                 <button class="logoutBtn">로그아웃</button>
@@ -1023,6 +1024,24 @@
                 location.reload();
             }
         });
+    });
+
+    const $btn = $(".closeMenuBtn");
+    localStorage.removeItem("floatingMenuOpen");
+
+    // ✅ 페이지 로드 시 현재 상태 반영
+    const isActive = localStorage.getItem("closeMenu") === "true";
+    $btn.text(isActive ? "메뉴열기" : "메뉴닫기");
+
+    // ✅ 버튼 클릭 시 토글 + 새로고침
+    $btn.on("click", function () {
+        const nowActive = localStorage.getItem("closeMenu") === "true";
+        const nextState = !nowActive;
+
+        localStorage.setItem("closeMenu", nextState ? "true" : "false");
+        $btn.text(nextState ? "메뉴열기" : "메뉴닫기");
+
+        location.reload();
     });
 
     $(".layoutBtn").on("click", function () {

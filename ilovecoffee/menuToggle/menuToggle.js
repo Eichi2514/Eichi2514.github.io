@@ -36,7 +36,7 @@ $(async function () {
                 <button class="floating-btn rankingBtn">아카이브</button>
                 <button class="floating-btn memoryRoomBtn">메모리룸</button>
                 <button class="floating-btn adminBtn">관리자</button>
-                <button class="floating-toggle">▼ 닫기</button>
+                <button class="floating-toggle">▲</button>
             </div>
         `);
     }
@@ -70,8 +70,9 @@ $(async function () {
 
     // ✅ 모든 버튼 숨기고 필요할 때만 표시
     $(".floating-btn").hide();
+    $toggle.hide();
 
-    // ✅ 접힘 상태 복원
+    /* ✅ 접힘 상태 복원
     const isOpen = localStorage.getItem("floatingMenuOpen") === "true";
     if (!isOpen) {
         $area.removeClass("collapsed");
@@ -79,6 +80,15 @@ $(async function () {
     } else {
         $area.addClass("collapsed");
         $toggle.text("▲");
+    }*/
+
+    const isToggle = localStorage.getItem("closeMenu") === "true";
+    console.log(isToggle);
+    if (!isToggle) {
+        $area.removeClass("collapsed");
+    } else {
+        $area.addClass("collapsed");
+        $toggle.show();
     }
 
     // ✅ 토글 버튼 클릭
@@ -88,11 +98,11 @@ $(async function () {
         if (nowCollapsed) {
             $area.removeClass("collapsed");
             $toggle.text("▼ 닫기");
-            localStorage.setItem("floatingMenuOpen", "false");
+            // localStorage.setItem("floatingMenuOpen", "false");
         } else {
             $area.addClass("collapsed");
             $toggle.text("▲");
-            localStorage.setItem("floatingMenuOpen", "true");
+            // localStorage.setItem("floatingMenuOpen", "true");
         }
     });
 
@@ -108,10 +118,10 @@ $(async function () {
         const hasSubCharacter = localStorage.getItem("coffee-subnickname");
 
         // ✅ 페이지별 표시 조건
-        if (currentPage !== "levelup") $(".levelupBtn").show();
+        if (currentPage !== "memory" && currentPage !== "levelup" && currentPage !== "ranking") $(".levelupBtn").show();
         if (currentPage === "levelup" && hasSubCharacter) $(".subCharacterBtn").show();
 
-        if (currentPage !== "memory") $(".memoryBtn").show();
+        if (currentPage !== "memory" && currentPage !== "levelup" && currentPage !== "memoryRoom") $(".memoryBtn").show();
         if (currentPage === "memory") $(".advancedSettingBtn").show();
 
         if (rankingPublic && currentPage !== "ranking") $(".rankingBtn").show();
