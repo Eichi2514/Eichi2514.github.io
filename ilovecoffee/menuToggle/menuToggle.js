@@ -201,9 +201,11 @@ $(async function () {
         if (nowActive) {
             $area.removeClass("collapsed");
             $toggle.hide();
+            $toggle.text("▼ 닫기");
         } else {
             $area.addClass("collapsed");
             $toggle.show();
+            $toggle.text("▲");
         }
     });
 });
