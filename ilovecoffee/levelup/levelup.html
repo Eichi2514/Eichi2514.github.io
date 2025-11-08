@@ -684,6 +684,18 @@
         <div id="rankingToggle" class="toggle-switch"></div>
     </div>
 
+    <!-- ✅ 경험치 진행도 바 -->
+    <div id="expBarContainer"
+         style="position:relative; width:100%; background:#eee; border-radius:10px; overflow:hidden; height:20px;">
+        <div id="expBarFill"
+             style="height:100%; width:0; background:#5a4398; transition:width 0.6s ease;"></div>
+        <div id="expBarPercent"
+             style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+                color:white; font-size:13px; font-weight:600; text-shadow:0 0 3px rgba(0,0,0,0.5);">
+            0%
+        </div>
+    </div>
+
     <div class="status-card">
         <div class="status-item">
             <div class="status-label">평균 경험치</div>
@@ -701,11 +713,6 @@
         <canvas id="expChart" width="100%" height="100"></canvas>
     </div>
     <div style="text-align:right;">
-        <button id="voteBtn"
-                style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
-                       border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
-            투표하기
-        </button>
         <button id="toggleChartBtn"
                 style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
                  border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
@@ -1258,39 +1265,6 @@
         bindNumericCommaFormatter("#todayExp, #editExpValue", 1_000_000_000_000, "경험치는 최대 1조까지 입력할 수 있어요.");
     });
 
-    // ✅ 투표 버튼 클릭 이벤트
-    $(document).on("click", "#voteBtn", async function () {
-        const nickname = getActiveNickname();
-        if (!nickname) return showAlert("로그인 후 이용해주세요.");
-
-        // 커스텀 컨펌 실행
-        showConfirm("그래프 기능을 계속 유지할까요?", async (ok) => {
-            const voteType = ok ? "반대" : "찬성";
-            const path = `coffeeVote/${voteType}/${nickname}`;
-            const voteRef = ref(db, path);
-
-            try {
-                // 🔹 현재 값 가져오기
-                const snap = await get(voteRef);
-                let currentCount = 0;
-                if (snap.exists()) {
-                    const val = snap.val();
-                    // 혹시 숫자 외 형식(타임스탬프 등)일 수도 있으므로 처리
-                    currentCount = typeof val === "number" ? val : 0;
-                }
-
-                // 🔹 기존 값 + 1 저장
-                const newCount = currentCount + 1;
-                await set(voteRef, newCount);
-
-                showAlert(`소중한 한표 감사합니다!`);
-            } catch (err) {
-                console.error("투표 저장 오류:", err);
-                showAlert("투표 중 오류가 발생했습니다.");
-            }
-        }, "반대", "찬성");
-    });
-
     let profileNum = 1;
     let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
     let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
@@ -1691,6 +1665,8 @@
                                 }
 
                                 $("#curExp").html(`${remainExp.toLocaleString()}<br>${approx}`);
+
+                                updateExpBar(currentExp, nextNeedExp);
                             } else if (userData.goalTargets?.length > 0) {
                                 // 만렙 + 목표 경험치 모드
                                 const goalTargets = userData.goalTargets.sort((a, b) => a - b);
@@ -2059,6 +2035,16 @@
                     renderExpChart(latestExpRecords);
                 }
             });
+
+            // ✅ 경험치바 업데이트
+            function updateExpBar(currentExp, nextNeedExp) {
+                const percent = Math.min((currentExp / nextNeedExp) * 100, 100).toFixed(1);
+                // ✅ 게이지 채우기
+                $("#expBarFill").css("width", `${percent}%`);
+
+                // ✅ 게이지 위 퍼센트 표시
+                $("#expBarPercent").text(`${percent}%`);
+            }
         }
 
         // ✅ 레벨 입력 모달 저장 버튼
