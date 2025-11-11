@@ -563,7 +563,7 @@ function createRegularGuestsModal() {
     const modalHTML = `
     <div id="regularGuestsModal" class="login-overlay" style="display:none;">
       <div class="login-modal" style="position:relative;">
-        <button id="closeRegularGuestsModal" class="closeBtn">✕</button>
+        <button id="closeRegularGuestsModal" class="closeBtn" style="color: #5a4398 !important;">✕</button>
         <h2 class="modal-title">단골손님 목록</h2>
         <div id="guestList"></div>
         <div id="levelSelect" style="display:none; margin-top:15px;">
@@ -576,7 +576,7 @@ function createRegularGuestsModal() {
           <h3 class="sub-title">대사 목록</h3>
           <ul id="dialogueItems" style="list-style:none; padding:0; line-height:1.8; text-align:left;"></ul>
         </div>
-        <button id="guestBackBtn" style="display:none; position:absolute; top:12px; left:12px; height: 40px; width: 40px;">←</button>
+        <button id="guestBackBtn" style="display:none; position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: #5a4398">←</button>
       </div>
     </div>
   `;
