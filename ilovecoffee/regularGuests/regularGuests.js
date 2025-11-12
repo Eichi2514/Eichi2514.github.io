@@ -558,6 +558,8 @@ $(document).on("click", ".regularGuestsBtn", function () {
     renderGuestList();
 });
 
+let currentGuest = null;
+
 // ✅ 모달 생성 함수
 function createRegularGuestsModal() {
     const modalHTML = `
@@ -592,11 +594,13 @@ function createRegularGuestsModal() {
         if ($("#dialogueList").is(":visible")) {
             $("#dialogueList").hide();
             $("#levelSelect").fadeIn(150);
+            $(".modal-title").text(currentGuest);
         } else if ($("#levelSelect").is(":visible")) {
             $("#levelSelect").hide();
             $("#guestList").fadeIn(150);
             $("#guestBackBtn").hide();
             $(".modal-title").text("단골손님 목록");
+            currentGuest = null;
         }
     });
 }
@@ -667,6 +671,7 @@ function renderGuestList() {
 
 // ✅ 2단계: 레벨 선택
 function showLevelSelect(guestName) {
+    currentGuest = guestName;
     $("#guestList").hide();
     $("#levelSelect").fadeIn(150);
     $("#guestBackBtn").show();
