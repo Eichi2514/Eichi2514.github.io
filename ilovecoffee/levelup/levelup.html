@@ -2750,6 +2750,13 @@
         }
     });
 
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
     // 🔥 좋아요 애니메이션 뿌리기
     async function showLikeMessages(nickname) {
         const likesRef = ref(db, `coffeeLikes/${nickname}`);
@@ -2768,6 +2775,9 @@
                 );
             }
         }
+
+        // 🎲 배열 랜덤 섞기
+        shuffle(messages);
 
         // 📌 간격 계산
         let group = Math.floor(messages.length / 10);
