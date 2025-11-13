@@ -260,3 +260,22 @@ export function showConfirm(message, onConfirm, yesText = "확인", noText = "�
             if (typeof onConfirm === "function") onConfirm(false);
         });
 }
+
+export function formatKoreanNumber(num) {
+    let n = num;
+
+    const eok = Math.floor(n / 100000000);  // 억
+    n %= 100000000;
+
+    const man = Math.floor(n / 10000);      // 만
+    n %= 10000;
+
+    const ge = n;                           // 나머지
+
+    const parts = [];
+    if (eok > 0) parts.push(`${eok.toLocaleString()}억`);
+    if (man > 0) parts.push(`${man.toLocaleString()}만`);
+    if (ge > 0 || parts.length === 0) parts.push(`${ge.toLocaleString()}`);
+
+    return parts.join(" ");
+}
