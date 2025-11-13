@@ -641,6 +641,39 @@
             transition:0.2s;
         }
 
+        /* ❤️ 좋아요 메시지 떠다니기 */
+        .like-floating {
+            position: fixed;
+            z-index: 2000;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ff3b7a;
+            opacity: 0;
+            animation: likeFloat 5s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .like-name {
+            color: #ff8a00;
+            font-weight: 900;      /* 더 두껍게 */
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); /* 약간 강조 효과 */
+        }
+
+        @keyframes likeFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-150px) scale(1.4);
+                opacity: 0;
+            }
+        }
+
     </style>
     <link rel="stylesheet" href="../helpModal/helpModal.css"/>
     <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
@@ -1308,11 +1341,11 @@
     let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
     let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
     $(function () {
-        const todayValue = "v7";
+        const todayValue = "v8";
         const lastUpdate = localStorage.getItem("LU-update");
 
         if (lastUpdate !== todayValue) {
-            showAlert("! New !\n그래프 아래의 투표 버튼을 눌러 그래프 기능 찬반여부에 투표 부탁드립니다!");
+            showAlert("! New !\n아카이브나 메모리룸에서 유저 프로필을 눌러 ❤️를 보내보세요!");
             localStorage.setItem("LU-update", todayValue);
         }
 
@@ -1331,6 +1364,7 @@
                     // ✅ 정상 계정이면 페이지 표시
                     if (savedNick == getActiveNickname()) {
                         await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
+                        await showLikeMessages(savedNick);
                     }
                     $loadingScreen.hide();
                     $mainPage.css("display", "flex");
@@ -2715,6 +2749,57 @@
             $("#totalProgressBarContainer").hide();
         }
     });
+
+    // 🔥 좋아요 애니메이션 뿌리기
+    async function showLikeMessages(nickname) {
+        const likesRef = ref(db, `coffeeLikes/${nickname}`);
+        const snap = await get(likesRef);
+
+        if (!snap.exists()) return;
+
+        const data = snap.val();
+        const messages = [];
+
+        for (const fromNick in data) {
+            const count = data[fromNick];
+            for (let i = 0; i < count; i++) {
+                messages.push(
+                    `<span class="like-name">${fromNick}</span>님이 ❤️를 보냈습니다🦊`
+                );
+            }
+        }
+
+        // 🔥 메시지를 뿌리기
+        messages.forEach((msg, idx) => {
+            setTimeout(() => spawnFloatingMessage(msg), idx * 1500);
+        });
+
+        // 🔥 데이터를 본 직후 좋아요 기록 삭제
+        // 완전히 삭제하면 새로 쌓이는 좋아요만 남게 됨
+        await remove(likesRef);
+    }
+
+    // 🔥 실제 메시지를 떠다니게 만드는 함수
+    function spawnFloatingMessage(text) {
+        const $msg = $(`<div class="like-floating">${text}</div>`);
+
+        // 화면 랜덤 위치
+        const x = Math.random() * (window.innerWidth - 200);
+        const y = Math.random() * (window.innerHeight - 100);
+
+        $msg.css({
+            left: `${x}px`,
+            top: `${y}px`
+        });
+
+        $("body").append($msg);
+
+        // 애니메이션 끝나면 제거
+        setTimeout(() => {
+            $msg.remove();
+        }, 2600);
+    }
+
 </script>
 <script src="../helpModal/helpModal.js" defer></script>
 <script src="../menuToggle/menuToggle.js" type="module" defer></script>
