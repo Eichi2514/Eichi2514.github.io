@@ -2769,9 +2769,14 @@
             }
         }
 
-        // 🔥 메시지를 뿌리기
+        // 📌 간격 계산
+        let group = Math.floor(messages.length / 10);
+        let interval = 1500 - (group * 300);
+        if (interval < 10) interval = 100;
+
+        // 🔥 메시지들을 사방에 뿌리기
         messages.forEach((msg, idx) => {
-            setTimeout(() => spawnFloatingMessage(msg), idx * 1500);
+            setTimeout(() => spawnFloatingMessage(msg), idx * interval);
         });
 
         // 🔥 데이터를 본 직후 좋아요 기록 삭제
