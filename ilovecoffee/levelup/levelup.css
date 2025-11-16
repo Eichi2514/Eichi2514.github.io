@@ -1,0 +1,654 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    margin: 0;
+    background: #fff;
+    color: #333;
+}
+
+/* ===== 전체 래퍼 ===== */
+#mainPage {
+    display: none;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: flex-start; /* 위쪽부터 배치 */
+    gap: 10px;
+    width: 100%;
+    min-height: 100vh;
+    background: #fff;
+    padding: 20px 16px 60px;
+    margin: 0 auto;
+    border-radius: 12px;
+    position: relative;
+    text-align: center;
+}
+
+/* ===== 레벨 입력 영역 ===== */
+.level-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px;
+    margin-top: 20px;
+}
+
+/* ===== 제목 / 버튼 ===== */
+h1 {
+    text-align: center;
+    color: #5a4398;
+    font-size: 22px;
+}
+
+.level-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ===== 헤더 스타일 ===== */
+.header-bar {
+    background: #5a4398;
+    color: #fff;
+    padding: 14px 16px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-bar h1 {
+    color: #fff; /* 흰 글씨 */
+    font-size: 20px;
+    margin: 0;
+}
+
+#expButton {
+    background: transparent; /* 배경 투명 */
+    color: #5a4398; /* 글자 보라색 */
+    border: 2px solid #5a4398; /* 진한 보라색 테두리 */
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+/* ===== 섹션 제목 ===== */
+h3 {
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: #444;
+    text-align: left;
+    font-size: 17px;
+}
+
+/* ===== 테이블 ===== */
+#expTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#expTable th,
+#expTable td {
+    border: 1px solid #e0dff2;
+    padding: 10px;
+    text-align: center;
+}
+
+#expTable th {
+    background: #f6f4fc;
+    color: #5a4398;
+    font-weight: 600;
+}
+
+#expTable tr:nth-child(even) {
+    background: #faf9fd;
+}
+
+/* ===== 모달 공통 ===== */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+/* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
+#customAlert,
+#customConfirm {
+    z-index: 100; /* 다른 모든 모달보다 앞 */
+}
+
+#customAlert .alert-box,
+#customConfirm .alert-box {
+    position: relative;
+    z-index: 101; /* 내부 콘텐츠도 최상단 */
+}
+
+.login-modal {
+    position: relative;
+    background: #fff;
+    padding: 30px 25px 50px 25px;
+    border-radius: 12px;
+    width: 360px;
+    min-height: max-content;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-modal h2 {
+    margin-bottom: 15px;
+    color: #5a4398;
+}
+
+.login-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.login-modal button {
+    width: 100%;
+    padding: 10px;
+    background: #5a4398;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.msg {
+    margin-top: 10px;
+    font-size: 20px;
+    height: 24px;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none !important;
+    border: none;
+    font-size: 20px;
+    color: #aaa !important;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+    margin: 0;
+    width: max-content !important;
+}
+
+/* ===== 옵션 선택 모달 ===== */
+#optionModal {
+    display: none;
+}
+
+#optionModal .login-modal {
+    width: 280px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* 제목 가운데 정렬 */
+#optionModal h3 {
+    color: #5a4398;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 공통 버튼 스타일 */
+#optionModal button {
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+/* 개별 색상 */
+#editExpBtn {
+    color: #5a4398;
+    border: 2px solid #5a4398;
+}
+
+#deleteExpBtn {
+    color: #d9534f;
+    border: 2px solid #d9534f;
+}
+
+#closeOptionBtn {
+    color: #777;
+    border: 2px solid #777;
+}
+
+#customAlert .alert-box, #customConfirm .alert-box {
+    background: #ffbcae;
+    padding: 25px 25px 20px;
+    border-radius: 12px;
+    width: 360px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    position: relative;
+}
+
+#customAlert .alert-content, #customConfirm .alert-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#customAlert .alert-text, #customConfirm .alert-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.4;
+    flex: 1;
+    padding-right: 10px;
+
+    white-space: pre-line; /* \n 줄바꿈 인식 */
+    word-break: keep-all; /* 단어 기준 줄바꿈 */
+    overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+}
+
+
+#customAlert .alert-img, #customConfirm .alert-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+#alertConfirmBtn {
+    display: block;
+    width: 100%;
+    background: #5a4398;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+}
+
+/* ===== 퀵버튼 바 ===== */
+#quickBtn-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* 버튼 간 간격 */
+    padding: 0 8px;
+}
+
+.quickBtn {
+    width: calc((100% / 3)); /* 버튼 크기 */
+    background: #f6f4fc;
+    border: 1px solid #e0dff2;
+    color: #5a4398;
+    border-radius: 8px;
+    padding: 5px 0;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden; /* ✅ 이미지가 버튼 밖으로 삐져나오지 않게 */
+}
+
+/* 버튼 텍스트를 앞으로 올리기 위해 span으로 감쌈 */
+.quickBtn span {
+    position: relative;
+    z-index: 2; /* ✅ 글자 앞으로 */
+    display: block;
+    width: calc(100% - 35px);
+    text-align: center;
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+/* ===== 퀵버튼(원형 이미지) ===== */
+.quickBtnImg {
+    width: 20px; /* 버튼 크기 */
+    height: 20px;
+    border-radius: 50%; /* 완전한 원형 */
+    object-fit: cover; /* 이미지 꽉 채우기 */
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0; /* ✅ 글자보다 아래 */
+}
+
+#adminBtn-bar {
+    text-align: right;
+}
+
+.barBtn {
+    background: #5a4398;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    height: 35px;
+    padding: 8px 16px;
+    font-weight: 600;
+}
+
+/* ===== 아카이브 공개 토글 스위치 ===== */
+.toggle-switch {
+    width: 50px;
+    height: 26px;
+    background: #ccc;
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.toggle-switch::after {
+    content: "";
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ 다크모드용 랭킹 토글 스위치 보정 */
+@media (prefers-color-scheme: dark) {
+    .toggle-switch {
+        background: #f2f2f2; /* 기본 OFF 배경을 어둡게 */
+    }
+}
+
+/* ON 상태 */
+.toggle-switch.on {
+    background: #5a4398;
+}
+
+.toggle-switch.on::after {
+    left: 26px;
+}
+
+/* ===== 설정 메뉴 스타일 ===== */
+.settings-menu {
+    position: relative;
+}
+
+#settingsBtn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    z-index: 100;
+    min-width: 140px;
+}
+
+/* ✅ 드롭다운 버튼 개별 스타일 */
+.dropdown-menu button {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* 마지막 버튼은 구분선 제거 */
+.dropdown-menu button:last-child {
+    border-bottom: none;
+}
+
+/* ===== 로딩 스크린 ===== */
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f3f9;
+    z-index: 9999;
+    flex-direction: column;
+}
+
+/* ===== 스피너 애니메이션 ===== */
+.spinner {
+    border: 5px solid #eee;
+    border-top: 5px solid #5a4398;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+/* ===== 로딩 문구 ===== */
+#loadingScreen p {
+    margin-top: 10px;
+    color: #5a4398;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* ===== 회전 애니메이션 ===== */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.status-box {
+    background: #f6f4fc;
+    border: 1px solid #e0dff2;
+    border-radius: 10px;
+}
+
+.status-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.status-item {
+    flex: 1;
+    text-align: center;
+}
+
+.status-label {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 4px;
+}
+
+.status-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #5a4398;
+}
+
+/* ===== 흘러가는 문장 (애니메이션) ===== */
+.scrolling-text-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.scrolling-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 600;
+    color: #5a4398;
+    animation: scrollText 14s linear infinite;
+}
+
+/* 좌 → 우 방향 스크롤 애니메이션 */
+@keyframes scrollText {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* 🎇 폭죽 + 축하문구 애니메이션 */
+.firework-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 150;
+}
+
+.firework-text {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.6;
+    text-shadow: 0 0 20px #5a4398, 0 0 30px #c6a6ff, 0 0 50px #fff;
+    margin-top: 20px;
+    z-index: 200; /* ✅ 폭죽보다 위로 */
+    animation: popIn 0.8s ease;
+}
+
+/* 폭죽 점 애니메이션 */
+.firework {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    animation: explode 1.5s ease-out infinite;
+}
+
+.firework {
+    --tx: 0;
+    --ty: 0;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes explode {
+    0% { transform: scale(0) translate(0, 0); opacity: 1; }
+    100% {
+        transform: scale(1.2)
+        translate(calc(var(--tx) * 1px), calc(var(--ty) * 1px));
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+#switchProgressBtn {
+    min-width: max-content;
+    background:#5a4398;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:2px 6px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    margin-left:10px;
+    transition:0.2s;
+}
+
+/* ❤️ 좋아요 메시지 떠다니기 */
+.like-floating {
+    position: fixed;
+    z-index: 2000;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff3b7a;
+    opacity: 0;
+    animation: likeFloat 5s ease-out forwards;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.like-name {
+    color: #ff8a00;
+    font-weight: 900;      /* 더 두껍게 */
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); /* 약간 강조 효과 */
+}
+
+@keyframes likeFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-150px) scale(1.4);
+        opacity: 0;
+    }
+}
