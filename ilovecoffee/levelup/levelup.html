@@ -131,11 +131,15 @@
     <div style="display:flex; justify-content: right;">
         <button id="toggleChartBtn"
                 style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
-                 border-radius:8px; padding:5px 10px; font-weight:600; cursor:pointer;">
+                 border-radius:8px; padding:5px 10px; font-weight:600;">
         </button>
     </div>
 
-    <h3>일자별 경험치</h3>
+    <div style="display: flex; justify-content:space-between; margin-top: 30px;">
+        <h3>일자별 경험치</h3>
+        <button id="toggleExpTableBtn" style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
+        border-radius:8px; padding:5px 10px; font-weight:600;">하이라이트</button>
+    </div>
     <table id="expTable">
         <thead>
         <tr>
@@ -229,11 +233,11 @@
         <div id="expTableNav"
              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap: 8px">
             <button id="prevExpPage"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">
+                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px;">
                 〈 이전
             </button>
             <button id="nextExpPage"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">
+                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px;">
                 다음 〉
             </button>
         </div>
@@ -269,11 +273,11 @@
         </div>
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button id="confirmYesBtn"
-                    style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">
+                    style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
                 확인
             </button>
             <button id="confirmNoBtn"
-                    style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; cursor:pointer; transition:background 0.2s;">
+                    style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
                 취소
             </button>
         </div>
@@ -299,7 +303,7 @@
         </div>
 
         <button id="applyProfileBtn"
-                style="width:100%; background:#5a4398; color:#fff; border:none; border-radius:8px; padding:8px 0; font-size:16px; font-weight:600; cursor:pointer;">
+                style="width:100%; background:#5a4398; color:#fff; border:none; border-radius:8px; padding:8px 0; font-size:16px; font-weight:600;">
             변경
         </button>
     </div>
@@ -384,19 +388,19 @@
 <!-- 레벨업 기록 모달 -->
 <div id="levelUpLogModal" class="login-overlay" style="display:none;">
     <div class="login-modal"
-         style="position:relative; width:320px;">
+         style="position:relative; width:230px;">
         <button id="closeLevelUpLogModal" class="closeBtn">✕</button>
         <div id="levelUpLogList"
-             style="text-align:left; margin-top:10px; font-size:15px; line-height:1.6; min-height: 250px;">
+             style="text-align:left; margin-top:30px; font-size:15px; line-height:1.6; min-height: 250px;">
         </div>
         <div id="logPagination"
              style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; gap: 8px;">
             <button class="logPrev"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">
+                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 20px 4px 10px;">
                 〈 이전
             </button>
             <button class="logNext"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">
+                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px 4px 20px;">
                 다음 〉
             </button>
         </div>

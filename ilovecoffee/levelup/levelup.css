@@ -84,8 +84,9 @@ h1 {
 
 /* ===== 섹션 제목 ===== */
 h3 {
-    margin-top: 30px;
-    margin-bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    margin: 0;
     color: #444;
     text-align: left;
     font-size: 17px;
@@ -172,7 +173,6 @@ h3 {
     color: #fff;
     border: none;
     border-radius: 6px;
-    cursor: pointer;
     font-size: 17px;
     margin-top: 10px;
     transition: 0.2s;
@@ -192,7 +192,6 @@ h3 {
     border: none;
     font-size: 20px;
     color: #aaa !important;
-    cursor: pointer;
     transition: color 0.2s;
     padding: 0;
     margin: 0;
@@ -225,7 +224,6 @@ h3 {
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
-    cursor: pointer;
     background: transparent;
     transition: all 0.2s ease;
 }
@@ -292,7 +290,6 @@ h3 {
     font-size: 16px;
     font-weight: 600;
     padding: 10px;
-    cursor: pointer;
     margin-top: 20px;
     transition: background 0.2s;
 }
@@ -364,7 +361,6 @@ h3 {
     background: #ccc;
     border-radius: 13px;
     position: relative;
-    cursor: pointer;
     transition: background 0.25s ease;
 }
 
@@ -410,7 +406,6 @@ h3 {
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
     transition: background 0.2s;
 }
 
@@ -437,7 +432,6 @@ h3 {
     text-align: center;
     padding: 12px 0;
     font-size: 14px;
-    cursor: pointer;
     font-weight: 500;
     transition: all 0.2s ease;
 }

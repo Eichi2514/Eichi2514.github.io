@@ -480,6 +480,56 @@ $(document).on("input", "#todayExp, #editExpValue", function () {
     bindNumericCommaFormatter("#todayExp, #editExpValue", 1_000_000_000_000, "경험치는 최대 1조까지 입력할 수 있어요.");
 });
 
+let showLevelUpOnly = false;   // 현재 필터 상태
+let allExpRows = [];           // 전체 기록 저장용 (날짜, level, exp, gained)
+
+$("#toggleExpTableBtn").on("click", function () {
+    showLevelUpOnly = !showLevelUpOnly; // 토글
+
+    const $tbody = $("#expTable tbody");
+    $tbody.empty();
+
+    let rows = [];
+
+    if (showLevelUpOnly) {
+        rows.push(allExpRows[0]); // ✅ 첫 기록은 무조건 포함
+
+        let prevLevel = allExpRows[0].level;
+
+        for (let i = 1; i < allExpRows.length; i++) {
+            const row = allExpRows[i];
+            if (row.level !== prevLevel) {
+                rows.push(row);
+            }
+            prevLevel = row.level;
+        }
+
+        $(this).text("전체보기");
+    } else {
+        rows = [...allExpRows];
+        $(this).text("하이라이트");
+    }
+
+    // ✅ 여기서 rows를 최신 날짜 기준 내림차순 정렬
+    rows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // 🔥 테이블 새로 렌더링
+    for (const r of rows) {
+        const gainedTd = showLevelUpOnly
+            ? `<td> - </td>`
+            : `<td>${r.gained}<br><span style="color:red">${r.approx}</span></td>`;
+
+        $tbody.append(`
+            <tr class="exp-row" data-date="${r.date}">
+                <td>${r.formattedDate}</td>
+                <td>${r.level}</td>
+                <td>${r.exp.toLocaleString()}</td>
+                ${gainedTd}
+            </tr>
+        `);
+    }
+});
+
 let profileNum = 1;
 let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
 let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
@@ -761,6 +811,7 @@ $(function () {
                 const sorted = Object.keys(records).sort();
                 const $tbody = $("#expTable tbody");
                 $tbody.empty();
+                allExpRows = [];
 
                 const pageSize = 10;
                 const totalRecords = sorted.length;
@@ -829,6 +880,15 @@ $(function () {
                     prevExp = currentExp;
                     prevLevel = currentLevel;
                     prevDate = date; // ✅ 이전 날짜 저장
+
+                    allExpRows.push({
+                        date,
+                        formattedDate,
+                        level: currentLevel,
+                        exp: currentExp,
+                        gained,
+                        approx
+                    });
                 });
 
                 // 🔸 평균 계산 및 전체 레벨업 예정일 표시 (레벨업 시 경험치 0으로 초기화 구조)
