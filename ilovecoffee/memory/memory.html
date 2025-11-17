@@ -881,7 +881,7 @@
 
         const memoryRef = ref(db, `coffeeMemory/${activeNickname}`);
         const snap = await get(memoryRef);
-        collected = snap.val();
+        collected = snap.val() || {};
 
         // ✅ 필요한 필드만 병렬로 가져오기
         Promise.all([
