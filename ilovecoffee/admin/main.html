@@ -342,7 +342,7 @@
                     const records = u.expRecords ? Object.entries(u.expRecords) : [];
 
                     // ✅ 유저별 평균 경험치 계산
-                    const avgExp = calcAvgExp(records);
+                    const avgExp = calcAvgExp(records, u.key);
 
                     // ✅ 유저별 D-day 계산
                     const lastRecord = records.length ? records[records.length - 1][1] : {};

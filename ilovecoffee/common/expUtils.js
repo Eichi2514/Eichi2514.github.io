@@ -24,10 +24,10 @@ export function calcDiffExp(prev, cur) {
 }
 
 /** ✅ 평균 경험치 계산 (최근 10일 내 기록 기준) */
-export function calcAvgExp(records) {
+export function calcAvgExp(records, user = null) {
     if (!records || records.length < 2) return 0;
 
-    console.log("📊 기록 :", JSON.parse(JSON.stringify(records)));
+    console.log(`📊${user != null ? user : ''} 기록 :`, JSON.parse(JSON.stringify(records)));
     records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
     const today = new Date();
 
