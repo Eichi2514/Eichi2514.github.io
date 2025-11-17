@@ -375,11 +375,11 @@ let profileNum = 1;
 let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
 let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
 $(function () {
-    const todayValue = "v8";
+    const todayValue = "v9";
     const lastUpdate = localStorage.getItem("LU-update");
 
     if (lastUpdate !== todayValue) {
-        showAlert("! New !\n아카이브나 메모리룸에서 유저 프로필을 눌러 ❤️를 보내보세요!");
+        showAlert("! New !\n오픈톡 포스트에 등록해놓은\n레벨업 일자들이 있다면\n과거 기록으로 등록해보세요!\n\n하이라이트 기능으로\n그럴수이치에서도 쉽게 확인이 가능해요!");
         localStorage.setItem("LU-update", todayValue);
     }
 
