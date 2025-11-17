@@ -1037,20 +1037,52 @@ $(function () {
         // ================================
         // ✅ 최근 10일 꺾은선 그래프 렌더링 (획득 ↔ 누적 토글 가능)
         // ================================
+        function interpolateRange(expMap, allDates) {
+            let lastKnownIndex = null; // 마지막으로 값이 있던 인덱스
+
+            for (let i = 0; i < allDates.length; i++) {
+                const d = allDates[i];
+
+                if (expMap[d]) {
+                    // 현재 날짜에 값이 있으면 lastKnownIndex 업데이트
+                    lastKnownIndex = i;
+                    continue;
+                }
+
+                // 값이 없는 날짜일 때 → 오른쪽에서 다음 known 탐색
+                let nextKnownIndex = null;
+                for (let j = i + 1; j < allDates.length; j++) {
+                    if (expMap[allDates[j]]) {
+                        nextKnownIndex = j;
+                        break;
+                    }
+                }
+
+                // 좌/우 모두 값이 있어야 보간 가능
+                if (lastKnownIndex !== null && nextKnownIndex !== null) {
+                    const startDate = allDates[lastKnownIndex];
+                    const endDate   = allDates[nextKnownIndex];
+
+                    const startVal = expMap[startDate].total;
+                    const endVal   = expMap[endDate].total;
+
+                    const totalGap = nextKnownIndex - lastKnownIndex;
+                    const pos = i - lastKnownIndex;
+
+                    const value = Math.floor(
+                        startVal + (endVal - startVal) * (pos / totalGap)
+                    );
+
+                    expMap[d] = { total: value, gain: 0 };
+                }
+            }
+        }
+
         function renderExpChart(records) {
             const today = new Date();
             const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             const hasTodayRecord = !!records[`2025-${todayStr}`] || !!records[todayStr];
             const baseDate = hasTodayRecord ? today : new Date(today.setDate(today.getDate() - 1));
-
-            const allDates = [];
-            for (let i = 9; i >= 0; i--) {
-                const d = new Date(baseDate);
-                d.setDate(baseDate.getDate() - i);
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                allDates.push(`${mm}-${dd}`);
-            }
 
             const expMap = {};
             const sortedDates = Object.keys(records).sort();
@@ -1075,6 +1107,44 @@ $(function () {
                 };
             });
 
+            // allDates를 먼저 10일 기준으로 만들고
+            const allDates10 = [];
+            for (let i = 9; i >= 0; i--) {
+                const d = new Date(baseDate);
+                d.setDate(baseDate.getDate() - i);
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                allDates10.push(`${mm}-${dd}`);
+            }
+
+            const graphStart = allDates10[0];  // 예: 11-09
+
+            // graphStart 이전 실제 기록 찾아라
+            const expKeys = Object.keys(expMap).sort();
+            const prevDates = expKeys.filter(d => d < graphStart);
+
+            const prevLast = prevDates.length > 0
+                ? prevDates[prevDates.length - 1]
+                : graphStart;
+
+            const firstDate = prevLast;
+            const [fm, fd] = firstDate.split('-').map(Number);
+            const allDates = [];
+
+            let cur = new Date(today.getFullYear(), fm - 1, fd);
+            let end = new Date(baseDate);
+
+            while (cur <= end) {
+                const mm = String(cur.getMonth() + 1).padStart(2, '0');
+                const dd = String(cur.getDate()).padStart(2, '0');
+                allDates.push(`${mm}-${dd}`);
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            // console.log(expMap);
+            // console.log(allDates);
+            interpolateRange(expMap, allDates);
+
             // 3) 증가량 gain 재계산
             const orderedKeys = Object.keys(expMap).sort((a, b) => {
                 const [am, ad] = a.split('-').map(Number);
@@ -1093,11 +1163,14 @@ $(function () {
             }
 
             // 🔹 그래프 데이터
-            const labels = allDates;
-            const values = allDates.map(d => {
+            const lastDates = allDates.slice(-10);
+
+            const labels = lastDates;
+            const values = lastDates.map(d => {
                 const rec = expMap[d];
                 return rec ? (chartMode === 'total' ? rec.total : rec.gain) : 0;
             });
+            // console.log(values);
 
             // 🔹 Chart.js
             const ctx = document.getElementById('expChart');

@@ -27,7 +27,7 @@ export function calcDiffExp(prev, cur) {
 export function calcAvgExp(records, user = null) {
     if (!records || records.length < 2) return 0;
 
-    console.log(`📊${user != null ? user : ''} 기록 :`, JSON.parse(JSON.stringify(records)));
+    // console.log(`📊${user != null ? user : ''} 기록 :`, JSON.parse(JSON.stringify(records)));
     records.sort((a, b) => new Date(a[0]) - new Date(b[0]));
     const today = new Date();
 
@@ -37,24 +37,24 @@ export function calcAvgExp(records, user = null) {
         return diff <= 10;
     });
 
-    console.log(`🗓️ 최근 11일 내 데이터 (${recent.length}개):`, recent.map(r => r[0]));
+    // console.log(`🗓️ 최근 11일 내 데이터 (${recent.length}개):`, recent.map(r => r[0]));
     if (recent.length < 2) return 0;
 
     const firstDate = new Date(recent[0][0]);
     const lastDate = new Date(recent[recent.length - 1][0]);
     const totalDays = Math.max(dayDiff(firstDate, lastDate), 1);
 
-    console.log(`📆 첫 기록: ${recent[0][0]}, 마지막 기록: ${recent[recent.length - 1][0]}, 총일수: ${totalDays}`);
+    // console.log(`📆 첫 기록: ${recent[0][0]}, 마지막 기록: ${recent[recent.length - 1][0]}, 총일수: ${totalDays}`);
     let totalGain = 0;
     for (let i = 1; i < recent.length; i++) {
         const prev = recent[i - 1][1];
         const curr = recent[i][1];
         const diff = calcDiffExp(prev, curr);
         totalGain += diff;
-        console.log(`🧮 ${recent[i - 1][0]} → ${recent[i][0]}: 획득경험치( ${diff.toLocaleString()} )`);
+        // console.log(`🧮 ${recent[i - 1][0]} → ${recent[i][0]}: 획득경험치( ${diff.toLocaleString()} )`);
     }
     const avg = totalGain > 0 ? Math.floor(totalGain / totalDays) : 0;
-    console.log(`✅ 총 증가량: ${totalGain.toLocaleString()}, 총일수: ${totalDays}, 평균: ${avg.toLocaleString()}`);
+    // console.log(`✅ 총 증가량: ${totalGain.toLocaleString()}, 총일수: ${totalDays}, 평균: ${avg.toLocaleString()}`);
     return avg;
 }
 
