@@ -1080,10 +1080,19 @@ $(function () {
 
         function renderExpChart(records) {
             const today = new Date();
-            const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            const hasTodayRecord = !!records[`2025-${todayStr}`] || !!records[todayStr];
-            const baseDate = hasTodayRecord ? today : new Date(today.setDate(today.getDate() - 1));
+            const thisYear = today.getFullYear();
 
+            // 🔁 오늘 날짜를 YYYY-MM-DD 로 생성
+            const todayYMD = `${thisYear}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            // 🔁 기존 데이터 호환: records 키가 YYYY-MM-DD 이거나 MM-DD 일 수 있음
+            const hasTodayRecord = !!records[todayYMD] || !!records[todayYMD.slice(5)];
+
+            const baseDate = hasTodayRecord
+                ? new Date(thisYear, today.getMonth(), today.getDate())
+                : new Date(thisYear, today.getMonth(), today.getDate() - 1);
+
+            // 🔁 연도 정보를 포함한 expMap (키: YYYY-MM-DD)
             const expMap = {};
             const sortedDates = Object.keys(records).sort();
             sortedDates.forEach(date => {
@@ -1101,7 +1110,7 @@ $(function () {
                 total += exp;
 
                 // 2) 증가량(gain) 계산
-                expMap[date.slice(5)] = {
+                expMap[date] = {
                     total,
                     gain: 0  // 뒤에서 다시 계산
                 };
@@ -1112,14 +1121,15 @@ $(function () {
             for (let i = 9; i >= 0; i--) {
                 const d = new Date(baseDate);
                 d.setDate(baseDate.getDate() - i);
+                const yyyy = d.getFullYear();
                 const mm = String(d.getMonth() + 1).padStart(2, '0');
                 const dd = String(d.getDate()).padStart(2, '0');
-                allDates10.push(`${mm}-${dd}`);
+                allDates10.push(`${yyyy}-${mm}-${dd}`);
             }
 
-            const graphStart = allDates10[0];  // 예: 11-09
+            const graphStart = allDates10[0];  // 예: 2025-11-09
 
-            // graphStart 이전 실제 기록 찾아라
+            // graphStart 이전 실제 기록 찾아라 (YYYY-MM-DD 문자열이면 연대순 정렬 OK)
             const expKeys = Object.keys(expMap).sort();
             const prevDates = expKeys.filter(d => d < graphStart);
 
@@ -1128,16 +1138,17 @@ $(function () {
                 : graphStart;
 
             const firstDate = prevLast;
-            const [fm, fd] = firstDate.split('-').map(Number);
+            const [fy, fm, fd] = firstDate.split('-').map(Number);
             const allDates = [];
 
-            let cur = new Date(today.getFullYear(), fm - 1, fd);
-            let end = new Date(baseDate);
+            let cur = new Date(fy, fm - 1, fd);
+            const end = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
 
             while (cur <= end) {
+                const yyyy = cur.getFullYear();
                 const mm = String(cur.getMonth() + 1).padStart(2, '0');
                 const dd = String(cur.getDate()).padStart(2, '0');
-                allDates.push(`${mm}-${dd}`);
+                allDates.push(`${yyyy}-${mm}-${dd}`);
                 cur.setDate(cur.getDate() + 1);
             }
 
@@ -1147,9 +1158,13 @@ $(function () {
 
             // 3) 증가량 gain 재계산
             const orderedKeys = Object.keys(expMap).sort((a, b) => {
-                const [am, ad] = a.split('-').map(Number);
-                const [bm, bd] = b.split('-').map(Number);
-                return am === bm ? ad - bd : am - bm;
+                // 🔁 연도/월/일 모두 포함해서 정렬
+                const [ay, am, ad] = a.split('-').map(Number);
+                const [by, bm, bd] = b.split('-').map(Number);
+
+                if (ay !== by) return ay - by;
+                if (am !== bm) return am - bm;
+                return ad - bd;
             });
 
             let prev = null;
@@ -1183,7 +1198,7 @@ $(function () {
             window.expChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels.map(d => d.split('-')[1]),
+                    labels: labels.map(d => d.split('-')[2]),
                     datasets: [{
                         label: labelName,
                         data: values,
