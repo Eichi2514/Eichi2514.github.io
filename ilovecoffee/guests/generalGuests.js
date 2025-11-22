@@ -285,3 +285,172 @@ const generalGuests = {
         ]
     }
 };
+
+$(document).on("click", ".generalGuestsBtn", function () {
+    if ($("#generalGuestsModal").length === 0) createGeneralGuestsModal();
+    $("#generalGuestsModal").fadeIn(200);
+    renderGeneralGuestList(); // 1단계
+});
+
+function createGeneralGuestsModal() {
+    const modal = `
+    <div id="generalGuestsModal" class="login-overlay" style="display:none;">
+      <div class="login-modal" style="position:relative;">
+        <button id="closeGeneralGuestsModal" class="closeBtn" style="color:#5a4398 !important;">✕</button>
+        <h2 class="modal-title">일반손님 목록</h2>
+
+        <!-- 검색 입력 -->
+        <input type="text" id="guestSearch"
+               placeholder="대사 검색"
+               style="width:100%; padding:8px; margin-bottom:12px; border:1px solid #ccc; border-radius:6px;">
+
+        <!-- 손님 목록 -->
+        <div id="generalGuestList"></div>
+
+        <!-- 상세 보기 -->
+        <div id="generalGuestDetail" style="display:none; margin-top:15px;">
+            <button id="generalGuestBackBtn" style="position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: #5a4398">←</button>
+            <div id="generalGuestContent"></div>
+        </div>
+
+      </div>
+    </div>
+    `;
+    $("body").append(modal);
+
+    $("#closeGeneralGuestsModal").on("click", () => {
+        $("#generalGuestsModal").fadeOut(200);
+    });
+
+    $("#generalGuestBackBtn").on("click", function(){
+        $("#generalGuestDetail").hide();
+        $("#generalGuestList").fadeIn(200);
+        $(".modal-title").text("일반손님 목록");
+    });
+
+    // 검색 이벤트
+    $(document).on("input", "#guestSearch", function () {
+        applyGeneralGuestSearch($(this).val().trim());
+    });
+}
+
+function renderGeneralGuestList() {
+    const $list = $("#generalGuestList");
+    $list.empty().show();
+    $("#generalGuestDetail").hide();
+    $(".modal-title").text("일반손님 목록");
+
+    $list.css({
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
+        gap: "10px",
+        justifyItems: "center"
+    });
+
+    Object.keys(generalGuests).forEach((guest, idx) => {
+        // const imgSrc = `../image/general${idx+1}.jpg`;
+        const imgSrc = `../image/guest/guest${idx + 1}.jpg`;
+
+        const card = $(`
+            <div class="guestCard">
+                <img src="${imgSrc}" class="guestImg"/>
+                <div class="guestName">${guest}</div>
+            </div>
+        `);
+
+        // 카드 스타일
+        applyGeneralGuestCardStyle(card);
+
+        card.on("click", () => showGeneralGuestDetail(guest, imgSrc));
+
+        $list.append(card);
+    });
+}
+
+function applyGeneralGuestSearch(keyword) {
+    keyword = keyword.toLowerCase();
+
+    if (keyword === "") {
+        renderGeneralGuestList();
+        return;
+    }
+
+    const $list = $("#generalGuestList");
+    $list.empty().show();
+    $("#generalGuestDetail").hide();
+
+    $(".modal-title").text("검색 결과");
+
+    Object.entries(generalGuests).forEach(([guest, data], idx) => {
+        const matchedLines = data.lines.filter(line =>
+            line.toLowerCase().includes(keyword)
+        );
+
+        matchedLines.forEach(line => {
+            const imgSrc = `../image/guest/guest${idx + 1}.jpg`;
+
+            const card = $(`
+                <div class="guestCard" style="width:100%; border:1px solid #ddd;">
+                    <img src="${imgSrc}" class="guestImg" style="width:60px; height:60px"/>
+                    <div class="guestName" style="font-weight:bold">${guest}</div>
+                    <div class="guestLinePreview" style="font-size: 10px; word-break: keep-all;">${line}</div>
+                </div>
+            `);
+
+            applyGeneralGuestCardStyle(card);
+
+            card.on("click", () => showGeneralGuestDetail(guest, imgSrc));
+            $list.append(card);
+        });
+    });
+}
+
+function applyGeneralGuestCardStyle(card) {
+    card.css({
+        width: "90px",
+        textAlign: "center",
+        cursor: "pointer",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
+        paddingTop: "8px",
+        background: "#f9f9fb",
+        transition: "0.2s",
+    });
+
+    card.find(".guestImg").css({
+        width: "60px",
+        height: "60px",
+        borderRadius: "8px",
+        objectFit: "cover",
+        display: "block",
+        margin: "0 auto 6px"
+    });
+}
+
+function showGeneralGuestDetail(name, imgSrc) {
+    const data = generalGuests[name];
+
+    $("#generalGuestList").hide();
+    $("#generalGuestDetail").show();
+
+    $(".modal-title").text(name);
+
+    const linesHTML = data.lines.map(line => `<li>• ${line}</li>`).join("");
+    const hairHTML = data.hair.join(", ");
+
+    const content = `
+        <div style="display: flex;">            
+            <img src="${imgSrc}" style="width:120px; height:120px; border-radius:10px; margin-bottom:10px;">            
+            <div style="text-align:left;">
+                <p style="padding: 5px; margin: 0;"><b>얼굴 : </b> ${data.face}</p>
+                <p style="padding: 5px; margin: 0; word-break: keep-all;"><b>헤어 : </b> ${hairHTML}</p>
+            </div>            
+        </div>
+        <div style="font-weight: bold; padding-top: 10px">대사 목록</div>
+        <ul style="text-align:left; list-style:none; padding:0; margin: 0;">
+            ${linesHTML}
+        </ul>
+    `;
+
+    $("#generalGuestContent").html(content);
+}

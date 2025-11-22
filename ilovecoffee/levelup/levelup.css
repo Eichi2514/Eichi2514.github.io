@@ -147,7 +147,8 @@ h3 {
     padding: 30px 25px 50px 25px;
     border-radius: 12px;
     width: 360px;
-    min-height: max-content;
+    max-height: 100vh;
+    overflow-y: auto;
     text-align: center;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
 }
@@ -295,8 +296,9 @@ h3 {
 }
 
 /* ===== 퀵버튼 바 ===== */
-#quickBtn-bar {
+.quickBtn-bar {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 8px; /* 버튼 간 간격 */
@@ -304,7 +306,8 @@ h3 {
 }
 
 .quickBtn {
-    width: calc((100% / 3)); /* 버튼 크기 */
+    flex: 1 1 calc((100% - 16px) / 3);
+    max-width: calc((100% - 16px) / 3);
     background: #f6f4fc;
     border: 1px solid #e0dff2;
     color: #5a4398;
