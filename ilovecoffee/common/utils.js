@@ -262,7 +262,7 @@ export function showConfirm(message, onConfirm, yesText = "확인", noText = "�
 }
 
 export function formatKoreanNumber(num) {
-    let n = num;
+    let n = Number(num);
 
     const eok = Math.floor(n / 100000000);  // 억
     n %= 100000000;

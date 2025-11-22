@@ -1979,3 +1979,13 @@ function spawnFloatingMessage(text) {
         $msg.remove();
     }, 2600);
 }
+
+$('#todayExp').on('input', function () {
+    const raw = $(this).val().replace(/[^0-9]/g, ""); // 숫자만
+    const $formattedExp = $('.formattedExp');
+    if (!raw) {
+        $formattedExp.text('');
+        return;
+    }
+    $formattedExp.text(formatKoreanNumber(raw));
+});
