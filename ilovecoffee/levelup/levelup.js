@@ -567,6 +567,35 @@ $(function () {
     function removeRankingButton() {
         $(".rankingBtn").hide();
     }
+    
+    // ✅ 목표 경험치 자동 생성 함수
+    function autoGenerateGoalsForDisplay(userData) {
+
+        // 경험치 기록 없으면 목표 계산 불가
+        if (!userData.expRecords) return [];
+
+        // 이미 사용자가 저장한 목표가 있으면 그걸 그대로 사용
+        if (userData.goalTargets && userData.goalTargets.length > 0) {
+            return userData.goalTargets;
+        }
+
+        // 🔥 현재 경험치 계산 (마지막 기록 기준)
+        const dates = Object.keys(userData.expRecords).sort();
+        const lastDate = dates[dates.length - 1];
+        const currentExp = userData.expRecords[lastDate].exp || 0;
+
+        // 🔥 1억 단위 시작점 계산
+        const startUnit = Math.ceil(currentExp / 100000000);
+        const startValue = startUnit * 100000000;
+
+        // 목표 배열 생성
+        const goals = [];
+        for (let i = 0; i < 5; i++) {
+            goals.push(startValue + (i * 100000000));
+        }
+
+        return goals;
+    }
 
     // ✅ 사용자 전체 데이터 불러오기
     async function loadUserData(nickname) {
@@ -577,6 +606,7 @@ $(function () {
 
         if (snapshot.exists()) {
             const userData = snapshot.val();
+            userData.goalTargets = autoGenerateGoalsForDisplay(userData);
 
             if (userData.expRecords) {
                 // 레벨업 로그 계산
