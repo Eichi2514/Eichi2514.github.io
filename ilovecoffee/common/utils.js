@@ -23,6 +23,21 @@ export function getKoreanTimestamp() {
     return `${yy}.${mm}.${dd}-${hh}:${mi}:${ss}`;
 }
 
+// 🔹 게시판용 날짜 파싱 (YY.MM.DD-hh:mm:ss → timestamp)
+export function parseKoreanTimestamp(str) {
+    if (!str) return 0;
+
+    // 예: "25.11.23-20:11:10"
+    const [datePart, timePart] = str.split('-'); // ["25.11.23", "20:11:10"]
+
+    const [yy, mm, dd] = datePart.split('.').map(Number);
+    const [HH, MI, SS] = timePart.split(':').map(Number);
+
+    const fullYear = 2000 + yy; // 25 → 2025
+
+    return new Date(fullYear, mm - 1, dd, HH, MI, SS);
+}
+
 // 🔹 짧은 날짜 포맷 (MM.DD)
 export function formatShortDate(dateStr) {
     if (!dateStr) return "-";
@@ -219,6 +234,10 @@ export function goToPage(target = "levelup") {
 
         admin: `${basePath}/admin/main.html`,
         aMemory: `${basePath}/admin/aMemory.html`,
+        aWrite: `${basePath}/post/write.html`,
+        aEdit: `${basePath}/post/edit.html`,
+
+        postList: `${basePath}/post/list.html`,
 
         layout: `${basePath}/layout/layout.html`,
         barista: `${basePath}/barista/barista.html`,
@@ -279,3 +298,32 @@ export function formatKoreanNumber(num) {
 
     return parts.join(" ");
 }
+
+export function isToday(koreanTimeStr) {
+    const d = parseKoreanTimestamp(koreanTimeStr);
+    const now = new Date();
+
+    return (
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth() &&
+        d.getDate() === now.getDate()
+    );
+}
+
+export function formatDisplayDate(koreanTimeStr) {
+    const d = parseKoreanTimestamp(koreanTimeStr);
+
+    if (isToday(koreanTimeStr)) {
+        // 오늘이면 → HH:MM
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        return `${hh}:${mm}`;
+    } else {
+        // 오늘이 아니면 → M-D
+        const yyyy = d.getFullYear();
+        const mm = d.getMonth() + 1;
+        const day = d.getDate();
+        return `${yyyy}-${mm}-${day}`;
+    }
+}
+

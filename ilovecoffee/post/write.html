@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .content-wrapper {
+            margin: 0 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+            height: 180px;
+            line-height: 1.6;
+        }
+
+        #submitBtn {
+            width: 100%;
+            padding: 12px 0;
+            margin-top: 10px;
+            background: #5a4398;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #submitBtn:active {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>게시글 작성</h1>
+    </div>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<div class="content-wrapper">
+    <div class="form-group">
+        <label>글 종류</label>
+        <select id="postType">
+            <option value="업데이트">업데이트</option>
+            <option value="공지">공지</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>제목</label>
+        <input type="text" id="title" placeholder="제목을 입력하세요">
+    </div>
+
+    <div class="form-group">
+        <label>내용</label>
+        <textarea id="content" placeholder="내용을 입력하세요"></textarea>
+    </div>
+
+    <button id="submitBtn">작성하기</button>
+</div>
+
+<script type="module">
+
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        get,
+        push,
+        set
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    import {goToPage, getKoreanTimestamp, getActiveNickname} from "../common/utils.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    $(function () {
+        const savedNick = getActiveNickname();
+
+        if (!savedNick) {
+            // 닉네임 자체가 없으면 바로 이동
+            goToPage();
+            return;
+        }
+
+        const adminRef = ref(db, `coffeeUsers/${savedNick}/isAdmin`);
+
+        get(adminRef).then((snapshot) => {
+            const isAdmin = snapshot.val();
+            if (!isAdmin) {
+                // null, undefined, false 모두 포함
+                goToPage();
+            }
+        }).catch(() => {
+            // 에러 발생 시에도 접근 막기
+            goToPage();
+        });
+    });
+
+    $(document).on("click", "#submitBtn", async function () {
+        const type = $("#postType").val();
+        const title = $("#title").val().trim();
+        const content = $("#content").val().trim();
+
+        if (!title) return alert("제목을 입력하세요.");
+        if (!content) return alert("내용을 입력하세요.");
+
+        const category = (type === "공지") ? "공지" : "기타";
+
+        // 타입별 카운터 경로
+        const counterRef = ref(db, `coffeePosts/counters/${category}`);
+        const counterSnap = await get(counterRef);
+
+        let newId = 1;
+        if (counterSnap.exists()) {
+            newId = counterSnap.val() + 1;
+        }
+
+        // 저장할 경로
+        const targetRef = ref(db, `coffeePosts/${category}/${newId}`);
+
+        const postData = {
+            id: newId,
+            type,
+            title,
+            content,
+            created: getKoreanTimestamp()
+        };
+
+        // 글 저장
+        await set(targetRef, postData);
+
+        // 카운터 증가
+        await set(counterRef, newId);
+
+        alert("등록이 완료되었습니다!");
+        goToPage("postList");
+    });
+
+    // ✅ 뒤로가기
+    $("#backBtn").on("click", () => goToPage());
+</script>
+
+</body>
+</html>
