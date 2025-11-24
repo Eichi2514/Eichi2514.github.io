@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .content-wrapper {
+            margin: 0 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 180px;
+            resize: none;
+            line-height: 1.6;
+        }
+
+        #loadBtn, #updateBtn, #deleteBtn {
+            width: 100%;
+            padding: 12px 0;
+            margin-top: 10px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #loadBtn, #updateBtn {
+            background: #5a4398;
+        }
+
+        #deleteBtn {
+            background: #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <h1>게시글 수정</h1>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<div class="content-wrapper">
+
+    <!-- ① 글 선택 영역 -->
+    <div id="loadSection">
+        <div class="form-group">
+            <label>글 종류 선택</label>
+            <select id="loadType">
+                <option value="공지">공지</option>
+                <option value="업데이트">업데이트</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>글 번호 입력</label>
+            <input type="number" id="loadId" placeholder="예: 12">
+        </div>
+
+        <button id="loadBtn">불러오기</button>
+    </div>
+
+    <!-- ② 수정 UI 영역 (초기에는 숨김) -->
+    <div id="editSection" style="display:none">
+
+        <div class="form-group">
+            <label>글 종류</label>
+            <select id="postType">
+                <option value="업데이트">업데이트</option>
+                <option value="공지">공지</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>제목</label>
+            <input type="text" id="title">
+        </div>
+
+        <div class="form-group">
+            <label>내용</label>
+            <textarea id="content"></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button id="updateBtn" style="flex:1;">수정하기</button>
+            <button id="deleteBtn" style="flex:1;">삭제하기</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+        getDatabase, ref, get, set, remove
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    import {goToPage, getKoreanTimestamp, getActiveNickname} from "../common/utils.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ==== 관리자 인증 ====
+    $(function () {
+        const savedNick = getActiveNickname();
+        if (!savedNick) return goToPage();
+
+        const adminRef = ref(db, `coffeeUsers/${savedNick}/isAdmin`);
+        get(adminRef).then(snap => {
+            if (!snap.val()) goToPage();
+        }).catch(() => goToPage());
+    });
+
+    // 기존 데이터 가져온 값 (불러오기할 때 저장해두기)
+    let originalCreated = null;
+
+    // ====== 글 불러오기 ======
+    $("#loadBtn").on("click", async function () {
+        const type = $("#loadType").val();
+        const id = $("#loadId").val().trim();
+
+        if (!id) return alert("글 번호를 입력하세요.");
+
+        const category = (type === "공지") ? "공지" : "기타";
+        const targetRef = ref(db, `coffeePosts/${category}/${id}`);
+
+        const snapshot = await get(targetRef);
+
+        if (!snapshot.exists()) {
+            alert("해당 번호의 글이 없습니다.");
+            return;
+        }
+
+        const data = snapshot.val();
+
+        // 작성일 저장해두기
+        originalCreated = data.created;
+
+        // 글 종류 값 넣고 수정 불가로 변경
+        $("#postType").val(data.type).prop("disabled", true);
+        $("#title").val(data.title);
+        $("#content").val(data.content);
+
+        $("#loadSection").hide();
+        $("#editSection").show();
+    });
+
+
+    // ====== 글 수정 저장 ======
+    $("#updateBtn").on("click", async function () {
+
+        const type = $("#postType").val();
+        const title = $("#title").val().trim();
+        const content = $("#content").val().trim();
+        if (!title) return alert("제목을 입력하세요.");
+        if (!content) return alert("내용을 입력하세요.");
+
+        const originalType = $("#loadType").val();
+        const id = $("#loadId").val().trim();
+
+        const category = (originalType === "공지") ? "공지" : "기타";
+        const targetRef = ref(db, `coffeePosts/${category}/${id}`);
+
+        const newData = {
+            id: Number(id),
+            type,
+            title,
+            content,
+            created: originalCreated,              // 🔥 기존 작성일 유지
+            updated: getKoreanTimestamp()          // 🔥 동일 포맷의 수정일
+        };
+
+        await set(targetRef, newData);
+
+        alert("수정이 완료되었습니다!");
+        location.reload();
+    });
+
+    // ====== 글 삭제 ======
+    $("#deleteBtn").on("click", async function () {
+
+        if (!confirm("정말 삭제하시겠습니까?\n삭제 후에는 되돌릴 수 없습니다.")) {
+            return;
+        }
+
+        const originalType = $("#loadType").val();
+        const id = $("#loadId").val().trim();
+
+        const category = (originalType === "공지") ? "공지" : "기타";
+        const targetRef = ref(db, `coffeePosts/${category}/${id}`);
+
+        await remove(targetRef);
+
+        alert("삭제가 완료되었습니다.");
+        goToPage("postList");  // 목록 페이지로 이동
+    });
+
+    $("#backBtn").on("click", () => goToPage());
+</script>
+
+</body>
+</html>

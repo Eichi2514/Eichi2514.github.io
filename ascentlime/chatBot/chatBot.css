@@ -194,7 +194,7 @@ input:-moz-placeholder, textarea:-moz-placeholder { /* 파이어폭스 4-18 */
     height: max-content;
     width: max-content;
     max-width: 80%;
-    text-shadow: 1px 1px 3px rgba(255,255,255,0.3)
+    text-shadow: 1px 1px 3px rgba(255,255,255,0.3);
     white-space: pre-line;
     word-break: keep-all;
     overflow-wrap: break-word;
