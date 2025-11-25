@@ -58,27 +58,19 @@ $(".logoutBtn").on("click", function () {
     });
 });
 
-$(".layoutBtn").on("click", function () {
-    goToPage("layout");
-});
-
-$(".baristaBtn").on("click", function () {
-    goToPage("barista");
-});
-
-$(".memoryBtn").on("click", function () {
-    goToPage("memory");
-});
+$(document).on("click", ".layoutBtn", () => goToPage("layout"));
+$(document).on("click", ".baristaBtn", () => goToPage("barista"));
+$(document).on("click", ".memoryBtn", () => goToPage("memory"));
+$(document).on("click", ".postsBtn", () => goToPage("postList"));
 
 // ✅ 부캐 등록 모달 열기
 $(document).on("click", ".addSubCharacterBtn", function () {
-    // 기존 모달 있으면 제거
     $("#subLoginPopup").show();
 });
 
 // ✅ 닫기 버튼
-$(document).on("click", "#closeSubLoginPopup", function () {
-    $("#subLoginPopup").hide();
+$(document).on("click", ".closeBtn", function () {
+    $(".login-overlay").hide();
 });
 
 // ✅ 부캐 로그인/등록 처리
@@ -165,11 +157,6 @@ $(document).on("click", "#settingsDropdown button", function () {
     $("#settingsDropdown").hide();
 });
 
-// ✅ 경험치 입력 모달 닫기 버튼
-$("#closeExpModal").on("click", function () {
-    $("#expModal").hide();
-});
-
 // ================================
 // ✅ 경험치표 페이지네이션 기능
 // ================================
@@ -184,16 +171,16 @@ function updateExpTablePagination(totalLevels) {
 
     // 🔹 첫 페이지이면 Prev 비활성화
     if (currentExpPage <= 0) {
-        $prev.prop("disabled", true).css({ opacity: 0.4, cursor: "not-allowed" });
+        $prev.prop("disabled", true).css({opacity: 0.4, cursor: "not-allowed"});
     } else {
-        $prev.prop("disabled", false).css({ opacity: 1, cursor: "pointer" });
+        $prev.prop("disabled", false).css({opacity: 1, cursor: "pointer"});
     }
 
     // 🔹 마지막 페이지이면 Next 비활성화
     if (currentExpPage >= totalPages - 1) {
-        $next.prop("disabled", true).css({ opacity: 0.4, cursor: "not-allowed" });
+        $next.prop("disabled", true).css({opacity: 0.4, cursor: "not-allowed"});
     } else {
-        $next.prop("disabled", false).css({ opacity: 1, cursor: "pointer" });
+        $next.prop("disabled", false).css({opacity: 1, cursor: "pointer"});
     }
 }
 
@@ -254,10 +241,6 @@ $("#nextExpPage").on("click", function () {
     }
 });
 
-$("#closeExpTableModal").on("click", function () {
-    $("#expTableModal").hide();
-});
-
 // 🔹 모든 버튼의 빠른 연속 클릭(더블클릭) 방지
 $(document).on("click", "button", function (e) {
     const $btn = $(this);
@@ -304,11 +287,6 @@ $(document).on("click", "#editExpBtn", async function () {
         $("#optionModal").hide();
         $("#editModal").css("display", "flex");
     }
-});
-
-// ✅ 수정 모달 닫기
-$(document).on("click", "#closeEditModal", function () {
-    $("#editModal").hide();
 });
 
 // ✅ 알림 모달 닫기 버튼
@@ -375,11 +353,11 @@ let profileNum = 1;
 let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
 let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
 $(function () {
-    const todayValue = "v9";
+    const todayValue = "v10";
     const lastUpdate = localStorage.getItem("LU-update");
 
     if (lastUpdate !== todayValue) {
-        showAlert("! New !\n오픈톡 포스트에 등록해놓은\n레벨업 일자들이 있다면\n과거 기록으로 등록해보세요!\n\n하이라이트 기능으로\n그럴수이치에서도 쉽게 확인이 가능해요!");
+        showAlert("! New !\n지난 업데이트를 확인할 수 있는\n게시판이 추가되었습니다~!\n화면 상단의 업데이트 버튼을 눌러보세요!");
         localStorage.setItem("LU-update", todayValue);
     }
 
@@ -567,7 +545,7 @@ $(function () {
     function removeRankingButton() {
         $(".rankingBtn").hide();
     }
-    
+
     // ✅ 목표 경험치 자동 생성 함수
     function autoGenerateGoalsForDisplay(userData) {
 
@@ -1091,10 +1069,10 @@ $(function () {
                 // 좌/우 모두 값이 있어야 보간 가능
                 if (lastKnownIndex !== null && nextKnownIndex !== null) {
                     const startDate = allDates[lastKnownIndex];
-                    const endDate   = allDates[nextKnownIndex];
+                    const endDate = allDates[nextKnownIndex];
 
                     const startVal = expMap[startDate].total;
-                    const endVal   = expMap[endDate].total;
+                    const endVal = expMap[endDate].total;
 
                     const totalGap = nextKnownIndex - lastKnownIndex;
                     const pos = i - lastKnownIndex;
@@ -1103,7 +1081,7 @@ $(function () {
                         startVal + (endVal - startVal) * (pos / totalGap)
                     );
 
-                    expMap[d] = { total: value, gain: 0 };
+                    expMap[d] = {total: value, gain: 0};
                 }
             }
         }
@@ -1126,7 +1104,7 @@ $(function () {
             const expMap = {};
             const sortedDates = Object.keys(records).sort();
             sortedDates.forEach(date => {
-                const { level, exp } = records[date];
+                const {level, exp} = records[date];
 
                 // 1) 해당 날짜 기준 누적 경험치 계산
                 let total = 0;
@@ -1243,7 +1221,7 @@ $(function () {
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { display: false },
+                        legend: {display: false},
                         tooltip: {
                             callbacks: {
                                 label: (ctx) => {
@@ -1274,9 +1252,9 @@ $(function () {
                                     }
                                 }
                             },
-                            grid: { color: '#eee' }
+                            grid: {color: '#eee'}
                         },
-                        x: { grid: { display: false }, ticks: { color: '#333' } }
+                        x: {grid: {display: false}, ticks: {color: '#333'}}
                     }
                 }
             });
@@ -1788,11 +1766,6 @@ $(function () {
         });
 
         $("#profileModal").css("display", "flex");
-    });
-
-    // ✅ 모달 닫기 버튼
-    $("#closeProfileModal").on("click", function () {
-        $("#profileModal").hide();
     });
 
     // ✅ 변경 버튼 클릭 시 Firebase 업데이트

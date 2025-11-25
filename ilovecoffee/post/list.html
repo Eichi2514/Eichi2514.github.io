@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>업데이트 목록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* 공지 영역 */
+        .notice-box {
+            background: #f6f4fc;
+            border: 1px solid #e0dff2;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 0 20px;
+        }
+
+        .notice-item {
+            padding: 4px 0;
+        }
+
+        .postList {
+            margin: 0 20px 0 20px;
+        }
+
+        /* 업데이트 리스트 */
+        .post-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-text {
+            height: 24px;
+        }
+
+        .isNew {
+            background: #5a4398;
+            padding: 3px 7px;
+            color: #fff;
+            border-radius: 100%;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: right;
+            font-size: 14px;
+            color: #777;
+            gap: 10px;
+        }
+
+        .post-footer span {
+            width: calc((100% - 20px) / 3);
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            background: #5a4398;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .pagination button:disabled {
+            background: #ccc;
+        }
+
+        /* 공지/업데이트 라벨 공통 스타일 */
+        .label-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 6px;
+            color: #fff;
+            background: #5a4398;
+        }
+
+        .modal-date, .modal-view {
+            padding-right: 8px;
+            text-align: right;
+        }
+
+        .modal-content {
+            text-align: left;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            height: 60vh;
+            overflow-y: auto;
+            word-break: keep-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>업데이트</h1>
+    </div>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<div class="notice-box" id="noticeList">
+</div>
+<div class="postList" id="postList">
+</div>
+
+<div class="pagination">
+    <button id="prevBtn">이전</button>
+    <button id="nextBtn">다음</button>
+</div>
+
+<!-- ===== 🔥 게시글 상세 모달 ===== -->
+<div class="login-overlay" id="postModal" style="display:none;">
+    <div class="login-modal">
+        <button id="closeModalBtn" class="closeBtn">✕</button>
+        <h2 id="modal-title"></h2>
+        <div id="modal-date" class="modal-date"></div>
+        <div id="modal-content" class="modal-content"></div>
+        <div id="modal-view" class="modal-view"></div>
+    </div>
+</div>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        get,
+        query,
+        orderByKey,
+        endAt,
+        limitToLast,
+        update
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId",
+        measurementId: ".env/measurementId"
+    };
+
+    import {goToPage, parseKoreanTimestamp, isToday, formatDisplayDate} from "../common/utils.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let perPage = 5;
+    let lastPostId = null;    // 가장 최신글의 id (커서 시작점)
+    let currentEndKey = null; // 현재 페이지의 마지막 key (다음 페이지의 cursor)
+    let currentQueryEndKey = null; // 마지막 loadPage에서 사용한 endKey
+    let prevStack = [];       // 이전 페이지 key들 저장해서 Prev 버튼 처리
+
+    $(document).ready(async function () {
+        // 🔹 공지 가져오기
+        const noticesSnap = await get(ref(db, "coffeePosts/공지"));
+        let notices = [];
+        if (noticesSnap.exists()) notices = Object.values(noticesSnap.val());
+
+        // 🔹 공지 최신순 정렬
+        notices.sort((a, b) => parseKoreanTimestamp(b.created) - parseKoreanTimestamp(a.created));
+
+        // 🔹 공지 렌더링
+        renderNotices(notices);
+
+        // 🔹 posts counter 가져오기 → 마지막 key 확인
+        const counterSnap = await get(ref(db, "coffeePosts/counters/기타"));
+        lastPostId = counterSnap.val();
+
+        // 🔹 첫 페이지 로드
+        await loadPage(lastPostId);
+    });
+
+    // 🔥 특정 key 끝에서부터 최신글 5개 가져오기
+    async function loadPage(endKey) {
+        currentQueryEndKey = endKey;
+
+        const postsQuery = query(
+            ref(db, "coffeePosts/기타"),
+            orderByKey(),
+            endAt(String(endKey)),
+            limitToLast(perPage)
+        );
+
+        const snap = await get(postsQuery);
+        if (!snap.exists()) return;
+
+        const postsObj = snap.val();
+        const posts = Object.values(postsObj);
+
+        // 최신순 정렬을 위해 reverse 없음 (이미 최신순)
+        posts.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+
+        // 현재 페이지의 가장 작은 key(=다음 페이지 cursor)
+        currentEndKey = Math.min(...Object.keys(postsObj).map(k => Number(k)));
+
+        // 페이지 렌더링
+        renderUpdates(posts);
+
+        // 버튼 상태 업데이트
+        updateButtons();
+    }
+
+    // 🔥 버튼 상태 처리
+    function updateButtons() {
+        $("#prevBtn").prop("disabled", prevStack.length === 0);
+        $("#nextBtn").prop("disabled", currentEndKey <= 1);
+    }
+
+    // 🔥 다음 페이지
+    $("#nextBtn").on("click", async () => {
+        if (currentEndKey <= 1) return;
+
+        // 현재 cursor 저장 → prev 버튼용
+        prevStack.push(currentQueryEndKey);
+
+        // 다음 페이지 로드
+        await loadPage(currentEndKey - 1);
+    });
+
+    // 🔥 이전 페이지
+    $("#prevBtn").on("click", async () => {
+        if (prevStack.length === 0) return;
+
+        const prevKey = prevStack.pop();
+
+        await loadPage(prevKey);
+
+        updateButtons();
+    });
+
+    // 🔹 공지 그리는 함수
+    function renderNotices(noticeList) {
+        const box = $("#noticeList");
+        box.empty();
+
+        noticeList.forEach(n => {
+            const finalDate = n.updated ?? n.created;
+            const showNew = isToday(finalDate);
+            const dateText = formatDisplayDate(finalDate);
+            const createdText = formatDisplayDate(n.created);
+
+            box.append(`
+                <div class="notice-item"
+                     data-title="${n.title}"
+                     data-content="${n.content}"
+                     data-date="${dateText}"
+                     data-view="${n.view ?? 0}"
+                     data-viewId="noticeViwe${n.id}"
+                    >
+                    <div class="title">
+                        <div class="title-text">${n.title}</div>
+                        ${showNew ? `<div class="isNew">N</div>` : ``}
+                    </div>
+                    <div class="post-footer">
+                        <span>${n.type}</span>
+                        <span class="date">${createdText}</span>
+                        <span id="noticeViwe${n.id}" class="viwe">${n.view ?? 0}</span>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    // 🔹 일반글(페이징 적용) 그리는 함수
+    function renderUpdates(listItems) {
+        const list = $("#postList");
+        list.empty();
+
+        listItems.forEach(p => {
+            const finalDate = p.updated ?? p.created;
+            const showNew = isToday(finalDate);
+            const dateText = formatDisplayDate(finalDate);
+            const createdText = formatDisplayDate(p.created);
+
+            list.append(`
+                <div class="post-item"
+                     data-title="${p.title}"
+                     data-content="${p.content}"
+                     data-date="${dateText}"
+                     data-view="${p.view ?? 0}"
+                     data-viewId="postViwe${p.id}"
+                    >
+                    <div class="title">
+                        <div class="title-text">${p.id} ) ${p.title}</div>
+                        ${showNew ? `<div class="isNew">N</div>` : ``}
+                    </div>
+                    <div class="post-footer">
+                        <span>${p.type}</span>
+                        <span class="date">${createdText}</span>
+                        <span id="postViwe${p.id}" class="viwe">${p.view ?? 0}</span>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    // ===== 🔥 공지 & 일반 글 클릭 시 모달 열기 =====
+    $(document).on("click", ".notice-item, .post-item", async function () {
+        const title = $(this).attr("data-title");
+        const date  = $(this).attr("data-date");
+
+        let view = Number($(this).attr("data-view")) || 0;
+        let newView = view + 1;
+
+        let viewId = $(this).attr("data-viewId");
+        let content = $(this).attr("data-content");
+
+        const isNotice = $(this).hasClass("notice-item");
+
+        // 🔥 ID 추출
+        const key = isNotice
+            ? $(this).attr("data-viewId").replace("noticeViwe", "")
+            : $(this).attr("data-viewId").replace("postViwe", "");
+
+        // 🔥 DB 경로
+        const dbPath = isNotice
+            ? `coffeePosts/공지/${key}`
+            : `coffeePosts/기타/${key}`;
+
+        // 🔥 DB 업데이트 (view 필드만 변경)
+        try {
+            await update(ref(db, dbPath), { view: newView });
+        } catch (error) {
+            console.error("조회수 업데이트 실패:", error);
+        }
+
+        // =======================
+        // 🔹 모달 UI 업데이트
+        // =======================
+        $("#modal-title").text(title);
+        $("#modal-date").text(date);
+
+        const safeContent = content ? content.replace(/\n/g, "<br>") : "";
+        $("#modal-content").html(safeContent);
+
+        $("#modal-view").text(`조회수 : ${newView}`);
+        $(`#${viewId}`).text(`${newView}`);
+        $(this).attr("data-view", newView);
+
+        $("#postModal").show();
+    });
+
+    // 닫기 버튼
+    $("#closeModalBtn").on("click", function () {
+        $("#postModal").hide();
+    });
+
+    // 뒤로가기
+    $("#backBtn").on("click", () => goToPage());
+</script>
+<script src="../helpModal/helpModal.js" defer></script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
+</body>
+</html>

@@ -32,8 +32,8 @@ $(async function () {
                 <button class="floating-btn advancedSettingBtn">필터모드</button>
                 <button class="floating-btn subCharacterBtn">부캐</button>
                 <button class="floating-btn levelupBtn">그럴수이치</button>
-                <button class="floating-btn memoryBtn">추억수집</button>                
                 <button class="floating-btn rankingBtn">아카이브</button>
+                <button class="floating-btn memoryBtn">추억수집</button>
                 <button class="floating-btn memoryRoomBtn">메모리룸</button>
                 <button class="floating-btn adminBtn">관리자</button>
                 <button class="floating-toggle">▲</button>
@@ -50,7 +50,7 @@ $(async function () {
                     <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
                     <button id="adminArchiveBtn"
                         style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
-                            border-radius:8px; font-size:16px; font-weight:600; margin-bottom:10px;
+                            border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         아카이브
                     </button>
@@ -59,6 +59,18 @@ $(async function () {
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         메모리룸
+                    </button>
+                    <button id="adminWriteBtn"
+                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                            border-radius:8px; font-size:16px; font-weight:600;
+                            background:transparent; transition:0.2s;">
+                        게시글 작성
+                    </button>
+                    <button id="adminEditBtn"
+                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                            border-radius:8px; font-size:16px; font-weight:600;
+                            background:transparent; transition:0.2s;">
+                        게시글 수정
                     </button>
                 </div>
             </div>
@@ -179,6 +191,8 @@ $(async function () {
     $(document).on("click", "#closeAdminOptionModal", () => $("#adminOptionModal").hide());
     $(document).on("click", "#adminArchiveBtn", () => { $("#adminOptionModal").hide(); goToPage("admin"); });
     $(document).on("click", "#adminMemoryBtn", () => { $("#adminOptionModal").hide(); goToPage("aMemory"); });
+    $(document).on("click", "#adminWriteBtn", () => { $("#adminOptionModal").hide(); goToPage("aWrite"); });
+    $(document).on("click", "#adminEditBtn", () => { $("#adminOptionModal").hide(); goToPage("aEdit"); });
 
     const $btn = $(".closeMenuBtn");
     localStorage.removeItem("floatingMenuOpen");
