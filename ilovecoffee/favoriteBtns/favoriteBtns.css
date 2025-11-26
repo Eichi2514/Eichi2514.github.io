@@ -1,0 +1,51 @@
+.quickBtns {
+    padding: 0 16px 16px 16px;
+}
+
+/* ===== 퀵버튼 바 ===== */
+.quickBtn-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* 버튼 간 간격 */
+    padding: 0 8px;
+}
+
+.quickBtn {
+    flex: 1 1 calc((100% - 16px) / 3);
+    max-width: calc((100% - 16px) / 3);
+    background: #f6f4fc;
+    border: 1px solid #e0dff2;
+    color: #5a4398;
+    border-radius: 8px;
+    padding: 5px 0;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden; /* ✅ 이미지가 버튼 밖으로 삐져나오지 않게 */
+}
+
+/* 버튼 텍스트를 앞으로 올리기 위해 span으로 감쌈 */
+.quickBtn span {
+    position: relative;
+    z-index: 2; /* ✅ 글자 앞으로 */
+    display: block;
+    width: calc(100% - 35px);
+    text-align: center;
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+/* ===== 퀵버튼(원형 이미지) ===== */
+.quickBtnImg {
+    width: 20px; /* 버튼 크기 */
+    height: 20px;
+    border-radius: 50%; /* 완전한 원형 */
+    object-fit: cover; /* 이미지 꽉 채우기 */
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0; /* ✅ 글자보다 아래 */
+}

@@ -1,0 +1,45 @@
+// common/buttonInfo.js
+export const BUTTONS = [
+    {
+        id: 1,
+        key: "postsBtn",
+        name: "업데이트",
+        img: "../image/postsBtnImg.jpg"
+    },
+    {
+        id: 2,
+        key: "baristaBtn",
+        name: "바리스타",
+        img: "../image/baristaBtnImg.jpg"
+    },
+    {
+        id: 3,
+        key: "memoryBtn",
+        name: "추억수집",
+        img: "../image/memoryBtnImg.jpg"
+    },
+    {
+        id: 4,
+        key: "layoutBtn",
+        name: "배치도",
+        img: "../image/layoutBtnImg.jpg"
+    },
+    {
+        id: 5,
+        key: "expTableBtn",
+        name: "경험치표",
+        img: "../image/expTableBtnImg.jpg"
+    },
+    {
+        id: 6,
+        key: "regularGuestsBtn",
+        name: "단골손님",
+        img: "../image/profile1.jpg"
+    },
+    {
+        id: 7,
+        key: "generalGuestsBtn",
+        name: "손님멘트",
+        img: "../image/guest/guest1.jpg"
+    }
+];
