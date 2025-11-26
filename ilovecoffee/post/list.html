@@ -69,12 +69,12 @@
             background: #f6f4fc;
             border: 1px solid #e0dff2;
             border-radius: 10px;
-            padding: 16px;
             margin: 0 20px;
         }
 
         .notice-item {
-            padding: 4px 0;
+            padding: 16px;
+            position: relative;
         }
 
         .postList {
@@ -84,6 +84,7 @@
         /* 업데이트 리스트 */
         .post-item {
             padding: 16px 0;
+            position: relative;
             border-bottom: 1px solid #eee;
         }
 
@@ -100,8 +101,18 @@
         }
 
         .isNew {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+
+            font-size: 12px;
             background: #5a4398;
-            padding: 3px 7px;
             color: #fff;
             border-radius: 100%;
         }
@@ -319,9 +330,11 @@
 
         noticeList.forEach(n => {
             const finalDate = n.updated ?? n.created;
-            const showNew = isToday(finalDate);
-            const dateText = formatDisplayDate(finalDate);
+            const isModified = n.updated && n.updated !== n.created;
+
+            const dateText = `${isModified ? "수정" : "작성"} : ${formatDisplayDate(finalDate)}`;
             const createdText = formatDisplayDate(n.created);
+            const showNew = isToday(finalDate);
 
             box.append(`
                 <div class="notice-item"
@@ -352,9 +365,11 @@
 
         listItems.forEach(p => {
             const finalDate = p.updated ?? p.created;
-            const showNew = isToday(finalDate);
-            const dateText = formatDisplayDate(finalDate);
+            const isModified = p.updated && p.updated !== p.created;
+
+            const dateText = `${isModified ? "수정" : "작성"} : ${formatDisplayDate(finalDate)}`;
             const createdText = formatDisplayDate(p.created);
+            const showNew = isToday(finalDate);
 
             list.append(`
                 <div class="post-item"
