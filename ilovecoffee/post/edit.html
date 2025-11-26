@@ -167,7 +167,7 @@
 
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
-        getDatabase, ref, get, set, remove
+        getDatabase, ref, get, update, remove
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {goToPage, getKoreanTimestamp, getActiveNickname} from "../common/utils.js";
@@ -231,7 +231,6 @@
         $("#editSection").show();
     });
 
-
     // ====== 글 수정 저장 ======
     $("#updateBtn").on("click", async function () {
 
@@ -247,16 +246,11 @@
         const category = (originalType === "공지") ? "공지" : "기타";
         const targetRef = ref(db, `coffeePosts/${category}/${id}`);
 
-        const newData = {
-            id: Number(id),
-            type,
+        await update(targetRef, {
             title,
             content,
-            created: originalCreated,              // 🔥 기존 작성일 유지
-            updated: getKoreanTimestamp()          // 🔥 동일 포맷의 수정일
-        };
-
-        await set(targetRef, newData);
+            updated: getKoreanTimestamp()
+        });
 
         alert("수정이 완료되었습니다!");
         goToPage("postList");
