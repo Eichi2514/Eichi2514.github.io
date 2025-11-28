@@ -14,13 +14,25 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// 🔥 background 메시지는 로깅만 — 알림 절대 표시 X
-messaging.onBackgroundMessage(payload => {
-    console.log("[SW] background message:", payload);
+// 📌 background 메시지
+messaging.onBackgroundMessage(() => {
 });
 
-// 🔥 push 이벤트에서도 알림 표시 금지
+// 📌 push 이벤트에서도 fallback 방지 + 동일 로직 적용
 self.addEventListener("push", event => {
-    console.log("[SW] push event:", event);
-    // ❌ showNotification 없음!
+    let data = {};
+    try {
+        data = event.data?.json() || {};
+    } catch(e) {}
+
+    const n = data.notification;
+    if (!n) return;
+
+    event.waitUntil(
+        self.registration.showNotification(n.title, {
+            body: n.body,
+            icon: n.icon || "/favicon/Eichi2.png",
+            badge: "/ilovecoffee/image/postsBtnImg.jpg"
+        })
+    );
 });
