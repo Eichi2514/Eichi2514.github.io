@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>테스트 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            background: #f4f3f9;
+            margin: 0;
+            color: #333;
+        }
+
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
+    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
+<body>
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>테스트 페이지</h1>
+        <button id="helpBtn">?</button>
+    </div>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<div style="margin: 20px; padding: 16px; background: white; border-radius: 10px;">
+    <h3>알림 시간 설정</h3>
+
+    <div id="notifyView" style="display:none; margin-bottom: 10px;">
+        <p>현재 설정된 시간: <span id="currentTime"></span></p>
+        <button id="editBtn">수정하기</button>
+    </div>
+
+    <div id="notifyForm">
+        <label>시:
+            <select id="notifyHour"></select>
+        </label>
+        <label>분:
+            <select id="notifyMinute"></select>
+        </label>
+        <button id="saveNotifyBtn">저장하기</button>
+    </div>
+</div>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, set, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {getMessaging, getToken} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging.js";
+
+    import {goToPage, getActiveNickname} from "../common/utils.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA4ERWaxTCYUiEijuhdQITVsP_VlYrVXEU",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: "test-948ba",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: "214442102094",
+        appId: "1:214442102094:web:844878f6a9c4080538e21f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const messaging = getMessaging(app);
+
+    // 👉 Firebase 콘솔 Cloud Messaging에서 복사한 "Web Push 인증서 공개키"
+    const FCM_VAPID_PUBLIC_KEY = "BCzk05nOhj12ZxrKtJaM_VOYOI9i3X0YuQuGiSFLHS1Cu_kfWD7qk5wixj_g0cJE_9JtnLU83aRjrWxfd-i5sqA";
+
+    const WORKER_BASE = "https://worker-gentle-dream-dcc5.picon1317.workers.dev";
+
+    const nickname = getActiveNickname();
+    if (!nickname) goToPage();
+
+    async function registerFcmToWorker(timeString) {
+        try {
+            // 알림 권한 요청
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") {
+                alert("알림 권한이 없습니다. 브라우저 설정에서 허용해주세요~!");
+                return;
+            }
+
+            // FCM 토큰 발급
+            const token = await getToken(messaging, {
+                vapidKey: FCM_VAPID_PUBLIC_KEY
+            });
+
+            if (!token) {
+                console.log("FCM 토큰 발급 실패");
+                return;
+            }
+
+            console.log("FCM token:", token);
+
+            // 토큰 + 시간 Cloudflare Worker로 전송
+            await fetch(`${WORKER_BASE}/subscribe-fcm`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    token,
+                    time: timeString,
+                    nickname: nickname
+                })
+            });
+
+            console.log("Worker에 FCM 토큰 + 시간 등록 완료");
+
+        } catch (e) {
+            console.error("FCM 등록 중 오류:", e);
+        }
+    }
+
+    $(document).ready(function () {
+        const notifyRef = ref(db, `coffeeUsers/${nickname}/notify`);
+
+        const $notifyHour = $("#notifyHour");
+        const $notifyMinute = $("#notifyMinute");
+        const $notifyForm = $("#notifyForm");
+        const $notifyView = $("#notifyView");
+        const $currentTime = $("#currentTime");
+
+        // ⭐ 0~23, 0~59 자동 생성
+        for (let i = 0; i < 24; i++) {
+            $notifyHour.append(`<option value="${i}">${String(i).padStart(2, "0")}시</option>`);
+        }
+
+        for (let i = 0; i < 60; i++) {
+            $notifyMinute.append(`<option value="${i}">${String(i).padStart(2, "0")}분</option>`);
+        }
+
+        // ⭐ 저장된 시간 불러오기
+        function loadNotifyTime() {
+            get(notifyRef).then((snap) => {
+                const value = snap.val();   // 예: "09:30"
+
+                if (value) {
+                    // 표시
+                    $currentTime.text(value);
+                    $notifyView.show();
+                    $notifyForm.hide();
+
+                    // 폼에도 값 반영
+                    const [h, m] = value.split(":");
+                    $notifyHour.val(Number(h));
+                    $notifyMinute.val(Number(m));
+
+                } else {
+                    $notifyView.hide();
+                    $notifyForm.show();
+                }
+            });
+        }
+
+        loadNotifyTime();
+
+        // ⭐ 저장하기 버튼
+        $("#saveNotifyBtn").on("click", function () {
+            let hour = String($notifyHour.val()).padStart(2, "0");
+            let minute = String($notifyMinute.val()).padStart(2, "0");
+
+            const timeString = `${hour}:${minute}`;
+
+            set(notifyRef, timeString).then(() => {
+                alert(`알림 시간이 ${timeString}으로 저장되었습니다.`);
+                loadNotifyTime();
+                registerFcmToWorker(timeString);
+            });
+        });
+
+        // ⭐ 수정하기 버튼
+        $("#editBtn").on("click", function () {
+            $notifyView.hide();
+            $notifyForm.show();
+        });
+    });
+
+    // ✅ 뒤로가기
+    $("#backBtn").on("click", () => goToPage());
+</script>
+<script src="../helpModal/helpModal.js" defer></script>
+<script src="../menuToggle/menuToggle.js" type="module" defer></script>
+</body>
+</html>

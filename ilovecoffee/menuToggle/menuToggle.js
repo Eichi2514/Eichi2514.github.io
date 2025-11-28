@@ -72,6 +72,12 @@ $(async function () {
                             background:transparent; transition:0.2s;">
                         게시글 수정
                     </button>
+                    <button id="testBtn"
+                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                            border-radius:8px; font-size:16px; font-weight:600;
+                            background:transparent; transition:0.2s;">
+                        Test
+                    </button>
                 </div>
             </div>
         `);
@@ -193,6 +199,7 @@ $(async function () {
     $(document).on("click", "#adminMemoryBtn", () => { $("#adminOptionModal").hide(); goToPage("aMemory"); });
     $(document).on("click", "#adminWriteBtn", () => { $("#adminOptionModal").hide(); goToPage("aWrite"); });
     $(document).on("click", "#adminEditBtn", () => { $("#adminOptionModal").hide(); goToPage("aEdit"); });
+    $(document).on("click", "#testBtn", () => { $("#adminOptionModal").hide(); goToPage("test"); });
 
     const $btn = $(".closeMenuBtn");
     localStorage.removeItem("floatingMenuOpen");
