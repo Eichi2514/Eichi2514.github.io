@@ -121,7 +121,7 @@
     const nickname = getActiveNickname();
     if (!nickname) goToPage();
 
-    async function registerFcmToWorker(timeString) {
+    async function registerFcmToWorker(timeString, token) {
         try {
             // 알림 권한 요청
             const permission = await Notification.requestPermission();
@@ -129,11 +129,6 @@
                 alert("알림 권한이 없습니다. 브라우저 설정에서 허용해주세요~!");
                 return;
             }
-
-            // FCM 토큰 발급
-            const token = await getToken(messaging, {
-                vapidKey: FCM_VAPID_PUBLIC_KEY
-            });
 
             if (!token) {
                 console.log("FCM 토큰 발급 실패");
@@ -181,20 +176,22 @@
         // ⭐ 저장된 시간 불러오기
         function loadNotifyTime() {
             get(notifyRef).then((snap) => {
-                const value = snap.val();   // 예: "09:30"
+                const data = snap.val();
 
-                if (value) {
+                if (data && data.time) {
+                    const time = data.time;   // "09:30" 같은 문자열
+
                     // 표시
-                    $currentTime.text(value);
+                    $currentTime.text(time);
                     $notifyView.show();
                     $notifyForm.hide();
 
                     // 폼에도 값 반영
-                    const [h, m] = value.split(":");
+                    const [h, m] = time.split(":");
                     $notifyHour.val(Number(h));
                     $notifyMinute.val(Number(m));
-
                 } else {
+                    // 설정이 아예 없거나 time이 없으면 처음 상태처럼 폼만 보이게
                     $notifyView.hide();
                     $notifyForm.show();
                 }
@@ -202,18 +199,27 @@
         }
 
         loadNotifyTime();
+        checkAndUpdateToken();
 
         // ⭐ 저장하기 버튼
-        $("#saveNotifyBtn").on("click", function () {
+        $("#saveNotifyBtn").on("click", async function () {
             let hour = String($notifyHour.val()).padStart(2, "0");
             let minute = String($notifyMinute.val()).padStart(2, "0");
 
             const timeString = `${hour}:${minute}`;
 
-            set(notifyRef, timeString).then(() => {
+            // FCM 토큰 발급
+            const token = await getToken(messaging, {
+                vapidKey: FCM_VAPID_PUBLIC_KEY
+            });
+
+            set(notifyRef, {
+                time: timeString,
+                token: token
+            }).then(() => {
                 alert(`알림 시간이 ${timeString}으로 저장되었습니다.`);
                 loadNotifyTime();
-                registerFcmToWorker(timeString);
+                registerFcmToWorker(timeString, token);
             });
         });
 
@@ -222,6 +228,55 @@
             $notifyView.hide();
             $notifyForm.show();
         });
+
+        async function checkAndUpdateToken() {
+            const snap = await get(notifyRef);
+
+            const notifyData = snap.val();
+            if (!notifyData || !notifyData.time) {
+                // 시간조차 없으면 아무것도 안 함
+                console.log("🔸 저장된 알림 설정 없음 — 무시");
+                return;
+            }
+
+            // 현재 FCM 토큰 얻기
+            const currentToken = await getToken(messaging, {
+                vapidKey: FCM_VAPID_PUBLIC_KEY
+            });
+
+            if (!currentToken) {
+                console.log("❌ 현재 토큰 발급 실패");
+                return;
+            }
+
+            const savedToken = notifyData.token;
+
+            // 🔍 비교
+            if (savedToken !== currentToken) {
+                console.log("🔄 FCM 토큰이 변경됨! Worker와 DB 업데이트 시작");
+
+                // 1) DB에 새로운 토큰 저장
+                await set(notifyRef, {
+                    time: notifyData.time,
+                    token: currentToken
+                });
+
+                // 2) Worker에도 전송
+                await fetch(`${WORKER_BASE}/subscribe-fcm`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        token: currentToken,
+                        time: notifyData.time,
+                        nickname: nickname
+                    })
+                });
+
+                console.log("✨ 토큰 갱신 완료!");
+            } else {
+                console.log("✔ 토큰 동일 — Worker 업데이트 불필요");
+            }
+        }
     });
 
     // ✅ 뒤로가기
