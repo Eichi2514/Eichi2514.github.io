@@ -101,10 +101,24 @@ $(document).on("click", "#subLoginBtn", async function () {
             $msg.css("color", "red").text("비밀번호가 틀렸습니다.");
         }
     } else {
+        const counterRef = ref(db, `coffeeCounters/users`);
+        const counterSnap = await get(counterRef);
+
+        let newId = 1;
+        if (counterSnap.exists()) {
+            newId = counterSnap.val() + 1;
+        }
+
         // 새 부캐 생성
         await set(ref(db, `coffeeUsers/${nickname}`), {
-            password, signupDate: getKoreanTimestamp(),
+            id: newId,
+            password,
+            signupDate: getKoreanTimestamp(),
         });
+
+        // 카운터 증가
+        await set(counterRef, newId);
+
         setActiveNickname(nickname, "coffee-subnickname");
         $msg.css("color", "green").text("새 부캐 계정이 등록되었습니다!");
         setTimeout(() => {
@@ -438,9 +452,23 @@ $(function () {
                     .html("이미 존재하는 닉네임이거나<br>비밀번호가 틀렸습니다.");
             }
         } else {
+            const counterRef = ref(db, `coffeeCounters/users`);
+            const counterSnap = await get(counterRef);
+
+            let newId = 1;
+            if (counterSnap.exists()) {
+                newId = counterSnap.val() + 1;
+            }
+
             await set(ref(db, `coffeeUsers/${nickname}`), {
-                password, signupDate: getKoreanTimestamp(),   // 가입일 저장
+                id: newId,
+                password,
+                signupDate: getKoreanTimestamp(),   // 가입일 저장
             });
+
+            // 카운터 증가
+            await set(counterRef, newId);
+
             $msg.css("color", "green").text("새 계정이 등록되었습니다.");
             setActiveNickname(nickname);
             setTimeout(() => {

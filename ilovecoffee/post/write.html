@@ -200,7 +200,7 @@
         const category = (type === "공지") ? "공지" : "기타";
 
         // 타입별 카운터 경로
-        const counterRef = ref(db, `coffeePosts/counters/${category}`);
+        const counterRef = ref(db, `coffeeCounters/posts/${category}`);
         const counterSnap = await get(counterRef);
 
         let newId = 1;
