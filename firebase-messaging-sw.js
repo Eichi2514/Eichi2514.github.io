@@ -20,12 +20,13 @@ messaging.onBackgroundMessage(() => {
 
 // 📌 push 이벤트에서도 fallback 방지 + 동일 로직 적용
 self.addEventListener("push", event => {
-    const data = event.data?.json() || {};
+    const payload = event.data?.json() || {};
+    const d = payload.data || {};
 
     event.waitUntil(
-        self.registration.showNotification(data.title, {
-            body: data.body,
-            icon: data.icon || "/favicon/Eichi2.png",
+        self.registration.showNotification(d.title, {
+            body: d.body,
+            icon: d.icon || "/favicon/Eichi2.png",
             badge: "/ilovecoffee/image/postsBtnImg.jpg"
         })
     );
