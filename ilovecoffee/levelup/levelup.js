@@ -118,6 +118,7 @@ $(document).on("click", "#subLoginBtn", async function () {
 
         // 카운터 증가
         await set(counterRef, newId);
+        await set(ref(db, `coffeeUsersId/${newId}`), nickname);
 
         setActiveNickname(nickname, "coffee-subnickname");
         $msg.css("color", "green").text("새 부캐 계정이 등록되었습니다!");
@@ -468,6 +469,7 @@ $(function () {
 
             // 카운터 증가
             await set(counterRef, newId);
+            await set(ref(db, `coffeeUsersId/${newId}`), nickname);
 
             $msg.css("color", "green").text("새 계정이 등록되었습니다.");
             setActiveNickname(nickname);
@@ -1607,6 +1609,10 @@ $(function () {
             // ✅ coffeeUsers 이동
             await set(newRef, userData);
             await remove(dbRef);
+
+            // ✅ coffeeUsersId도 업데이트
+            const userId = userData.id;
+            await set(ref(db, `coffeeUsersId/${userId}`), newNick);
 
             // ✅ coffeeMemory 데이터도 같이 이동
             const memoryRef = ref(db, `coffeeMemory/${nickname}`);
