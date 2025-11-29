@@ -19,9 +19,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../levelup/levelup.css"/>
-    <link rel="stylesheet" href="../helpModal/helpModal.css"/>
-    <link rel="stylesheet" href="../menuToggle/menuToggle.css"/>
-    <link rel="stylesheet" href="../favoriteBtns/favoriteBtns.css"/>
+    <link rel="stylesheet" href="../modules/helpModal.css"/>
+    <link rel="stylesheet" href="../modules/menuToggle.css"/>
+    <link rel="stylesheet" href="../modules/favoriteBtns.css"/>
 </head>
 <body>
 
@@ -45,6 +45,7 @@
                 <button class="favoriteSettingBtn">즐겨찾기 설정</button>
 
                 <button class="closeMenuBtn">메뉴닫기</button>
+                <button class="notifyBtn">알림 설정</button>
                 <button class="changeNicknameBtn">닉네임 변경</button>
                 <button class="changePasswordBtn">비밀번호 변경</button>
                 <button class="logoutBtn">로그아웃</button>
@@ -413,12 +414,44 @@
     </div>
 </div>
 
+<div id="notifyModal" class="login-overlay" style="display: none;">
+    <div class="login-modal">
+        <button id="closeNotifyModal" class="closeBtn">✕</button>
+        <h2>알림 설정</h2>
+
+        <select id="modalHour"></select>
+        <select id="modalMinute"></select>
+
+        <div class="modal-actions">
+            <button id="modalSaveBtn">저장하기</button>
+            <button id="modalDisableBtn">알림 끄기</button>
+        </div>
+
+        <div style="font-size: 14px; color: #666; margin-top: 14px; text-align: left;">
+            ※ 알림이 정상적으로 동작하려면<br>
+            · Chrome 또는 Safari에서 알림을 ‘허용’해야 합니다.<br>
+            · 일부 iOS 기기에서는 알림이 제한될 수 있습니다.
+        </div>
+    </div>
+</div>
+
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker
+                .register("/firebase-messaging-sw.js")
+                .then(() => console.log("SW 등록 성공"))
+                .catch(err => console.log("SW 등록 실패:", err));
+        });
+    }
+</script>
 <script src="../levelup/levelup.js" type="module" defer></script>
-<script src="../helpModal/helpModal.js" defer></script>
-<script src="../menuToggle/menuToggle.js" type="module" defer></script>
-<script src="../favoriteBtns/favoriteBtns.js" type="module" defer></script>
-<script src="../guests/regularGuests.js" defer></script>
-<script src="../guests/generalGuests.js" defer></script>
+<script src="../modules/helpModal.js" defer></script>
+<script src="../modules/menuToggle.js" type="module" defer></script>
+<script src="../modules/favoriteBtns.js" type="module" defer></script>
+<script src="../modules/pwaNotify.js" type="module" defer></script>
+<script src="../modules/regularGuests.js" defer></script>
+<script src="../modules/generalGuests.js" defer></script>
 <script src="../common/computeLevelUpLogs.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>

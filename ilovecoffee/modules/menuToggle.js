@@ -4,18 +4,17 @@ import {
     ref,
     get,
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-import { getActiveNickname, goToPage, showAlert, getKoreanDate } from "../common/utils.js";
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import {getActiveNickname, goToPage, showAlert, getKoreanDate} from "../common/utils.js";
+import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 
 const firebaseConfig = {
-    apiKey: ".env/apiKey",
+    apiKey: "AIzaSyA4ERWaxTCYUiEijuhdQITVsP_VlYrVXEU",
     authDomain: ".env/authDomain",
     databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
-    projectId: ".env/projectId",
+    projectId: "test-948ba",
     storageBucket: ".env/storageBucket",
-    messagingSenderId: ".env/messagingSenderId",
-    appId: ".env/appId",
-    measurementId: ".env/measurementId"
+    messagingSenderId: "214442102094",
+    appId: "1:214442102094:web:844878f6a9c4080538e21f"
 };
 
 $(async function () {
@@ -132,7 +131,7 @@ $(async function () {
         if (!snap.exists()) return;
         const user = snap.val();
 
-        const { memoryRoomPublic, rankingPublic, isAdmin } = user;
+        const {memoryRoomPublic, rankingPublic, isAdmin} = user;
         const hasSubCharacter = localStorage.getItem("coffee-subnickname");
 
         // ✅ 페이지별 표시 조건
@@ -195,11 +194,26 @@ $(async function () {
 
     // ✅ 관리자 모달 동작
     $(document).on("click", "#closeAdminOptionModal", () => $("#adminOptionModal").hide());
-    $(document).on("click", "#adminArchiveBtn", () => { $("#adminOptionModal").hide(); goToPage("admin"); });
-    $(document).on("click", "#adminMemoryBtn", () => { $("#adminOptionModal").hide(); goToPage("aMemory"); });
-    $(document).on("click", "#adminWriteBtn", () => { $("#adminOptionModal").hide(); goToPage("aWrite"); });
-    $(document).on("click", "#adminEditBtn", () => { $("#adminOptionModal").hide(); goToPage("aEdit"); });
-    $(document).on("click", "#testBtn", () => { $("#adminOptionModal").hide(); goToPage("test"); });
+    $(document).on("click", "#adminArchiveBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("admin");
+    });
+    $(document).on("click", "#adminMemoryBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("aMemory");
+    });
+    $(document).on("click", "#adminWriteBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("aWrite");
+    });
+    $(document).on("click", "#adminEditBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("aEdit");
+    });
+    $(document).on("click", "#testBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("test");
+    });
 
     const $btn = $(".closeMenuBtn");
     localStorage.removeItem("floatingMenuOpen");

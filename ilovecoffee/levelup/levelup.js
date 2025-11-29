@@ -35,14 +35,13 @@ import {
 } from "../common/utils.js";
 
 const firebaseConfig = {
-    apiKey: ".env/apiKey",
+    apiKey: "AIzaSyA4ERWaxTCYUiEijuhdQITVsP_VlYrVXEU",
     authDomain: ".env/authDomain",
     databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
-    projectId: ".env/projectId",
+    projectId: "test-948ba",
     storageBucket: ".env/storageBucket",
-    messagingSenderId: ".env/messagingSenderId",
-    appId: ".env/appId",
-    measurementId: ".env/measurementId"
+    messagingSenderId: "214442102094",
+    appId: "1:214442102094:web:844878f6a9c4080538e21f"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -201,15 +200,15 @@ function renderExpTablePage(userLevel) {
         const fontWeight = isMyLevel ? "700" : "500";
 
         $("#expChartTable tbody").append(`
-            <tr style="background:${bg}; color:${color}; font-weight:${fontWeight};">
-                <td style="padding:8px; border:1px solid #e0dff2;">
-                    ${i} -> ${i + 1}
-                </td>
-                <td style="padding:8px; border:1px solid #e0dff2;">
-                    ${need ? need.toLocaleString() : '-'}
-                </td>
-            </tr>
-        `);
+                <tr style="background:${bg}; color:${color}; font-weight:${fontWeight};">
+                    <td style="padding:8px; border:1px solid #e0dff2;">
+                        ${i} -> ${i + 1}
+                    </td>
+                    <td style="padding:8px; border:1px solid #e0dff2;">
+                        ${need ? need.toLocaleString() : '-'}
+                    </td>
+                </tr>
+            `);
     }
 
     updateExpTablePagination(totalLevels);
@@ -339,13 +338,13 @@ $("#toggleExpTableBtn").on("click", function () {
             : `<td>${r.gained}<br><span style="color:red">${r.approx}</span></td>`;
 
         $tbody.append(`
-            <tr class="exp-row" data-date="${r.date}">
-                <td>${r.formattedDate}</td>
-                <td>${r.level}</td>
-                <td>${r.exp.toLocaleString()}</td>
-                ${gainedTd}
-            </tr>
-        `);
+                <tr class="exp-row" data-date="${r.date}">
+                    <td>${r.formattedDate}</td>
+                    <td>${r.level}</td>
+                    <td>${r.exp.toLocaleString()}</td>
+                    ${gainedTd}
+                </tr>
+            `);
     }
 });
 
@@ -718,13 +717,13 @@ $(function () {
                     }
 
                     $tbody.prepend(`
-                            <tr class="exp-row" data-date="${date}">
-                                <td>${formattedDate}</td>
-                                <td>${currentLevel}</td>
-                                <td>${currentExp.toLocaleString()}</td>
-                                <td>${gained}<br><span style="color:red">${approx}</span></td>
-                            </tr>
-                        `);
+                                <tr class="exp-row" data-date="${date}">
+                                    <td>${formattedDate}</td>
+                                    <td>${currentLevel}</td>
+                                    <td>${currentExp.toLocaleString()}</td>
+                                    <td>${gained}<br><span style="color:red">${approx}</span></td>
+                                </tr>
+                            `);
 
                     prevExp = currentExp;
                     prevLevel = currentLevel;
@@ -828,16 +827,16 @@ $(function () {
                             const goalTargets = userData.goalTargets.sort((a, b) => a - b);
 
                             let goalTable = `
-                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
-                                    <thead>
-                                        <tr style="background:#f6f4fc; color:#5a4398;">
-                                            <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
-                                        </tr>
-                                    </thead>
-                                <tbody>
-                            `;
+                                    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                        <thead>
+                                            <tr style="background:#f6f4fc; color:#5a4398;">
+                                                <th style="padding:8px; border:1px solid #e0dff2;">목표</th>
+                                                <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                                <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                            </tr>
+                                        </thead>
+                                    <tbody>
+                                `;
 
                             goalTargets
                                 .filter(goal => goal > currentExp)
@@ -859,11 +858,11 @@ $(function () {
                                             : `${Math.floor(goal / 100000000)}억`;
 
                                     goalTable += `
-                                        <tr>
-                                           <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
-                                           <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
-                                           <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-                                        </tr>`;
+                                            <tr>
+                                               <td style="padding:8px; border:1px solid #e0dff2;">${formattedGoal}</td>
+                                               <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
+                                               <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                            </tr>`;
 
                                 });
 
@@ -873,16 +872,16 @@ $(function () {
                         } else {
                             // 🔹 일반 레벨업 테이블 (기존 구조 유지)
                             let tableHTML = `
-                                <table style="width:100%; border-collapse:collapse; font-size:14px;">
-                                    <thead>
-                                        <tr style="background:#f6f4fc; color:#5a4398;">
-                                            <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
-                                            <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
-                                        </tr>
-                                    </thead>
-                                <tbody>
-                            `;
+                                    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                                        <thead>
+                                            <tr style="background:#f6f4fc; color:#5a4398;">
+                                                <th style="padding:8px; border:1px solid #e0dff2;">목표 레벨</th>
+                                                <th style="padding:8px; border:1px solid #e0dff2;">D-day</th>
+                                                <th style="padding:8px; border:1px solid #e0dff2;">예상 도달일</th>
+                                            </tr>
+                                        </thead>
+                                    <tbody>
+                                `;
 
                             let accumulatedExp = 0;
                             let curExp = currentExp;
@@ -927,12 +926,12 @@ $(function () {
                                 }
 
                                 tableHTML += `
-                                    <tr>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
-                                        <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
-                                    </tr>
-                                `;
+                                        <tr>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">${lvl + 1}레벨</td>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
+                                            <td style="padding:8px; border:1px solid #e0dff2;">${yyyy}-${mm}-${dd}</td>
+                                        </tr>
+                                    `;
                                 curExp = 0;
                             }
                             tableHTML += `</tbody></table>`;
@@ -947,15 +946,15 @@ $(function () {
                 // ✅ (1) 옵션 선택 모달 추가
                 // ============================
                 const optionModal = $(`
-                        <div id="optionModal" class="login-overlay" style="display:none;">
-                            <div class="login-modal">
-                                <h3>옵션을 선택해주세요</h3>
-                                <button id="editExpBtn">수정</button>
-                                <button id="deleteExpBtn">삭제</button>
-                                <button id="closeOptionBtn">닫기</button>
+                            <div id="optionModal" class="login-overlay" style="display:none;">
+                                <div class="login-modal">
+                                    <h3>옵션을 선택해주세요</h3>
+                                    <button id="editExpBtn">수정</button>
+                                    <button id="deleteExpBtn">삭제</button>
+                                    <button id="closeOptionBtn">닫기</button>
+                                </div>
                             </div>
-                        </div>
-                    `);
+                        `);
 
                 $("body").append(optionModal);
 
@@ -963,20 +962,20 @@ $(function () {
                 // ✅ (2) 수정 모달 추가
                 // ============================
                 const editModal = $(`
-                        <div id="editModal" class="login-overlay" style="display:none;">
-                            <div class="login-modal" style="position:relative; width:360px;">
-                                <button id="closeEditModal" class="closeBtn">✕</button>
-                                <h2>경험치 수정</h2>
-                                <label style="display:block; text-align:left; color:#555;">날짜</label>
-                                <input id="editExpDate" type="date" style="margin-bottom:10px;">
-                                <label style="display:block; text-align:left; color:#555;">현재 레벨</label>
-                                <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
-                                <label style="display:block; text-align:left; color:#555;">현재 경험치</label>
-                                <input id="editExpValue" type="text" inputmode="numeric" style="margin-bottom:10px;">
-                                <button id="updateExpBtn">저장</button>
+                            <div id="editModal" class="login-overlay" style="display:none;">
+                                <div class="login-modal" style="position:relative; width:360px;">
+                                    <button id="closeEditModal" class="closeBtn">✕</button>
+                                    <h2>경험치 수정</h2>
+                                    <label style="display:block; text-align:left; color:#555;">날짜</label>
+                                    <input id="editExpDate" type="date" style="margin-bottom:10px;">
+                                    <label style="display:block; text-align:left; color:#555;">현재 레벨</label>
+                                    <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
+                                    <label style="display:block; text-align:left; color:#555;">현재 경험치</label>
+                                    <input id="editExpValue" type="text" inputmode="numeric" style="margin-bottom:10px;">
+                                    <button id="updateExpBtn">저장</button>
+                                </div>
                             </div>
-                        </div>
-                    `);
+                        `);
                 $("body").append(editModal);
 
                 latestExpRecords = userData.expRecords; // ✅ 최근 기록 캐싱
@@ -1443,15 +1442,15 @@ $(function () {
             $("#goalModal").remove();
 
             const modal = $(`
-                    <div id="goalModal" class="login-overlay">
-                        <div class="login-modal" style="position:relative;">
-                            <button id="closeGoalModal" class="closeBtn">✕</button>
-                            <h2>목표 설정</h2>
-                            <div id="goalInputs" style="margin-bottom:10px;"></div>
-                            <button id="saveGoalBtn">저장</button>
+                        <div id="goalModal" class="login-overlay">
+                            <div class="login-modal" style="position:relative;">
+                                <button id="closeGoalModal" class="closeBtn">✕</button>
+                                <h2>목표 설정</h2>
+                                <div id="goalInputs" style="margin-bottom:10px;"></div>
+                                <button id="saveGoalBtn">저장</button>
+                            </div>
                         </div>
-                    </div>
-                `);
+                    `);
 
             $("body").append(modal);
 
@@ -1460,10 +1459,10 @@ $(function () {
             for (let i = 0; i < 5; i++) {
                 const val = savedGoals[i] ? savedGoals[i].toLocaleString() : "";
                 $goalInputs.append(`
-                        <input type="text" class="goalInput" placeholder="목표 경험치 ${i + 1}" value="${val}"
-                               style="width:100%; padding:8px; margin-bottom:8px;
-                               font-size:16px; border:1px solid #ccc; border-radius:6px;">
-                    `);
+                            <input type="text" class="goalInput" placeholder="목표 경험치 ${i + 1}" value="${val}"
+                                   style="width:100%; padding:8px; margin-bottom:8px;
+                                   font-size:16px; border:1px solid #ccc; border-radius:6px;">
+                        `);
             }
 
             // ✅ 실시간 쉼표 포맷 + 상한(1조) 체크
@@ -1532,16 +1531,16 @@ $(function () {
         // 기존 모달 제거 후 새로 생성
         $("#nicknameModal").remove();
         const modal = $(`
-                <div id="nicknameModal" class="login-overlay">
-                    <div class="login-modal" style="position:relative;">
-                        <button id="closeNicknameModal" class="closeBtn">✕</button>
-                        <h2>닉네임 변경</h2>
-                        <input id="newNicknameInput" type="text" value="${nickname}"
-                               style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
-                        <button id="saveNicknameBtn">저장</button>
+                    <div id="nicknameModal" class="login-overlay">
+                        <div class="login-modal" style="position:relative;">
+                            <button id="closeNicknameModal" class="closeBtn">✕</button>
+                            <h2>닉네임 변경</h2>
+                            <input id="newNicknameInput" type="text" value="${nickname}"
+                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
+                            <button id="saveNicknameBtn">저장</button>
+                        </div>
                     </div>
-                </div>
-            `);
+                `);
         $("body").append(modal);
 
         // 닫기 버튼
@@ -1607,16 +1606,16 @@ $(function () {
         // 기존 모달 제거 후 새로 생성
         $("#passwordModal").remove();
         const modal = $(`
-                <div id="passwordModal" class="login-overlay">
-                    <div class="login-modal" style="position:relative;">
-                        <button id="closePasswordModal" class="closeBtn">✕</button>
-                        <h2>비밀번호 변경</h2>
-                        <input id="newPasswordInput" type="password" placeholder="새 비밀번호 입력 (4자 이상)"
-                               style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
-                        <button id="savePasswordBtn">저장</button>
+                    <div id="passwordModal" class="login-overlay">
+                        <div class="login-modal" style="position:relative;">
+                            <button id="closePasswordModal" class="closeBtn">✕</button>
+                            <h2>비밀번호 변경</h2>
+                            <input id="newPasswordInput" type="password" placeholder="새 비밀번호 입력 (4자 이상)"
+                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; font-size:16px;">
+                            <button id="savePasswordBtn">저장</button>
+                        </div>
                     </div>
-                </div>
-            `);
+                `);
         $("body").append(modal);
 
         // 닫기 버튼
@@ -1728,9 +1727,9 @@ $(function () {
         profileList.forEach(p => {
             const isLocked = p.id > unlockLimit;
             const img = $(`<div style="position:relative;">
-                <img src="${p.src}" alt="${p.name}">
-                    ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
-                </div>`);
+                    <img src="${p.src}" alt="${p.name}">
+                        ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
+                    </div>`);
 
             img.find("img").css({
                 width: "55px",
