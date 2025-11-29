@@ -72,22 +72,31 @@
     <button id="backBtn">뒤로가기</button>
 </div>
 
-<div style="margin: 20px; padding: 16px; background: white; border-radius: 10px;">
-    <h3>알림 시간 설정</h3>
+<div style="margin: 20px;">
+    <button class="notifyBtn">
+        알림 설정
+    </button>
+</div>
 
-    <div id="notifyView" style="display:none; margin-bottom: 10px;">
-        <p>현재 설정된 시간: <span id="currentTime"></span></p>
-        <button id="editBtn">수정하기</button>
-    </div>
 
-    <div id="notifyForm">
-        <label>시:
-            <select id="notifyHour"></select>
-        </label>
-        <label>분:
-            <select id="notifyMinute"></select>
-        </label>
-        <button id="saveNotifyBtn">저장하기</button>
+<div id="notifyModal" class="login-overlay" style="display: none;">
+    <div class="login-modal">
+        <button id="closeNotifyModal" class="closeBtn">✕</button>
+        <h2>알림 설정</h2>
+
+        <select id="modalHour"></select>
+        <select id="modalMinute"></select>
+
+        <div class="modal-actions">
+            <button id="modalSaveBtn">저장하기</button>
+            <button id="modalDisableBtn">알림 끄기</button>
+        </div>
+
+        <div style="font-size: 14px; color: #666; margin-top: 14px; text-align: left;">
+            ※ 알림이 정상적으로 동작하려면<br>
+            · Chrome 또는 Safari에서 알림을 ‘허용’해야 합니다.<br>
+            · 일부 iOS 기기에서는 알림이 제한될 수 있습니다.
+        </div>
     </div>
 </div>
 
@@ -165,22 +174,28 @@
         }
     }
 
+    $(document).on("click", ".notifyBtn", async function () {
+        $("#notifyModal").show();
+    });
+
+    // ✅ 닫기 버튼
+    $(document).on("click", ".closeBtn", function () {
+        $(".login-overlay").hide();
+    });
+
     $(document).ready(function () {
         const notifyRef = ref(db, `coffeeUsers/${nickname}/notify`);
 
-        const $notifyHour = $("#notifyHour");
-        const $notifyMinute = $("#notifyMinute");
-        const $notifyForm = $("#notifyForm");
-        const $notifyView = $("#notifyView");
-        const $currentTime = $("#currentTime");
+        const $modalHour = $("#modalHour");
+        const $modalMinute = $("#modalMinute");
 
         // ⭐ 0~23, 0~59 자동 생성
         for (let i = 0; i < 24; i++) {
-            $notifyHour.append(`<option value="${i}">${String(i).padStart(2, "0")}시</option>`);
+            $modalHour.append(`<option value="${i}">${String(i).padStart(2, "0")}시</option>`);
         }
 
-        for (let i = 0; i < 60; i++) {
-            $notifyMinute.append(`<option value="${i}">${String(i).padStart(2, "0")}분</option>`);
+        for (let i = 0; i < 60; i += 30) {
+            $modalMinute.append(`<option value="${i}">${String(i).padStart(2, "0")}분</option>`);
         }
 
         // ⭐ 저장된 시간 불러오기
@@ -188,23 +203,20 @@
             get(notifyRef).then((snap) => {
                 const data = snap.val();
 
-                if (data && data.time) {
-                    const time = data.time;   // "09:30" 같은 문자열
-
-                    // 표시
-                    $currentTime.text(time);
-                    $notifyView.show();
-                    $notifyForm.hide();
-
-                    // 폼에도 값 반영
-                    const [h, m] = time.split(":");
-                    $notifyHour.val(Number(h));
-                    $notifyMinute.val(Number(m));
-                } else {
-                    // 설정이 아예 없거나 time이 없으면 처음 상태처럼 폼만 보이게
-                    $notifyView.hide();
-                    $notifyForm.show();
+                if (data?.disabled) {
+                    // 알림 끈 상태 → 자동 모달 X
+                    return;
                 }
+
+                if (data?.time) {
+                    const [h, m] = data.time.split(":");
+                    $("#modalHour").val(Number(h));
+                    $("#modalMinute").val(Number(m));
+                    return;
+                }
+
+                // ⭐ 최초 미설정 상태 → 자동 모달 OPEN
+                $("#notifyModal").show();
             });
         }
 
@@ -212,31 +224,25 @@
         checkAndUpdateToken();
 
         // ⭐ 저장하기 버튼
-        $("#saveNotifyBtn").on("click", async function () {
-            let hour = String($notifyHour.val()).padStart(2, "0");
-            let minute = String($notifyMinute.val()).padStart(2, "0");
+        $("#modalSaveBtn").on("click", async function () {
+            let hour = String($("#modalHour").val()).padStart(2, "0");
+            let minute = String($("#modalMinute").val()).padStart(2, "0");
 
             const timeString = `${hour}:${minute}`;
 
-            // FCM 토큰 발급
             const token = await getToken(messaging, {
                 vapidKey: FCM_VAPID_PUBLIC_KEY
             });
 
-            set(notifyRef, {
+            await set(notifyRef, {
                 time: timeString,
                 token: token
-            }).then(() => {
-                alert(`알림 시간이 ${timeString}으로 저장되었습니다.`);
-                loadNotifyTime();
-                registerFcmToWorker(timeString, token);
             });
-        });
 
-        // ⭐ 수정하기 버튼
-        $("#editBtn").on("click", function () {
-            $notifyView.hide();
-            $notifyForm.show();
+            await registerFcmToWorker(timeString, token);
+
+            alert(`알림 시간이 ${timeString}으로 저장되었습니다.`);
+            $("#notifyModal").hide();
         });
 
         async function checkAndUpdateToken() {
@@ -287,6 +293,26 @@
                 console.log("✔ 토큰 동일 — Worker 업데이트 불필요");
             }
         }
+
+        // ⭐ 알림 끄기
+        $("#modalDisableBtn").on("click", async function () {
+            if (!confirm("정말 알림을 끌까요?")) return;
+
+            // 1) Firebase DB notify 값 삭제
+            await set(notifyRef, {disabled: true});
+
+            // 2) Worker에서도 해당 nickname 구독 해제 요청(옵션)
+            await fetch(`${WORKER_BASE}/unsubscribe-fcm`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({nickname})
+            }).catch(() => {
+            });
+
+            alert("알림이 꺼졌습니다.");
+            loadNotifyTime(); // UI 새로 반영
+            $("#notifyModal").hide();
+        });
     });
 
     // ✅ 뒤로가기

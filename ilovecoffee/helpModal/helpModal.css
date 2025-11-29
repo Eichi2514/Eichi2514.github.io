@@ -8,7 +8,6 @@
     height: 32px;
     font-size: 18px;
     font-weight: 700;
-    cursor: pointer;
     transition: all 0.2s ease;
     margin-right: 8px;
     display: flex;
@@ -30,6 +29,26 @@
     z-index: 50;
 }
 
+.login-modal {
+    position: relative;
+    background: #fff;
+    padding: 30px 25px 50px 25px;
+    border-radius: 12px;
+    width: 360px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-modal select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;    
+    font-size: 17px;
+    margin-top: 10px;
+ }
+
 .login-modal button {
     width: 100%;
     padding: 10px;
@@ -37,10 +56,23 @@
     color: #fff;
     border: none;
     border-radius: 6px;
-    cursor: pointer;
     font-size: 17px;
     margin-top: 10px;
     transition: 0.2s;
+}
+
+.login-modal h2 {
+    margin-bottom: 15px;
+    color: #5a4398;
+}
+
+.login-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
 }
 
 .help-modal {
@@ -62,7 +94,6 @@
     border: none;
     font-size: 20px;
     color: #aaa !important;
-    cursor: pointer;
     transition: color 0.2s;
     padding: 0;
     margin: 0;

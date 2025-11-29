@@ -141,18 +141,6 @@ h3 {
     z-index: 101; /* 내부 콘텐츠도 최상단 */
 }
 
-.login-modal {
-    position: relative;
-    background: #fff;
-    padding: 30px 25px 50px 25px;
-    border-radius: 12px;
-    width: 360px;
-    max-height: 100vh;
-    overflow-y: auto;
-    text-align: center;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-}
-
 .login-modal h2 {
     margin-bottom: 15px;
     color: #5a4398;
