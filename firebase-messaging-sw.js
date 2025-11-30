@@ -24,6 +24,13 @@ self.addEventListener("push", event => {
     const payload = event.data?.json() || {};
     const d = payload.data || {};
 
+    // ✔ OS가 notification을 이미 띄운 경우 → data-only로 들어오지 않음
+    //   하지만 일부 기기에서는 data도 같이 들어오므로 type 체크 필요
+    if (d.type !== "levelup-noti") {
+        return; // 우리가 보내는 알림이 아닌 경우 무시
+    }
+
+    // ✔ OS가 숨긴 경우에만 fallback 알림을 띄움
     event.waitUntil(
         self.registration.showNotification(d.title, {
             body: d.body,
