@@ -70,6 +70,19 @@ async function registerFcmToWorker(timeString, token) {
     }
 }
 
+async function safeGetToken() {
+    try {
+        await navigator.serviceWorker.ready;
+    } catch (e) {
+        console.warn("⚠ serviceWorker.ready 실패, 강제로 기다림", e);
+        await new Promise(res => setTimeout(res, 500)); // fallback
+    }
+
+    return await getToken(messaging, {
+        vapidKey: FCM_VAPID_PUBLIC_KEY
+    });
+}
+
 $(document).on("click", ".notifyBtn", async function () {
     const nickname = getActiveNickname();
     if(!nickname) return;
@@ -131,9 +144,7 @@ $(document).ready(function () {
 
         const timeString = `${hour}:${minute}`;
 
-        const token = await getToken(messaging, {
-            vapidKey: FCM_VAPID_PUBLIC_KEY
-        });
+        const token = await safeGetToken();
 
         await set(notifyRef, {
             time: timeString,
@@ -157,9 +168,7 @@ $(document).ready(function () {
         }
 
         // 현재 FCM 토큰 얻기
-        const currentToken = await getToken(messaging, {
-            vapidKey: FCM_VAPID_PUBLIC_KEY
-        });
+        const currentToken = await safeGetToken();
 
         if (!currentToken) {
             console.log("❌ 현재 토큰 발급 실패");
