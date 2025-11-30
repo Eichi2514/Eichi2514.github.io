@@ -17,7 +17,19 @@ const PWA_START_URL = "/ilovecoffee/levelup/levelup.html";
 const messaging = firebase.messaging();
 
 // ✔ background 메시지
-messaging.onBackgroundMessage(() => {});
+messaging.onBackgroundMessage((payload) => {
+    const d = payload.data || {};
+    if (d.type !== "levelup-noti") return;
+
+    self.registration.showNotification(d.title, {
+        body: d.body,
+        icon: d.icon || "/favicon/Eichi2.png",
+        badge: "/ilovecoffee/image/postsBtnImg.jpg",
+        data: {
+            url: d.url || "/ilovecoffee/levelup/levelup.html"
+        }
+    });
+});
 
 // ✔ push 이벤트 (fallback)
 self.addEventListener("push", event => {
