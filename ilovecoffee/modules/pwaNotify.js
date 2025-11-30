@@ -1,6 +1,6 @@
 import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {getDatabase, ref, set, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-import {getMessaging, getToken} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging.js";
+import {getMessaging, onMessage, getToken} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging.js";
 
 import {goToPage, getActiveNickname, showAlert, showConfirm} from "../common/utils.js";
 
@@ -23,6 +23,16 @@ const messaging = getMessaging(app);
 const FCM_VAPID_PUBLIC_KEY = "BCzk05nOhj12ZxrKtJaM_VOYOI9i3X0YuQuGiSFLHS1Cu_kfWD7qk5wixj_g0cJE_9JtnLU83aRjrWxfd-i5sqA";
 
 const WORKER_BASE = "https://worker-gentle-dream-dcc5.picon1317.workers.dev";
+
+onMessage(messaging, (payload) => {
+    console.log("📩 웹페이지에서 직접 메시지 수신:", payload);
+
+    // 실제 알림 띄우기
+    new Notification(payload.data.title, {
+        body: payload.data.body,
+        icon: payload.data.icon
+    });
+});
 
 async function registerFcmToWorker(timeString, token) {
     const nickname = getActiveNickname();
