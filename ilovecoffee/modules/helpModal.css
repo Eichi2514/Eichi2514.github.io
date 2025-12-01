@@ -61,6 +61,11 @@
     transition: 0.2s;
 }
 
+.login-modal button:disabled {
+    background: #ccc;
+    color: #777;
+}
+
 .login-modal h2 {
     margin-bottom: 15px;
     color: #5a4398;

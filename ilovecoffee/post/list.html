@@ -185,7 +185,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
         }
 
         /* 기본 공통 박스 */
@@ -203,7 +202,7 @@
             width: 100%;
             height: 100%;
             border-radius: inherit;
-            overflow: hidden;  /* 이미지만 둥글게 잘리게 함 */
+            overflow: hidden; /* 이미지만 둥글게 잘리게 함 */
         }
 
         .top5-img-wrap img {
@@ -216,7 +215,10 @@
         .rank-1 {
             width: 120px;
             height: 120px;
-            border: 4px solid #FFC400;
+            /* 바깥 보더 */
+            border: 8px solid #FFC400;
+            /* 안쪽 보더 효과 */
+            box-shadow: inset 0 0 0 4px #FFC400; /* 내부 보더 */
         }
 
         /* 1등 왕관 */
@@ -233,7 +235,9 @@
         .rank-2-3 {
             width: 100px;
             height: 100px;
-            border: 3px solid #CFCFCF;
+
+            border: 6px solid #CFCFCF;
+            box-shadow: inset 0 0 0 4px #CFCFCF;
         }
 
         /* 축하 모양 */
@@ -249,7 +253,9 @@
         .rank-4-5 {
             width: 80px;
             height: 80px;
-            border: 3px solid #C48A5A;
+
+            border: 4px solid #C48A5A;
+            box-shadow: inset 0 0 0 4px #C48A5A;
         }
 
         /* 닉네임 + 시간 텍스트 */
@@ -345,28 +351,37 @@
     </div>
 </div>
 
-<!-- ===== 🔥 TOP 5 랭킹 모달 ===== -->
-<div class="login-overlay" id="rankTop5Modal" style="display:none;">
-    <div class="login-modal" style="padding:20px; text-align:center; max-width:360px;">
-        <button id="closeTop5Btn" class="closeBtn">✕</button>
-        <h2>출석 랭킹 TOP 5</h2>
-
-        <div id="top5Wrapper"></div>
-
-        <!-- 아래로 내려갈 버튼 -->
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:12px;">
-            <button disabled="true">이전</button>
-            <button id="goRankListBtn">다음</button>
-        </div>
-    </div>
-</div>
-
 <!-- ===== 🔥 출석 랭킹 모달 ===== -->
 <div class="login-overlay" id="rankModal" style="display:none;">
     <div class="login-modal">
         <button id="closeRankBtn" class="closeBtn">✕</button>
         <h2>출석 랭킹</h2>
 
+        <!-- 내 등수 박스 -->
+        <div id="myRankBox" style="
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #f6f4fc;
+            border: 1px solid #dcd7f0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: #5a4398;
+        ">
+            <span style="flex: 1; text-align: left;">
+                총 <span id="myRankTotal"></span>명
+            </span>
+            |
+            <span style="flex: 1; text-align: right;">
+                <span id="myRankNumber"></span>등
+            </span>
+        </div>
+
+        <!-- 1페이지 전용: TOP5 -->
+        <div id="top5Wrapper"></div>
+
+        <!-- 그 외 페이지용: 리스트 -->
         <div id="rankList" style="
             margin-top:10px;
             padding:10px;
@@ -374,11 +389,14 @@
             border-radius:10px;
             max-height:60vh;
             overflow-y:auto;
+            display:none;
         "></div>
 
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:12px;">
-            <button id="rankPrevBtn">이전</button>
-            <button id="rankNextBtn">다음</button>
+        <div id="rankPagination"
+             style="display:flex; justify-content:center; gap:8px; align-items:center;">
+            <button id="rankPrevBtn">◀</button>
+            <div id="rankPageNumbers" style="display:flex; gap:6px;"></div>
+            <button id="rankNextBtn">▶</button>
         </div>
     </div>
 </div>
@@ -415,7 +433,14 @@
         measurementId: ".env/measurementId"
     };
 
-    import {goToPage, parseKoreanTimestamp, isToday, formatDisplayDate, getKoreanDate} from "../common/utils.js";
+    import {
+        goToPage,
+        getActiveNickname,
+        parseKoreanTimestamp,
+        isToday,
+        formatDisplayDate,
+        getKoreanDate
+    } from "../common/utils.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -578,7 +603,7 @@
     // ===== 🔥 공지 & 일반 글 클릭 시 모달 열기 =====
     $(document).on("click", ".notice-item, .post-item", async function () {
         const title = $(this).attr("data-title");
-        const date  = $(this).attr("data-date");
+        const date = $(this).attr("data-date");
 
         let view = Number($(this).attr("data-view")) || 0;
         let newView = view + 1;
@@ -600,7 +625,7 @@
 
         // 🔥 DB 업데이트 (view 필드만 변경)
         try {
-            await update(ref(db, dbPath), { view: newView });
+            await update(ref(db, dbPath), {view: newView});
         } catch (error) {
             console.error("조회수 업데이트 실패:", error);
         }
@@ -691,11 +716,64 @@
     let currentRankStart = 1;
     const rankPageSize = 5;
     const $loadingScreen = $("#loadingScreen");
+    let totalRankCount = 0;
+
+    async function loadTotalRankCount() {
+        const today = getKoreanDate();
+        const counterSnap = await get(ref(db, `coffeeCounters/dailyRank/${today}`));
+
+        if (counterSnap.exists()) {
+            totalRankCount = counterSnap.val();   // 숫자 그대로 있음
+        } else {
+            totalRankCount = 0;
+        }
+    }
+
+    function renderRankPageNumbers() {
+        const $nums = $("#rankPageNumbers");
+        $nums.empty();
+
+        const totalPages = Math.ceil(totalRankCount / rankPageSize);
+        const currentPage = Math.floor((currentRankStart - 1) / rankPageSize) + 1;
+        let startPage = currentPage - 2;
+        let endPage = currentPage + 2;
+
+        if (startPage < 1) {
+            startPage = 1;
+            endPage = Math.min(5, totalPages);
+        } else if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, totalPages - 4);
+        }
+
+        for (let p = startPage; p <= endPage; p++) {
+            const startRank = (p - 1) * rankPageSize + 1;
+
+            $nums.append(`
+            <button class="rankPageBtn"
+                data-start="${startRank}"
+                style="
+                    padding:4px 8px;
+                    border-radius:6px;
+                    border:none;
+                    background:${p === currentPage ? '#5a4398' : '#ddd'};
+                    color:${p === currentPage ? '#fff' : '#333'};
+                    font-weight:${p === currentPage ? '700' : '500'};
+                ">
+                ${p}
+            </button>
+        `);
+        }
+
+        // 버튼 상태 반영
+        $("#rankPrevBtn").prop("disabled", currentPage === 1);
+        $("#rankNextBtn").prop("disabled", currentPage === totalPages);
+    }
 
     async function getUserInfoById(id) {
         // id → nickname 조회
         const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
-        if (!nickSnap.exists()) return { nickname: "탈퇴유저", profile: 1 };
+        if (!nickSnap.exists()) return {nickname: "탈퇴유저", profile: 1};
 
         const nickname = nickSnap.val();
 
@@ -707,7 +785,7 @@
             profile = userSnap.val().profileImg;
         }
 
-        return { nickname, profile };
+        return {nickname, profile};
     }
 
     async function loadRankChunk(startRank) {
@@ -725,7 +803,7 @@
 
         return Object.entries(snap.val()).map(([rank, data]) => {
             const userId = Number(Object.keys(data)[0]);
-            const time   = Object.values(data)[0];
+            const time = Object.values(data)[0];
             return {
                 rank: Number(rank),
                 id: userId,
@@ -750,7 +828,7 @@
 
                 <div>
                     <div style="font-weight:600;">${user.nickname}</div>
-                    <div style="font-size:13px; color:#777;">${item.time}</div>
+                    <div style="font-size:13px; color:#777; text-align: left;">${item.time}</div>
                 </div>
             </div>
         `);
@@ -761,16 +839,55 @@
         $("#rankNextBtn").prop("disabled", items.length < rankPageSize); // 5개 미만이면 다음 없음
     }
 
+    function updateRankViewMode() {
+        if (currentRankStart === 1) {
+            // 1페이지 → top5 view
+            $("#top5Wrapper").show();
+            $("#rankList").hide();
+        } else {
+            // 2페이지 이상 → 일반 리스트
+            $("#top5Wrapper").hide();
+            $("#rankList").show();
+        }
+    }
+
+    const activeNickname = getActiveNickname();
+
+    async function getMyDailyRank() {
+        if (!activeNickname) return null;
+
+        const snap = await get(ref(db, `coffeeUsers/${activeNickname}/dailyRank`));
+        if (!snap.exists()) return null;
+
+        return snap.val();
+    }
+
     // 처음 열기 = 1~5등
     $(document).on("click", ".dailyRankBtn", async function () {
         $loadingScreen.show();
-        // 1~5등 불러오기
-        const data = await loadRankChunk(1);
-        await renderTop5Rank(data);
-        $("#rankTop5Modal").show();
 
+        // 내 등수 표시
+        const myRank = await getMyDailyRank();
+        if (myRank !== null) {
+            $("#myRankNumber").text(myRank);
+            $("#myRankBox").show();
+        } else {
+            $("#myRankBox").hide();
+        }
+
+        // 현재 페이지 = 1
         currentRankStart = 1;
 
+        // TOP5 로딩
+        const top5 = await loadRankChunk(1);
+        await renderTop5Rank(top5);
+
+        updateRankViewMode();           // ★ 페이지 뷰 전환
+        await loadTotalRankCount();     // 전체 인원 로드
+        $("#myRankTotal").text(totalRankCount);
+        renderRankPageNumbers();        // 페이지 숫자 생성
+
+        $("#rankModal").show();
         // 플로팅 영역 기존 유지
         const $area = $(".floating-btn-area");
         const $toggle = $(".floating-toggle");
@@ -780,57 +897,68 @@
         $loadingScreen.hide();
     });
 
-    // TOP5 → 6등 이후 보기
-    $(document).on("click", "#goRankListBtn", async function () {
+    $(document).on("click", ".rankPageBtn", async function () {
         $loadingScreen.show();
-        $("#rankTop5Modal").hide(); // TOP5 닫기
+        const startRank = Number($(this).data("start"));
+        currentRankStart = startRank;
 
-        currentRankStart = 6; // 6등부터 시작
-        const data = await loadRankChunk(currentRankStart);
+        if (startRank === 1) {
+            const top5 = await loadRankChunk(1);
+            await renderTop5Rank(top5);
+        } else {
+            const data = await loadRankChunk(startRank);
+            await renderRankList(data);
+        }
 
-        await renderRankList(data);
-
-        $("#rankModal").show(); // 랭킹 모달 열기
+        updateRankViewMode();
+        renderRankPageNumbers();
         $loadingScreen.hide();
     });
 
-    // 다음 5개 → 6~10, 11~15...
     $(document).on("click", "#rankNextBtn", async function () {
         $loadingScreen.show();
         currentRankStart += rankPageSize;
+
         const data = await loadRankChunk(currentRankStart);
 
-        // 실제 데이터 없으면 다시 롤백
         if (data.length === 0) {
             currentRankStart -= rankPageSize;
             $loadingScreen.hide();
             return;
         }
+
         await renderRankList(data);
+
+        updateRankViewMode();
+        renderRankPageNumbers();
         $loadingScreen.hide();
     });
 
     // 이전 5개
     $(document).on("click", "#rankPrevBtn", async function () {
         $loadingScreen.show();
-        // 현재가 6~10 범위라면 → 이전 누르면 TOP5로 복귀
+        // 현재 2페이지(=6등)에서 뒤로 가면 TOP5 보기
         if (currentRankStart === 6) {
-
-            $("#rankModal").hide(); // 랭킹 모달 닫고
+            currentRankStart = 1;
 
             const top5 = await loadRankChunk(1);
             await renderTop5Rank(top5);
 
-            $("#rankTop5Modal").show(); // TOP5 모달 다시 열기
-            currentRankStart = 1;
+            updateRankViewMode();
+            renderRankPageNumbers();
             $loadingScreen.hide();
             return;
         }
 
-        // ---- 기존 이전 페이지 이동 ----
+        // 평소 이전 페이지 이동
         currentRankStart -= rankPageSize;
+        if (currentRankStart < 1) currentRankStart = 1;
+
         const data = await loadRankChunk(currentRankStart);
         await renderRankList(data);
+
+        updateRankViewMode();
+        renderRankPageNumbers();
         $loadingScreen.hide();
     });
 </script>
