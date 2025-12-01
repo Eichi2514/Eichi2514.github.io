@@ -27,9 +27,10 @@ $(async function () {
     // ✅ 메뉴 영역이 없으면 자동 생성
     if ($(".floating-btn-area").length === 0) {
         $("body").append(`
-            <div class="floating-btn-area">                
-                <button class="floating-btn advancedSettingBtn">필터모드</button>
+            <div class="floating-btn-area">
                 <button class="floating-btn subCharacterBtn">부캐</button>
+                <button class="floating-btn advancedSettingBtn">필터모드</button>                
+                <button class="floating-btn dailyRankBtn">출석랭킹</button>
                 <button class="floating-btn levelupBtn">그럴수이치</button>
                 <button class="floating-btn rankingBtn">아카이브</button>
                 <button class="floating-btn memoryBtn">추억수집</button>
@@ -140,6 +141,8 @@ $(async function () {
 
         if (currentPage !== "memory" && currentPage !== "levelup" && currentPage !== "memoryRoom") $(".memoryBtn").show();
         if (currentPage === "memory") $(".advancedSettingBtn").show();
+
+        if (currentPage === "list") $(".dailyRankBtn").show();
 
         if (rankingPublic && currentPage !== "ranking") $(".rankingBtn").show();
         if (memoryRoomPublic && currentPage !== "memoryRoom") $(".memoryRoomBtn").show();

@@ -1,3 +1,5 @@
+import {goToPage} from "../common/utils.js";
+
 // ✅ 도움말 페이지네이션 로직
 let currentHelpPage = 1;
 
@@ -84,3 +86,11 @@ $(window).on("load", function () {
         $("#helpModal").css("display", "flex");
     }
 });
+
+// ✅ 닫기 버튼
+$(document).on("click", ".closeBtn", function () {
+    $(".login-overlay").hide();
+});
+
+// 뒤로가기
+$("#backBtn").on("click", () => goToPage());

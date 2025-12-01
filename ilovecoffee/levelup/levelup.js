@@ -31,7 +31,8 @@ import {
     goToPage,
     showAlert,
     closeAlert,
-    showConfirm
+    showConfirm,
+    formatDisplayDate
 } from "../common/utils.js";
 
 const firebaseConfig = {
@@ -389,6 +390,7 @@ $(function () {
             if (snapshot.exists()) {
                 // ✅ 정상 계정이면 페이지 표시
                 if (savedNick == getActiveNickname()) {
+                    await checkDailyAttendance(savedNick);
                     await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     await showLikeMessages(savedNick);
                 }
@@ -1995,3 +1997,55 @@ $('#todayExp').on('input', function () {
     }
     $formattedExp.text(formatKoreanNumber(raw));
 });
+
+async function checkDailyAttendance(nickname) {
+    const today = getKoreanDate();
+    const userRef = ref(db, `coffeeUsers/${nickname}`);
+    const userSnap = await get(userRef);
+    if (!userSnap.exists()) return;
+
+    const user = userSnap.val();
+
+    // 기존 lastLogin 날짜 추출
+    const lastLoginRaw = user.lastLogin || "";
+    let datePart = lastLoginRaw.split("-")[0];
+    let parts = datePart.split(".");
+    let yy = parts[0];
+    let yyyy = yy.length === 2 ? "20" + yy : yy; // 2자리면 앞에 20 붙이기
+    const lastLoginDate = `${yyyy}-${parts[1]}-${parts[2]}`;
+
+    // 🔸 already logged in today → skip
+    if (lastLoginDate === today) {
+        console.log(`🎉 이미 출석한 기록이 있습니다 → ${nickname}`);
+        return;
+    }
+
+    // 🔥 여기까지 왔으면 오늘 첫 로그인 → 출석 처리해야 함
+    // 1) 오늘 출석 카운터 증가
+    const counterRef = ref(db, `coffeeCounters/dailyRank/${today}`);
+    const counterSnap = await get(counterRef);
+    let newRank = 1;
+
+    if (counterSnap.exists()) {
+        newRank = counterSnap.val() + 1;
+    }
+    await set(counterRef, newRank);
+
+    // 2) 유저 ID 가져오기
+    const userId = user.id;
+
+    // 3) 출석 시간 생성
+    const kst = new Date();
+    const hh = String(kst.getHours()).padStart(2, "0");
+    const mm = String(kst.getMinutes()).padStart(2, "0");
+    const attendTime = `${hh}:${mm}`;
+
+    // 4) 출석 랭킹 저장
+    await set(ref(db, `coffeeDailyRank/${today}/${newRank}`), {
+        [userId]: attendTime
+    });
+
+    // 5) 내 등수 저장
+    await set(ref(db, `coffeeUsers/${nickname}/dailyRank`), newRank);
+    console.log(`🎉 출석 처리 완료 → ${nickname} / 등수: ${newRank}`);
+}

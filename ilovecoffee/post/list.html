@@ -178,6 +178,141 @@
             overflow-y: auto;
             word-break: keep-all;
         }
+
+        /* 모달 내부 Wrapper */
+        #top5Wrapper {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* 기본 공통 박스 */
+        .top5-box {
+            border-radius: 16px;
+            position: relative;
+            overflow: visible;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 이미지용 별도 감싸기 */
+        .top5-img-wrap {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            overflow: hidden;  /* 이미지만 둥글게 잘리게 함 */
+        }
+
+        .top5-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 1등 박스 */
+        .rank-1 {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #FFC400;
+        }
+
+        /* 1등 왕관 */
+        .rank-1 .crown {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            color: #FFC400;
+        }
+
+        /* 2·3등 박스 */
+        .rank-2-3 {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #CFCFCF;
+        }
+
+        /* 축하 모양 */
+        .party {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 26px;
+        }
+
+        /* 4·5등 박스 */
+        .rank-4-5 {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #C48A5A;
+        }
+
+        /* 닉네임 + 시간 텍스트 */
+        .top5-name {
+            margin-top: 6px;
+            font-weight: 700;
+        }
+
+        .top5-time {
+            font-size: 13px;
+            color: #777;
+        }
+
+        /* 6등 보기 버튼 */
+        .rank-more-btn {
+            margin-top: 18px;
+            background: #5a4398;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+        }
+
+        /* ===== 로딩 스크린 ===== */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f3f9;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        /* ===== 스피너 애니메이션 ===== */
+        .spinner {
+            border: 5px solid #eee;
+            border-top: 5px solid #5a4398;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== 로딩 문구 ===== */
+        #loadingScreen p {
+            margin-top: 10px;
+            color: #5a4398;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* ===== 회전 애니메이션 ===== */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -210,6 +345,50 @@
     </div>
 </div>
 
+<!-- ===== 🔥 TOP 5 랭킹 모달 ===== -->
+<div class="login-overlay" id="rankTop5Modal" style="display:none;">
+    <div class="login-modal" style="padding:20px; text-align:center; max-width:360px;">
+        <button id="closeTop5Btn" class="closeBtn">✕</button>
+        <h2>출석 랭킹 TOP 5</h2>
+
+        <div id="top5Wrapper"></div>
+
+        <!-- 아래로 내려갈 버튼 -->
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:12px;">
+            <button disabled="true">이전</button>
+            <button id="goRankListBtn">다음</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 🔥 출석 랭킹 모달 ===== -->
+<div class="login-overlay" id="rankModal" style="display:none;">
+    <div class="login-modal">
+        <button id="closeRankBtn" class="closeBtn">✕</button>
+        <h2>출석 랭킹</h2>
+
+        <div id="rankList" style="
+            margin-top:10px;
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:10px;
+            max-height:60vh;
+            overflow-y:auto;
+        "></div>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:12px;">
+            <button id="rankPrevBtn">이전</button>
+            <button id="rankNextBtn">다음</button>
+        </div>
+    </div>
+</div>
+
+<!-- 로딩 스피너 -->
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>로딩 중...</p>
+</div>
+
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -220,6 +399,8 @@
         orderByKey,
         endAt,
         limitToLast,
+        startAt,
+        limitToFirst,
         update
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
@@ -234,7 +415,7 @@
         measurementId: ".env/measurementId"
     };
 
-    import {goToPage, parseKoreanTimestamp, isToday, formatDisplayDate} from "../common/utils.js";
+    import {goToPage, parseKoreanTimestamp, isToday, formatDisplayDate, getKoreanDate} from "../common/utils.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -263,6 +444,7 @@
 
         // 🔹 첫 페이지 로드
         await loadPage(lastPostId);
+        $loadingScreen.hide();
     });
 
     // 🔥 특정 key 끝에서부터 최신글 5개 가져오기
@@ -439,15 +621,220 @@
         $("#postModal").show();
     });
 
-    // 닫기 버튼
-    $("#closeModalBtn").on("click", function () {
-        $("#postModal").hide();
+    async function renderTop5Rank(items) {
+        const wrap = $("#top5Wrapper");
+        wrap.empty();
+
+        // 유저 정보 결합
+        const users = [];
+        for (const item of items) {
+            const info = await getUserInfoById(item.id);
+            users.push({...item, ...info});
+        }
+
+        // ========= 1등 =========
+        if (users[0]) {
+            wrap.append(`
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <div class="top5-box rank-1">
+                    <div class="top5-img-wrap">
+                        <img src="../image/profile${users[0].profile}.jpg">
+                    </div>
+                    <div class="crown">👑</div>
+                </div>
+                <div class="top5-name">${users[0].nickname}</div>
+                <div class="top5-time">${users[0].time}</div>
+            </div>
+        `);
+        }
+
+        // ========= 2등 + 3등 =========
+        wrap.append(`<div id="top5-mid" style="display:flex; justify-content: space-between; width: 100%;"></div>`);
+        const mid = $("#top5-mid");
+
+        for (let i = 1; i <= 2; i++) {
+            if (!users[i]) continue;
+            mid.append(`
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <div class="top5-box rank-2-3">
+                    <div class="top5-img-wrap">
+                        <img src="../image/profile${users[i].profile}.jpg">
+                    </div>
+                    <div class="party">🎊</div>
+                </div>
+                <div class="top5-name">${users[i].nickname}</div>
+                <div class="top5-time">${users[i].time}</div>
+            </div>
+        `);
+        }
+
+        // ========= 4등 + 5등 =========
+        wrap.append(`<div id="top5-bottom" style="display:flex; gap:20px;"></div>`);
+        const bottom = $("#top5-bottom");
+
+        for (let i = 3; i <= 4; i++) {
+            if (!users[i]) continue;
+            bottom.append(`
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <div class="top5-box rank-4-5">
+                    <div class="top5-img-wrap">
+                        <img src="../image/profile${users[i].profile}.jpg">
+                    </div>
+                </div>
+                <div class="top5-name">${users[i].nickname}</div>
+                <div class="top5-time">${users[i].time}</div>
+            </div>
+        `);
+        }
+    }
+
+    let currentRankStart = 1;
+    const rankPageSize = 5;
+    const $loadingScreen = $("#loadingScreen");
+
+    async function getUserInfoById(id) {
+        // id → nickname 조회
+        const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
+        if (!nickSnap.exists()) return { nickname: "탈퇴유저", profile: 1 };
+
+        const nickname = nickSnap.val();
+
+        // nickname → user info 조회
+        const userSnap = await get(ref(db, `coffeeUsers/${nickname}`));
+
+        let profile = 1;
+        if (userSnap.exists() && userSnap.val().profileImg) {
+            profile = userSnap.val().profileImg;
+        }
+
+        return { nickname, profile };
+    }
+
+    async function loadRankChunk(startRank) {
+        const today = getKoreanDate();
+
+        const q = query(
+            ref(db, `coffeeDailyRank/${today}`),
+            orderByKey(),
+            startAt(String(startRank)),
+            limitToFirst(rankPageSize)
+        );
+
+        const snap = await get(q);
+        if (!snap.exists()) return [];
+
+        return Object.entries(snap.val()).map(([rank, data]) => {
+            const userId = Number(Object.keys(data)[0]);
+            const time   = Object.values(data)[0];
+            return {
+                rank: Number(rank),
+                id: userId,
+                time: time
+            };
+        });
+    }
+
+    async function renderRankList(items) {
+        const list = $("#rankList");
+        list.empty();
+
+        for (const item of items) {
+            const user = await getUserInfoById(item.id);
+
+            list.append(`
+            <div style="display:flex; align-items:center; margin-bottom:10px;">
+                <div style="font-weight:700; width:40px;">${item.rank}등</div>
+
+                <img src="../image/profile${user.profile}.jpg"
+                     style="width:40px; height:40px; border-radius:5px; margin-right:10px;">
+
+                <div>
+                    <div style="font-weight:600;">${user.nickname}</div>
+                    <div style="font-size:13px; color:#777;">${item.time}</div>
+                </div>
+            </div>
+        `);
+        }
+
+        // 이전/다음 버튼 활성화 조정
+        $("#rankPrevBtn").prop("disabled", currentRankStart === 1);
+        $("#rankNextBtn").prop("disabled", items.length < rankPageSize); // 5개 미만이면 다음 없음
+    }
+
+    // 처음 열기 = 1~5등
+    $(document).on("click", ".dailyRankBtn", async function () {
+        $loadingScreen.show();
+        // 1~5등 불러오기
+        const data = await loadRankChunk(1);
+        await renderTop5Rank(data);
+        $("#rankTop5Modal").show();
+
+        currentRankStart = 1;
+
+        // 플로팅 영역 기존 유지
+        const $area = $(".floating-btn-area");
+        const $toggle = $(".floating-toggle");
+        $area.addClass("collapsed");
+        $toggle.show();
+        $toggle.text("▲");
+        $loadingScreen.hide();
     });
 
-    // 뒤로가기
-    $("#backBtn").on("click", () => goToPage());
+    // TOP5 → 6등 이후 보기
+    $(document).on("click", "#goRankListBtn", async function () {
+        $loadingScreen.show();
+        $("#rankTop5Modal").hide(); // TOP5 닫기
+
+        currentRankStart = 6; // 6등부터 시작
+        const data = await loadRankChunk(currentRankStart);
+
+        await renderRankList(data);
+
+        $("#rankModal").show(); // 랭킹 모달 열기
+        $loadingScreen.hide();
+    });
+
+    // 다음 5개 → 6~10, 11~15...
+    $(document).on("click", "#rankNextBtn", async function () {
+        $loadingScreen.show();
+        currentRankStart += rankPageSize;
+        const data = await loadRankChunk(currentRankStart);
+
+        // 실제 데이터 없으면 다시 롤백
+        if (data.length === 0) {
+            currentRankStart -= rankPageSize;
+            $loadingScreen.hide();
+            return;
+        }
+        await renderRankList(data);
+        $loadingScreen.hide();
+    });
+
+    // 이전 5개
+    $(document).on("click", "#rankPrevBtn", async function () {
+        $loadingScreen.show();
+        // 현재가 6~10 범위라면 → 이전 누르면 TOP5로 복귀
+        if (currentRankStart === 6) {
+
+            $("#rankModal").hide(); // 랭킹 모달 닫고
+
+            const top5 = await loadRankChunk(1);
+            await renderTop5Rank(top5);
+
+            $("#rankTop5Modal").show(); // TOP5 모달 다시 열기
+            currentRankStart = 1;
+            $loadingScreen.hide();
+            return;
+        }
+
+        // ---- 기존 이전 페이지 이동 ----
+        currentRankStart -= rankPageSize;
+        const data = await loadRankChunk(currentRankStart);
+        await renderRankList(data);
+        $loadingScreen.hide();
+    });
 </script>
-<script src="../modules/helpModal.js" defer></script>
+<script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
 </body>
 </html>

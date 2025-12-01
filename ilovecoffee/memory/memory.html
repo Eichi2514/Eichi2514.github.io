@@ -932,9 +932,6 @@
             $("#rewardSection").empty();    // ✅ 보상영역 초기화
         });
 
-        // 뒤로가기
-        $("#backBtn").on("click", () => goToPage());
-
         // ✅ 마지막 모드 불러오기
         const savedMode = localStorage.getItem("coffeeMemory-mode") || "normal";
         if (savedMode === "filter") {
@@ -1374,7 +1371,7 @@
         }
     });
 </script>
-<script src="../modules/helpModal.js" defer></script>
+<script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
 </body>
 </html>

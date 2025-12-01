@@ -591,12 +591,9 @@
                 $(this).fadeOut(200, () => $(this).removeClass("active"));
             }
         });
-
-        // ✅ 뒤로가기
-        $("#backBtn").on("click", () => goToPage());
     });
 </script>
-<script src="../modules/helpModal.js" defer></script>
+<script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
 <script src="../common/computeLevelUpLogs.js" defer></script>
 </body>
