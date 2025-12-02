@@ -446,10 +446,8 @@ $(function () {
                 $msg.css("color", "green").text("로그인 성공!");
                 setActiveNickname(nickname);
                 setTimeout(() => {
-                    $popup.hide();
-                    $mainPage.css("display", "flex");
-                    loadUserData(nickname);
-                }, 800);
+                    location.reload();
+                }, 400);
             } else {
                 $msg.css("color", "red")
                     .html("이미 존재하는 닉네임이거나<br>비밀번호가 틀렸습니다.");
@@ -476,10 +474,8 @@ $(function () {
             $msg.css("color", "green").text("새 계정이 등록되었습니다.");
             setActiveNickname(nickname);
             setTimeout(() => {
-                $popup.hide();
-                $mainPage.css("display", "flex");
-                loadUserData(nickname);
-            }, 800);
+                location.reload();
+            }, 400);
         }
     });
 
