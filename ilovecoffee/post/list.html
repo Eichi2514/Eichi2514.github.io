@@ -454,6 +454,7 @@
     let currentEndKey = null; // 현재 페이지의 마지막 key (다음 페이지의 cursor)
     let currentQueryEndKey = null; // 마지막 loadPage에서 사용한 endKey
     let prevStack = [];       // 이전 페이지 key들 저장해서 Prev 버튼 처리
+    const postCache = {};
 
     $(document).ready(async function () {
         // 🔹 공지 가져오기
@@ -478,6 +479,17 @@
 
     // 🔥 특정 key 끝에서부터 최신글 5개 가져오기
     async function loadPage(endKey) {
+        // 🔥 1) 캐시에 이미 있으면 DB 요청 생략
+        if (postCache[endKey]) {
+            const cached = postCache[endKey];
+            currentQueryEndKey = endKey;
+            currentEndKey = cached.currentEndKey;
+            renderUpdates(cached.posts);
+            updateButtons();
+            return;
+        }
+
+        // 🔥 2) 캐시에 없으면 Firebase 요청
         currentQueryEndKey = endKey;
 
         const postsQuery = query(
@@ -498,6 +510,12 @@
 
         // 현재 페이지의 가장 작은 key(=다음 페이지 cursor)
         currentEndKey = Math.min(...Object.keys(postsObj).map(k => Number(k)));
+
+        // 🔥 3) 캐싱 (렌더링에 필요한 모든 정보 저장)
+        postCache[endKey] = {
+            posts,
+            currentEndKey
+        };
 
         // 페이지 렌더링
         renderUpdates(posts);
@@ -650,6 +668,9 @@
         $("#postModal").show();
     });
 
+    const rankCache = {};
+    const userInfoCache = {};
+
     async function renderTop5Rank(items) {
         const wrap = $("#top5Wrapper");
         wrap.empty();
@@ -775,26 +796,37 @@
     }
 
     async function getUserInfoById(id) {
-        // id → nickname 조회
+        // 1) 캐시에 이미 있으면 바로 반환
+        if (userInfoCache[id]) return userInfoCache[id];
+
+        // 2) 닉네임 요청
         const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
-        if (!nickSnap.exists()) return {nickname: "탈퇴유저", profile: 1};
+        if (!nickSnap.exists()) {
+            userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
+            return userInfoCache[id];
+        }
 
         const nickname = nickSnap.val();
 
-        // nickname → user info 조회
+        // 3) 유저 상세 요청
         const userSnap = await get(ref(db, `coffeeUsers/${nickname}`));
-
         let profile = 1;
         if (userSnap.exists() && userSnap.val().profileImg) {
             profile = userSnap.val().profileImg;
         }
 
-        return {nickname, profile};
+        // 4) 캐싱
+        userInfoCache[id] = { nickname, profile };
+        return userInfoCache[id];
     }
 
     async function loadRankChunk(startRank) {
-        const today = getKoreanDate();
+        // 1) 캐시에 있다면 요청하지 않음
+        if (rankCache[startRank]) {
+            return rankCache[startRank];
+        }
 
+        const today = getKoreanDate();
         const q = query(
             ref(db, `coffeeDailyRank/${today}`),
             orderByKey(),
@@ -805,7 +837,7 @@
         const snap = await get(q);
         if (!snap.exists()) return [];
 
-        return Object.entries(snap.val()).map(([rank, data]) => {
+        const items = Object.entries(snap.val()).map(([rank, data]) => {
             const userId = Number(Object.keys(data)[0]);
             const time = Object.values(data)[0];
             return {
@@ -814,6 +846,11 @@
                 time: time
             };
         });
+
+        // 🔥 요청한 chunk 캐싱
+        rankCache[startRank] = items;
+
+        return items;
     }
 
     async function renderRankList(items) {
@@ -943,26 +980,23 @@
 
     // 이전 5개
     $(document).on("click", "#rankPrevBtn", async function () {
-        // 평소 이전 페이지 이동
         currentRankStart -= rankPageSize;
-        if (currentRankStart < 1) return;
-
-        $loadingScreen.show();
-        // 현재 2페이지(=6등)에서 뒤로 가면 TOP5 보기
-        if (currentRankStart === 6) {
+        if (currentRankStart < 1) {
             currentRankStart = 1;
-
-            const top5 = await loadRankChunk(1);
-            await renderTop5Rank(top5);
-
-            updateRankViewMode();
-            renderRankPageNumbers();
-            $loadingScreen.hide();
             return;
         }
 
-        const data = await loadRankChunk(currentRankStart);
-        await renderRankList(data);
+        $loadingScreen.show();
+
+        if (currentRankStart === 1) {
+            // TOP5
+            const top5 = await loadRankChunk(1);
+            await renderTop5Rank(top5);
+        } else {
+            // 일반 리스트
+            const data = await loadRankChunk(currentRankStart);
+            await renderRankList(data);
+        }
 
         updateRankViewMode();
         renderRankPageNumbers();
