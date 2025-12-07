@@ -297,7 +297,7 @@ export const memoryData = [{
         "name": "축제의 추억", "reward": "소망 가득 풍등 날리기", "items": [{
             "id": 397, "item": "포도 슬러시", "theme": "", "color": "", "machine": "슬러시 머신", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 398, "item": "닭꼬치", "theme": "", "color": "", "machine": "슬러시 머신", "attribute": "음료 토큰", "price": "", "note": "포도 슬러시 판매"
+            "id": 398, "item": "닭꼬치 (50개)", "theme": "", "color": "", "machine": "슬러시 머신", "attribute": "음료 토큰", "price": "", "note": "포도 슬러시 판매"
         }, {
             "id": 399, "item": "슬러시 머신", "theme": "", "color": "", "machine": "", "attribute": "이벤트 아이템", "price": "", "note": "이벤트 아이템"
         }, {
