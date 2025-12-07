@@ -48,6 +48,12 @@ $(async function () {
                 <div class="login-modal" style="width:260px; text-align:center; position:relative;">
                     <button id="closeAdminOptionModal" class="closeBtn">✕</button>
                     <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
+                    <button id="adminDashboardBtn"
+                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                            border-radius:8px; font-size:16px; font-weight:600;
+                            background:transparent; transition:0.2s;">
+                        대시보드
+                    </button>
                     <button id="adminArchiveBtn"
                         style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
                             border-radius:8px; font-size:16px; font-weight:600;
@@ -197,6 +203,10 @@ $(async function () {
 
     // ✅ 관리자 모달 동작
     $(document).on("click", "#closeAdminOptionModal", () => $("#adminOptionModal").hide());
+    $(document).on("click", "#adminDashboardBtn", () => {
+        $("#adminOptionModal").hide();
+        goToPage("aDash");
+    });
     $(document).on("click", "#adminArchiveBtn", () => {
         $("#adminOptionModal").hide();
         goToPage("admin");

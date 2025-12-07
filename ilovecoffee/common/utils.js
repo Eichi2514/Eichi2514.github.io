@@ -232,6 +232,7 @@ export function goToPage(target = "levelup") {
         memory: `${basePath}/memory/memory.html`,
         memoryRoom: `${basePath}/memory/memoryRoom.html`,
 
+        aDash: `${basePath}/admin/dashboard.html`,
         admin: `${basePath}/admin/main.html`,
         aMemory: `${basePath}/admin/aMemory.html`,
         aWrite: `${basePath}/post/write.html`,

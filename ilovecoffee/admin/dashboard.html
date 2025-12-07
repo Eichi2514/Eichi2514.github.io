@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>대시보드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            background: #f4f3f9;
+            margin: 0;
+            color: #333;
+        }
+
+        /* ===== 전체 래퍼 ===== */
+        #mainPage {
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 10px;
+            width: 100%;
+            min-height: 100vh;
+            background: #fff;
+            padding: 20px 16px 60px;
+            margin: 0 auto;
+            border-radius: 12px;
+            position: relative;
+            text-align: center;
+        }
+
+        /* ===== 헤더 스타일 ===== */
+        .header-bar {
+            background: #5a4398;
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-bar h1 {
+            color: #fff; /* 흰 글씨 */
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ===== 로딩 스크린 ===== */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f3f9;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        /* ===== 스피너 애니메이션 ===== */
+        .spinner {
+            border: 5px solid #eee;
+            border-top: 5px solid #5a4398;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== 로딩 문구 ===== */
+        #loadingScreen p {
+            margin-top: 10px;
+            color: #5a4398;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* ===== 회전 애니메이션 ===== */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .rangeBtn {
+            background: #5a4398;
+            color: #f6f4fc;
+            border: 1px solid #e0dff2;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-weight: 600;
+        }
+    </style>
+    <link rel="stylesheet" href="../modules/helpModal.css"/>
+    <link rel="stylesheet" href="../modules/menuToggle.css"/>
+</head>
+
+<body>
+<div id="mainPage">
+    <div class="header-bar">
+        <h1>대시보드</h1>
+        <button id="backBtn">뒤로가기</button>
+    </div>
+
+    <div style="max-height: 400px;">
+        <canvas id="attendanceChart" width="100%" height="100"></canvas>
+    </div>
+
+    <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+        <button class="rangeBtn" data-range="7">1주</button>
+        <button class="rangeBtn" data-range="30">1달</button>
+    </div>
+</div>
+
+<!-- 로딩 스피너 -->
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>로딩 중...</p>
+</div>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {goToPage, getActiveNickname} from "../common/utils.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let attendanceChartInstance = null;
+
+    // 특정 기간(days) 만큼의 출석 데이터를 로드
+    async function loadAttendanceData(days) {
+        const today = new Date();
+        const resultLabels = [];
+        const resultValues = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            const key = `${yyyy}-${mm}-${dd}`;
+
+            resultLabels.push(`${mm}/${dd}`);
+
+            // DB 조회
+            const snap = await get(ref(db, `coffeeCounters/dailyRank/${key}`));
+            resultValues.push(snap.exists() ? snap.val() : 0);
+        }
+
+        renderAttendanceChart(resultLabels, resultValues);
+    }
+
+    // Chart.js로 그래프 렌더링
+    function renderAttendanceChart(labels, values) {
+        const ctx = document.getElementById("attendanceChart").getContext("2d");
+
+        // 기존 그래프 있으면 삭제
+        if (attendanceChartInstance) attendanceChartInstance.destroy();
+
+        attendanceChartInstance = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [{
+                    label: "출석 인원",
+                    data: values,
+                    borderColor: "#5a4398",
+                    pointBackgroundColor: "#5a4398",   // 점 내부 색
+                    pointBorderColor: "#5a4398",       // 점 테두리 색
+                    pointRadius: 5,
+                    pointHoverRadius: 6,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {display: false}
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: Math.max(0, Math.min(...values) - 1),
+                        suggestedMax: Math.max(...values) + 1,
+                        ticks: {
+                            color: "#333"
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: "#333",
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        $loadingScreen.hide();
+    }
+
+    const $loadingScreen = $("#loadingScreen");
+
+    // 기간 버튼 클릭 이벤트
+    $(document).on("click", ".rangeBtn", function () {
+        $loadingScreen.show();
+        const days = parseInt($(this).data("range"));
+        loadAttendanceData(days);
+    });
+
+    // 페이지 로드 시 기본 1주 표시
+    $(function () {
+        setTimeout(() => {
+            loadAttendanceData(7);
+        }, 300);
+    });
+
+    $(function () {
+        const nickname = getActiveNickname();
+        if (!nickname) return alert("로그인이 필요합니다."), goToPage();
+
+        // ✅ 관리자 권한 확인
+        get(ref(db, `coffeeUsers/${nickname}/isAdmin`)).then(snap => {
+            const isAdmin = snap.exists() && snap.val() === true;
+
+            if (!isAdmin) {
+                alert("관리자만 접근할 수 있습니다.");
+                goToPage("memory");
+                return;
+            }
+        });
+    });
+
+    $("#backBtn").on("click", () => {
+        goToPage();
+    });
+</script>
+<script src="../modules/menuToggle.js" type="module" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
