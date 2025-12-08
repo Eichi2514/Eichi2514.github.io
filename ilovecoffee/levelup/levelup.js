@@ -231,7 +231,7 @@ function renderExpTablePage(userLevel) {
 }
 
 // ✅ 모달 열 때 현재 구간부터 표시
-$(".expTableBtn").off("click").on("click", function () {
+$(document).on("click", ".expTableBtn", function () {
     const userLevel = parseInt($("#currentLevelDisplay").text()) || 1;
     currentExpPage = Math.floor((userLevel - 1) / levelsPerPage);
     $("#expTableModal").css("display", "flex");
@@ -1905,7 +1905,6 @@ function showFireworkCelebration() {
 
 // 🔄 경험치바 ↔ 전체 진행도 전환 기능
 $("#switchProgressBtn").on("click", function () {
-
     const isExpMode = $("#expBarContainer").is(":visible");
 
     if (isExpMode) {
