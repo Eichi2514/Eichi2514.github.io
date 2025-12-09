@@ -340,6 +340,16 @@
     <button id="nextBtn">다음</button>
 </div>
 
+<div class="header-bar" style="margin-top: 40px;">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>1등 리스트</h1>
+    </div>
+    <button class="dailyRankBtn">출석랭킹</button>
+</div>
+<div id="firstRankList"
+     style="margin: 0 20px; display:flex; flex-direction:column; gap:14px;">
+</div>
+
 <!-- ===== 🔥 게시글 상세 모달 ===== -->
 <div class="login-overlay" id="postModal" style="display:none;">
     <div class="login-modal">
@@ -391,7 +401,7 @@
             padding:10px;
             border:1px solid #ccc;
             border-radius:10px;
-            max-height:60vh;
+            height: 272px;
             overflow-y:auto;
             display:none;
         "></div>
@@ -474,6 +484,7 @@
 
         // 🔹 첫 페이지 로드
         await loadPage(lastPostId);
+        await loadDailyFirstRanks(7);
         $loadingScreen.hide();
     });
 
@@ -1029,6 +1040,75 @@
         renderRankPageNumbers();
         $loadingScreen.hide();
     });
+
+    async function loadDailyFirstRanks(days) {
+        const today = new Date();
+        const startDate = new Date(today);
+        const result = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() - i);
+
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            const key = `${yyyy}-${mm}-${dd}`;
+
+            // 1등 데이터 조회
+            const snap = await get(ref(db, `coffeeDailyRank/${key}/1`));
+
+            if (!snap.exists()) {
+                result.push({
+                    date: `${mm}/${dd}`,
+                    nickname: "기록 없음",
+                    profile: 1,
+                    time: "-"
+                });
+                continue;
+            }
+
+            // { userId : timeString } 형태
+            const userId = Number(Object.keys(snap.val())[0]);
+            const time = Object.values(snap.val())[0];
+
+            const info = await getUserInfoById(userId);
+
+            result.push({
+                date: `${mm}/${dd}`,
+                nickname: info.nickname,
+                profile: info.profile,
+                time
+            });
+        }
+
+        renderFirstRankList(result);
+    }
+
+    function renderFirstRankList(list) {
+        const wrap = $("#firstRankList");
+        wrap.empty();
+
+        list = list.slice().reverse();
+        list.forEach(item => {
+            wrap.append(`
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:14px;
+                ">
+                    <div style="width:50px; font-weight:700; color:#5a4398;">
+                        ${item.date}
+                    </div>
+
+                    <img src="../image/profile${item.profile}.jpg"
+                         style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+
+                    <div style="font-weight:600;">${item.nickname}</div>
+                </div>
+            `);
+        });
+    }
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
