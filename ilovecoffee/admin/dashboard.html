@@ -145,6 +145,10 @@
         <button class="rangeBtn" data-range="7">1주</button>
         <button class="rangeBtn" data-range="30">1달</button>
     </div>
+
+    <div id="firstRankList"
+         style="margin-top:20px; display:flex; flex-direction:column; gap:14px;">
+    </div>
 </div>
 
 <!-- 로딩 스피너 -->
@@ -172,16 +176,44 @@
     const db = getDatabase(app);
 
     let attendanceChartInstance = null;
+    const userInfoCache = {};
+
+    async function getUserInfoById(id) {
+        // 1) 캐시에 이미 있으면 바로 반환
+        if (userInfoCache[id]) return userInfoCache[id];
+
+        // 2) 닉네임 요청
+        const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
+        if (!nickSnap.exists()) {
+            userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
+            return userInfoCache[id];
+        }
+
+        const nickname = nickSnap.val();
+
+        // 3) 유저 상세 요청
+        const userSnap = await get(ref(db, `coffeeUsers/${nickname}`));
+        let profile = 1;
+        if (userSnap.exists() && userSnap.val().profileImg) {
+            profile = userSnap.val().profileImg;
+        }
+
+        // 4) 캐싱
+        userInfoCache[id] = { nickname, profile };
+        return userInfoCache[id];
+    }
 
     // 특정 기간(days) 만큼의 출석 데이터를 로드
     async function loadAttendanceData(days) {
         const today = new Date();
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - 1);
         const resultLabels = [];
         const resultValues = [];
 
         for (let i = days - 1; i >= 0; i--) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - i);
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() - i);
 
             const yyyy = d.getFullYear();
             const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -195,7 +227,78 @@
             resultValues.push(snap.exists() ? snap.val() : 0);
         }
 
+        await loadDailyFirstRanks(days);
         renderAttendanceChart(resultLabels, resultValues);
+    }
+
+    async function loadDailyFirstRanks(days) {
+        const today = new Date();
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - 1);
+        const result = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() - i);
+
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            const key = `${yyyy}-${mm}-${dd}`;
+
+            // 1등 데이터 조회
+            const snap = await get(ref(db, `coffeeDailyRank/${key}/1`));
+
+            if (!snap.exists()) {
+                result.push({
+                    date: `${mm}/${dd}`,
+                    nickname: "기록 없음",
+                    profile: 1,
+                    time: "-"
+                });
+                continue;
+            }
+
+            // { userId : timeString } 형태
+            const userId = Number(Object.keys(snap.val())[0]);
+            const time = Object.values(snap.val())[0];
+
+            const info = await getUserInfoById(userId);
+
+            result.push({
+                date: `${mm}/${dd}`,
+                nickname: info.nickname,
+                profile: info.profile,
+                time
+            });
+        }
+
+        renderFirstRankList(result);
+    }
+
+    function renderFirstRankList(list) {
+        const wrap = $("#firstRankList");
+        wrap.empty();
+
+        list = list.slice().reverse();
+        list.forEach(item => {
+            wrap.append(`
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:14px;
+                ">
+                    <div style="width:50px; font-weight:700; color:#5a4398;">
+                        ${item.date}
+                    </div>
+
+                    <img src="../image/profile${item.profile}.jpg"
+                         style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+
+                    <div style="font-weight:600;">${item.nickname}</div>
+                </div>
+            `);
+        });
     }
 
     // Chart.js로 그래프 렌더링
