@@ -319,6 +319,18 @@
                 transform: rotate(360deg);
             }
         }
+
+        .rankToggleBtn {
+            background: #7b68ac;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .rankToggleBtn.active {
+            background: #5a4398;
+        }
     </style>
 </head>
 <body>
@@ -340,11 +352,15 @@
     <button id="nextBtn">다음</button>
 </div>
 
-<div class="header-bar" style="margin-top: 40px;">
+<div class="header-bar" style="margin-top: 40px; margin-bottom: 10px;">
     <div style="display: flex; gap: 4px; align-items: center">
         <h1>1등 리스트</h1>
     </div>
     <button class="dailyRankBtn">출석랭킹</button>
+</div>
+<div style="margin: 10px 20px; display:flex; gap:10px; justify-content:flex-end;">
+    <button id="viewDaily" class="rankToggleBtn active">날짜별 보기</button>
+    <button id="viewTotal" class="rankToggleBtn">누적 보기</button>
 </div>
 <div id="firstRankList"
      style="margin: 0 20px; display:flex; flex-direction:column; gap:14px;">
@@ -465,6 +481,7 @@
     let currentQueryEndKey = null; // 마지막 loadPage에서 사용한 endKey
     let prevStack = [];       // 이전 페이지 key들 저장해서 Prev 버튼 처리
     const postCache = {};
+    let firstRankMode = localStorage.getItem("firstRankMode") || "daily";
 
     $(document).ready(async function () {
         // 🔹 공지 가져오기
@@ -484,7 +501,15 @@
 
         // 🔹 첫 페이지 로드
         await loadPage(lastPostId);
-        await loadDailyFirstRanks(7);
+        if (firstRankMode === "daily") {
+            $("#viewDaily").addClass("active");
+            $("#viewTotal").removeClass("active");
+            await loadDailyFirstRanks(7);
+        } else {
+            $("#viewTotal").addClass("active");
+            $("#viewDaily").removeClass("active");
+            await loadTotalFirstRanks();
+        }
         $loadingScreen.hide();
     });
 
@@ -813,22 +838,18 @@
         // 2) 닉네임 요청
         const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
         if (!nickSnap.exists()) {
-            userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
-            return userInfoCache[id];
+            return userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
         }
 
         const nickname = nickSnap.val();
 
-        // 3) 유저 상세 요청
-        const userSnap = await get(ref(db, `coffeeUsers/${nickname}`));
-        let profile = 1;
-        if (userSnap.exists() && userSnap.val().profileImg) {
-            profile = userSnap.val().profileImg;
-        }
+        // 3) 프로필 번호만 조회 (전체 유저 데이터 NO)
+        const profileSnap = await get(ref(db, `coffeeUsers/${nickname}/profileImg`));
 
-        // 4) 캐싱
-        userInfoCache[id] = { nickname, profile };
-        return userInfoCache[id];
+        const profile = profileSnap.exists() ? profileSnap.val() : 1;
+
+        // 캐싱
+        return userInfoCache[id] = { nickname, profile };
     }
 
     async function loadRankChunk(startRank) {
@@ -1041,6 +1062,49 @@
         $loadingScreen.hide();
     });
 
+    async function loadTotalFirstRanks() {
+        // 시작일 = 2025-12-01
+        const start = new Date(2025, 11, 1); // 11 = 12월 (JS는 0부터 시작)
+        const today = new Date();
+
+        const firstCountMap = {}; // { userId: count }
+
+        // 2025-12-01 ~ 오늘까지 날짜 반복
+        for (let d = new Date(start); d <= today; d.setDate(d.getDate() - 0 + 1)) {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            const key = `${yyyy}-${mm}-${dd}`;
+
+            // 날짜의 1등 데이터만 읽기
+            const snap = await get(ref(db, `coffeeDailyRank/${key}/1`));
+            if (!snap.exists()) continue;
+
+            const firstObj = snap.val();
+            const userId = Number(Object.keys(firstObj)[0]);
+
+            if (!firstCountMap[userId]) firstCountMap[userId] = 0;
+            firstCountMap[userId]++;
+        }
+
+        // 유저 정보 매핑
+        const result = [];
+        for (const userId in firstCountMap) {
+            const info = await getUserInfoById(userId);
+            result.push({
+                userId,
+                nickname: info.nickname,
+                profile: info.profile,
+                count: firstCountMap[userId]
+            });
+        }
+
+        // 1등 횟수 순 정렬
+        result.sort((a, b) => b.count - a.count);
+
+        renderTotalFirstRankList(result);
+    }
+
     async function loadDailyFirstRanks(days) {
         const today = new Date();
         const startDate = new Date(today);
@@ -1088,14 +1152,22 @@
     function renderFirstRankList(list) {
         const wrap = $("#firstRankList");
         wrap.empty();
+        const myNickname = getActiveNickname();
 
         list = list.slice().reverse();
         list.forEach(item => {
+            // 특별 표시
+            const highlight = item.nickname === myNickname
+                ? "background:#fff4c2; border:1px solid #f2c200; border-radius:8px;"
+                : "";
+
             wrap.append(`
                 <div style="
                     display:flex;
                     align-items:center;
                     gap:14px;
+                    padding:8px 10px;
+                    ${highlight}
                 ">
                     <div style="width:50px; font-weight:700; color:#5a4398;">
                         ${item.date}
@@ -1109,6 +1181,68 @@
             `);
         });
     }
+
+    function renderTotalFirstRankList(list) {
+        const wrap = $("#firstRankList");
+        wrap.empty();
+        const myNickname = getActiveNickname();
+
+        list.forEach((item, index) => {
+            // 특별 표시
+            const highlight = item.nickname === myNickname
+                ? "background:#fff4c2; border:1px solid #f2c200; border-radius:8px;"
+                : "";
+
+            wrap.append(`
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:14px;
+                padding:8px 10px;
+                ${highlight}
+            ">
+                <div style="font-weight:700; width:40px; text-align:center; color:#5a4398;">
+                    ${index + 1}위
+                </div>
+
+                <img src="../image/profile${item.profile}.jpg"
+                     style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+
+                <div style="font-weight:600;">
+                    ${item.nickname}
+                </div>
+
+                <div style="margin-left:auto; font-weight:700; color:#5a4398;">
+                    ${item.count}회
+                </div>
+            </div>
+        `);
+        });
+    }
+
+    $(document).on("click", "#viewDaily", async function () {
+        if (firstRankMode === "daily") return;
+        $loadingScreen.show();
+        firstRankMode = "daily";
+        localStorage.setItem("firstRankMode", firstRankMode);
+        $("#viewDaily").addClass("active");
+        $("#viewTotal").removeClass("active");
+
+        await loadDailyFirstRanks(7);
+        $loadingScreen.hide();
+    });
+
+    $(document).on("click", "#viewTotal", async function () {
+        if (firstRankMode === "total") return;
+        $loadingScreen.show();
+        firstRankMode = "total";
+        localStorage.setItem("firstRankMode", firstRankMode);
+        $("#viewTotal").addClass("active");
+        $("#viewDaily").removeClass("active");
+
+        await loadTotalFirstRanks();
+        $loadingScreen.hide();
+    });
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
