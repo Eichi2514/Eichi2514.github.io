@@ -178,6 +178,9 @@ $(document).on("click", "#settingsDropdown button", function () {
 let currentExpPage = 0;
 const levelsPerPage = 10;
 
+// 출석 1등 10회 달성 여부 캐싱
+let isFirstRank10 = false;
+
 function updateExpTablePagination(totalLevels) {
     const totalPages = Math.ceil(totalLevels / levelsPerPage);
 
@@ -616,6 +619,7 @@ $(function () {
             if (userData.expRecords) {
                 // 레벨업 로그 계산
                 computeLevelUpLogs(userData.expRecords);
+                isFirstRank10 = !!userData.isFirst10;
 
                 // 오래된 기록(1년 초과)은 자동 삭제
                 // 현재 한국 날짜를 기준으로 계산
@@ -1690,6 +1694,12 @@ $(function () {
         {id: 19, name: "케이트", src: "../image/profile19.jpg"},
     ];
 
+    const profileList2 = [
+        // {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
+        {id: 91, name: "???", src: "../image/profile91.jpg"},
+        {id: 99, name: "이치", src: "../image/profile99.jpg"},
+    ];
+
     // ✅ 닉네임 앞의 프로필 클릭 시 모달 열기
     $(document).on("click", ".profile-img", async function () {
         const nickname = getActiveNickname();
@@ -1744,7 +1754,8 @@ $(function () {
 
         // 현재 프로필 표시
         const currentNum = profileNum || 1;
-        const current = profileList.find(p => p.id === currentNum) || {
+        const allProfiles = [...profileList, ...profileList2];
+        const current = allProfiles.find(p => p.id === currentNum) || {
             id: 1,
             name: "기본 프로필",
             src: "../image/profile1.jpg"
@@ -1790,6 +1801,42 @@ $(function () {
                         ? `현재 기록 : ${progressValue}개\n${remain}개 더 입력하면 해금돼요!`
                         : `현재 기록 : ${progressValue}개`;
                     showAlert(`${p.name}(은)는 아직 해금되지 않았어요!\n\n${remainText}`);
+                });
+            }
+
+            $container.append(img);
+        });
+
+        // 🔥 스페셜 프로필 추가 렌더링
+        profileList2.forEach(sp => {
+            const isLocked = !isFirstRank10;
+
+            const img = $(`<div style="position:relative;">
+                                <img src="${sp.src}" alt="스페셜">
+                                ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
+                            </div>`);
+
+            img.find("img").css({
+                width: "55px",
+                height: "55px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                cursor: isLocked ? "not-allowed" : "pointer",
+                border: sp.id === currentNum ? "3px solid #5a4398" : "2px solid #ddd",
+                filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
+            });
+
+            if (!isLocked) {
+                img.on("click", function () {
+                    $("#profileImageContainer img").css("border", "2px solid #ddd");
+                    $(this).find("img").css("border", "3px solid #5a4398");
+                    $("#currentProfileImg").attr("src", sp.src);
+                    $("#currentProfileName").text( sp.name);
+                    $("#applyProfileBtn").data("selected", sp.id);
+                });
+            } else {
+                img.on("click", function () {
+                    showAlert(`${sp.name}(은)는 아직 해금되지 않았어요!\n\n⭐ 출석 1등을 10회 이상 달성하면 해금됩니다!`);
                 });
             }
 
