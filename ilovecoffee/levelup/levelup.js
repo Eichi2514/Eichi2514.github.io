@@ -711,7 +711,7 @@ $(function () {
 
                     // 🔹 날짜 포맷 변경
                     const [yyyy, mm, dd] = date.split("-");
-                    const formattedDate = `${mm}.${dd}`;
+                    const formattedDate = `${yyyy.slice(2)}.${mm}.${dd}`;
 
                     if (prevExp !== null && prevLevel !== null) {
                         // 🔹 두 날짜 사이의 간격 계산
