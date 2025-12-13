@@ -55,15 +55,6 @@ $(document).on("click", ".addSubCharacterBtn", function () {
     $("#subLoginPopup").show();
 });
 
-function calcTier(targetDate) {
-    if (!remainExp || remainExp <= 0) return null;
-
-    const days = calcRemainingDays(targetDate);
-    if (days <= 0) return null;
-
-    return Math.ceil(remainExp / days);
-}
-
 function calcRemainingDays(targetDate) {
     const todayStr = getKoreanDate(); // YYYY-MM-DD
 
@@ -73,10 +64,13 @@ function calcRemainingDays(targetDate) {
     const target = new Date(targetDate);
     target.setHours(0, 0, 0, 0);
 
+    // 타겟이 오늘 이전이면 계산 불가
+    if (target <= today) return 0;
+
     let days = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
 
     // 오늘 경험치 아직 안 썼으면 오늘 포함
-    const hasTodayRecord = latestExpRecords && latestExpRecords[todayStr];
+    const hasTodayRecord = latestExpRecords && (latestExpRecords[todayStr] || latestExpRecords[todayStr.slice(5)]);
     if (!hasTodayRecord) {
         days += 1;
     }
@@ -84,7 +78,9 @@ function calcRemainingDays(targetDate) {
     return days;
 }
 
-// ✅ 티르계산기 등록 모달 열기
+// ✅ 티르 계산기 전용 스냅샷
+let tirRemainExpSnapshot = null;
+
 $(document).on("click", ".tirCalcBtn", function () {
     $("#tirCalcModal").show();
 
@@ -95,15 +91,26 @@ $(document).on("click", ".tirCalcBtn", function () {
     const curExpText = $("#expTable tbody tr:first td:nth-child(3)").text();
     $("#tirCurExp").text(curExpText || "-");
 
+    tirRemainExpSnapshot = (progressMode === "goal" && remainExp > 0) ? remainExp : null;
+
     // 남은 경험치
     $("#tirRemainExp").text(
-        remainExp ? remainExp.toLocaleString() : "-"
+        tirRemainExpSnapshot ? tirRemainExpSnapshot.toLocaleString() : "-"
     );
 
-    // 초기화
     $("#tirTargetDate").val("");
     $("#tirResultBox").hide();
 });
+
+function calcTier(targetDate) {
+    // ✅ 전역 remainExp 말고 스냅샷 사용
+    if (!tirRemainExpSnapshot || tirRemainExpSnapshot <= 0) return null;
+
+    const days = calcRemainingDays(targetDate);
+    if (days <= 0) return null;
+
+    return Math.ceil(tirRemainExpSnapshot / days);
+}
 
 $(document).on("change", "#tirTargetDate", function () {
     const targetDate = $(this).val();
@@ -257,6 +264,8 @@ const levelsPerPage = 10;
 
 // 출석 1등 10회 달성 여부 캐싱
 let isFirstRank10 = false;
+
+let progressMode = "level"; // "level" | "goal"
 
 function updateExpTablePagination(totalLevels) {
     const totalPages = Math.ceil(totalLevels / levelsPerPage);
@@ -885,6 +894,7 @@ $(function () {
 
                         // ✅ 남은 경험치 계산 및 표시
                         if (userData.level < levelExp.length) {
+                            progressMode = "level";
                             // 일반 레벨업 모드
                             const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
                             remainExp = Math.max(nextNeedExp - currentExp, 0);
@@ -907,6 +917,7 @@ $(function () {
                             updateExpBar(currentExp, nextNeedExp);
                             updateTotalProgress(records, currentLevel, currentExp);
                         } else if (userData.goalTargets?.length > 0) {
+                            progressMode = "goal";
                             // 만렙 + 목표 경험치 모드
                             const goalTargets = userData.goalTargets.sort((a, b) => a - b);
                             const nextGoal = goalTargets.find(g => g > currentExp);
@@ -952,7 +963,8 @@ $(function () {
                             goalTargets
                                 .filter(goal => goal > currentExp)
                                 .forEach(goal => {
-                                    const daysNeeded = Math.ceil(remainExp / avgGain);
+                                    const remainForGoal = Math.max(goal - currentExp, 0);
+                                    const daysNeeded = Math.ceil(remainForGoal / avgGain);
                                     const estDate = new Date(koreaNow);
                                     estDate.setDate(koreaNow.getDate() + daysNeeded);
                                     const yyyy = estDate.getFullYear();
