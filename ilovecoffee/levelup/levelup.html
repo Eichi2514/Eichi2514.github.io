@@ -435,6 +435,71 @@
     </div>
 </div>
 
+<div id="tirCalcModal" class="login-overlay" style="display:none;">
+    <div class="login-modal" style="position:relative; width:320px;">
+        <button id="closeTirCalcModal" class="closeBtn">✕</button>
+        <h2 style="margin-bottom:12px;">티르계산기</h2>
+
+        <!-- 🔹 현재 상태 요약 (카드형) -->
+        <div class="tir-status">
+            <div class="tir-card">
+                <div class="tir-label">레벨</div>
+                <div class="tir-value">
+                    <span id="tirCurLevel">-</span>
+                </div>
+            </div>
+
+            <div class="tir-card">
+                <div class="tir-label">현재 EXP</div>
+                <div class="tir-value">
+                    <span id="tirCurExp">-</span>
+                </div>
+            </div>
+
+            <div class="tir-card emphasis">
+                <div class="tir-label">남은 EXP</div>
+                <div class="tir-value highlight">
+                    <span id="tirRemainExp">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔹 목표 날짜 -->
+        <div style="margin-bottom:12px;">
+            <label for="tirTargetDate"
+                   style="display:block; font-size:14px; text-align:left; color:#555; margin-bottom:4px;">
+                목표 날짜
+            </label>
+            <input id="tirTargetDate"
+                   type="date"
+                   style="width:100%; padding:8px; font-size:15px;
+                          border:1px solid #ccc; border-radius:6px;">
+        </div>
+
+        <!-- 🔹 계산 결과 -->
+        <div id="tirResultBox"
+             style="display:none; margin-top:14px;
+                    border-top:1px solid #e0dff2; padding-top:12px;">
+
+            <div style="font-size:14px; color:#555; margin-bottom:4px;">
+                하루 필요 경험치
+            </div>
+
+            <div style="font-size:20px; font-weight:700; color:#5a4398;">
+                <span id="tirDailyExp">-</span>
+                <span id="tirDailyExpApprox"
+                      style="font-size:13px; color:#888; margin-top:4px;"></span>
+            </div>
+        </div>
+
+        <!-- 🔹 안내 문구 -->
+        <div style="font-size:12px; color:#888; margin-top:14px; text-align:left;">
+            ※ 선택한 날짜에 <b>다음 레벨</b>에 도달하기 위한<br>
+            하루 평균 필요 경험치를 계산합니다.
+        </div>
+    </div>
+</div>
+
 <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {

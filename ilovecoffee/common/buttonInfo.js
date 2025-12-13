@@ -32,12 +32,18 @@ export const BUTTONS = [
     },
     {
         id: 6,
+        key: "tirCalcBtn",
+        name: "티르계산기",
+        img: "../image/tirCalcBtnImg.jpg"
+    },
+    {
+        id: 7,
         key: "regularGuestsBtn",
         name: "단골손님",
         img: "../image/profile1.jpg"
     },
     {
-        id: 7,
+        id: 8,
         key: "generalGuestsBtn",
         name: "손님멘트",
         img: "../image/guest/guest1.jpg"

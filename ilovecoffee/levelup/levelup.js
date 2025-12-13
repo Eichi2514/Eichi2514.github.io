@@ -1,38 +1,25 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import {
-    getDatabase,
-    ref,
-    set,
-    get,
-    remove,
-    query,
-    orderByKey,
-    limitToLast,
-    endAt
-} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import {get, getDatabase, ref, remove, set} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // ✅ 공통 유틸 모듈
-import {calcAvgExp, calcDDay, calcDiffExp} from "../common/expUtils.js";
+import {calcAvgExp} from "../common/expUtils.js";
 import {levelExp} from "../common/levelExp.js";
 import {
-    getKoreanDate,
-    getKoreanTimestamp,
-    validateNickname,
-    validatePassword,
-    validateDateNotFuture,
-    validateUniqueGoals,
-    addComma,
-    removeComma,
-    formatKoreanNumber,
     bindNumericCommaFormatter,
+    closeAlert,
+    formatKoreanNumber,
     getActiveNickname,
     getActiveSubNickname,
-    setActiveNickname,
+    getKoreanDate,
+    getKoreanTimestamp,
     goToPage,
+    setActiveNickname,
     showAlert,
-    closeAlert,
     showConfirm,
-    formatDisplayDate
+    validateDateNotFuture,
+    validateNickname,
+    validatePassword,
+    validateUniqueGoals
 } from "../common/utils.js";
 
 const firebaseConfig = {
@@ -66,6 +53,96 @@ $(document).on("click", ".postsBtn", () => goToPage("postList"));
 // ✅ 부캐 등록 모달 열기
 $(document).on("click", ".addSubCharacterBtn", function () {
     $("#subLoginPopup").show();
+});
+
+function calcTier(targetDate) {
+    if (!remainExp || remainExp <= 0) return null;
+
+    const days = calcRemainingDays(targetDate);
+    if (days <= 0) return null;
+
+    return Math.ceil(remainExp / days);
+}
+
+function calcRemainingDays(targetDate) {
+    const todayStr = getKoreanDate(); // YYYY-MM-DD
+
+    const today = new Date(todayStr);
+    today.setHours(0, 0, 0, 0);
+
+    const target = new Date(targetDate);
+    target.setHours(0, 0, 0, 0);
+
+    let days = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+
+    // 오늘 경험치 아직 안 썼으면 오늘 포함
+    const hasTodayRecord = latestExpRecords && latestExpRecords[todayStr];
+    if (!hasTodayRecord) {
+        days += 1;
+    }
+
+    return days;
+}
+
+// ✅ 티르계산기 등록 모달 열기
+$(document).on("click", ".tirCalcBtn", function () {
+    $("#tirCalcModal").show();
+
+    // 현재 레벨
+    $("#tirCurLevel").text($("#currentLevelDisplay").text());
+
+    // 현재 경험치 (최근 기록 기준)
+    const curExpText = $("#expTable tbody tr:first td:nth-child(3)").text();
+    $("#tirCurExp").text(curExpText || "-");
+
+    // 남은 경험치
+    $("#tirRemainExp").text(
+        remainExp ? remainExp.toLocaleString() : "-"
+    );
+
+    // 초기화
+    $("#tirTargetDate").val("");
+    $("#tirResultBox").hide();
+});
+
+$(document).on("change", "#tirTargetDate", function () {
+    const targetDate = $(this).val();
+    const $tirResultBox = $("#tirResultBox");
+    if (!targetDate) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const target = new Date(targetDate);
+    target.setHours(0, 0, 0, 0);
+
+    // ❌ 오늘 이전이면 차단
+    if (target <= today) {
+        showAlert("오늘 이전 날짜는 선택할 수 없습니다.");
+        $(this).val("");
+        $tirResultBox.hide();
+        return;
+    }
+
+    const daily = calcTier(targetDate);
+
+    if (!daily) {
+        $tirResultBox.hide();
+        return;
+    }
+
+    $("#tirDailyExp").text(daily.toLocaleString());
+
+    // 보기용 근사치
+    let approx = ``;
+    if (daily >= 100000000) {
+        approx = `( 약 ${Math.floor(daily / 100000000)}억 )`;
+    } else if (daily >= 10000) {
+        approx = `( 약 ${Math.floor(daily / 10000)}만 )`;
+    }
+
+    $("#tirDailyExpApprox").text(approx);
+    $tirResultBox.show();
 });
 
 // ✅ 닫기 버튼
@@ -370,6 +447,8 @@ $("#toggleExpTableBtn").on("click", function () {
 let profileNum = 1;
 let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
 let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
+let remainExp; // ✅ 레벨업까지 남은 경험치 캐싱용
+
 $(function () {
     const todayValue = "v10";
     const lastUpdate = localStorage.getItem("LU-update");
@@ -808,7 +887,7 @@ $(function () {
                         if (userData.level < levelExp.length) {
                             // 일반 레벨업 모드
                             const nextNeedExp = levelExp[userData.level]; // 다음 레벨까지 필요한 총 경험치
-                            const remainExp = Math.max(nextNeedExp - currentExp, 0);
+                            remainExp = Math.max(nextNeedExp - currentExp, 0);
 
                             // ✅ 남은 경험치 퍼센트 계산
                             const percent = ((remainExp / nextNeedExp) * 100).toFixed(1);
@@ -833,7 +912,7 @@ $(function () {
                             const nextGoal = goalTargets.find(g => g > currentExp);
 
                             if (nextGoal) {
-                                const remainExp = Math.max(nextGoal - currentExp, 0);
+                                remainExp = Math.max(nextGoal - currentExp, 0);
 
                                 let approx = "";
                                 if (remainExp >= 100000000) {
@@ -873,7 +952,6 @@ $(function () {
                             goalTargets
                                 .filter(goal => goal > currentExp)
                                 .forEach(goal => {
-                                    const remainExp = Math.max(goal - currentExp, 0);
                                     const daysNeeded = Math.ceil(remainExp / avgGain);
                                     const estDate = new Date(koreaNow);
                                     estDate.setDate(koreaNow.getDate() + daysNeeded);

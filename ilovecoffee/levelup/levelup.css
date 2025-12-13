@@ -600,3 +600,40 @@ h3 {
         opacity: 0;
     }
 }
+
+/* 티르계산기 상태 카드 */
+.tir-status {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.tir-card {
+    flex: 1;
+    background: #f6f4fc;
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+}
+
+.tir-card.emphasis {
+    background: #ede8ff;
+}
+
+.tir-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.tir-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.tir-value.highlight {
+    font-size: 16px;
+    font-weight: 700;
+    color: #5a4398;
+}
