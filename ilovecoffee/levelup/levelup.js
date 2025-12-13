@@ -91,7 +91,7 @@ $(document).on("click", ".tirCalcBtn", function () {
     const curExpText = $("#expTable tbody tr:first td:nth-child(3)").text();
     $("#tirCurExp").text(curExpText || "-");
 
-    tirRemainExpSnapshot = (progressMode === "goal" && remainExp > 0) ? remainExp : null;
+    tirRemainExpSnapshot = remainExp;
 
     // 남은 경험치
     $("#tirRemainExp").text(
