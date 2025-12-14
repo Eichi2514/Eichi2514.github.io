@@ -185,22 +185,18 @@
         // 2) 닉네임 요청
         const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
         if (!nickSnap.exists()) {
-            userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
-            return userInfoCache[id];
+            return userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
         }
 
         const nickname = nickSnap.val();
 
-        // 3) 유저 상세 요청
-        const userSnap = await get(ref(db, `coffeeUsers/${nickname}`));
-        let profile = 1;
-        if (userSnap.exists() && userSnap.val().profileImg) {
-            profile = userSnap.val().profileImg;
-        }
+        // 3) 프로필 번호만 조회
+        const profileSnap = await get(ref(db, `coffeeUsers/${nickname}/profileImg`));
 
-        // 4) 캐싱
-        userInfoCache[id] = { nickname, profile };
-        return userInfoCache[id];
+        const profile = profileSnap.exists() ? profileSnap.val() : 1;
+
+        // 캐싱
+        return userInfoCache[id] = { nickname, profile };
     }
 
     // 특정 기간(days) 만큼의 출석 데이터를 로드
@@ -227,51 +223,49 @@
             resultValues.push(snap.exists() ? snap.val() : 0);
         }
 
-        await loadDailyFirstRanks(days);
-        renderAttendanceChart(resultLabels, resultValues);
+        await loadTotalFirstRanks();
+        await renderAttendanceChart(resultLabels, resultValues);
     }
 
-    async function loadDailyFirstRanks(days) {
+    async function loadTotalFirstRanks() {
+        // 시작일 = 2025-12-01
+        const start = new Date(2025, 11, 1); // 11 = 12월 (JS는 0부터 시작)
         const today = new Date();
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 1);
-        const result = [];
 
-        for (let i = days - 1; i >= 0; i--) {
-            const d = new Date(startDate);
-            d.setDate(startDate.getDate() - i);
+        const firstCountMap = {}; // { userId: count }
 
+        // 2025-12-01 ~ 오늘까지 날짜 반복
+        for (let d = new Date(start); d <= today; d.setDate(d.getDate() - 0 + 1)) {
             const yyyy = d.getFullYear();
             const mm = String(d.getMonth() + 1).padStart(2, "0");
             const dd = String(d.getDate()).padStart(2, "0");
             const key = `${yyyy}-${mm}-${dd}`;
 
-            // 1등 데이터 조회
+            // 날짜의 1등 데이터만 읽기
             const snap = await get(ref(db, `coffeeDailyRank/${key}/1`));
+            if (!snap.exists()) continue;
 
-            if (!snap.exists()) {
-                result.push({
-                    date: `${mm}/${dd}`,
-                    nickname: "기록 없음",
-                    profile: 1,
-                    time: "-"
-                });
-                continue;
-            }
+            const firstObj = snap.val();
+            const userId = Number(Object.keys(firstObj)[0]);
 
-            // { userId : timeString } 형태
-            const userId = Number(Object.keys(snap.val())[0]);
-            const time = Object.values(snap.val())[0];
+            if (!firstCountMap[userId]) firstCountMap[userId] = 0;
+            firstCountMap[userId]++;
+        }
 
+        // 유저 정보 매핑
+        const result = [];
+        for (const userId in firstCountMap) {
             const info = await getUserInfoById(userId);
-
             result.push({
-                date: `${mm}/${dd}`,
+                userId,
                 nickname: info.nickname,
                 profile: info.profile,
-                time
+                count: firstCountMap[userId]
             });
         }
+
+        // 1등 횟수 순 정렬
+        result.sort((a, b) => b.count - a.count);
 
         renderFirstRankList(result);
     }
@@ -280,24 +274,37 @@
         const wrap = $("#firstRankList");
         wrap.empty();
 
-        list = list.slice().reverse();
-        list.forEach(item => {
+        list.forEach((item, index) => {
+
+            // 10회 이상 특별 표시
+            const highlight = item.count >= 10
+                ? "background:#fff4c2; border:2px solid #f2c200; border-radius:8px;"
+                : "";
+
             wrap.append(`
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:14px;
-                ">
-                    <div style="width:50px; font-weight:700; color:#5a4398;">
-                        ${item.date}
-                    </div>
-
-                    <img src="../image/profile${item.profile}.jpg"
-                         style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
-
-                    <div style="font-weight:600;">${item.nickname}</div>
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:14px;
+                padding:8px 10px;
+                ${highlight}
+            ">
+                <div style="font-weight:700; width:40px; text-align:center; color:#5a4398;">
+                    ${index + 1}위
                 </div>
-            `);
+
+                <img src="../image/profile${item.profile}.jpg"
+                     style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+
+                <div style="font-weight:600;">
+                    ${item.nickname}
+                </div>
+
+                <div style="margin-left:auto; font-weight:700; color:#5a4398;">
+                    ${item.count}회
+                </div>
+            </div>
+        `);
         });
     }
 

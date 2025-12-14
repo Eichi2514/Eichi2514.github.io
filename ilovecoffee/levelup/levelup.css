@@ -637,3 +637,16 @@ h3 {
     font-weight: 700;
     color: #5a4398;
 }
+
+/* 프로필 탭 기본 */
+.profile-tab {
+    background: #f6f4fc !important;
+    color: #5a4398 !important;
+    font-weight: 600;
+}
+
+/* 선택된 탭 */
+.profile-tab.active {
+    background: #5a4398 !important;
+    color: #fff !important;
+}

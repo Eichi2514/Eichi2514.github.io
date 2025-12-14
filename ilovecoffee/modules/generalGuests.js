@@ -349,7 +349,7 @@ function renderGeneralGuestList() {
 
     Object.keys(generalGuests).forEach((guest, idx) => {
         // const imgSrc = `../image/general${idx+1}.jpg`;
-        const imgSrc = `../image/guest/guest${idx + 1}.jpg`;
+        const imgSrc = `../image/profile${idx + 101}.jpg`;
 
         const card = $(`
             <div class="guestCard">
@@ -387,7 +387,7 @@ function applyGeneralGuestSearch(keyword) {
         );
 
         matchedLines.forEach(line => {
-            const imgSrc = `../image/guest/guest${idx + 1}.jpg`;
+            const imgSrc = `../image/profile${idx + 101}.jpg`;
 
             const card = $(`
                 <div class="guestCard" style="width:100%; border:1px solid #ddd;">

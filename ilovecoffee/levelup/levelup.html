@@ -287,8 +287,14 @@
             <div id="currentProfileName" style="margin-top:6px; color:#5a4398; font-weight:600;">기본 프로필</div>
         </div>
 
+        <div id="profileTabs" style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="profile-tab" data-tab="normal">출석</button>
+            <button class="profile-tab active" data-tab="favorite">기록</button>
+            <button class="profile-tab" data-tab="rank">랭킹</button>
+        </div>
+
         <div id="profileImageContainer"
-             style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; justify-items:center; margin-bottom:15px;">
+             style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; justify-items:center; margin-bottom:15px; height: 340px; overflow-y:auto;">
             <!-- 이미지 목록 JS로 추가 -->
         </div>
 

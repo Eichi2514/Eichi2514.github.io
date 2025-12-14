@@ -707,7 +707,6 @@ $(function () {
             if (userData.expRecords) {
                 // 레벨업 로그 계산
                 computeLevelUpLogs(userData.expRecords);
-                isFirstRank10 = !!userData.isFirst10;
 
                 // 오래된 기록(1년 초과)은 자동 삭제
                 // 현재 한국 날짜를 기준으로 계산
@@ -766,6 +765,40 @@ $(function () {
 
                 $adminBtn.show();
             }
+
+            // 프로필 관련 조회
+            // 🔹 출석 1등 10회 달성 여부 (랭킹 프로필 해금 조건)
+            isFirstRank10 = !!userData.isFirst10;
+
+            // 🔹 가입일 기준 경과 일수 계산
+            if (userData.signupDate) {
+                const raw = userData.signupDate; // "25.10.07-00:00:00"
+                const normalized = raw
+                    .replace("-", "T")
+                    .replace(/^(\d{2})\./, "20$1-")
+                    .replace(/\./g, "-")
+                    .replace(/T.*/, "T00:00:00");
+
+                const signup = new Date(normalized);
+                const today = new Date();
+                signup.setHours(0,0,0,0);
+                today.setHours(0,0,0,0);
+
+                signupDays = Math.max(
+                    Math.floor((today - signup) / (1000 * 60 * 60 * 24)),
+                    0
+                ) + 1;
+            }
+
+            // 🔹 경험치 기록 수
+            expRecordCount = userData.expRecords
+                ? Object.keys(userData.expRecords).length
+                : 0;
+
+            // 🔹 단골 / 일반 해금 계산
+            favoriteProgress = Math.min(expRecordCount, signupDays);
+            favoriteUnlockLimit = Math.floor(2 + (favoriteProgress + UNLOCK_OFFSET) / UNLOCK_PER_RECORDS);
+            normalUnlockLimit = Math.floor((signupDays + UNLOCK_OFFSET) / UNLOCK_PER_RECORDS2);
 
             // ✅ 로드 시 부캐 버튼 검사
             addSubCharacterButton();
@@ -1723,7 +1756,6 @@ $(function () {
         });
     });
 
-
     // ✅ 비밀번호 변경 모달 열기
     $(document).on("click", ".changePasswordBtn", async function () {
         const nickname = getActiveNickname();
@@ -1760,204 +1792,195 @@ $(function () {
             $("#passwordModal").remove();
         });
     });
+});
 
-    // ✅ 프로필 변경 기능
-    const profileList = [
-        {id: 1, name: "전교1등", src: "../image/profile1.jpg"},
-        {id: 2, name: "샘일병", src: "../image/profile2.jpg"},
-        {id: 3, name: "웹툰작가", src: "../image/profile3.jpg"},
-        {id: 4, name: "아이돌스타", src: "../image/profile4.jpg"},
-        {id: 5, name: "보드매니아", src: "../image/profile5.jpg"},
-        {id: 6, name: "미스왕", src: "../image/profile6.jpg"},
-        {id: 7, name: "캐치미이프유캔", src: "../image/profile7.jpg"},
-        {id: 8, name: "외계소녀", src: "../image/profile8.jpg"},
-        {id: 9, name: "미스테리마법사", src: "../image/profile9.jpg"},
-        {id: 10, name: "홍대소녀", src: "../image/profile10.jpg"},
-        {id: 11, name: "집사 루이", src: "../image/profile11.jpg"},
-        {id: 12, name: "아가씨", src: "../image/profile12.jpg"},
-        {id: 13, name: "땡땡이알바", src: "../image/profile13.jpg"},
-        {id: 14, name: "소공녀", src: "../image/profile14.jpg"},
-        {id: 15, name: "엄친아", src: "../image/profile15.jpg"},
-        {id: 16, name: "포카리걸", src: "../image/profile16.jpg"},
-        {id: 17, name: "가브리엘", src: "../image/profile17.jpg"},
-        {id: 18, name: "제이", src: "../image/profile18.jpg"},
-        {id: 19, name: "케이트", src: "../image/profile19.jpg"},
-    ];
+let signupDays = 0; // 가입 후 경과 일수
+let expRecordCount = 0; // 경험치 기록 개수 (expRecords 수)
+let favoriteProgress = 0; // 단골 해금 진행도 = min(기록 수, 가입일)
+let favoriteUnlockLimit = 0; // 단골 프로필 해금 가능 개수
+let normalUnlockLimit = 0; // 일반 프로필 해금 가능 개수 (가입일 기준)
+const UNLOCK_PER_RECORDS = 7; // 프로필 해금 비율 (예: 기록 n개당 1개 해금)
+const UNLOCK_PER_RECORDS2 = UNLOCK_PER_RECORDS * 2; // 프로필 해금 비율 (예: 기록 n개당 1개 해금)
+const UNLOCK_OFFSET = 1 // 유저 약속 보정
 
-    const profileList2 = [
-        // {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
-        {id: 91, name: "???", src: "../image/profile91.jpg"},
-        {id: 99, name: "이치", src: "../image/profile99.jpg"},
-    ];
+// ✅ 프로필 변경 기능
+const profileList = [
+    {id: 1, name: "전교1등", src: "../image/profile1.jpg"},
+    {id: 2, name: "샘일병", src: "../image/profile2.jpg"},
+    {id: 3, name: "웹툰작가", src: "../image/profile3.jpg"},
+    {id: 4, name: "아이돌스타", src: "../image/profile4.jpg"},
+    {id: 5, name: "보드매니아", src: "../image/profile5.jpg"},
+    {id: 6, name: "미스왕", src: "../image/profile6.jpg"},
+    {id: 7, name: "캐치미이프유캔", src: "../image/profile7.jpg"},
+    {id: 8, name: "외계소녀", src: "../image/profile8.jpg"},
+    {id: 9, name: "미스테리마법사", src: "../image/profile9.jpg"},
+    {id: 10, name: "홍대소녀", src: "../image/profile10.jpg"},
+    {id: 11, name: "집사 루이", src: "../image/profile11.jpg"},
+    {id: 12, name: "아가씨", src: "../image/profile12.jpg"},
+    {id: 13, name: "땡땡이알바", src: "../image/profile13.jpg"},
+    {id: 14, name: "소공녀", src: "../image/profile14.jpg"},
+    {id: 15, name: "엄친아", src: "../image/profile15.jpg"},
+    {id: 16, name: "포카리걸", src: "../image/profile16.jpg"},
+    {id: 17, name: "가브리엘", src: "../image/profile17.jpg"},
+    {id: 18, name: "제이", src: "../image/profile18.jpg"},
+    {id: 19, name: "케이트", src: "../image/profile19.jpg"},
+];
 
-    // ✅ 닉네임 앞의 프로필 클릭 시 모달 열기
-    $(document).on("click", ".profile-img", async function () {
-        const nickname = getActiveNickname();
-        if (!nickname) return showAlert("로그인 후 이용해주세요.");
+const profileList2 = [
+    {id: 101, name: "순수남", src: "../image/profile101.jpg"},
+    {id: 102, name: "순수녀", src: "../image/profile102.jpg"},
+    {id: 103, name: "차도남", src: "../image/profile103.jpg"},
+    {id: 104, name: "차도녀", src: "../image/profile104.jpg"},
+    {id: 105, name: "졸린남", src: "../image/profile105.jpg"},
+    {id: 106, name: "졸린녀", src: "../image/profile106.jpg"},
+    {id: 107, name: "중년남", src: "../image/profile107.jpg"},
+    {id: 108, name: "중년녀", src: "../image/profile108.jpg"},
+    {id: 109, name: "외국남", src: "../image/profile109.jpg"},
+    {id: 110, name: "외국녀", src: "../image/profile110.jpg"},
+    {id: 111, name: "외국남", src: "../image/profile111.jpg"},
+    {id: 112, name: "외국녀", src: "../image/profile112.jpg"},
+    {id: 113, name: "부자남", src: "../image/profile113.jpg"},
+    {id: 114, name: "부자녀", src: "../image/profile114.jpg"},
+];
 
-        // 🔹 유저의 경험치 기록 개수 확인
-        const recordsRef = ref(db, `coffeeUsers/${nickname}/expRecords`);
-        const recordsSnap = await get(recordsRef);
-        const recordCount = recordsSnap.exists() ? Object.keys(recordsSnap.val()).length : 0;
+const profileList3 = [
+    // {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
+    {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
+    {id: 99, name: "이치", src: "../image/profile99.jpg"},
+];
 
-        // 🔹 해금 가능한 프로필 개수 계산 (기록 수 vs 가입 후 일수 중 작은 값 기준)
-        const signupRef = ref(db, `coffeeUsers/${nickname}/signupDate`);
-        const signupSnap = await get(signupRef);
+function renderProfileList(list, type, unlockLimit, progressValue) {
+    const $container = $("#profileImageContainer");
+    $container.empty();
 
-        let daysSinceSignup = 0;
-        if (signupSnap.exists()) {
-            const rawVal = signupSnap.val(); // 예: "25.10.07-00:00:00"
-            const signupDateStr = typeof rawVal === "string" ? rawVal : Object.values(rawVal)[0];
+    list.forEach((p, index) => {
+        let isLocked = false;
+        let lockMessage = "";
+        const unlockIndex = index + 1;
 
-            if (signupDateStr) {
-                // 🔸 "25.10.07-00:00:00" → "2025-10-07T00:00:00"
-                const normalized = signupDateStr
-                    .replace("-", "T")               // 첫 '-' (날짜-시간 구분) → 'T'
-                    .replace(/^(\d{2})\./, "20$1-")  // 25. → 2025-
-                    .replace(/\./g, "-")             // 나머지 점(.) → -
-                    .replace(/T.*/, "T00:00:00");    // ✅ T 뒤 전부 제거 후 00:00:00으로 고정
-
-
-                const signupDate = new Date(normalized);
-                const today = new Date();
-
-                if (!isNaN(signupDate.getTime())) {
-                    const diffTime = today.getTime() - signupDate.getTime();
-                    daysSinceSignup = Math.max(Math.floor(diffTime / (1000 * 60 * 60 * 24)), 0) + 2;
-                } else {
-                    console.warn("날짜 변환 실패:", signupDateStr, normalized);
-                }
-            }
+        if (type === "favorite") { // 단골
+            isLocked = unlockIndex > unlockLimit;
+            const nextUnlock = (unlockIndex - 2) * UNLOCK_PER_RECORDS;
+            const remain = Math.max(nextUnlock - progressValue - UNLOCK_OFFSET, 0);
+            lockMessage =
+                `${p.name}(은)는 아직 해금되지 않았어요!\n\n` +
+                `현재 기록 : ${progressValue}개\n` +
+                `${remain}개 더 입력하면 해금돼요!`;
         }
 
-        // 🔹 프로필 해금 비율 (예: 기록 n개당 1개 해금)
-        const UNLOCK_PER_RECORDS = 7; // 나중에 5나 8로 바꾸면 즉시 반영됨
-        // 🔸 기록 수와 가입일 기준 중 낮은 값 사용
-        const progressValue = Math.min(recordCount, daysSinceSignup);
-        let unlockLimit = Math.floor(2 + (progressValue / UNLOCK_PER_RECORDS));
-        /*
-        console.log(`recordCount : ${recordCount}`);
-        console.log(`daysSinceSignup : ${daysSinceSignup}`);
-        console.log(`progressValue : ${progressValue}`);
-        console.log(`unlockLimit : ${unlockLimit}`);
-         */
+        if (type === "normal") {
+            isLocked = unlockIndex > normalUnlockLimit;
 
-        // 현재 프로필 표시
-        const currentNum = profileNum || 1;
-        const allProfiles = [...profileList, ...profileList2];
-        const current = allProfiles.find(p => p.id === currentNum) || {
-            id: 1,
-            name: "기본 프로필",
-            src: "../image/profile1.jpg"
-        };
-        $("#currentProfileImg").attr("src", current.src);
-        $("#currentProfileName").text(current.name);
+            const nextUnlock = unlockIndex * UNLOCK_PER_RECORDS2;
+            const remain = Math.max(nextUnlock - signupDays - UNLOCK_OFFSET, 0);
 
-        // 이미지 목록 채우기
-        const $container = $("#profileImageContainer");
-        $container.empty();
-
-        profileList.forEach(p => {
-            const isLocked = p.id > unlockLimit;
-            const img = $(`<div style="position:relative;">
-                    <img src="${p.src}" alt="${p.name}">
-                        ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
-                    </div>`);
-
-            img.find("img").css({
-                width: "55px",
-                height: "55px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                cursor: isLocked ? "not-allowed" : "pointer",
-                border: p.id === currentNum ? "3px solid #5a4398" : "2px solid #ddd",
-                filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
-            });
-
-            // 클릭 시 선택
-            if (!isLocked) {
-                img.on("click", function () {
-                    $("#profileImageContainer img").css("border", "2px solid #ddd");
-                    $(this).find("img").css("border", "3px solid #5a4398");
-                    $("#currentProfileImg").attr("src", p.src);
-                    $("#currentProfileName").text(p.name);
-                    $("#applyProfileBtn").data("selected", p.id);
-                });
-            } else {
-                img.on("click", function () {
-                    const nextUnlockThreshold = (p.id - 2) * UNLOCK_PER_RECORDS; // 다음 해금 조건
-                    const remain = Math.max(nextUnlockThreshold - progressValue, 0); // 남은 개수
-                    const remainText = remain > 0
-                        ? `현재 기록 : ${progressValue}개\n${remain}개 더 입력하면 해금돼요!`
-                        : `현재 기록 : ${progressValue}개`;
-                    showAlert(`${p.name}(은)는 아직 해금되지 않았어요!\n\n${remainText}`);
-                });
-            }
-
-            $container.append(img);
-        });
-
-        // 🔥 스페셜 프로필 추가 렌더링
-        profileList2.forEach(sp => {
-            const isLocked = !isFirstRank10;
-
-            const img = $(`<div style="position:relative;">
-                                <img src="${sp.src}" alt="스페셜">
-                                ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
-                            </div>`);
-
-            img.find("img").css({
-                width: "55px",
-                height: "55px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                cursor: isLocked ? "not-allowed" : "pointer",
-                border: sp.id === currentNum ? "3px solid #5a4398" : "2px solid #ddd",
-                filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
-            });
-
-            if (!isLocked) {
-                img.on("click", function () {
-                    $("#profileImageContainer img").css("border", "2px solid #ddd");
-                    $(this).find("img").css("border", "3px solid #5a4398");
-                    $("#currentProfileImg").attr("src", sp.src);
-                    $("#currentProfileName").text( sp.name);
-                    $("#applyProfileBtn").data("selected", sp.id);
-                });
-            } else {
-                img.on("click", function () {
-                    showAlert(`${sp.name}(은)는 아직 해금되지 않았어요!\n\n⭐ 출석 1등을 10회 이상 달성하면 해금됩니다!`);
-                });
-            }
-
-            $container.append(img);
-        });
-
-        $("#profileModal").css("display", "flex");
-    });
-
-    // ✅ 변경 버튼 클릭 시 Firebase 업데이트
-    $("#applyProfileBtn").on("click", async function () {
-        const nickname = getActiveNickname();
-        if (!nickname) return showAlert("로그인 후 이용해주세요.");
-
-        const selected = $(this).data("selected");
-        if (!selected) return showAlert("프로필을 선택해주세요.");
-
-        try {
-            await set(ref(db, `coffeeUsers/${nickname}/profileImg`), selected);
-            showAlert("프로필이 변경되었습니다!");
-            $("#profileModal").hide();
-
-            // 즉시 반영
-            profileNum = selected;
-            const newSrc = `../image/profile${selected}.jpg`;
-            $(".profile-img").attr("src", newSrc);
-        } catch (err) {
-            console.error("프로필 변경 오류:", err);
-            showAlert("프로필 변경 중 오류가 발생했습니다.");
+            lockMessage =
+                `${p.name}(은)는 아직 해금되지 않았어요!\n\n` +
+                `가입 ${signupDays}일차\n` +
+                `${remain}일 더 지나면 해금돼요!`;
         }
+
+        if (type === "rank") { // 랭킹
+            isLocked = !isFirstRank10;
+            lockMessage =
+                `${p.name}(은)는 아직 해금되지 않았어요!\n\n` +
+                `⭐ 출석 1등을 10회 이상 달성하면 해금됩니다!`;
+        }
+
+        const img = $(`
+            <div style="position:relative;">
+                <img src="${p.src}" alt="${p.name}">
+                ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
+            </div>
+        `);
+
+        img.find("img").css({
+            width: "55px",
+            height: "55px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            cursor: isLocked ? "not-allowed" : "pointer",
+            border: p.id === profileNum ? "3px solid #5a4398" : "2px solid #ddd",
+            filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
+        });
+
+        if (!isLocked) {
+            img.on("click", () => {
+                $("#profileImageContainer img").css("border", "2px solid #ddd");
+                img.find("img").css("border", "3px solid #5a4398");
+                $("#currentProfileImg").attr("src", p.src);
+                $("#currentProfileName").text(p.name);
+                $("#applyProfileBtn").data("selected", p.id);
+            });
+        } else {
+            img.on("click", () => showAlert(lockMessage));
+        }
+
+        $container.append(img);
     });
+}
+
+$(document).on("click", ".profile-tab", function () {
+    $(".profile-tab").removeClass("active");
+    $(this).addClass("active");
+
+    const tab = $(this).data("tab");
+
+    if (tab === "favorite") {
+        renderProfileList(profileList, "favorite", favoriteUnlockLimit, favoriteProgress);
+    }
+
+    if (tab === "normal") {
+        renderProfileList(profileList2, "normal", normalUnlockLimit, signupDays);
+    }
+
+    if (tab === "rank") {
+        renderProfileList(profileList3, "rank", 0, 0);
+    }
+});
+
+// ✅ 닉네임 앞의 프로필 클릭 시 모달 열기
+$(document).on("click", ".profile-img", async function () {
+    // 현재 프로필 표시
+    const currentNum = profileNum || 1;
+    const allProfiles = [...profileList, ...profileList2, ...profileList3];
+    const current = allProfiles.find(p => p.id === currentNum) || {
+        id: 1,
+        name: "기본 프로필",
+        src: "../image/profile1.jpg"
+    };
+    $("#currentProfileImg").attr("src", current.src);
+    $("#currentProfileName").text(current.name);
+
+    // 이미지 목록 채우기
+    const $container = $("#profileImageContainer");
+    $container.empty();
+
+    $("#profileModal").css("display", "flex");
+    $(".profile-tab[data-tab='favorite']").click(); // 기본: 단골
+});
+
+// ✅ 변경 버튼 클릭 시 Firebase 업데이트
+$("#applyProfileBtn").on("click", async function () {
+    const nickname = getActiveNickname();
+    if (!nickname) return showAlert("로그인 후 이용해주세요.");
+
+    const selected = $(this).data("selected");
+    if (!selected) return showAlert("프로필을 선택해주세요.");
+
+    try {
+        await set(ref(db, `coffeeUsers/${nickname}/profileImg`), selected);
+        showAlert("프로필이 변경되었습니다!");
+        $("#profileModal").hide();
+
+        // 즉시 반영
+        profileNum = selected;
+        const newSrc = `../image/profile${selected}.jpg`;
+        $(".profile-img").attr("src", newSrc);
+    } catch (err) {
+        console.error("프로필 변경 오류:", err);
+        showAlert("프로필 변경 중 오류가 발생했습니다.");
+    }
 });
 
 // ✅ 오늘의 D-day 유저 목록 불러오기 → scrolling-text 표시

@@ -46,6 +46,6 @@ export const BUTTONS = [
         id: 8,
         key: "generalGuestsBtn",
         name: "손님멘트",
-        img: "../image/guest/guest1.jpg"
+        img: "../image/profile101.jpg"
     }
 ];
