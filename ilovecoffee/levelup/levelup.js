@@ -1837,15 +1837,15 @@ const profileList2 = [
     {id: 108, name: "중년녀", src: "../image/profile108.jpg"},
     {id: 109, name: "외국남", src: "../image/profile109.jpg"},
     {id: 110, name: "외국녀", src: "../image/profile110.jpg"},
-    {id: 111, name: "외국남", src: "../image/profile111.jpg"},
-    {id: 112, name: "외국녀", src: "../image/profile112.jpg"},
-    {id: 113, name: "부자남", src: "../image/profile113.jpg"},
-    {id: 114, name: "부자녀", src: "../image/profile114.jpg"},
+    {id: 111, name: "부자남", src: "../image/profile111.jpg"},
+    {id: 112, name: "부자녀", src: "../image/profile112.jpg"},
+    {id: 113, name: "바리스타남", src: "../image/profile113.jpg"},
+    {id: 114, name: "바리스타녀", src: "../image/profile114.jpg"},
 ];
 
 const profileList3 = [
     // {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
-    {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
+    {id: 91, name: "???", src: "../image/profile91.jpg"},
     {id: 99, name: "이치", src: "../image/profile99.jpg"},
 ];
 
@@ -2203,4 +2203,22 @@ async function checkDailyAttendance(nickname) {
     // 5) 내 등수 저장
     await set(ref(db, `coffeeUsers/${nickname}/dailyRank`), newRank);
     console.log(`🎉 출석 처리 완료 → ${nickname} / 등수: ${newRank}`);
+
+    // 🔥 6) 1등이면 누적 1등 횟수 증가
+    if (newRank === 1) {
+        const totalRef = ref(db, `coffeeStats/firstRankTotal/${userId}`);
+        const totalSnap = await get(totalRef);
+
+        const nextCount = totalSnap.exists()
+            ? totalSnap.val() + 1
+            : 1;
+
+        await set(totalRef, nextCount);
+
+
+        // 7) 1등 10회 달성권한 부여 (누적 기준)
+        if (nextCount >= 10) {
+            await set(ref(db, `coffeeUsers/${nickname}/isFirst10`), true);
+        }
+    }
 }
