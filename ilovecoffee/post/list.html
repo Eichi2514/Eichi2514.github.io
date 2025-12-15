@@ -1063,43 +1063,30 @@
     });
 
     async function loadTotalFirstRanks() {
-        // 시작일 = 2025-12-01
-        const start = new Date(2025, 11, 1); // 11 = 12월 (JS는 0부터 시작)
-        const today = new Date();
+        // ✅ 누적 1등 집계 데이터 한 번만 조회
+        const snap = await get(ref(db, "coffeeStats/firstRankTotal"));
 
-        const firstCountMap = {}; // { userId: count }
-
-        // 2025-12-01 ~ 오늘까지 날짜 반복
-        for (let d = new Date(start); d <= today; d.setDate(d.getDate() - 0 + 1)) {
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, "0");
-            const dd = String(d.getDate()).padStart(2, "0");
-            const key = `${yyyy}-${mm}-${dd}`;
-
-            // 날짜의 1등 데이터만 읽기
-            const snap = await get(ref(db, `coffeeDailyRank/${key}/1`));
-            if (!snap.exists()) continue;
-
-            const firstObj = snap.val();
-            const userId = Number(Object.keys(firstObj)[0]);
-
-            if (!firstCountMap[userId]) firstCountMap[userId] = 0;
-            firstCountMap[userId]++;
+        if (!snap.exists()) {
+            renderTotalFirstRankList([]);
+            return;
         }
 
-        // 유저 정보 매핑
+        const data = snap.val(); // { userId: count }
         const result = [];
-        for (const userId in firstCountMap) {
-            const info = await getUserInfoById(userId);
+
+        for (const userId in data) {
+            const numericId = Number(userId);
+            const info = await getUserInfoById(numericId);
+
             result.push({
-                userId,
+                userId: numericId,
                 nickname: info.nickname,
                 profile: info.profile,
-                count: firstCountMap[userId]
+                count: data[userId]
             });
         }
 
-        // 1등 횟수 순 정렬
+        // 1등 횟수 기준 내림차순
         result.sort((a, b) => b.count - a.count);
 
         renderTotalFirstRankList(result);
