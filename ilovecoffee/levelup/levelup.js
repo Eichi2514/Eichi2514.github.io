@@ -154,7 +154,7 @@ $(document).on("change", "#tirTargetDate", function () {
 
 // ✅ 닫기 버튼
 $(document).on("click", ".closeBtn", function () {
-    $(".login-overlay").hide();
+    $(this).closest(".login-overlay").hide();
 });
 
 // ✅ 부캐 로그인/등록 처리

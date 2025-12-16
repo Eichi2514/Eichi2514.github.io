@@ -91,7 +91,7 @@ $(document).on("click", ".notifyBtn", async function () {
 
 // ✅ 닫기 버튼
 $(document).on("click", ".closeBtn", function () {
-    $(".login-overlay").hide();
+    $(this).closest(".login-overlay").hide();
 });
 
 $(document).ready(function () {

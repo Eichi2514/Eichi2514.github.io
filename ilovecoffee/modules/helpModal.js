@@ -89,7 +89,7 @@ $(window).on("load", function () {
 
 // ✅ 닫기 버튼
 $(document).on("click", ".closeBtn", function () {
-    $(".login-overlay").hide();
+    $(this).closest(".login-overlay").hide();
 });
 
 // 뒤로가기
