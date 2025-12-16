@@ -77,27 +77,6 @@
             font-size: 14px;
         }
 
-        #userTable {
-            width: calc(100% - 40px);
-            margin: 10px 20px;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #userTable th, #userTable td {
-            border: 1px solid #e0dff2;
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        #userTable th {
-            background: #f6f4fc;
-            color: #5a4398;
-        }
-
         #loading {
             text-align: center;
             color: #5a4398;
@@ -201,9 +180,91 @@
             color: #333;
         }
 
-        #userTable th, #userTable td {
+        #userList {
+            padding: 0 20px 20px;
+        }
+
+        .user-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            font-size: 13px;
+        }
+
+        /* 🔹 2일 이상 */
+        .user-card.bg-2 {
+            background: #fff8d1;
+        }
+
+        /* 🔹 5일 이상 */
+        .user-card.bg-5 {
+            background: #ffd6d6;
+        }
+
+        /* 🔹 7일 이상 */
+        .user-card.bg-7 {
+            background: #f0f0f0;
+        }
+
+        /* 🔹 기록 없음 */
+        .user-card.bg-none {
+            background: #cfcfcf;
+        }
+
+        .user-profile {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-top {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 4px;
+            gap: 4px;
+        }
+
+        .user-nick {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 랭킹 공개 유저 */
+        .user-nick.rank-public {
+            background: #5a4398;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .user-meta {
+            color: #555;
+            line-height: 1.5;
             font-size: 12px;
         }
+
+        .user-meta span {
+            display: inline-block;
+            padding: 1px 2px;
+            font-size: 12px;
+            border-radius: 6px;
+            background: #f6f4fc;
+            color: #444;
+            border: 1px solid #e0dff2;
+            white-space: nowrap;
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -246,18 +307,7 @@
     </div>
 </div>
 
-<table id="userTable">
-    <thead>
-    <tr>
-        <th>닉네임</th>
-        <th>Lv</th>
-        <th>경험치</th>
-        <th>D-day</th>
-        <th>기록</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<div id="userList"></div>
 
 <div id="loading">불러오는 중...</div>
 
@@ -295,6 +345,39 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    function formatLastLogin(lastLogin) {
+        if (!lastLogin) return "-";
+
+        // yy.mm.dd-hh:mm:ss
+        const match = lastLogin.match(
+            /^(\d{2})\.(\d{2})\.(\d{2})-(\d{2}:\d{2}:\d{2})$/
+        );
+        if (!match) return lastLogin;
+
+        let [, yy, mm, dd, time] = match;
+
+        const yyyy = "20" + yy; // 보정
+
+        const loginDate = new Date(`${yyyy}-${mm}-${dd}T${time}`);
+        const today = new Date();
+
+        // 날짜 비교용 (시간 제거)
+        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const loginDateOnly = new Date(loginDate.getFullYear(), loginDate.getMonth(), loginDate.getDate());
+
+        // ✅ 오늘 접속 → 시간만
+        if (todayDate.getTime() === loginDateOnly.getTime()) {
+            return time;
+        }
+
+        // ✅ 과거 접속 → 날짜 + N일 전
+        const diffDays = Math.floor(
+            (todayDate - loginDateOnly) / 86400000
+        );
+
+        return `${yyyy}.${mm}.${dd} (D-${diffDays})`;
+    }
+
     $(function () {
         const nickname = getActiveNickname();
         if (!nickname) return alert("로그인이 필요합니다."), goToPage();
@@ -312,7 +395,7 @@
             $("#loading").hide();
 
             if (!usersSnap.exists()) {
-                $("#userTable tbody").html("<tr><td colspan='4'>등록된 사용자가 없습니다.</td></tr>");
+                $("#userList").html("<div style='text-align:center;color:#777;'>등록된 사용자가 없습니다.</div>");
                 $("#userCount").text("총 0명");
                 return;
             }
@@ -327,12 +410,12 @@
             // ======================
             // 🔹 렌더링 함수
             // ======================
-            function renderTable(list) {
-                const $tbody = $("#userTable tbody");
-                $tbody.empty();
+            function renderList(list) {
+                const $wrap = $("#userList");
+                $wrap.empty();
 
                 if (list.length === 0) {
-                    $tbody.html("<tr><td colspan='4'>검색 결과가 없습니다.</td></tr>");
+                    $wrap.html("<div style='text-align:center;color:#777;'>검색 결과가 없습니다.</div>");
                     return;
                 }
 
@@ -340,61 +423,50 @@
 
                 list.forEach(u => {
                     const records = u.expRecords ? Object.entries(u.expRecords) : [];
-
-                    // ✅ 유저별 평균 경험치 계산
-                    const avgExp = calcAvgExp(records, u.key);
-
-                    // ✅ 유저별 D-day 계산
-                    const lastRecord = records.length ? records[records.length - 1][1] : {};
                     const lastDateStr = records.length ? records[records.length - 1][0] : null;
-                    const dDay = calcDDay({...u, exp: lastRecord.exp || 0, lastDate: lastDateStr}, avgExp);
+                    const signupDateOnly = u.signupDate ? u.signupDate.split("-")[0] : "-";
 
-                    u.avgExp = avgExp;
-                    u.dDayValue = dDay.value;
-                    u.dDayText = dDay.text;
+                    let bgClass = "";
 
-                    // ✅ 날짜 차이 계산
-                    let bgColor = "";
                     if (records.length > 0) {
-                        const lastDate = new Date(records[records.length - 1][0]);
-                        const diffDays = dayDiff(lastDate, today);
+                        const diff = dayDiff(new Date(lastDateStr), today);
 
-                        if (diffDays >= 15) {
-                            bgColor = "#cfcfcf"; // 회색
-                        } else if (diffDays >= 7) {
-                            bgColor = "#f0f0f0"; // 연한 회색
-                        } else if (diffDays >= 5) {
-                            bgColor = "#ffd6d6"; // 빨간색
-                        } else if (diffDays >= 2) {
-                            bgColor = "#fff8d1"; // 연노랑
+                        if (diff >= 7) {
+                            bgClass = "bg-7";
+                        } else if (diff >= 5) {
+                            bgClass = "bg-5";
+                        } else if (diff >= 2) {
+                            bgClass = "bg-2";
                         }
                     } else {
-                        // ✅ 기록 없음
-                        bgColor = "#cfcfcf"; // 회색
+                        bgClass = "bg-none";
                     }
 
-                    $tbody.append(`
-                        <tr data-nick="${u.key}" data-date="${u.signupDate}" data-lastlogin="${u.lastLogin}" style="background:${bgColor}">
-                            <td style="color:${u.rankingPublic ? '#5a4398' : '#333'}; font-weight:${u.rankingPublic ? '600' : 'normal'};">
-                                ${u.key}
-                            </td>
-                            <td>${u.level || "-"}</td>
-                            <td>${avgExp ? (avgExp >= 10000 ? Math.floor(avgExp / 10000) + "만" : avgExp.toLocaleString()) : "-"}</td>
-                            <td>${dDay.text}</td>
-                            <td>
-                                ${
-                                    lastDateStr ? (() => {
-                                        const parts = lastDateStr.split("-");
-                                        if (parts.length === 3) {
-                                            const month = parts[1].padStart(2, "0");
-                                            const day = parts[2].padStart(2, "0");
-                                            return `${month}/${day}`;
-                                        }
-                                        return "-";
-                                    })() : "-"
-                                }
-                            </td>
-                        </tr>
+                    const profileNum = u.profileImg || 1;
+                    const profileSrc = `../image/profile${profileNum}.jpg`;
+
+                    $wrap.append(`
+                        <div class="user-card ${bgClass}"
+                            data-nick="${u.key}"
+                            data-signup="${u.signupDate || ''}"
+                            data-lastlogin="${u.lastLogin || ''}">
+                            <img src="${profileSrc}" alt=""  class="user-profile">
+                            <div class="user-info">
+                                <div class="user-top">
+                                    <span>Lv ${u.level || "-"}</span>
+                                    <span class="user-nick ${u.rankingPublic ? 'rank-public' : ''}">
+                                        ${u.key}
+                                    </span>
+                                </div>
+
+                                <div class="user-meta">
+                                    <span>경험치 : ${u.avgExp ? Math.floor(u.avgExp / 10000) + "만" : "-"}</span>
+                                    <span>기록 : ${lastDateStr ? lastDateStr.slice(5).replace("-", "/") : "-"}</span><br>
+                                    <span>가입 : ${signupDateOnly}</span>
+                                    <span>접속 : ${formatLastLogin(u.lastLogin)}</span>
+                                </div>
+                            </div>
+                        </div>
                     `);
                 });
             }
@@ -427,7 +499,7 @@
                 const bTime = parseDate(b.lastLogin);
                 return bTime - aTime; // ✅ 최신 로그인순 (최근이 위로)
             });
-            renderTable(users);
+            renderList(users);
 
             // ✅ 정렬 셀렉트도 D-day로 초기값 맞추기
             $("#sortSelect").val("lastlogin");
@@ -444,7 +516,7 @@
                     const filtered = users.filter(u =>
                         u.key.toLowerCase().includes(keyword)
                     );
-                    renderTable(filtered);
+                    renderList(filtered);
                 }, 300);
             });
 
@@ -519,7 +591,7 @@
                     });
                 }
 
-                renderTable(sorted);
+                renderList(sorted);
             });
 
             // ======================
@@ -528,13 +600,19 @@
             let selectedNick = "";
             let selectedDate = "";
             let selectedLastLogin = "";
-            $(document).on("click", "#userTable tbody tr", function () {
-                selectedNick = $(this).data("nick");
-                selectedDate = $(this).data("date");
-                selectedLastLogin = $(this).data("lastlogin");
-                $("#modalNickname").text(`${selectedNick}`);
-                $("#modalSignupDate").text(`생성일 : ${selectedDate}`);
-                $("#modalLastLogin").text(`로그인 : ${selectedLastLogin}`);
+            $(document).on("click", ".user-card", function () {
+                const nick = $(this).data("nick");
+                const signup = $(this).data("signup");
+                const lastLogin = $(this).data("lastlogin");
+
+                selectedNick = nick;
+                selectedDate = signup;
+                selectedLastLogin = lastLogin;
+
+                $("#modalNickname").text(nick);
+                $("#modalSignupDate").text(`가입일 : ${signup || "-"}`);
+                $("#modalLastLogin").text(`접속 : ${lastLogin || "-"}`);
+
                 $("#userModal").css("display", "flex").hide().fadeIn(200);
             });
 
@@ -554,8 +632,9 @@
                     await remove(ref(db, `coffeeMemory/${selectedNick}`));
                     alert("삭제되었습니다.");
                     $("#userModal").fadeOut(200);
-                    // 테이블에서 즉시 제거
-                    $(`#userTable tr[data-nick="${selectedNick}"]`).remove();
+
+                    users = users.filter(u => u.key !== selectedNick);
+                    renderList(users);
                 } catch (e) {
                     alert("삭제 중 오류가 발생했습니다.");
                     console.error(e);
@@ -567,6 +646,10 @@
                 if (e.target.id === "userModal" || $(this).hasClass("close-btn")) {
                     $("#userModal").fadeOut(200);
                 }
+            });
+
+            $(".move-btn, .delete-btn, .close-btn").on("click", function (e) {
+                e.stopPropagation();
             });
 
             // 뒤로가기
