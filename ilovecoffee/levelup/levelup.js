@@ -4,6 +4,8 @@ import {get, getDatabase, ref, remove, set} from "https://www.gstatic.com/fireba
 // ✅ 공통 유틸 모듈
 import {calcAvgExp} from "../common/expUtils.js";
 import {levelExp} from "../common/levelExp.js";
+import { PROFILE_GROUPS } from "../common/profileData.js";
+import {getSafeProfileById} from "../common/profileUtils.js";
 import {
     bindNumericCommaFormatter,
     closeAlert,
@@ -199,6 +201,7 @@ $(document).on("click", "#subLoginBtn", async function () {
             id: newId,
             password,
             signupDate: getKoreanTimestamp(),
+            lastLogin: getKoreanTimestamp(),
         });
 
         // 카운터 증가
@@ -556,6 +559,7 @@ $(function () {
                 id: newId,
                 password,
                 signupDate: getKoreanTimestamp(),   // 가입일 저장
+                lastLogin: getKoreanTimestamp(),
             });
 
             // 카운터 증가
@@ -737,8 +741,9 @@ $(function () {
                 return;
             } else {
                 // ✅ 프로필 이미지 표시 (닉네임 앞)
-                profileNum = userData.profileImg || profileNum;
-                const profileSrc = `../image/profile${profileNum}.jpg`;
+                profileNum = Number(userData.profileImg) || 1;
+                const profile = getSafeProfileById(profileNum);
+                const profileSrc = profile.src;
 
                 // 프로필 이미지가 이미 있으면 갱신, 없으면 추가
                 if ($("#nicknameDisplay").prev(".profile-img").length > 0) {
@@ -1803,59 +1808,6 @@ const UNLOCK_PER_RECORDS = 7; // 프로필 해금 비율 (예: 기록 n개당 1�
 const UNLOCK_PER_RECORDS2 = UNLOCK_PER_RECORDS * 2; // 프로필 해금 비율 (예: 기록 n개당 1개 해금)
 const UNLOCK_OFFSET = 1 // 유저 약속 보정
 
-// ✅ 프로필 변경 기능
-const profileList = [
-    {id: 1, name: "전교1등", src: "../image/profile1.jpg"},
-    {id: 2, name: "샘일병", src: "../image/profile2.jpg"},
-    {id: 3, name: "웹툰작가", src: "../image/profile3.jpg"},
-    {id: 4, name: "아이돌스타", src: "../image/profile4.jpg"},
-    {id: 5, name: "보드매니아", src: "../image/profile5.jpg"},
-    {id: 6, name: "미스왕", src: "../image/profile6.jpg"},
-    {id: 7, name: "캐치미이프유캔", src: "../image/profile7.jpg"},
-    {id: 8, name: "외계소녀", src: "../image/profile8.jpg"},
-    {id: 9, name: "미스테리마법사", src: "../image/profile9.jpg"},
-    {id: 10, name: "홍대소녀", src: "../image/profile10.jpg"},
-    {id: 11, name: "집사 루이", src: "../image/profile11.jpg"},
-    {id: 12, name: "아가씨", src: "../image/profile12.jpg"},
-    {id: 13, name: "땡땡이알바", src: "../image/profile13.jpg"},
-    {id: 14, name: "소공녀", src: "../image/profile14.jpg"},
-    {id: 15, name: "엄친아", src: "../image/profile15.jpg"},
-    {id: 16, name: "포카리걸", src: "../image/profile16.jpg"},
-    {id: 17, name: "가브리엘", src: "../image/profile17.jpg"},
-    {id: 18, name: "제이", src: "../image/profile18.jpg"},
-    {id: 19, name: "케이트", src: "../image/profile19.jpg"},
-];
-
-const profileList2 = [
-    {id: 101, name: "순수남", src: "../image/profile101.jpg"},
-    {id: 102, name: "순수녀", src: "../image/profile102.jpg"},
-    {id: 103, name: "차도남", src: "../image/profile103.jpg"},
-    {id: 104, name: "차도녀", src: "../image/profile104.jpg"},
-    {id: 105, name: "졸린남", src: "../image/profile105.jpg"},
-    {id: 106, name: "졸린녀", src: "../image/profile106.jpg"},
-    {id: 107, name: "중년남", src: "../image/profile107.jpg"},
-    {id: 108, name: "중년녀", src: "../image/profile108.jpg"},
-    {id: 109, name: "외국남", src: "../image/profile109.jpg"},
-    {id: 110, name: "외국녀", src: "../image/profile110.jpg"},
-    {id: 111, name: "부자남", src: "../image/profile111.jpg"},
-    {id: 112, name: "부자녀", src: "../image/profile112.jpg"},
-    {id: 113, name: "바리스타남", src: "../image/profile113.jpg"},
-    {id: 114, name: "바리스타녀", src: "../image/profile114.jpg"},
-];
-
-const profileList3 = [
-    // {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
-    {id: 91, name: "???", src: "../image/profile90.jpg"},
-    {id: 92, name: "???", src: "../image/profile90.jpg"},
-    {id: 93, name: "???", src: "../image/profile90.jpg"},
-    {id: 94, name: "???", src: "../image/profile90.jpg"},
-    {id: 95, name: "???", src: "../image/profile90.jpg"},
-    {id: 96, name: "???", src: "../image/profile90.jpg"},
-    {id: 97, name: "???", src: "../image/profile90.jpg"},
-    {id: 98, name: "???", src: "../image/profile90.jpg"},
-    {id: 99, name: "이치", src: "../image/profile99.jpg"},
-];
-
 function renderProfileList(list, type, unlockLimit, progressValue) {
     const $container = $("#profileImageContainer");
     $container.empty();
@@ -1894,9 +1846,10 @@ function renderProfileList(list, type, unlockLimit, progressValue) {
                 `⭐ 출석 1등을 10회 이상 달성하면 해금됩니다!`;
         }
 
+        const safe = getSafeProfileById(p.id);
         const img = $(`
             <div style="position:relative;">
-                <img src="${p.src}" alt="${p.name}">
+                <img src="${safe.src}" alt="${safe.name}">
                 ${isLocked ? `<div class="lock-overlay">🔒</div>` : ""}
             </div>
         `);
@@ -1907,7 +1860,7 @@ function renderProfileList(list, type, unlockLimit, progressValue) {
             borderRadius: "50%",
             objectFit: "cover",
             cursor: isLocked ? "not-allowed" : "pointer",
-            border: p.id === profileNum ? "3px solid #5a4398" : "2px solid #ddd",
+            border: Number(p.id) === Number(profileNum) ? "3px solid #5a4398" : "2px solid #ddd",
             filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
         });
 
@@ -1915,8 +1868,9 @@ function renderProfileList(list, type, unlockLimit, progressValue) {
             img.on("click", () => {
                 $("#profileImageContainer img").css("border", "2px solid #ddd");
                 img.find("img").css("border", "3px solid #5a4398");
-                $("#currentProfileImg").attr("src", p.src);
-                $("#currentProfileName").text(p.name);
+                const safe = getSafeProfileById(p.id);
+                $("#currentProfileImg").attr("src", safe.src);
+                $("#currentProfileName").text(safe.name);
                 $("#applyProfileBtn").data("selected", p.id);
             });
         } else {
@@ -1934,28 +1888,23 @@ $(document).on("click", ".profile-tab", function () {
     const tab = $(this).data("tab");
 
     if (tab === "favorite") {
-        renderProfileList(profileList, "favorite", favoriteUnlockLimit, favoriteProgress);
+        renderProfileList(PROFILE_GROUPS.favorite, "favorite", favoriteUnlockLimit, favoriteProgress);
     }
 
     if (tab === "normal") {
-        renderProfileList(profileList2, "normal", normalUnlockLimit, signupDays);
+        renderProfileList(PROFILE_GROUPS.normal, "normal", normalUnlockLimit, signupDays);
     }
 
     if (tab === "rank") {
-        renderProfileList(profileList3, "rank", 0, 0);
+        renderProfileList(PROFILE_GROUPS.rank, "rank", 0, 0);
     }
 });
 
 // ✅ 닉네임 앞의 프로필 클릭 시 모달 열기
-$(document).on("click", ".profile-img", async function () {
+$(document) .off("click", ".profile-img") .on("click", ".profile-img", async function () {
     // 현재 프로필 표시
-    const currentNum = profileNum || 1;
-    const allProfiles = [...profileList, ...profileList2, ...profileList3];
-    const current = allProfiles.find(p => p.id === currentNum) || {
-        id: 1,
-        name: "기본 프로필",
-        src: "../image/profile1.jpg"
-    };
+    const current = getSafeProfileById(profileNum);
+
     $("#currentProfileImg").attr("src", current.src);
     $("#currentProfileName").text(current.name);
 
@@ -1982,8 +1931,8 @@ $("#applyProfileBtn").on("click", async function () {
 
         // 즉시 반영
         profileNum = selected;
-        const newSrc = `../image/profile${selected}.jpg`;
-        $(".profile-img").attr("src", newSrc);
+        const profile = getSafeProfileById(selected);
+        $(".profile-img").attr("src", profile.src);
     } catch (err) {
         console.error("프로필 변경 오류:", err);
         showAlert("프로필 변경 중 오류가 발생했습니다.");
