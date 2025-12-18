@@ -80,7 +80,7 @@
             justify-content: space-between;
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 10px 14px;
             border: 1px solid #e2dff7;
             transition: 0.2s ease;
@@ -127,7 +127,7 @@
 
         #searchInput:focus {
             border-color: #5a4398;
-            box-shadow: 0 0 0 2px rgba(90,67,152,0.15);
+            box-shadow: 0 0 0 2px rgba(90, 67, 152, 0.15);
         }
 
         /* ✅ 즐겨찾기 목록 */
@@ -135,7 +135,7 @@
             margin: 10px 20px;
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 10px;
             display: none;
         }
@@ -171,7 +171,7 @@
             margin: 10px 20px;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
@@ -184,7 +184,9 @@
             cursor: pointer;
         }
 
-        .coffee-item:last-child { border-bottom: none; }
+        .coffee-item:last-child {
+            border-bottom: none;
+        }
 
         .star {
             font-size: 18px;
@@ -204,7 +206,7 @@
             margin: 10px 20px;
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 15px 20px 5px 20px;
             display: none;
         }
@@ -245,35 +247,40 @@
         }
 
         /* 표 영역 */
-        #coffeeTable {
+        #coffeeTable,
+        #subTable {
             width: calc(100% - 40px);
             margin: 10px 20px;
             border-collapse: collapse;
             background: #fff;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        #coffeeTable th, #coffeeTable td {
+        #coffeeTable th, #coffeeTable td,
+        #subTable th, #subTable td {
             border: 1px solid #e0dff2;
             padding: 4px;
             text-align: center;
             font-size: 10px;
         }
 
-        #coffeeTable th {
+        #coffeeTable th,
+        #subTable th {
             background: #f6f4fc;
             color: #5a4398;
             font-weight: 600;
         }
 
         /* 교차 배경색 (줄무늬 효과) */
-        #coffeeTable tbody tr:nth-child(odd) {
+        #coffeeTable tbody tr:nth-child(odd),
+        #subTable tbody tr:nth-child(odd) {
             background-color: #ffffff; /* 흰색 */
         }
 
-        #coffeeTable tbody tr:nth-child(even) {
+        #coffeeTable tbody tr:nth-child(even),
+        #subTable tbody tr:nth-child(even) {
             background-color: #faf9ff; /* 아주 옅은 보라빛 */
         }
 
@@ -284,8 +291,33 @@
             margin-top: 20px;
             display: none;
         }
+
+        /* ===== 서브페이지 컨트롤 ===== */
+        .sub-control-bar {
+            margin: 0 20px;
+        }
+
+        #sortSelect {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            font-weight: 600;
+            background: #fff;
+            color: #333;
+            transition: 0.2s;
+        }
+
+        #sortSelect:focus {
+            border-color: #5a4398;
+            box-shadow: 0 0 0 2px rgba(90, 67, 152, 0.15);
+            outline: none;
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
+    <link rel="stylesheet" href="../modules/menuToggle.css"/>
 </head>
 <body>
 
@@ -313,31 +345,57 @@
     </div>
 </div>
 
-<!-- ✅ 즐겨찾기 목록 -->
-<div id="favoriteList">
-    <h3>즐겨찾기</h3>
-    <div id="favoriteItems"></div>
+<div class="mainPage">
+    <!-- ✅ 즐겨찾기 목록 -->
+    <div id="favoriteList">
+        <h3>즐겨찾기</h3>
+        <div id="favoriteItems"></div>
+    </div>
+
+    <div id="resultList" class="coffee-list">
+        <div style='padding:10px; color:#999;'>빠진 커피가 있다면 문의 부탁드립니다.</div>
+    </div>
+
+    <!-- ✅ 커피 정보 카드 -->
+    <div id="coffeeInfo"></div>
+
+    <table id="coffeeTable" style="display:none;">
+        <thead>
+        <tr>
+            <th>갯수</th>
+            <th>소요시간</th>
+            <th>원두<br>소모량</th>
+            <th>획득<br>경험치</th>
+            <th>획득<br>골드</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
-<div id="resultList" class="coffee-list">
-    <div style='padding:10px; color:#999;'>빠진 커피가 있다면 문의 부탁드립니다.</div>
+<div class="subPage" style="display:none;">
+    <div class="sub-control-bar">
+        <select id="sortSelect">
+            <option value="expPerTime">시간 대비 경험치 효율</option>
+            <option value="goldPerTime">시간 대비 골드 효율</option>
+            <option value="expPerBean">원두 대비 경험치 효율</option>
+            <option value="goldPerBean">원두 대비 골드 효율</option>
+            <option value="masterPerTime">시간 대비 마레 효율</option>
+            <option value="masterBase">마레 경험치 획득량</option>
+        </select>
+    </div>
+
+    <table id="subTable">
+        <thead>
+        <tr id="subHeaderRow">
+            <th>순서</th>
+            <th>이름</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
-<!-- ✅ 커피 정보 카드 -->
-<div id="coffeeInfo"></div>
-
-<table id="coffeeTable" style="display:none;">
-    <thead>
-    <tr>
-        <th>갯수</th>
-        <th>소요시간</th>
-        <th>원두<br>소모량</th>
-        <th>획득<br>경험치</th>
-        <th>획득<br>골드</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
 
 <div id="loading">불러오는 중...</div>
 
@@ -405,8 +463,8 @@
 </div>
 
 <script type="module">
-    import { menuData } from "../common/menuData.js";
-    import { goToPage } from "../common/utils.js";
+    import {menuData} from "../common/menuData.js";
+    import {goToPage} from "../common/utils.js";
 
     const STORAGE_KEYS = {
         SPEED: "coffeeSpeed",
@@ -427,10 +485,11 @@
 
     const MAX_SPEED = 10000;
     const MAX_COUNT = 25;
+    const TIME = 3600;
 
     // ✅ 판매속도 / 머신수량 복원
-    let savedSpeed = parseInt(localStorage.getItem(STORAGE_KEYS.SPEED)) || "";
-    let savedCount = parseInt(localStorage.getItem(STORAGE_KEYS.COUNT)) || "";
+    let savedSpeed = parseInt(localStorage.getItem(STORAGE_KEYS.SPEED)) || "1800";
+    let savedCount = parseInt(localStorage.getItem(STORAGE_KEYS.COUNT)) || "4";
 
     if (savedSpeed > MAX_SPEED) {
         savedSpeed = MAX_SPEED;
@@ -465,7 +524,15 @@
 
     $searchInput.on("input", () => {
         const keyword = $searchInput.val().trim();
-        renderCoffeeList(keyword);
+        const mode = localStorage.getItem("coffeeBarista-mode") || "normal";
+
+        if (mode === "filter") {
+            // ✅ 서브페이지일 때
+            renderSubTable();
+        } else {
+            // ✅ 메인페이지일 때
+            renderCoffeeList(keyword);
+        }
     });
 
     function updateAndRefresh() {
@@ -610,7 +677,7 @@
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
             const seconds = Math.floor(totalSeconds % 60);
-            const timeStr = `${hours}시간 ${String(minutes).padStart(2,"0")}분 ${String(seconds).padStart(2,"0")}초`;
+            const timeStr = `${hours}시간 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초`;
 
             const beanUse = (coffee.bean * i).toLocaleString();
             const expGain = (coffee.exp * i).toLocaleString();
@@ -687,7 +754,167 @@
         });
         $favoriteList.show();
     }
+
+    const viewConfigMap = {
+        expPerTime: {
+            headers: ["시간 대비 경험치", "시간 대비 골드"],
+            keys: ["expPerTime", "goldPerTime"],
+            sort: ["expPerTime", "goldPerTime"]
+        },
+        goldPerTime: {
+            headers: ["시간 대비 골드", "시간 대비 경험치"],
+            keys: ["goldPerTime", "expPerTime"],
+            sort: ["goldPerTime", "expPerTime"]
+        },
+        expPerBean: {
+            headers: ["원두 대비 경험치", "원두 대비 골드"],
+            keys: ["expPerBean", "goldPerBean"],
+            sort: ["expPerBean", "goldPerBean"]
+        },
+        goldPerBean: {
+            headers: ["원두 대비 골드", "원두 대비 경험치"],
+            keys: ["goldPerBean", "expPerBean"],
+            sort: ["goldPerBean", "expPerBean"]
+        },
+        masterPerTime: {
+            headers: ["시간 대비 마레", "마레 획득량"],
+            keys: ["masterPerTime", "masterBase"],
+            sort: ["masterPerTime", "masterBase"]
+        },
+        masterBase: {
+            headers: ["마레 획득량", "시간 대비 마레"],
+            keys: ["masterBase", "masterPerTime"],
+            sort: ["masterBase", "masterPerTime"]
+        }
+    };
+
+    // ✅ 알림 모달 닫기 버튼
+    $(document).on("click", ".baristaModeBtn", function () {
+        const $area = $(".floating-btn-area");
+        const $toggle = $(".floating-toggle");
+        $area.addClass("collapsed");
+        $toggle.show();
+        $toggle.text("▲");
+        toggleMode();
+    });
+
+    function toggleMode() {
+        const current = localStorage.getItem("coffeeBarista-mode") || "normal";
+        const next = current === "filter" ? "normal" : "filter";
+
+        localStorage.setItem("coffeeBarista-mode", next);
+        console.log(`next : ${next}`);
+        applySavedMode();
+    }
+
+    function applySavedMode() {
+        const savedMode = localStorage.getItem("coffeeBarista-mode") || "normal";
+        console.log(`savedMode : ${savedMode}`);
+
+        if (savedMode === "filter") {
+            $(".mainPage").hide();
+            $(".subPage").show();
+            renderSubTable();
+            $(".baristaModeBtn").text("일반모드");
+        } else {
+            $(".mainPage").show();
+            $(".subPage").hide();
+            $(".baristaModeBtn").text("필터모드");
+        }
+    }
+
+    function calcEfficiency(menu) {
+        const { gold, count, exp, bean } = menu;
+
+        return {
+            goldPerBean: ((gold * count) / bean) * 100,
+            expPerBean: (exp / bean) * 100,
+            goldPerTime: gold / (TIME / savedSpeed),
+            expPerTime: (exp * (savedSpeed / count)) / TIME,
+            masterPerTime: (bean * 0.03) * (savedSpeed / count) / TIME,
+            masterBase: bean * 0.03
+        };
+    }
+
+    const $subBody = $("#subTable tbody");
+    const $sortSelect = $("#sortSelect");
+    $sortSelect.on("change", renderSubTable);
+
+    function renderSubTable() {
+        const keyword = $searchInput.val()?.toLowerCase() || "";
+        const selectKey = $sortSelect.val();
+        const config = viewConfigMap[selectKey];
+
+        // ✅ 헤더 재구성
+        const $headerRow = $("#subHeaderRow");
+        $headerRow.find("th:gt(1)").remove();
+
+        config.headers.forEach(h => {
+            $headerRow.append(`<th>${h}</th>`);
+        });
+
+        // ✅ 1. 전체 데이터 정렬 먼저
+        const sortedAll = menuData
+            .map(m => ({ ...m, e: calcEfficiency(m) }))
+            .sort((a, b) => {
+                for (const key of config.sort) {
+                    if (b.e[key] !== a.e[key]) {
+                        return b.e[key] - a.e[key];
+                    }
+                }
+                return 0;
+            })
+            // ✅ 원래 순번 부여
+            .map((m, index) => ({
+                ...m,
+                originIndex: index + 1
+            }));
+
+        // ✅ 2. 검색은 필터만
+        const filtered = sortedAll.filter(m =>
+            m.name.toLowerCase().includes(keyword)
+        );
+
+        $subBody.empty();
+
+        filtered.forEach(m => {
+            let valueCells = "";
+
+            config.keys.forEach(k => {
+                valueCells += `<td>${m.e[k].toFixed(2)}</td>`;
+            });
+
+            $subBody.append(`
+            <tr>
+                <td>${m.originIndex}</td>
+                <td>${m.name}</td>
+                ${valueCells}
+            </tr>
+        `);
+        });
+    }
+
+    function waitForBaristaToggleBtn() {
+        const observer = new MutationObserver(() => {
+            const $btn = $(".baristaModeBtn");
+            if ($btn.length) {
+                applySavedMode();   // ✅ 버튼 생성 후 실행
+                observer.disconnect(); // ✅ 한 번만 실행
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // ✅ DOM 준비되면 감시 시작
+    $(document).ready(() => {
+        waitForBaristaToggleBtn();
+    });
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
+<script src="../modules/menuToggle.js" type="module" defer></script>
 </body>
 </html>
