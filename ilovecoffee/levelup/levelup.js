@@ -1,5 +1,5 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import {get, getDatabase, ref, remove, set} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import {get, getDatabase, ref, remove, set, runTransaction} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // ✅ 공통 유틸 모듈
 import {calcAvgExp} from "../common/expUtils.js";
@@ -2131,49 +2131,55 @@ async function checkDailyAttendance(nickname) {
         return;
     }
 
-    // 🔥 여기까지 왔으면 오늘 첫 로그인 → 출석 처리해야 함
-    // 1) 오늘 출석 카운터 증가
+    // ============================
+    // ✅ (1) 출석 순위 transaction
+    // ============================
     const counterRef = ref(db, `coffeeCounters/dailyRank/${today}`);
-    const counterSnap = await get(counterRef);
-    let newRank = 1;
 
-    if (counterSnap.exists()) {
-        newRank = counterSnap.val() + 1;
+    const txResult = await runTransaction(counterRef, (current) => {
+        return (current || 0) + 1;
+    });
+
+    // 트랜잭션 실패 시 중단
+    if (!txResult.committed) {
+        console.error("❌ 출석 트랜잭션 실패");
+        return;
     }
-    await set(counterRef, newRank);
 
-    // 2) 유저 ID 가져오기
-    const userId = user.id;
+    const newRank = txResult.snapshot.val(); // ✅ 확정된 등수
 
-    // 3) 출석 시간 생성
+    // ============================
+    // ✅ (2) 출석 시간 기록
+    // ============================
     const kst = new Date();
     const hh = String(kst.getHours()).padStart(2, "0");
     const mm = String(kst.getMinutes()).padStart(2, "0");
     const attendTime = `${hh}:${mm}`;
 
-    // 4) 출석 랭킹 저장
-    await set(ref(db, `coffeeDailyRank/${today}/${newRank}`), {
-        [userId]: attendTime
-    });
+    const userId = user.id;
 
-    // 5) 내 등수 저장
+    // 출석 랭킹 저장
+    await set(ref(db, `coffeeDailyRank/${today}/${newRank}/${userId}`), attendTime);
+
+
+    // 유저 개인 출석 등수 저장
     await set(ref(db, `coffeeUsers/${nickname}/dailyRank`), newRank);
-    console.log(`🎉 출석 처리 완료 → ${nickname} / 등수: ${newRank}`);
 
-    // 🔥 6) 1등이면 누적 1등 횟수 증가
+    console.log(`🎉 출석 완료 → ${nickname} / ${newRank}등`);
+
+    // ============================
+    // ✅ (3) 1등 처리 (중복 방지)
+    // ============================
     if (newRank === 1) {
-        const totalRef = ref(db, `coffeeStats/firstRankTotal/${userId}`);
-        const totalSnap = await get(totalRef);
+        const firstRankRef = ref(db, `coffeeStats/firstRankTotal/${userId}`);
 
-        const nextCount = totalSnap.exists()
-            ? totalSnap.val() + 1
-            : 1;
+        await runTransaction(firstRankRef, (current) => {
+            return (current || 0) + 1;
+        });
 
-        await set(totalRef, nextCount);
-
-
-        // 7) 1등 10회 달성권한 부여 (누적 기준)
-        if (nextCount >= 10) {
+        // 1등 10회 달성권한 부여 (누적 기준)
+        const totalSnap = await get(firstRankRef);
+        if (totalSnap.exists() && totalSnap.val() >= 10) {
             await set(ref(db, `coffeeUsers/${nickname}/isFirst10`), true);
         }
     }
