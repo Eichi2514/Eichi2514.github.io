@@ -94,10 +94,10 @@
             flex-shrink: 0;
         }
 
-        .input-group input {
+        .input-group input,
+        .input-group select {
             border: none;
             outline: none;
-            text-align: center;
             width: 50%;
             padding: 6px 8px;
             border-radius: 6px;
@@ -107,10 +107,15 @@
             font-size: 16px;
         }
 
-        .input-group input:focus {
-            background: #fff;
-            border: 1px solid #5a4398;
-            box-shadow: 0 0 0 2px rgba(90, 67, 152, 0.15);
+        .input-group input {
+            text-align: center;
+        }
+
+        .input-group select option {
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: unset;
+            min-width: max-content;
         }
 
         /* 검색 input */
@@ -128,6 +133,33 @@
         #searchInput:focus {
             border-color: #5a4398;
             box-shadow: 0 0 0 2px rgba(90, 67, 152, 0.15);
+        }
+
+        #buffInfo {
+            background:#fff;
+            border:1px solid #e2dff7;
+            border-radius:10px;
+            padding:10px 14px;
+        }
+
+        #buffInfo h3 {
+            margin: 0 0 8px;
+            color: #5a4398;
+            font-size: 14px;
+        }
+
+        #buffList {
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 12px;
+            gap: 4px;
+        }
+
+        .buff-pill {
+            background: #5a4398;
+            color: #fff;
+            border-radius: 10px;
+            padding: 8px 12px;
         }
 
         /* ✅ 즐겨찾기 목록 */
@@ -315,6 +347,15 @@
             outline: none;
         }
 
+        .sub-star {
+            color: #c8b9e8;
+            cursor: pointer;
+        }
+
+        .sub-star.active {
+            color: #ffd84d;
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -332,26 +373,108 @@
 <div id="controlBar">
     <div class="input-groups">
         <div class="input-group">
-            <span>커피판매</span>
-            <input type="number" id="speedInput" placeholder="속도" min="1" max="10000">
+            <span>커피마레</span>
+            <select id="levelSelect" class="level-select">
+                <option value="0">선택</option>
+
+                <optgroup label="루키">
+                    <option value="1">루키 1</option>
+                    <option value="2">루키 2</option>
+                    <option value="3">루키 3</option>
+                    <option value="4">루키 4</option>
+                    <option value="5">루키 5</option>
+                    <option value="6">루키 6</option>
+                    <option value="7">루키 7</option>
+                    <option value="8">루키 8</option>
+                    <option value="9">루키 9</option>
+                </optgroup>
+
+                <optgroup label="아마추어">
+                    <option value="10">아마추어 1</option>
+                    <option value="11">아마추어 2</option>
+                    <option value="12">아마추어 3</option>
+                    <option value="13">아마추어 4</option>
+                    <option value="14">아마추어 5</option>
+                    <option value="15">아마추어 6</option>
+                    <option value="16">아마추어 7</option>
+                    <option value="17">아마추어 8</option>
+                    <option value="18">아마추어 9</option>
+                </optgroup>
+
+                <optgroup label="프로">
+                    <option value="19">프로 1</option>
+                    <option value="20">프로 2</option>
+                    <option value="21">프로 3</option>
+                    <option value="22">프로 4</option>
+                    <option value="23">프로 5</option>
+                    <option value="24">프로 6</option>
+                    <option value="25">프로 7</option>
+                    <option value="26">프로 8</option>
+                    <option value="27">프로 9</option>
+                </optgroup>
+
+                <optgroup label="스페셜">
+                    <option value="28">스페셜 1</option>
+                    <option value="29">스페셜 2</option>
+                    <option value="30">스페셜 3</option>
+                    <option value="31">스페셜 4</option>
+                    <option value="32">스페셜 5</option>
+                    <option value="33">스페셜 6</option>
+                    <option value="34">스페셜 7</option>
+                    <option value="35">스페셜 8</option>
+                    <option value="36">스페셜 9</option>
+                </optgroup>
+
+                <optgroup label="월드 베스트">
+                    <option value="37">월베 1</option>
+                    <option value="38">월베 2</option>
+                    <option value="39">월베 3</option>
+                    <option value="40">월베 4</option>
+                    <option value="41">월베 5</option>
+                    <option value="42">월베 6</option>
+                    <option value="43">월베 7</option>
+                    <option value="44">월베 8</option>
+                    <option value="45">월베 9</option>
+                </optgroup>
+
+                <optgroup label="마스터">
+                    <option value="46">마스터 1</option>
+                    <option value="47">마스터 2</option>
+                    <option value="48">마스터 3</option>
+                    <option value="49">마스터 4</option>
+                    <option value="50">마스터 5</option>
+                    <option value="51">마스터 6</option>
+                    <option value="52">마스터 7</option>
+                    <option value="53">마스터 8</option>
+                    <option value="54">마스터 9</option>
+                </optgroup>
+
+                <optgroup label="그랜드 마스터">
+                    <option value="55">그마</option>
+                </optgroup>
+            </select>
         </div>
         <div class="input-group">
             <span>커피머신</span>
             <input type="number" id="countInput" placeholder="수량" min="1" max="25">
         </div>
     </div>
+    <div id="buffInfo">
+        <h3>적용버프</h3>
+        <div id="buffList"></div>
+    </div>
     <div>
         <input type="text" id="searchInput" placeholder="커피 이름 검색">
     </div>
 </div>
 
-<div class="mainPage">
+
     <!-- ✅ 즐겨찾기 목록 -->
     <div id="favoriteList">
         <h3>즐겨찾기</h3>
         <div id="favoriteItems"></div>
     </div>
-
+<div class="mainPage">
     <div id="resultList" class="coffee-list">
         <div style='padding:10px; color:#999;'>빠진 커피가 있다면 문의 부탁드립니다.</div>
     </div>
@@ -388,8 +511,10 @@
     <table id="subTable">
         <thead>
         <tr id="subHeaderRow">
+            <th>★</th>
             <th>순서</th>
             <th>이름</th>
+            <th>판매시간</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -466,6 +591,78 @@
     import {menuData} from "../common/menuData.js";
     import {goToPage} from "../common/utils.js";
 
+    const LEVEL_RESULT = [
+        /* 0 */  { speed:1800, ice:0, hot:0, latte:0, blended:0, tea:0 },
+
+        /* 루키 */
+        /* 1 */  { speed:1800, ice:0, hot:0, latte:0, blended:0, tea:0 },
+        /* 2 */  { speed:1800, ice:0, hot:0, latte:0, blended:0, tea:0 },
+        /* 3 */  { speed:1872, ice:0, hot:0, latte:0, blended:0, tea:0 },
+        /* 4 */  { speed:1872, ice:0, hot:0, latte:0, blended:0, tea:0 },
+        /* 5 */  { speed:1872, ice:0, hot:0, latte:0, blended:0, tea:0 },
+        /* 6 */  { speed:1872, ice:0, hot:15, latte:0, blended:0, tea:0 },
+        /* 7 */  { speed:1872, ice:0, hot:15, latte:0, blended:0, tea:0 },
+        /* 8 */  { speed:1944, ice:0, hot:15, latte:0, blended:0, tea:0 },
+        /* 9 */  { speed:1944, ice:0, hot:15, latte:15, blended:0, tea:0 },
+
+        /* 아마추어 */
+        /* 10 */ { speed:1944, ice:15, hot:15, latte:15, blended:0, tea:0 },
+        /* 11 */ { speed:1944, ice:15, hot:15, latte:15, blended:0, tea:0 },
+        /* 12 */ { speed:2070, ice:15, hot:15, latte:15, blended:0, tea:0 },
+        /* 13 */ { speed:2070, ice:15, hot:15, latte:15, blended:15, tea:0 },
+        /* 14 */ { speed:2070, ice:15, hot:15, latte:15, blended:15, tea:0 },
+        /* 15 */ { speed:2070, ice:15, hot:15, latte:15, blended:15, tea:15 },
+        /* 16 */ { speed:2070, ice:15, hot:15, latte:15, blended:15, tea:15 },
+        /* 17 */ { speed:2070, ice:15, hot:15, latte:15, blended:15, tea:15 },
+        /* 18 */ { speed:2196, ice:15, hot:30, latte:15, blended:15, tea:15 },
+
+        /* 프로 */
+        /* 19 */ { speed:2196, ice:15, hot:30, latte:15, blended:15, tea:15 },
+        /* 20 */ { speed:2340, ice:15, hot:30, latte:15, blended:15, tea:15 },
+        /* 21 */ { speed:2340, ice:15, hot:30, latte:30, blended:15, tea:15 },
+        /* 22 */ { speed:2340, ice:15, hot:30, latte:30, blended:15, tea:15 },
+        /* 23 */ { speed:2340, ice:15, hot:30, latte:30, blended:30, tea:15 },
+        /* 24 */ { speed:2340, ice:15, hot:30, latte:30, blended:30, tea:15 },
+        /* 25 */ { speed:2340, ice:15, hot:30, latte:30, blended:30, tea:15 },
+        /* 26 */ { speed:2340, ice:30, hot:30, latte:30, blended:30, tea:15 },
+        /* 27 */ { speed:2340, ice:30, hot:30, latte:30, blended:30, tea:30 },
+
+        /* 스페셜 */
+        /* 28 */ { speed:2520, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 29 */ { speed:2520, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 30 */ { speed:2700, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 31 */ { speed:2700, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 32 */ { speed:2916, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 33 */ { speed:2916, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 34 */ { speed:3132, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 35 */ { speed:3132, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 36 */ { speed:3132, ice:30, hot:30, latte:30, blended:30, tea:30 },
+
+        /* 월베 */
+        /* 37 */ { speed:3132, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 38 */ { speed:3384, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 39 */ { speed:3384, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 40 */ { speed:3384, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 41 */ { speed:3384, ice:30, hot:30, latte:30, blended:30, tea:30 },
+        /* 42 */ { speed:3384, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 43 */ { speed:3384, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 44 */ { speed:3384, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 45 */ { speed:3672, ice:30, hot:30, latte:30, blended:45, tea:30 },
+
+        /* 마스터 */
+        /* 46 */ { speed:3672, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 47 */ { speed:3672, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 48 */ { speed:3672, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 49 */ { speed:3978, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 50 */ { speed:4356, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 51 */ { speed:4860, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 52 */ { speed:4860, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 53 */ { speed:4860, ice:30, hot:30, latte:30, blended:45, tea:30 },
+        /* 54 */ { speed:5436, ice:30, hot:30, latte:30, blended:45, tea:30 },
+
+        /* 55 */ { speed:5436, ice:30, hot:30, latte:30, blended:45, tea:30 }
+    ];
+
     const STORAGE_KEYS = {
         SPEED: "coffeeSpeed",
         COUNT: "coffeeMachineCount",
@@ -473,7 +670,6 @@
         FAVORITES: "favoriteCoffees"
     };
 
-    const $speedInput = $("#speedInput");
     const $countInput = $("#countInput");
     const $searchInput = $("#searchInput");
     const $resultList = $("#resultList");
@@ -483,21 +679,44 @@
     const $favoriteList = $("#favoriteList");
     const $favoriteItems = $("#favoriteItems");
 
-    const MAX_SPEED = 10000;
     const MAX_COUNT = 25;
     const TIME = 3600;
 
+    const $levelSelect = $("#levelSelect");
+
+    $levelSelect.on("change", () => {
+        const level = Number($levelSelect.val());
+        const data = LEVEL_RESULT[level];
+        if (!data) return;
+
+        savedSpeed = data.speed;
+        localStorage.setItem("coffeeBarista-level", level);
+
+        renderBuffInfo(level);
+        clearAllTables();
+
+        const mode = localStorage.getItem("coffeeBarista-mode") || "normal";
+
+        if (mode === "filter") {
+            // ✅ 서브페이지일 때
+            renderSubTable();
+        } else {
+            // ✅ 메인페이지일 때
+            const selected = getSavedCoffee();
+            if (selected) {
+                showCoffeeInfo(selected);
+                showCoffeeTable(selected);
+            }
+        }
+    });
+
     // ✅ 판매속도 / 머신수량 복원
-    let savedSpeed = parseInt(localStorage.getItem(STORAGE_KEYS.SPEED)) || "1800";
+    const savedLevel = Number(localStorage.getItem("coffeeBarista-level")) || 0;
+    $levelSelect.val(savedLevel);
+
+    let savedSpeed = LEVEL_RESULT[savedLevel].speed;
     let savedCount = parseInt(localStorage.getItem(STORAGE_KEYS.COUNT)) || "4";
 
-    if (savedSpeed > MAX_SPEED) {
-        savedSpeed = MAX_SPEED;
-        localStorage.setItem(STORAGE_KEYS.SPEED, savedSpeed);
-    } else if (savedSpeed < 0) {
-        savedSpeed = 0;
-        localStorage.setItem(STORAGE_KEYS.SPEED, savedSpeed);
-    }
     if (savedCount > MAX_COUNT) {
         savedCount = MAX_COUNT;
         localStorage.setItem(STORAGE_KEYS.COUNT, savedCount);
@@ -506,25 +725,58 @@
         localStorage.setItem(STORAGE_KEYS.COUNT, savedCount);
     }
 
-    if (savedSpeed) $speedInput.val(savedSpeed);
     if (savedCount) $countInput.val(savedCount);
 
-    const savedCoffee = getSavedCoffee();
-
-    // ✅ 세 가지 값이 모두 있을 때만 표 다시 표시
-    if (savedSpeed && savedCount && savedCoffee) {
-        showCoffeeInfo(savedCoffee);
-        showCoffeeTable(savedCoffee);
+    function clearAllTables() {
+        $("#coffeeTable tbody").empty();
+        $("#subTable tbody").empty();
     }
 
+    function formatSecondsToTime(sec) {
+        const total = Math.floor(sec);
+
+        const hours = Math.floor(total / 3600);
+        const minutes = Math.floor((total % 3600) / 60);
+        const seconds = total % 60;
+
+        if (hours > 0) {
+            return `${hours}시간 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초`;
+        }
+
+        if (minutes > 0) {
+            return `${minutes}분 ${String(seconds).padStart(2, "0")}초`;
+        }
+
+        return `${seconds}초`;
+    }
+
+    function renderBuffInfo(level) {
+        const buff = LEVEL_RESULT[level] || LEVEL_RESULT[0];
+
+        const rows = [];
+
+        // 속도는 그대로
+        rows.push(`<span class="buff-pill">속도 : ${buff.speed.toLocaleString()}</span>`);
+
+        // 나머지는 + 붙여서
+        rows.push(`<span class="buff-pill">아이스 : +${buff.ice || 0}</span>`);
+        rows.push(`<span class="buff-pill">핫 : +${buff.hot || 0}</span>`);
+        rows.push(`<span class="buff-pill">라떼 : +${buff.latte || 0}</span>`);
+        rows.push(`<span class="buff-pill">블렌디드 : +${buff.blended || 0}</span>`);
+        rows.push(`<span class="buff-pill">티 : +${buff.tea || 0}</span>`);
+
+        $("#buffList").html(rows.join(""));
+    }
+
+    renderBuffInfo(savedLevel);
     renderFavorites();
 
-    $speedInput.on("input", updateAndRefresh);
     $countInput.on("input", updateAndRefresh);
 
     $searchInput.on("input", () => {
         const keyword = $searchInput.val().trim();
         const mode = localStorage.getItem("coffeeBarista-mode") || "normal";
+        clearAllTables();
 
         if (mode === "filter") {
             // ✅ 서브페이지일 때
@@ -536,17 +788,9 @@
     });
 
     function updateAndRefresh() {
-        let speed = Number($speedInput.val()) || 0;
         let count = Number($countInput.val()) || 0;
 
         // ✅ 상한값 초과 시 자동 교정
-        if (speed > MAX_SPEED) {
-            speed = MAX_SPEED;
-            $speedInput.val(speed);
-        } else if (speed < 0) {
-            speed = 0;
-            $speedInput.val(speed);
-        }
         if (count > MAX_COUNT) {
             count = MAX_COUNT;
             $countInput.val(count);
@@ -556,11 +800,11 @@
         }
 
         // ✅ 로컬스토리지에도 정정된 값 저장
-        localStorage.setItem(STORAGE_KEYS.SPEED, speed + "");
         localStorage.setItem(STORAGE_KEYS.COUNT, count + "");
 
         const selected = getSavedCoffee();
-        if (selected) {
+        const mode = localStorage.getItem("coffeeBarista-mode") || "normal";
+        if (mode !== "filter" && selected) {
             showCoffeeInfo(selected);
             showCoffeeTable(selected);
         }
@@ -600,11 +844,11 @@
         matched.forEach(c => {
             const isFav = favorites.some(f => f.name === c.name);
             const $item = $(`
-            <div class="coffee-item">
-                <span>${c.name}</span>
-                <span class="star ${isFav ? 'active' : ''}">★</span>
-            </div>
-        `);
+                <div class="coffee-item">
+                    <span>${c.name}</span>
+                    <span class="star ${isFav ? 'active' : ''}">★</span>
+                </div>
+            `);
 
             $item.find(".star").on("click", (e) => {
                 e.stopPropagation();
@@ -618,23 +862,27 @@
     }
 
     function selectCoffee(coffee) {
-        localStorage.setItem(STORAGE_KEYS.SELECTED_COFFEE, JSON.stringify(coffee));
+        const normalized = normalizeCoffee(coffee);
+        localStorage.setItem(STORAGE_KEYS.SELECTED_COFFEE, JSON.stringify(normalized));
         $searchInput.val("");
         $resultList.empty().hide();
-        showCoffeeInfo(coffee);
-        showCoffeeTable(coffee);
+        showCoffeeInfo(normalized);
+        showCoffeeTable(normalized);
         renderFavorites();
     }
 
     function getSavedCoffee() {
         const data = localStorage.getItem(STORAGE_KEYS.SELECTED_COFFEE);
-        return data ? JSON.parse(data) : null;
+        if (!data) return null;
+
+        return normalizeCoffee(JSON.parse(data));
     }
 
     // ✅ 커피 정보 표시
     function showCoffeeInfo(coffee) {
         $resultList.hide();
 
+        const buffedExp = getBuffedExp(coffee);
         const isFav = getFavorites().some(f => f.name === coffee.name);
         $coffeeInfo.show().html(`
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -646,7 +894,7 @@
             </div>
             <p>
                 <span class="coffee-stat">원두 : ${coffee.bean.toLocaleString()}</span>
-                <span class="coffee-stat">경험치 : ${coffee.exp.toLocaleString()}</span>
+                <span class="coffee-stat">경험치 : ${buffedExp.toLocaleString()}</span>
                 <span class="coffee-stat">골드 : ${coffee.gold.toLocaleString()}</span>
             </p>
         `);
@@ -659,28 +907,23 @@
 
     // ✅ 표 표시
     function showCoffeeTable(coffee) {
-        const speed = Number(localStorage.getItem(STORAGE_KEYS.SPEED));
+        const speed = savedSpeed;
         const end = (Number(localStorage.getItem(STORAGE_KEYS.COUNT)) || 0) * 4;
         $tbody.empty();
         $table.show();
 
-        if (!speed) {
-            $tbody.html(`<tr><td colspan="5" style="font-size:15px; padding:15px">커피판매 속도를 먼저 입력해주세요.</td></tr>`);
-            return;
-        } else if (!end) {
+        if (!end) {
             $tbody.html(`<tr><td colspan="5" style="font-size:15px; padding:15px">커피머신 수량을 먼저 입력해주세요.</td></tr>`);
             return;
         }
 
         for (let i = end; i > 0; i--) {
             const totalSeconds = (coffee.count * i * 3600) / speed;
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = Math.floor(totalSeconds % 60);
-            const timeStr = `${hours}시간 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초`;
+            const timeStr = formatSecondsToTime(totalSeconds);
 
             const beanUse = (coffee.bean * i).toLocaleString();
-            const expGain = (coffee.exp * i).toLocaleString();
+            const buffedExp = getBuffedExp(coffee);
+            const expGain = (buffedExp * i).toLocaleString();
             const goldGain = (coffee.gold * coffee.count * i).toLocaleString();
 
             $tbody.append(`
@@ -695,10 +938,37 @@
         }
     }
 
+    function normalizeCoffee(coffee) {
+        // 이미 tag 있으면 그대로 사용
+        if (coffee.tag) return coffee;
+
+        // menuData에서 동일한 이름 찾기
+        const origin = menuData.find(m => m.name === coffee.name);
+
+        // 못 찾으면 그대로 반환 (방어)
+        if (!origin) return coffee;
+
+        // tag 보정해서 반환
+        return {
+            ...coffee,
+            tag: origin.tag
+        };
+    }
+
     // ✅ 즐겨찾기 관련 함수
     function getFavorites() {
         const data = localStorage.getItem(STORAGE_KEYS.FAVORITES);
-        return data ? JSON.parse(data) : [];
+        if (!data) return [];
+
+        const list = JSON.parse(data);
+
+        // ✅ 과거 데이터 보정
+        const normalized = list.map(normalizeCoffee);
+
+        // 🔒 한 번 보정했으면 다시 저장
+        localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(normalized));
+
+        return normalized;
     }
 
     function saveFavorites(list) {
@@ -715,7 +985,7 @@
                 alert("즐겨찾기는 최대 5개까지만 가능합니다.");
                 return;
             }
-            list.push(coffee);
+            list.push(normalizeCoffee(coffee));
         }
         saveFavorites(list);
         renderFavorites();
@@ -757,34 +1027,34 @@
 
     const viewConfigMap = {
         expPerTime: {
-            headers: ["시간 대비 경험치", "시간 대비 골드"],
-            keys: ["expPerTime", "goldPerTime"],
-            sort: ["expPerTime", "goldPerTime"]
+            headers: ["효율"],
+            keys: ["expPerTime"],
+            sort: ["expPerTime"]
         },
         goldPerTime: {
-            headers: ["시간 대비 골드", "시간 대비 경험치"],
-            keys: ["goldPerTime", "expPerTime"],
-            sort: ["goldPerTime", "expPerTime"]
+            headers: ["효율"],
+            keys: ["goldPerTime"],
+            sort: ["goldPerTime"]
         },
         expPerBean: {
-            headers: ["원두 대비 경험치", "원두 대비 골드"],
-            keys: ["expPerBean", "goldPerBean"],
-            sort: ["expPerBean", "goldPerBean"]
+            headers: ["효율"],
+            keys: ["expPerBean"],
+            sort: ["expPerBean"]
         },
         goldPerBean: {
-            headers: ["원두 대비 골드", "원두 대비 경험치"],
-            keys: ["goldPerBean", "expPerBean"],
-            sort: ["goldPerBean", "expPerBean"]
+            headers: ["효율"],
+            keys: ["goldPerBean"],
+            sort: ["goldPerBean"]
         },
         masterPerTime: {
-            headers: ["시간 대비 마레", "마레 획득량"],
-            keys: ["masterPerTime", "masterBase"],
-            sort: ["masterPerTime", "masterBase"]
+            headers: ["효율"],
+            keys: ["masterPerTime"],
+            sort: ["masterPerTime"]
         },
         masterBase: {
-            headers: ["마레 획득량", "시간 대비 마레"],
-            keys: ["masterBase", "masterPerTime"],
-            sort: ["masterBase", "masterPerTime"]
+            headers: ["효율"],
+            keys: ["masterBase"],
+            sort: ["masterBase"]
         }
     };
 
@@ -803,13 +1073,12 @@
         const next = current === "filter" ? "normal" : "filter";
 
         localStorage.setItem("coffeeBarista-mode", next);
-        console.log(`next : ${next}`);
         applySavedMode();
     }
 
     function applySavedMode() {
         const savedMode = localStorage.getItem("coffeeBarista-mode") || "normal";
-        console.log(`savedMode : ${savedMode}`);
+        clearAllTables();
 
         if (savedMode === "filter") {
             $(".mainPage").hide();
@@ -819,20 +1088,55 @@
         } else {
             $(".mainPage").show();
             $(".subPage").hide();
+
+            const selected = getSavedCoffee();
+            if (selected) {
+                showCoffeeInfo(selected);
+                showCoffeeTable(selected);
+            }
+
             $(".baristaModeBtn").text("필터모드");
         }
     }
 
+    function getExpBuffByTag(tag) {
+        const level = Number($levelSelect.val()) || 0;
+        const buff = LEVEL_RESULT[level] || LEVEL_RESULT[0];
+
+        // ✅ all 태그면 가장 높은 버프 하나 적용
+        if (tag === "all") {
+            return Math.max(
+                buff.ice || 0,
+                buff.hot || 0,
+                buff.latte || 0,
+                buff.blended || 0,
+                buff.tea || 0
+            );
+        }
+
+        // ✅ 일반 태그
+        return buff[tag] || 0;
+    }
+
+    function getBuffedExp(menu) {
+        return menu.exp + getExpBuffByTag(menu.tag);
+    }
+
     function calcEfficiency(menu) {
-        const { gold, count, exp, bean } = menu;
+        const { gold, count, exp, bean, tag } = menu;
+
+        // ✅ 태그에 맞는 고정 경험치 보너스
+        const buffedExp = getBuffedExp(menu);
+        const safeCount = count || 1;
 
         return {
-            goldPerBean: ((gold * count) / bean) * 100,
-            expPerBean: (exp / bean) * 100,
+            goldPerBean: ((gold * safeCount) / bean) * 100,
+            expPerBean: (buffedExp / bean) * 100,
             goldPerTime: gold / (TIME / savedSpeed),
-            expPerTime: (exp * (savedSpeed / count)) / TIME,
-            masterPerTime: (bean * 0.03) * (savedSpeed / count) / TIME,
-            masterBase: bean * 0.03
+            expPerTime: (buffedExp * (savedSpeed / safeCount)) / TIME,
+            masterPerTime: (bean * 0.03) * (savedSpeed / safeCount) / TIME,
+            masterBase: bean * 0.03,
+            brewTime: TIME / (savedSpeed / safeCount),
         };
     }
 
@@ -844,10 +1148,11 @@
         const keyword = $searchInput.val()?.toLowerCase() || "";
         const selectKey = $sortSelect.val();
         const config = viewConfigMap[selectKey];
+        const favorites = getFavorites();
 
         // ✅ 헤더 재구성
         const $headerRow = $("#subHeaderRow");
-        $headerRow.find("th:gt(1)").remove();
+        $headerRow.find("th:gt(3)").remove();
 
         config.headers.forEach(h => {
             $headerRow.append(`<th>${h}</th>`);
@@ -879,18 +1184,34 @@
 
         filtered.forEach(m => {
             let valueCells = "";
+            const isFav = favorites.some(f => f.name === m.name);
+            const starClass = isFav ? "active" : "";
 
             config.keys.forEach(k => {
-                valueCells += `<td>${m.e[k].toFixed(2)}</td>`;
+                const value = m.e[k].toFixed(2);
+                valueCells += `<td>${value}</td>`;
             });
 
             $subBody.append(`
-            <tr>
-                <td>${m.originIndex}</td>
-                <td>${m.name}</td>
-                ${valueCells}
-            </tr>
-        `);
+                <tr class="sub-row" data-name="${m.name}">
+                    <td>
+                        <span class="sub-star ${starClass}" data-name="${m.name}">★</span>
+                    </td>
+                    <td>${m.originIndex}</td>
+                    <td>${m.name}</td>
+                    <td>${formatSecondsToTime(m.e.brewTime)}</td>
+                    ${valueCells}
+                </tr>
+            `);
+        });
+
+        $subBody.find("tr").off("click").on("click", function () {
+            const name = $(this).data("name");
+            const coffee = menuData.find(m => m.name === name);
+            if (!coffee) return;
+
+            toggleFavorite(coffee);
+            renderSubTable();
         });
     }
 
