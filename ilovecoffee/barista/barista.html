@@ -135,6 +135,35 @@
             box-shadow: 0 0 0 2px rgba(90, 67, 152, 0.15);
         }
 
+        /* 버프 헤더 */
+        .buff-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* 화살표 */
+        .buff-toggle {
+            font-size: 14px;
+            color: #5a4398;
+        }
+
+        /* 접힌 상태 */
+        #buffInfo.collapsed #buffList {
+            display: none;
+        }
+
+        /* 펼친 상태 */
+        #buffInfo.expanded #buffList {
+            display: flex;
+        }
+
+        /* 펼치면 화살표 회전 */
+        #buffInfo.expanded .buff-toggle {
+            transform: rotate(180deg);
+        }
+
         #buffInfo {
             background:#fff;
             border:1px solid #e2dff7;
@@ -143,7 +172,7 @@
         }
 
         #buffInfo h3 {
-            margin: 0 0 8px;
+            margin: 0;
             color: #5a4398;
             font-size: 14px;
         }
@@ -163,19 +192,23 @@
         }
 
         /* ✅ 즐겨찾기 목록 */
-        #favoriteList {
+        #quickSelect {
             margin: 10px 20px;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 10px;
-            display: none;
         }
 
-        #favoriteList h3 {
-            margin: 0 0 8px;
+        #quickSelect h3 {
+            margin: 0;
             color: #5a4398;
             font-size: 14px;
+        }
+
+        #favoriteList {
+            margin-top: 8px;
+            display: none;
         }
 
         .favorite-item {
@@ -459,8 +492,11 @@
             <input type="number" id="countInput" placeholder="수량" min="1" max="25">
         </div>
     </div>
-    <div id="buffInfo">
-        <h3>적용버프</h3>
+    <div id="buffInfo" class="collapsed">
+        <div class="buff-header">
+            <h3>적용버프</h3>
+            <span class="buff-toggle">▼</span>
+        </div>
         <div id="buffList"></div>
     </div>
     <div>
@@ -469,10 +505,15 @@
 </div>
 
 
-    <!-- ✅ 즐겨찾기 목록 -->
-    <div id="favoriteList">
-        <h3>즐겨찾기</h3>
-        <div id="favoriteItems"></div>
+    <!-- ✅ TOP5 / 즐겨찾기 목록 -->
+    <div id="quickSelect">
+        <h3>시간 대비 경험치 효율 TOP5</h3>
+        <div id="recommendedItems"></div>
+
+        <div id="favoriteList">
+            <h3>즐겨찾기</h3>
+            <div id="favoriteItems"></div>
+        </div>
     </div>
 <div class="mainPage">
     <div id="resultList" class="coffee-list">
@@ -676,6 +717,7 @@
     const $table = $("#coffeeTable");
     const $tbody = $("#coffeeTable tbody");
     const $coffeeInfo = $("#coffeeInfo");
+    const $recommendedItems = $("#recommendedItems");
     const $favoriteList = $("#favoriteList");
     const $favoriteItems = $("#favoriteItems");
 
@@ -694,6 +736,7 @@
 
         renderBuffInfo(level);
         clearAllTables();
+        renderRecommended();
 
         const mode = localStorage.getItem("coffeeBarista-mode") || "normal";
 
@@ -768,7 +811,13 @@
         $("#buffList").html(rows.join(""));
     }
 
+    $("#buffInfo").on("click", function () {
+        const $this = $(this);
+        $this.toggleClass("expanded collapsed");
+    });
+
     renderBuffInfo(savedLevel);
+    renderRecommended();
     renderFavorites();
 
     $countInput.on("input", updateAndRefresh);
@@ -869,6 +918,7 @@
         showCoffeeInfo(normalized);
         showCoffeeTable(normalized);
         renderFavorites();
+        renderRecommended();
     }
 
     function getSavedCoffee() {
@@ -953,6 +1003,36 @@
             ...coffee,
             tag: origin.tag
         };
+    }
+
+    function renderRecommended() {
+        const level = Number($levelSelect.val()) || 0;
+
+        // 효율 계산 → expPerTime 기준 정렬
+        const ranked = menuData
+            .map(m => ({ ...m, e: calcEfficiency(m) }))
+            .sort((a, b) => b.e.expPerTime - a.e.expPerTime)
+            .slice(0, 5); // TOP 5
+
+        const selected = getSavedCoffee();
+        const selectedName = selected ? selected.name : null;
+
+        $recommendedItems.empty();
+
+        ranked.forEach((c, idx) => {
+            const shortName = shortenName(c.name);
+            const isActive = c.name === selectedName;
+
+            const $item = $(`
+                <div class="favorite-item ${isActive ? "active" : ""}"
+                     title="${c.name}">
+                    ${shortName}
+                </div>
+            `);
+
+            $item.on("click", () => selectCoffee(c));
+            $recommendedItems.append($item);
+        });
     }
 
     // ✅ 즐겨찾기 관련 함수
@@ -1130,10 +1210,10 @@
         const safeCount = count || 1;
 
         return {
-            goldPerBean: ((gold * safeCount) / bean) * 100,
-            expPerBean: (buffedExp / bean) * 100,
-            goldPerTime: gold / (TIME / savedSpeed),
             expPerTime: (buffedExp * (savedSpeed / safeCount)) / TIME,
+            goldPerTime: gold / (TIME / savedSpeed),
+            expPerBean: (buffedExp / bean) * 100,
+            goldPerBean: ((gold * safeCount) / bean) * 100,
             masterPerTime: (bean * 0.03) * (savedSpeed / safeCount) / TIME,
             masterBase: bean * 0.03,
             brewTime: TIME / (savedSpeed / safeCount),
