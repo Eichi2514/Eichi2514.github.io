@@ -1,0 +1,26 @@
+:root {
+    /* Brand */
+    --primary: #5a4398;
+    --primary-light : #ede8ff;
+    --primary-dark : #3b2d7a;
+
+    /* Background */
+    --bg-main: #ffffff;
+    --bg-sub: #f6f4fc;
+    --bg-accent: #ede8ff;
+
+    /* Text */
+    --text-main: #333333;
+    --text-sub: #777777;
+    --text-accent: #ffffff;
+    --text-danger: #ff0000;
+
+    /* Btn */
+    --btn-close: #333333;
+    --btn-danger: #d9534f;
+    --btn-toggle: #cccccc;
+
+    /* Border */
+    --border-main: #e0dff2;
+    --border-sub: #cccccc;
+}

@@ -330,3 +330,32 @@ export function formatDisplayDate(koreanTimeStr) {
     }
 }
 
+export function getCssVar(name) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+}
+
+export const cssVar = (name) => getCssVar(`--${name}`);
+
+export const COLORS = {
+    P: cssVar("primary"),
+    P_L: cssVar("primary-light"),
+    P_D: cssVar("primary-dark"),
+
+    BG_M: cssVar("bg-main"),
+    BG_S: cssVar("bg-sub"),
+    BG_A: cssVar("bg-accent"),
+
+    TXT_M: cssVar("text-main"),
+    TXT_S: cssVar("text-sub"),
+    TXT_A: cssVar("text-accent"),
+    TXT_D: cssVar("text-danger"),
+
+    BTN_C: cssVar("btn-close"),
+    BTN_D: cssVar("btn-danger"),
+    BTN_T: cssVar("btn-toggle"),
+
+    BO_M: cssVar("border-main"),
+    BO_S: cssVar("border-sub"),
+};
