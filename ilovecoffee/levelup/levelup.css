@@ -11,7 +11,7 @@ html, body {
 body {
     margin: 0;
     background: var(--bg-main);
-    colorvar(--text-main);
+    color: var(--text-main);
 }
 
 /* ===== 전체 래퍼 ===== */
@@ -252,7 +252,7 @@ h3 {
 #customAlert .alert-text, #customConfirm .alert-text {
     font-size: 16px;
     font-weight: 500;
-    colorvar(--text-main);
+    color: var(--text-main);
     line-height: 1.4;
     flex: 1;
     padding-right: 10px;
@@ -371,7 +371,7 @@ h3 {
     background: var(--bg-main);
     border: none;
     border-bottom: 1px solid #eee;
-    colorvar(--text-main);
+    color: var(--text-main);
     text-align: center;
     padding: 12px 0;
     font-size: 14px;
@@ -629,7 +629,7 @@ h3 {
 .tir-value {
     font-size: 14px;
     font-weight: 600;
-    colorvar(--text-main);
+    color: var(--text-main);
 }
 
 .tir-value.highlight {

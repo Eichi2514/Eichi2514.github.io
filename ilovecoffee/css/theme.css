@@ -1,26 +1,26 @@
 :root {
     /* Brand */
-    --primary: #5a4398;
-    --primary-light : #ede8ff;
-    --primary-dark : #3b2d7a;
+    --primary: #5a4398; /* var(--primary) */
+    --primary-light : #ede8ff; /* var(--primary-light) */
+    --primary-dark : #3b2d7a; /* var(--primary-dark) */
 
     /* Background */
-    --bg-main: #ffffff;
-    --bg-sub: #f6f4fc;
-    --bg-accent: #ede8ff;
+    --bg-main: #ffffff; /* var(--bg-main) */
+    --bg-sub: #f6f4fc; /* var(--bg-sub) */
+    --bg-accent: #ede8ff; /* var(--bg-accent) */
 
     /* Text */
-    --text-main: #333333;
-    --text-sub: #777777;
-    --text-accent: #ffffff;
-    --text-danger: #ff0000;
+    --text-main: #333333; /* var(--text-main) */
+    --text-sub: #777777; /* var(--text-sub) */
+    --text-accent: #ffffff; /* var(--text-accent) */
+    --text-danger: #ff0000; /* var(--text-danger) */
 
     /* Btn */
-    --btn-close: #333333;
-    --btn-danger: #d9534f;
-    --btn-toggle: #cccccc;
+    --btn-close: #333333; /* var(--btn-close) */
+    --btn-danger: #d9534f; /* var(--btn-danger) */
+    --btn-toggle: #cccccc; /* var(--btn-toggle) */
 
     /* Border */
-    --border-main: #e0dff2;
-    --border-sub: #cccccc;
+    --border-main: #e0dff2; /* var(--border-main) */
+    --border-sub: #cccccc; /* var(--border-sub) */
 }
