@@ -15,6 +15,7 @@
     <!-- Pretendard 웹폰트 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
+    <link rel="stylesheet" href="../css/theme.css">
     <style>
         * {
             box-sizing: border-box;
@@ -27,14 +28,14 @@
         }
 
         body {
-            background: #f4f3f9;
+            background: var(--bg-sub);
             margin: 0;
-            color: #333;
+            color: var(--text-main);
         }
 
         .header-bar {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             padding: 14px 16px;
             border-radius: 10px;
             display: flex;
@@ -50,7 +51,7 @@
 
         .header-bar button {
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -69,7 +70,7 @@
 
         #controlBar input, #controlBar select {
             padding: 8px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
             border-radius: 6px;
             font-size: 14px;
         }
@@ -78,26 +79,26 @@
             width: calc(100% - 40px);
             margin: 10px 20px;
             border-collapse: collapse;
-            background: #fff;
+            background: var(--bg-main);
             border-radius: 10px;
             overflow: hidden;
         }
 
         #rankingTable th, #rankingTable td {
-            border: 1px solid #e0dff2;
+            border: 1px solid var(--border-main);
             padding: 10px;
             text-align: center;
             font-size: 13px;
         }
 
         #rankingTable th {
-            background: #f6f4fc;
-            color: #5a4398;
+            background: var(--bg-sub);
+            color: var(--primary);
         }
 
         #loading {
             text-align: center;
-            color: #5a4398;
+            color: var(--primary);
             font-weight: 600;
             margin-top: 20px;
             display: none;
@@ -113,7 +114,7 @@
             align-items: center;
             margin: 0 30px 10px;
             font-weight: 600;
-            color: #5a4398;
+            color: var(--primary);
             font-size: 15px;
         }
 
@@ -176,7 +177,7 @@
             margin-top: 16px;
             width: 60px;
             height: 60px;
-            background: #fff;
+            background: var(--bg-main);
             color: #ff3b7a;
             border: 2px solid #ff3b7a;
             border-radius: 50%;
@@ -347,7 +348,7 @@
 <script type="module">
     import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {getDatabase, ref, get, set, query, orderByChild, equalTo} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-    import {goToPage, getActiveNickname, setActiveNickname} from "../common/utils.js";
+    import {goToPage, getActiveNickname, setActiveNickname, COLORS} from "../common/utils.js";
 
     // ✅ 공통 유틸
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
@@ -492,7 +493,7 @@
         const myRank = myIndex >= 0 ? myIndex + 1 : "-";
         $("#totalCountText").text(`총 ${totalCount}명`);
         $("#myRankText").text(`내 위치 : ${myRank}번째`);
-        $(`#rankingTable tbody tr`).eq(myIndex).css("background", "#ede7ff");
+        $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.BG_A}`);
 
         // ✅ 검색 기능
         $("#searchInput").on("input", function () {
@@ -527,7 +528,7 @@
             const myIndex = sorted.findIndex(u => u.key === nickname);
             const myRank = myIndex >= 0 ? myIndex + 1 : "-";
             $("#myRankText").text(`내 위치 : ${myRank}번째`);
-            $(`#rankingTable tbody tr`).eq(myIndex).css("background", "#ede7ff");
+            $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.BG_A}`);
         });
 
         // 🔥 행 전체 클릭 시 프로필 모달 열기
