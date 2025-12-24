@@ -463,11 +463,11 @@ let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
 let remainExp; // ✅ 레벨업까지 남은 경험치 캐싱용
 
 $(function () {
-    const todayValue = "v10";
+    const todayValue = "v11";
     const lastUpdate = localStorage.getItem("LU-update");
 
     if (lastUpdate !== todayValue) {
-        showAlert("! New !\n지난 업데이트를 확인할 수 있는\n게시판이 추가되었습니다~!\n화면 상단의 업데이트 버튼을 눌러보세요!");
+        showAlert("! New !\n크리스마스 테마 적용 🎄\n\n시간 관계상 전부는 못했어요 ㅎㅅaㅎ\n\n곧 지나갈 이벤트이니\n넓은 마음으로\n양해 부탁드려요..!");
         localStorage.setItem("LU-update", todayValue);
     }
 

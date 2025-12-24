@@ -103,7 +103,7 @@ h3 {
 
 #expTable th,
 #expTable td {
-    border: 1px solid #e0dff2;
+    border: 1px solid var(--border-main);
     padding: 10px;
     text-align: center;
 }
@@ -150,7 +150,7 @@ h3 {
     width: 100%;
     padding: 10px;
     margin: 6px 0;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-sub);
     border-radius: 6px;
     font-size: 16px;
 }
@@ -224,13 +224,13 @@ h3 {
 }
 
 #deleteExpBtn {
-    color: var(--btn-del);
-    border: 2px solid var(--btn-del);
+    color: var(--btn-danger);
+    border: 2px solid var(--btn-danger);
 }
 
 #closeOptionBtn {
     color: var(--text-main);
-    border: 2px solid #777;
+    border: 2px solid var(--btn-close);
 }
 
 #customAlert .alert-box, #customConfirm .alert-box {
@@ -370,7 +370,7 @@ h3 {
     width: 100%;
     background: var(--bg-main);
     border: none;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-main);
     color: var(--text-main);
     text-align: center;
     padding: 12px 0;
@@ -398,7 +398,7 @@ h3 {
 
 /* ===== 스피너 애니메이션 ===== */
 .spinner {
-    border: 5px solid #eee;
+    border: 5px solid var(--border-main);
     border-top: 5px solid var(--primary);
     border-radius: 50%;
     width: 60px;
@@ -426,7 +426,7 @@ h3 {
 
 .status-box {
     background: var(--bg-sub);
-    border: 1px solid #e0dff2;
+    border: 1px solid var(--border-main);
     border-radius: 10px;
 }
 
@@ -617,7 +617,7 @@ h3 {
 }
 
 .tir-card.emphasis {
-    background: var(--bg-accent);
+    background: var(--primary-light);
 }
 
 .tir-label {

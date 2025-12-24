@@ -61,11 +61,11 @@
         <div style="display:flex; align-items:center; gap:10px;">
             <span id="nicknameDisplay"
                   style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:#5a4398;">
+                  font-size:16px; font-weight:600; color: var(--primary);">
             </span>
             <span id="currentLevelDisplay"
                   style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:#5a4398;">
+                  font-size:16px; font-weight:600; color: var(--primary);">
             </span>
             <button id="expButton">입력</button>
         </div>
@@ -75,9 +75,9 @@
     <div id="progressWrapper" style="display: none; justify-content: space-between; align-items: center;">
         <!-- ✅ 경험치 진행도 바 -->
         <div id="expBarContainer"
-             style="position:relative; width:100%; background:#eee; border-radius:10px; overflow:hidden; height:20px;">
+             style="position:relative; width:100%; background: var(--bg-sub); border-radius:10px; overflow:hidden; height:20px;">
             <div id="expBarFill"
-                 style="height:100%; width:0; background:#5a4398; transition:width 0.6s ease;"></div>
+                 style="height:100%; width:0; background: var(--primary); transition:width 0.6s ease;"></div>
             <div id="expBarPercent"
                  style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
                     color:white; font-size:13px; font-weight:600; text-shadow:0 0 3px rgba(0,0,0,0.5); white-space: nowrap;">
@@ -87,9 +87,9 @@
 
         <!-- 전체 레벨 진행도 표시 -->
         <div id="totalProgressBarContainer"
-             style="display: none; position:relative; width:100%; background:#eee; border-radius:10px; overflow:hidden; height:20px;">
+             style="display: none; position:relative; width:100%; background: var(--bg-sub); border-radius:10px; overflow:hidden; height:20px;">
             <div id="totalProgressBarFill"
-                 style="height:100%; width:0; background:#5a4398; transition:width 0.6s ease;"></div>
+                 style="height:100%; width:0; background: var(--primary); transition:width 0.6s ease;"></div>
             <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
                  color:white; font-size:12px; text-shadow:0 0 3px rgba(0,0,0,0.5); white-space: nowrap;">
                 진행률 : <span id="totalProgressPercent">0%</span>
@@ -120,14 +120,14 @@
     </div>
     <div style="display:flex; justify-content: right;">
         <button id="toggleChartBtn"
-                style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
+                style="background: var(--primary); color: var(--text-accent); border:1px solid var(--border-main);
                  border-radius:8px; padding:5px 10px; font-weight:600;">
         </button>
     </div>
 
     <div style="display: flex; justify-content:space-between; margin-top: 30px;">
         <h3>일자별 경험치</h3>
-        <button id="toggleExpTableBtn" style="background:#5a4398; color:#f6f4fc; border:1px solid #e0dff2;
+        <button id="toggleExpTableBtn" style="background: var(--primary); color: var(--text-accent); border:1px solid var(--border-main);
         border-radius:8px; padding:5px 10px; font-weight:600;">하이라이트</button>
     </div>
     <table id="expTable">
@@ -182,21 +182,21 @@
         <button id="closeExpModal" class="closeBtn">✕</button>
         <h2>경험치 입력</h2>
         <div style="margin-bottom:10px;">
-            <label for="expDate" style="display:block; font-size:14px; text-align:left; color:#555;">날짜</label>
+            <label for="expDate" style="display:block; font-size:14px; text-align:left; color: var(--text-sub);">날짜</label>
             <input id="expDate" type="date"
-                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid var(--border-sub); border-radius:6px;">
         </div>
 
         <div style="margin-bottom:10px;">
-            <label for="todayLevel" style="display:block; font-size:14px; text-align:left; color:#555;">현재 레벨</label>
+            <label for="todayLevel" style="display:block; font-size:14px; text-align:left; color: var(--text-sub);">현재 레벨</label>
             <input id="todayLevel" type="number" min="1" max="100"
-                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid var(--border-sub); border-radius:6px;">
         </div>
 
         <div style="margin-bottom:10px;">
-            <label for="todayExp" style="display:block; font-size:14px; text-align:left; color:#555;">현재 경험치</label>
+            <label for="todayExp" style="display:block; font-size:14px; text-align:left; color: var(--text-sub);">현재 경험치</label>
             <input id="todayExp" type="text" inputmode="numeric" placeholder="현재 경험치"
-                   style="width:100%; padding:8px; font-size:16px; border:1px solid #ccc; border-radius:6px;">
+                   style="width:100%; padding:8px; font-size:16px; border:1px solid var(--border-sub); border-radius:6px;">
             <div class="formattedExp" style="text-align: left; padding-left: 10px;"></div>
         </div>
 
@@ -209,13 +209,13 @@
     <div class="login-modal" style="position: relative;">
         <button id="closeExpTableModal" class="closeBtn">✕</button>
         <h2 style="margin-bottom:10px;">경험치표</h2>
-        <div style="border-top:1px solid #e0dff2; border-bottom:1px solid #e0dff2;">
+        <div style="border-top:1px solid var(--border-main); border-bottom:1px solid var(--border-main);">
             <table id="expChartTable"
                    style="width:100%; border-collapse:collapse; margin-top:0; font-size:14px;">
-                <thead style="position:sticky; top:0; background:#f6f4fc; z-index:2;">
-                <tr style="color:#5a4398;">
-                    <th style="padding:8px; border:1px solid #e0dff2; width: 80px">레벨</th>
-                    <th style="padding:8px; border:1px solid #e0dff2;">경험치</th>
+                <thead style="position:sticky; top:0; background: var(--bg-sub); z-index:2;">
+                <tr style="color: var(--primary);">
+                    <th style="padding:8px; border:1px solid var(--border-main); width: 80px">레벨</th>
+                    <th style="padding:8px; border:1px solid var(--border-main);">경험치</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
@@ -224,11 +224,11 @@
         <div id="expTableNav"
              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap: 8px">
             <button id="prevExpPage"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px;">
+                    style="background: var(--bg-sub); color: var(--primary); border:none; border-radius:6px; padding:4px 10px;">
                 〈 이전
             </button>
             <button id="nextExpPage"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px;">
+                    style="background: var(--bg-sub); color: var(--primary); border:none; border-radius:6px; padding:4px 10px;">
                 다음 〉
             </button>
         </div>
@@ -264,11 +264,11 @@
         </div>
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button id="confirmYesBtn"
-                    style="flex:1; background:#5a4398; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
+                    style="flex:1; background: var(--primary); color: var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
                 확인
             </button>
             <button id="confirmNoBtn"
-                    style="flex:1; background:#aaa; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
+                    style="flex:1; background: var(--btn-close); color: var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
                 취소
             </button>
         </div>
@@ -284,8 +284,8 @@
         <div id="currentProfile" style="text-align:center; margin-bottom:15px;">
             <img id="currentProfileImg" src="../image/profile1.jpg"
                  alt="현재 프로필"
-                 style="width:60px; height:60px; border-radius:50%; border:2px solid #5a4398; object-fit:cover;">
-            <div id="currentProfileName" style="margin-top:6px; color:#5a4398; font-weight:600;">기본 프로필</div>
+                 style="width:60px; height:60px; border-radius:50%; border:2px solid  var(--primary); object-fit:cover;">
+            <div id="currentProfileName" style="margin-top:6px; color: var(--primary); font-weight:600;">기본 프로필</div>
         </div>
 
         <div id="profileTabs" style="display:flex; gap:8px; margin-bottom:12px;">
@@ -300,7 +300,7 @@
         </div>
 
         <button id="applyProfileBtn"
-                style="width:100%; background:#5a4398; color:#fff; border:none; border-radius:8px; padding:8px 0; font-size:16px; font-weight:600;">
+                style="width:100%; background: var(--primary); color: var(--text-accent); border:none; border-radius:8px; padding:8px 0; font-size:16px; font-weight:600;">
             변경
         </button>
     </div>
@@ -393,11 +393,11 @@
         <div id="logPagination"
              style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; gap: 8px;">
             <button class="logPrev"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 20px 4px 10px;">
+                    style="background: var(--bg-sub); color: var(--primary); border:none; border-radius:6px; padding:4px 20px 4px 10px;">
                 〈 이전
             </button>
             <button class="logNext"
-                    style="background:#f6f4fc; color:#5a4398; border:none; border-radius:6px; padding:4px 10px 4px 20px;">
+                    style="background: var(--bg-sub); color: var(--primary); border:none; border-radius:6px; padding:4px 10px 4px 20px;">
                 다음 〉
             </button>
         </div>
@@ -414,7 +414,7 @@
         </div>
 
         <button id="saveFavoriteBtn"
-                style="width:100%; background:#5a4398; color:#fff; border:none;
+                style="width:100%; background: var(--primary); color: var(--text-accent); border:none;
                      border-radius:8px; padding:8px 0; font-size:16px; font-weight:600;">
             저장
         </button>
@@ -434,7 +434,7 @@
             <button id="modalDisableBtn">알림 끄기</button>
         </div>
 
-        <div style="font-size: 14px; color: #666; margin-top: 14px; text-align: left;">
+        <div style="font-size: 14px; color: var(--text-sub); margin-top: 14px; text-align: left;">
             ※ 알림이 정상적으로 동작하려면<br>
             · Chrome 또는 Safari에서 알림을 ‘허용’해야 합니다.<br>
             · 일부 iOS 기기에서는 알림이 제한될 수 있습니다.
@@ -474,33 +474,33 @@
         <!-- 🔹 목표 날짜 -->
         <div style="margin-bottom:12px;">
             <label for="tirTargetDate"
-                   style="display:block; font-size:14px; text-align:left; color:#555; margin-bottom:4px;">
+                   style="display:block; font-size:14px; text-align:left; var(--text-sub); margin-bottom:4px;">
                 목표 날짜
             </label>
             <input id="tirTargetDate"
                    type="date"
                    style="width:100%; padding:8px; font-size:15px;
-                          border:1px solid #ccc; border-radius:6px;">
+                          border:1px solid var(--border-sub); border-radius:6px;">
         </div>
 
         <!-- 🔹 계산 결과 -->
         <div id="tirResultBox"
              style="display:none; margin-top:14px;
-                    border-top:1px solid #e0dff2; padding-top:12px;">
+                    border-top:1px solid var(--border-main); padding-top:12px;">
 
-            <div style="font-size:14px; color:#555; margin-bottom:4px;">
+            <div style="font-size:14px; color: var(--text-sub); margin-bottom:4px;">
                 하루 필요 경험치
             </div>
 
-            <div style="font-size:20px; font-weight:700; color:#5a4398;">
+            <div style="font-size:20px; font-weight:700; color: var(--primary);">
                 <span id="tirDailyExp">-</span>
                 <span id="tirDailyExpApprox"
-                      style="font-size:13px; color:#888; margin-top:4px;"></span>
+                      style="font-size:13px; color: var(--text-sub); margin-top:4px;"></span>
             </div>
         </div>
 
         <!-- 🔹 안내 문구 -->
-        <div style="font-size:12px; color:#888; margin-top:14px; text-align:left;">
+        <div style="font-size:12px; color: var(--text-sub); margin-top:14px; text-align:left;">
             ※ 선택한 날짜에 <b>다음 레벨</b>에 도달하기 위한<br>
             하루 평균 필요 경험치를 계산합니다.
         </div>

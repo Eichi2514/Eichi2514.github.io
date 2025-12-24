@@ -493,7 +493,7 @@
         const myRank = myIndex >= 0 ? myIndex + 1 : "-";
         $("#totalCountText").text(`총 ${totalCount}명`);
         $("#myRankText").text(`내 위치 : ${myRank}번째`);
-        $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.BG_A}`);
+        $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.P_L}`);
 
         // ✅ 검색 기능
         $("#searchInput").on("input", function () {
@@ -528,7 +528,7 @@
             const myIndex = sorted.findIndex(u => u.key === nickname);
             const myRank = myIndex >= 0 ? myIndex + 1 : "-";
             $("#myRankText").text(`내 위치 : ${myRank}번째`);
-            $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.BG_A}`);
+            $(`#rankingTable tbody tr`).eq(myIndex).css("background", `${COLORS.P_L}`);
         });
 
         // 🔥 행 전체 클릭 시 프로필 모달 열기
