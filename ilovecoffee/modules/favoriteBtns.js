@@ -1,4 +1,5 @@
 import {BUTTONS} from "../common/buttonInfo.js";
+import {COLORS} from "../common/utils.js";
 
 let favoriteOrder = JSON.parse(localStorage.getItem("favorites") || "[]");
 
@@ -36,10 +37,10 @@ function renderFavoriteSelect() {
 
     $("#favoriteSelectArea").append(`
         <label id="favSelectAllWrapper"
-               style="padding:10px; border:1px solid #e0dff2; border-radius:12px;
-               background:#fff; display:flex; justify-content:space-between;
+               style="padding:10px; border:1px solid ${COLORS.BO_M}; border-radius:12px;
+               background:${COLORS.BG_M}; display:flex; justify-content:space-between;
                align-items:center; margin-bottom:10px;">
-            <span style="font-size:15px; font-weight:600; color:#5a4398;">
+            <span style="font-size:15px; font-weight:600; color:${COLORS.P};">
                 전체 선택
             </span>
             <input type="checkbox" id="favSelectAll" style="transform:scale(1.3); width:17px;">
@@ -53,9 +54,9 @@ function renderFavoriteSelect() {
             <label class="fav-item" data-key="${btn.key}"
                    style="
                        padding:10px;
-                       border:1px solid #e0dff2;
+                       border:1px solid ${COLORS.BO_M};
                        border-radius:12px;
-                       background:#fff;
+                       background:${COLORS.BG_M};
                        display:flex;
                        justify-content:space-between;
                        align-items:center;
@@ -64,7 +65,7 @@ function renderFavoriteSelect() {
                 <div style="display:flex; align-items:center; gap:12px;">
                     <img src="${btn.img}"
                          style="width:40px; height:40px; border-radius:10px; object-fit:cover;">
-                    <span style="font-size:15px; font-weight:600; color:#5a4398;">
+                    <span style="font-size:15px; font-weight:600; color:${COLORS.P};">
                         ${btn.name}
                     </span>
                 </div>

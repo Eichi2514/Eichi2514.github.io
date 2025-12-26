@@ -4,7 +4,7 @@ import {
     ref,
     get,
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-import {getActiveNickname, goToPage, showAlert, getKoreanDate} from "../common/utils.js";
+import {getActiveNickname, goToPage, showAlert, getKoreanDate, COLORS} from "../common/utils.js";
 import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 
 const firebaseConfig = {
@@ -49,37 +49,37 @@ $(async function () {
                     <button id="closeAdminOptionModal" class="closeBtn">✕</button>
                     <h2 style="margin-bottom:16px;">관리자 메뉴</h2>
                     <button id="adminDashboardBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         대시보드
                     </button>
                     <button id="adminArchiveBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         아카이브
                     </button>
                     <button id="adminMemoryBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         메모리룸
                     </button>
                     <button id="adminWriteBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         게시글 작성
                     </button>
                     <button id="adminEditBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         게시글 수정
                     </button>
                     <button id="testBtn"
-                        style="width:100%; padding:10px; border:2px solid #5a4398; color:#5a4398;
+                        style="width:100%; padding:10px; border:2px solid ${COLORS.P}; color:${COLORS.P};
                             border-radius:8px; font-size:16px; font-weight:600;
                             background:transparent; transition:0.2s;">
                         Test

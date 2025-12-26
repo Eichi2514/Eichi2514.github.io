@@ -15,9 +15,9 @@
 .quickBtn {
     flex: 1 1 calc((100% - 16px) / 3);
     max-width: calc((100% - 16px) / 3);
-    background: #f6f4fc;
-    border: 1px solid #e0dff2;
-    color: #5a4398;
+    background: var(--bg-sub);
+    border: 1px solid var(--border-main);
+    color: var(--primary);
     border-radius: 8px;
     padding: 5px 0;
     font-size: 15px;
