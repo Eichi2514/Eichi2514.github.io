@@ -17,9 +17,10 @@
 
     <!-- Pretendard 웹폰트 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
-
     <style>
 
         * {
@@ -34,13 +35,13 @@
 
         body {
             margin: 0;
-            background: #fff;
-            color: #333;
+            background: var(--bg-main);
+            color: var(--text-main);
         }
 
         .header-bar {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             padding: 14px 16px;
             border-radius: 10px;
             display: flex;
@@ -56,7 +57,7 @@
 
         .header-bar button {
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -66,8 +67,8 @@
 
         /* 공지 영역 */
         .notice-box {
-            background: #f6f4fc;
-            border: 1px solid #e0dff2;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 10px;
             margin: 0 20px;
         }
@@ -85,7 +86,7 @@
         .post-item {
             padding: 16px 0;
             position: relative;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-sub);
         }
 
         .title {
@@ -112,8 +113,8 @@
             height: 20px;
 
             font-size: 12px;
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             border-radius: 100%;
         }
 
@@ -121,14 +122,14 @@
             display: flex;
             justify-content: right;
             font-size: 14px;
-            color: #777;
+            color: var(--text-sub);
             gap: 10px;
         }
 
         .post-footer span {
             width: calc((100% - 20px) / 3);
             text-align: center;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
             border-radius: 5px;
         }
 
@@ -142,7 +143,7 @@
 
         .pagination button {
             padding: 8px 16px;
-            background: #5a4398;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
@@ -150,7 +151,7 @@
         }
 
         .pagination button:disabled {
-            background: #ccc;
+            background: var(--bg-sub);
         }
 
         /* 공지/업데이트 라벨 공통 스타일 */
@@ -160,8 +161,8 @@
             font-weight: 700;
             border-radius: 6px;
             margin-right: 6px;
-            color: #fff;
-            background: #5a4398;
+            color: var(--text-accent);
+            background: var(--primary);
         }
 
         .modal-date, .modal-view {
@@ -171,7 +172,7 @@
 
         .modal-content {
             text-align: left;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
             border-radius: 10px;
             padding: 10px;
             height: 60vh;
@@ -266,14 +267,14 @@
 
         .top5-time {
             font-size: 13px;
-            color: #777;
+            color: var(--text-sub);
         }
 
         /* 6등 보기 버튼 */
         .rank-more-btn {
             margin-top: 18px;
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             padding: 10px 18px;
             border-radius: 8px;
             border: none;
@@ -287,15 +288,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f4f3f9;
+            background: var(--bg-sub);
             z-index: 9999;
             flex-direction: column;
         }
 
         /* ===== 스피너 애니메이션 ===== */
         .spinner {
-            border: 5px solid #eee;
-            border-top: 5px solid #5a4398;
+            border: 5px solid var(--border-main);
+            border-top: 5px solid var(--primary);
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -305,7 +306,7 @@
         /* ===== 로딩 문구 ===== */
         #loadingScreen p {
             margin-top: 10px;
-            color: #5a4398;
+            color: var(--primary);
             font-weight: 600;
             font-size: 16px;
         }
@@ -321,15 +322,15 @@
         }
 
         .rankToggleBtn {
-            background: #7b68ac;
-            color: #fff;
+            background: var(--primary-light);
+            color: var(--text-accent);
             border: none;
             padding: 6px 12px;
             border-radius: 8px;
         }
 
         .rankToggleBtn.active {
-            background: #5a4398;
+            background: var(--primary);
         }
     </style>
 </head>
@@ -387,13 +388,13 @@
         <div id="myRankBox" style="
             margin: 10px 0;
             padding: 8px 12px;
-            background: #f6f4fc;
-            border: 1px solid #dcd7f0;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
             font-weight: 700;
-            color: #5a4398;
+            color: var(--primary);
         ">
             <span style="flex: 1; text-align: left;">
                 총 <span id="myRankTotal"></span>명
@@ -415,7 +416,7 @@
         <div id="rankList" style="
             margin-top:10px;
             padding:10px;
-            border:1px solid #ccc;
+            border:1px solid var(--border-sub);
             border-radius:10px;
             height: 272px;
             overflow-y:auto;
@@ -469,7 +470,8 @@
         parseKoreanTimestamp,
         isToday,
         formatDisplayDate,
-        getKoreanDate
+        getKoreanDate,
+        COLORS
     } from "../common/utils.js";
 
     const app = initializeApp(firebaseConfig);
@@ -817,8 +819,8 @@
                     padding:4px 8px;
                     border-radius:6px;
                     border:none;
-                    background:${p === currentPage ? '#5a4398' : '#ddd'};
-                    color:${p === currentPage ? '#fff' : '#333'};
+                    background:${p === currentPage ? COLORS.P : COLORS.P_L};
+                    color:${p === currentPage ? COLORS.TXT_A : COLORS.TXT_M};
                     font-weight:${p === currentPage ? '700' : '500'};
                 ">
                 ${p}
@@ -901,7 +903,7 @@
 
                 <div>
                     <div style="font-weight:600;">${user.nickname}</div>
-                    <div style="font-size:13px; color:#777; text-align: left;">${item.time}</div>
+                    <div style="font-size:13px; color:${COLORS.TXT_S}; text-align: left;">${item.time}</div>
                 </div>
             </div>
         `);
@@ -1145,7 +1147,7 @@
         list.forEach(item => {
             // 특별 표시
             const highlight = item.nickname === myNickname
-                ? "background:#fff4c2; border:1px solid #f2c200; border-radius:8px;"
+                ? `background:#fff4c2; border:1px solid #f2c200; border-radius:8px;`
                 : "";
 
             wrap.append(`
@@ -1156,7 +1158,7 @@
                     padding:8px 10px;
                     ${highlight}
                 ">
-                    <div style="width:50px; font-weight:700; color:#5a4398;">
+                    <div style="width:50px; font-weight:700; color: ${COLORS.P};">
                         ${item.date}
                     </div>
 
@@ -1188,7 +1190,7 @@
                 padding:8px 10px;
                 ${highlight}
             ">
-                <div style="font-weight:700; width:40px; text-align:center; color:#5a4398;">
+                <div style="font-weight:700; width:40px; text-align:center; color:${COLORS.P};">
                     ${index + 1}위
                 </div>
 
@@ -1199,7 +1201,7 @@
                     ${item.nickname}
                 </div>
 
-                <div style="margin-left:auto; font-weight:700; color:#5a4398;">
+                <div style="margin-left:auto; font-weight:700; color:${COLORS.P};">
                     ${item.count}회
                 </div>
             </div>
