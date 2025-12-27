@@ -1,3 +1,5 @@
+import {COLORS} from "../common/utils.js";
+
 // 🔹 단골손님 전체 데이터 (regularGuests.js)
 const regularGuests = {
     "전교1등": {
@@ -566,7 +568,7 @@ function createRegularGuestsModal() {
     const modalHTML = `
     <div id="regularGuestsModal" class="login-overlay" style="display:none;">
       <div class="login-modal" style="position:relative;">
-        <button id="closeRegularGuestsModal" class="closeBtn" style="color: #5a4398 !important;">✕</button>
+        <button id="closeRegularGuestsModal" class="closeBtn" style="color: ${COLORS.P} !important;">✕</button>
         <h2 class="modal-title">단골손님 목록</h2>
         <div id="guestList"></div>
         <div id="levelSelect" style="display:none; margin-top:15px;">
@@ -579,7 +581,7 @@ function createRegularGuestsModal() {
           <h3 class="sub-title">대사 목록</h3>
           <ul id="dialogueItems" style="list-style:none; padding:0; line-height:1.8; text-align:left;"></ul>
         </div>
-        <button id="guestBackBtn" style="display:none; position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: #5a4398">←</button>
+        <button id="guestBackBtn" style="display:none; position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: ${COLORS.P}">←</button>
       </div>
     </div>
   `;
@@ -639,10 +641,10 @@ function renderGuestList() {
             width: "90px",
             textAlign: "center",
             cursor: "pointer",
-            border: "1px solid #ddd",
+            border: `1px solid ${COLORS.BO_S}`,
             borderRadius: "10px",
             paddingTop: "8px",
-            background: "#f9f9fb",
+            background: `${COLORS.BG_S}`,
             transition: "0.2s",
         });
 
@@ -658,7 +660,7 @@ function renderGuestList() {
         $btn.find(".guestName").css({
             fontFamily: "Pretendard",
             fontSize: "14px",
-            color: "#333"
+            color: `${COLORS.TXT_M}`
         });
 
         // 🔹 클릭 시 레벨 선택 이동

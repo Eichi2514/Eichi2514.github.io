@@ -1,3 +1,5 @@
+import {COLORS} from "../common/utils";
+
 const generalGuests = {
     "순수남": {
         face: "순수소년",
@@ -296,20 +298,20 @@ function createGeneralGuestsModal() {
     const modal = `
     <div id="generalGuestsModal" class="login-overlay" style="display:none;">
       <div class="login-modal" style="position:relative;">
-        <button id="closeGeneralGuestsModal" class="closeBtn" style="color:#5a4398 !important;">✕</button>
+        <button id="closeGeneralGuestsModal" class="closeBtn" style="color:${COLORS.P} !important;">✕</button>
         <h2 class="modal-title">일반손님 목록</h2>
 
         <!-- 검색 입력 -->
         <input type="text" id="guestSearch"
                placeholder="대사 검색"
-               style="width:100%; padding:8px; margin-bottom:12px; border:1px solid #ccc; border-radius:6px;">
+               style="width:100%; padding:8px; margin-bottom:12px; border:1px solid ${COLORS.BO_S}; border-radius:6px;">
 
         <!-- 손님 목록 -->
         <div id="generalGuestList"></div>
 
         <!-- 상세 보기 -->
         <div id="generalGuestDetail" style="display:none; margin-top:15px;">
-            <button id="generalGuestBackBtn" style="position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: #5a4398">←</button>
+            <button id="generalGuestBackBtn" style="position:absolute; top:8px; left:10px; height: 43px; width: 40px; background: none; color: ${COLORS.P}">←</button>
             <div id="generalGuestContent"></div>
         </div>
 
@@ -390,7 +392,7 @@ function applyGeneralGuestSearch(keyword) {
             const imgSrc = `../image/profile${idx + 101}.jpg`;
 
             const card = $(`
-                <div class="guestCard" style="width:100%; border:1px solid #ddd;">
+                <div class="guestCard" style="width:100%; border:1px solid ${COLORS.BO_S};">
                     <img src="${imgSrc}" class="guestImg" style="width:60px; height:60px"/>
                     <div class="guestName" style="font-weight:bold">${guest}</div>
                     <div class="guestLinePreview" style="font-size: 10px; word-break: keep-all;">${line}</div>
@@ -410,10 +412,10 @@ function applyGeneralGuestCardStyle(card) {
         width: "90px",
         textAlign: "center",
         cursor: "pointer",
-        border: "1px solid #ddd",
+        border: `1px solid ${COLORS.BO_S}`,
         borderRadius: "10px",
         paddingTop: "8px",
-        background: "#f9f9fb",
+        background: `${COLORS.BG_S}`,
         transition: "0.2s",
     });
 
