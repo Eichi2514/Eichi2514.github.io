@@ -1,4 +1,4 @@
-import {COLORS} from "../common/utils";
+import {COLORS} from "../common/utils.js";
 
 const generalGuests = {
     "순수남": {
