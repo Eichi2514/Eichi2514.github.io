@@ -2117,16 +2117,16 @@ async function checkDailyAttendance(nickname) {
 
     const user = userSnap.val();
 
-    // 기존 lastLogin 날짜 추출
-    const lastLoginRaw = user.lastLogin || "";
+    // 기존 lastAttendDate 날짜 추출
+    const lastLoginRaw = user.lastAttendDate || user.lastLogin;
     let datePart = lastLoginRaw.split("-")[0];
     let parts = datePart.split(".");
     let yy = parts[0];
     let yyyy = yy.length === 2 ? "20" + yy : yy; // 2자리면 앞에 20 붙이기
-    const lastLoginDate = `${yyyy}-${parts[1]}-${parts[2]}`;
+    const lastAttendDate = `${yyyy}-${parts[1]}-${parts[2]}`;
 
     // 🔸 already logged in today → skip
-    if (lastLoginDate === today) {
+    if (lastAttendDate === today) {
         console.log(`🎉 이미 출석한 기록이 있습니다 → ${nickname}`);
         return;
     }
@@ -2162,8 +2162,9 @@ async function checkDailyAttendance(nickname) {
     await set(ref(db, `coffeeDailyRank/${today}/${newRank}/${userId}`), attendTime);
 
 
-    // 유저 개인 출석 등수 저장
+    // 유저 개인 출석 처리
     await set(ref(db, `coffeeUsers/${nickname}/dailyRank`), newRank);
+    await set(ref(db, `coffeeUsers/${nickname}/lastAttendDate`), getKoreanTimestamp());
 
     console.log(`🎉 출석 완료 → ${nickname} / ${newRank}등`);
 
