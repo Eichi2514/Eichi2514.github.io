@@ -1,5 +1,5 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import {get, getDatabase, ref, remove, set, runTransaction} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import {get, getDatabase, ref, remove, set, update, runTransaction} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // ✅ 공통 유틸 모듈
 import {calcAvgExp} from "../common/expUtils.js";
@@ -2112,71 +2112,52 @@ $('#todayExp').on('input', function () {
 async function checkDailyAttendance(nickname) {
     const today = getKoreanDate();
     const userRef = ref(db, `coffeeUsers/${nickname}`);
-    const userSnap = await get(userRef);
-    if (!userSnap.exists()) return;
-
-    const user = userSnap.val();
-
-    // 기존 lastAttendDate 날짜 추출
-    const lastLoginRaw = user.lastAttendDate || user.lastLogin;
-    let datePart = lastLoginRaw.split("-")[0];
-    let parts = datePart.split(".");
-    let yy = parts[0];
-    let yyyy = yy.length === 2 ? "20" + yy : yy; // 2자리면 앞에 20 붙이기
-    const lastAttendDate = `${yyyy}-${parts[1]}-${parts[2]}`;
-
-    // 🔸 already logged in today → skip
-    if (lastAttendDate === today) {
-        console.log(`🎉 이미 출석한 기록이 있습니다 → ${nickname}`);
-        return;
-    }
-
-    // ============================
-    // ✅ (1) 출석 순위 transaction
-    // ============================
     const counterRef = ref(db, `coffeeCounters/dailyRank/${today}`);
 
-    const txResult = await runTransaction(counterRef, (current) => {
-        return (current || 0) + 1;
-    });
+    // 유저 정보
+    const userSnap = await get(userRef);
+    if (!userSnap.exists()) return;
+    const user = userSnap.val();
 
-    // 트랜잭션 실패 시 중단
-    if (!txResult.committed) {
-        console.error("❌ 출석 트랜잭션 실패");
-        return;
+    // 이미 오늘 출석했으면 종료
+    const ts = user.lastAttendDate || user.lastLogin; // "25.01.08-00:03:21"
+    if (ts) {
+        const datePart = ts.split("-")[0];      // "25.01.08"
+        const [yy, mm, dd] = datePart.split(".");
+        const dateOnly = `20${yy}-${mm}-${dd}`; // "2025-01-08"
+        if (dateOnly === today) return;
     }
 
-    const newRank = txResult.snapshot.val(); // ✅ 확정된 등수
+    // 랭킹 발급 (항상 새 번호)
+    const rankTx = await runTransaction(counterRef, (current) => {
+        return (current || 0) + 1;
+    });
+    if (!rankTx.committed) {
+        // 실패해도 다음 접속 시 다시 시도
+        return;
+    }
+    const newRank = rankTx.snapshot.val();
 
-    // ============================
-    // ✅ (2) 출석 시간 기록
-    // ============================
-    const kst = new Date();
-    const hh = String(kst.getHours()).padStart(2, "0");
-    const mm = String(kst.getMinutes()).padStart(2, "0");
-    const attendTime = `${hh}:${mm}`;
-
-    const userId = user.id;
+    // 출석 시간
+    const now = new Date();
+    const attendTime =
+        String(now.getHours()).padStart(2, "0") + ":" +
+        String(now.getMinutes()).padStart(2, "0");
 
     // 출석 랭킹 저장
-    await set(ref(db, `coffeeDailyRank/${today}/${newRank}/${userId}`), attendTime);
-
+    await set(ref(db, `coffeeDailyRank/${today}/${newRank}/${user.id}`), attendTime);
 
     // 유저 개인 출석 처리
-    await set(ref(db, `coffeeUsers/${nickname}/dailyRank`), newRank);
-    await set(ref(db, `coffeeUsers/${nickname}/lastAttendDate`), getKoreanTimestamp());
+    await update(userRef, {
+        dailyRank: newRank,
+        previousLoginAt: user.lastLogin || null,
+        lastAttendDate: getKoreanTimestamp()
+    });
 
-    console.log(`🎉 출석 완료 → ${nickname} / ${newRank}등`);
-
-    // ============================
-    // ✅ (3) 1등 처리 (중복 방지)
-    // ============================
+    // 1등 누적
     if (newRank === 1) {
-        const firstRankRef = ref(db, `coffeeStats/firstRankTotal/${userId}`);
-
-        await runTransaction(firstRankRef, (current) => {
-            return (current || 0) + 1;
-        });
+        const firstRankRef = ref(db, `coffeeStats/firstRankTotal/${user.id}`);
+        await runTransaction(firstRankRef, (current) => (current || 0) + 1);
 
         // 1등 10회 달성권한 부여 (누적 기준)
         const totalSnap = await get(firstRankRef);
