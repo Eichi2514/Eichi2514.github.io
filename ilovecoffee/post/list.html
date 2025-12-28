@@ -709,16 +709,33 @@
     const rankCache = {};
     const userInfoCache = {};
 
+    async function preloadUsers(userIds) {
+        // 🔹 중복 제거 + 캐시에 없는 것만
+        const uniqueIds = [...new Set(userIds)]
+            .filter(id => !userInfoCache[id]);
+
+        if (uniqueIds.length === 0) return;
+
+        // 🔹 병렬 요청
+        const promises = uniqueIds.map(id => getUserInfoById(id));
+        const results = await Promise.all(promises);
+
+        // 🔹 캐시에 저장
+        uniqueIds.forEach((id, idx) => {
+            userInfoCache[id] = results[idx];
+        });
+    }
+
     async function renderTop5Rank(items) {
         const wrap = $("#top5Wrapper");
         wrap.empty();
 
-        // 유저 정보 결합
-        const users = [];
-        for (const item of items) {
-            const info = await getUserInfoById(item.id);
-            users.push({...item, ...info});
-        }
+        await preloadUsers(items.map(i => i.id));
+
+        const users = items.map(item => ({
+            ...item,
+            ...userInfoCache[item.id]
+        }));
 
         // ========= 1등 =========
         if (users[0]) {
@@ -891,8 +908,10 @@
         const list = $("#rankList");
         list.empty();
 
+        await preloadUsers(items.map(i => i.id));
+
         for (const item of items) {
-            const user = await getUserInfoById(item.id);
+            const user = userInfoCache[item.id];
 
             list.append(`
             <div style="display:flex; align-items:center; margin-bottom:10px;">
@@ -1076,12 +1095,14 @@
         const data = snap.val(); // { userId: count }
         const result = [];
 
-        for (const userId in data) {
-            const numericId = Number(userId);
-            const info = await getUserInfoById(numericId);
+        const ids = Object.keys(data).map(Number);
+        await preloadUsers(ids);
+
+        for (const userId of ids) {
+            const info = userInfoCache[userId];
 
             result.push({
-                userId: numericId,
+                userId,
                 nickname: info.nickname,
                 profile: info.profile,
                 count: data[userId]
@@ -1114,8 +1135,7 @@
             if (!snap.exists()) {
                 result.push({
                     date: `${mm}/${dd}`,
-                    nickname: "기록 없음",
-                    profile: 1,
+                    userId: null,
                     time: "-"
                 });
                 continue;
@@ -1125,15 +1145,27 @@
             const userId = Number(Object.keys(snap.val())[0]);
             const time = Object.values(snap.val())[0];
 
-            const info = await getUserInfoById(userId);
-
             result.push({
                 date: `${mm}/${dd}`,
-                nickname: info.nickname,
-                profile: info.profile,
+                userId,
                 time
             });
         }
+
+        const ids = result.filter(r => r.userId).map(r => r.userId);
+        await preloadUsers(ids);
+
+        // 🔥 캐시 매핑
+        result.forEach(r => {
+            if (!r.userId) {
+                r.nickname = "기록 없음";
+                r.profile = 1;
+                return;
+            }
+            const info = userInfoCache[r.userId];
+            r.nickname = info.nickname;
+            r.profile = info.profile;
+        });
 
         renderFirstRankList(result);
     }

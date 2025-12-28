@@ -2120,7 +2120,7 @@ async function checkDailyAttendance(nickname) {
     const user = userSnap.val();
 
     // 이미 오늘 출석했으면 종료
-    const ts = user.lastAttendDate || user.lastLogin; // "25.01.08-00:03:21"
+    const ts = user.lastAttendDate || ""; // "25.01.08-00:03:21"
     if (ts) {
         const datePart = ts.split("-")[0];      // "25.01.08"
         const [yy, mm, dd] = datePart.split(".");
