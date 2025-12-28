@@ -489,29 +489,30 @@ $(function () {
                     await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     await showLikeMessages(savedNick);
                 }
-                $loadingScreen.hide();
                 $mainPage.css("display", "flex");
-                loadUserData(savedNick);
+                await loadUserData(savedNick);
                 await loadTodayLevelUpUsers();
+                await new Promise(requestAnimationFrame);
+                $loadingScreen.hide();
             } else {
                 // ❌ DB에 없는 닉네임일 경우 자동 제거
                 console.warn("저장된 닉네임이 유효하지 않아 초기화합니다.");
                 localStorage.removeItem("coffee-nickname");
-                $loadingScreen.hide();
                 $popup.show();
+                $loadingScreen.hide();
             }
         }).catch(err => {
             console.error("데이터 확인 중 오류 발생:", err);
             localStorage.removeItem("coffee-nickname");
-            $loadingScreen.hide();
             $popup.show();
+            $loadingScreen.hide();
         });
     } else {
         // 로컬스토리지에 닉네임이 없으면 로그인 팝업 유지
-        $loadingScreen.hide();
         $popup.show();
         localStorage.removeItem("coffee-nickname");
         localStorage.removeItem("coffee-subnickname");
+        $loadingScreen.hide();
     }
 
     // ✅ 로그인 처리
