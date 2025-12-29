@@ -26,7 +26,7 @@
 }
 
 /* 🔥 디버그 테마 – 인간 인지 최적화 (최종) */
-:root {
+:root[data-theme="debug"] {
     /* Brand (🔥 뜨거운 계열만) */
     --primary: #FF0000;          /* 🔴 순수 빨강 */
     --primary-light: #FF5E00;    /* 🟠 네온 오렌지 */
@@ -54,7 +54,7 @@
 }
 
 /* 크리스마스 테마 */
-:root {
+:root[data-theme="christmas"] {
     /* Brand */
     --primary: #B31904;
     --primary-light: #F6D6D1;

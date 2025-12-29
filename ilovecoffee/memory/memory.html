@@ -31,14 +31,14 @@
         }
 
         body {
-            background: #fff;
+            background: var(--bg-main);
             margin: 0;
-            color: #333;
+            color: var(--text-main);
         }
 
         .header-bar {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             padding: 14px 16px;
             border-radius: 10px;
             display: flex;
@@ -54,7 +54,7 @@
 
         .header-bar button {
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -104,7 +104,7 @@
         #customAlert .alert-text, #customConfirm .alert-text {
             font-size: 16px;
             font-weight: 500;
-            color: #333;
+            color: var(--text-main);
             line-height: 1.4;
             flex: 1;
             padding-right: 10px;
@@ -124,8 +124,8 @@
         #alertConfirmBtn {
             display: block;
             width: 100%;
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             font-size: 16px;
@@ -147,9 +147,9 @@
 
         .character-tab {
             width: calc((100% / 3)); /* 버튼 크기 */
-            background: #f6f4fc;
-            border: 1px solid #e0dff2;
-            color: #5a4398;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--primary);
             border-radius: 8px;
             padding: 5px 0;
             font-size: 15px;
@@ -181,8 +181,8 @@
         }
 
         .character-tab.active {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
         }
 
         .level-input {
@@ -197,7 +197,7 @@
         .toggle-switch {
             width: 50px;
             height: 26px;
-            background: #ccc;
+            background: var(--bg-sub);
             border-radius: 13px;
             position: relative;
             cursor: pointer;
@@ -208,7 +208,7 @@
             content: "";
             width: 22px;
             height: 22px;
-            background: #fff;
+            background: var(--bg-main);
             border-radius: 50%;
             position: absolute;
             top: 2px;
@@ -226,7 +226,7 @@
 
         /* ON 상태 */
         .toggle-switch.on {
-            background: #5a4398;
+            background: var(--primary);
         }
 
         .toggle-switch.on::after {
@@ -245,15 +245,15 @@
         #searchInput {
             flex: 1;
             padding: 8px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
             border-radius: 6px;
             font-size: 14px;
         }
 
         #searchBtn {
             flex-shrink: 0;
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             border: none;
             border-radius: 6px;
             padding: 8px 14px;
@@ -274,8 +274,8 @@
 
         .subcategory {
             position: relative;
-            background: #f6f4fc;
-            border: 1px solid #ddd;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-sub);
             border-radius: 10px;
             padding: 10px 14px;
             width: calc(50% - 4px);
@@ -285,7 +285,7 @@
             align-items: center;
             text-align: center;
             font-size: 15px;
-            color: #333;
+            color: var(--text-main);
             cursor: pointer;
         }
 
@@ -301,16 +301,16 @@
             bottom: 3px;
             right: 8px;
             font-size: 12px;
-            color: #888;
+            color: var(--text-sub);
             font-weight: 600;
         }
 
         /* ✅ 모든 아이템 수집 완료된 서브카테고리 */
         .subcategory.collected {
             position: relative;
-            background: #f0eaff; /* 밝은 보라색 강조 */
-            border-color: #b7a8f0;
-            color: #5a4398;
+            background: var(--primary-light); /* 밝은 보라색 강조 */
+            border-color: var(--border-main);
+            color: var(--primary);
             font-weight: 700;
         }
 
@@ -327,8 +327,8 @@
         }
 
         .subcategory.active {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             font-weight: 600;
             flex-grow: 1;
         }
@@ -343,9 +343,9 @@
         }
 
         .close-subcategory {
-            background: #f6f4fc;
-            border: 1px solid #e0dff2;
-            color: #5a4398;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--primary);
             border-radius: 8px;
             font-weight: 700;
             padding: 8px 14px;
@@ -366,7 +366,7 @@
             margin-bottom: 10px;
             text-align: center;
             font-weight: 600;
-            color: #5a4398;
+            color: var(--primary);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* 살짝 입체감 */
         }
 
@@ -378,8 +378,8 @@
         }
 
         .item-card {
-            background: #fff;
-            border: 1.5px solid #e5e3f0; /* ✅ 은은한 보라빛 테두리 */
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-main); /* ✅ 은은한 보라빛 테두리 */
             border-radius: 10px;
             padding: 10px 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -391,12 +391,12 @@
         .item-name {
             word-break: keep-all;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
         }
 
         .item-detail {
             font-size: 10px;
-            color: #666;
+            color: var(--text-sub);
             margin-top: 4px;
             line-height: 1.5;
         }
@@ -426,7 +426,7 @@
         }
 
         .modal-content {
-            background: #fff;
+            background: var(--bg-main);
             border-radius: 12px;
             padding: 20px;
             width: 85%;
@@ -444,8 +444,8 @@
         }
 
         .result-item {
-            background: #f6f4fc;
-            border: 1px solid #ddd;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-sub);
             border-radius: 8px;
             padding: 10px;
             cursor: pointer;
@@ -454,13 +454,13 @@
 
         .result-item-name {
             font-size: 13px;
-            color: #555;
+            color: var(--text-sub);
             margin-top: 4px;
         }
 
         #closeSearchModal {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -504,9 +504,9 @@
         .filter-select {
             flex: 0 0 33.3333%;
             max-width: 33.3333%;
-            background: #f6f4fc;
-            border: 1px solid #e0dff2;
-            color: #5a4398;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--primary);
             border-radius: 8px;
             padding: 4px 2px;
             font-size: 15px;
@@ -537,7 +537,7 @@
             align-items: center;
             justify-content: right;
             font-size: 14px;
-            color: #555;
+            color: var(--text-sub);
             padding: 0 24px;
         }
 
@@ -551,7 +551,7 @@
             width: 16px;
             height: 16px;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
         }
 
         /* ===== 아이템 테이블 ===== */
@@ -567,7 +567,7 @@
         }
 
         .item-table td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-sub);
             text-align: left;
             word-break: keep-all;
             padding: 4px 8px;
@@ -576,8 +576,8 @@
         /* ✅ 필터모드 표 - 획득 아이템 스타일 */
         .collected-item td {
             position: relative; /* ::after 기준 */
-            background: #f0eaff !important;
-            color: #5a4398;
+            background: var(--primary-light) !important;
+            color: var(--primary);
             font-weight: 700;
         }
 
@@ -596,8 +596,8 @@
 
         /* ✅ 획득된 아이템의 두 번째 줄(tag-text)도 같은 배경색으로 */
         .collected-item + .tag-text td {
-            background: #f0eaff !important;
-            color: #5a4398;
+            background: var(--primary-light) !important;
+            color: var(--primary);
             font-weight: 700;
         }
 
@@ -615,7 +615,7 @@
         /* ✅ 종류별 색상 */
         .tag-theme {
             background: #f3eaff;
-            color: #5a4398;
+            color: var(--primary);
             border-color: #c9b8f8;
         }
 
@@ -644,6 +644,7 @@
         }
 
         .tag-text {
+            background: #ffffff;
             color: #555;
             border-color: #ddd;
         }
@@ -664,7 +665,7 @@
 
         /* ✅ 마지막 아이템만 아래쪽 테두리 남기기 */
         .item-table tr:last-child td {
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-sub);
         }
 
     </style>
@@ -691,11 +692,11 @@
     <div style="display:flex; align-items:center; gap:10px;">
             <span id="nicknameDisplay"
                   style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:#5a4398;">
+                  font-size:16px; font-weight:600; color:var(--primary);">
             </span>
         <span id="currentLevelDisplay"
               style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:#5a4398;">
+                  font-size:16px; font-weight:600; color:var(--primary);">
             </span>
     </div>
     <div id="memoryRoomToggle" class="toggle-switch"></div>
@@ -816,7 +817,7 @@
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {memoryData} from "../common/memoryData.js";
-    import {goToPage, showAlert, closeAlert, getActiveNickname} from "../common/utils.js";
+    import {goToPage, showAlert, closeAlert, getActiveNickname, COLORS} from "../common/utils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
@@ -879,9 +880,9 @@
                 // ✅ 토글 초기상태 반영
                 const $toggle = $("#memoryRoomToggle");
                 if (memoryRoomPublic) {
-                    $toggle.addClass("on").css("background", "#5a4398");
+                    $toggle.addClass("on").css("background", `${COLORS.P}`);
                 } else {
-                    $toggle.removeClass("on").css("background", "#ccc");
+                    $toggle.removeClass("on").css("background", `${COLORS.BO_S}`);
                 }
 
                 // ✅ 캐릭터 탭 생성
@@ -1153,7 +1154,7 @@
                 await update(ref(db, `coffeeMemory/${activeNickname}`), {[itemId]: true});
                 collected[itemId] = true;
                 if (isTableRow) {
-                    $(this).addClass("collected-item").css("background", "#f0eaff"); // 테이블용
+                    $(this).addClass("collected-item").css("background", `${COLORS.P_L}`); // 테이블용
                 } else {
                     $(this).addClass("collected"); // 카드용
                 }
@@ -1358,10 +1359,10 @@
 
             // 🔹 UI 갱신
             if (newStatus) {
-                $toggle.addClass("on").css("background", "#5a4398");
+                $toggle.addClass("on").css("background", `${COLORS.P}`);
                 $(".memoryRoomBtn").show();
             } else {
-                $toggle.removeClass("on").css("background", "#ccc");
+                $toggle.removeClass("on").css("background", `${COLORS.BO_S}`);
                 $(".memoryRoomBtn").hide();
             }
 
