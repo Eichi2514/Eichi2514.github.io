@@ -868,7 +868,7 @@ export const memoryData = [{
             "id": 344, "item": "뉴델리 휴식 카페", "theme": "", "color": "", "machine": "", "attribute": "프랜차이즈", "price": "", "note": "프렌차이즈 코인 상점"
         }]
     }, {
-        "name": "디저트는 손 닿는 곳에", "reward": "디저트 경험치 증가 +5", "items": [{
+        "name": "디저트는 손 닿는 곳에", "reward": "썸머 커플 선베드", "items": [{
             "id": 345, "item": "아이스크림와플", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
         }, {
             "id": 346, "item": "아이스샌디", "theme": "", "color": "", "machine": "", "attribute": "디저트", "price": "", "note": ""
