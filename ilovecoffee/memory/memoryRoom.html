@@ -31,14 +31,14 @@
         }
 
         body {
-            background: #f4f3f9;
+            background: var(--bg-sub);
             margin: 0;
-            color: #333;
+            color: var(--text-main);
         }
 
         .header-bar {
-            background: #5a4398;
-            color: #fff;
+            background: var(--primary);
+            color: var(--text-accent);
             padding: 14px 16px;
             border-radius: 10px;
             display: flex;
@@ -54,7 +54,7 @@
 
         .header-bar button {
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -73,7 +73,7 @@
 
         #controlBar input, #controlBar select {
             padding: 8px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-sub);
             border-radius: 6px;
             font-size: 14px;
         }
@@ -82,13 +82,13 @@
             width: calc(100% - 40px);
             margin: 10px 20px;
             border-collapse: collapse;
-            background: #fff;
+            background: var(--bg-main);
             border-radius: 10px;
             overflow: hidden;
         }
 
         #userTable th, #userTable td {
-            border: 1px solid #e0dff2;
+            border: 1px solid var(--border-main);
             padding: 10px;
             text-align: center;
             font-size: 14px;
@@ -99,8 +99,8 @@
         }
 
         #userTable th {
-            background: #f6f4fc;
-            color: #5a4398;
+            background: var(--bg-sub);
+            color: var(--primary);
         }
 
         /* ✅ 게이지 셀만 남은 폭 전부 차지하게 */
@@ -125,11 +125,11 @@
         .gauge-bar {
             position: relative;
             height: 14px;
-            background: #eee;
+            background: var(--primary-light);
             border-radius: 6px;
             overflow: hidden;
             text-align: center;
-            color: #fff;
+            color: var(--text-accent);
             font-size: 11px;
             font-weight: 300;
         }
@@ -140,7 +140,7 @@
             left: 0;
             top: 0;
             height: 100%;
-            background: #a997e9;
+            background: var(--primary);
             border-radius: 6px;
             transition: width 0.3s ease;
         }
@@ -155,30 +155,30 @@
 
         /* ✅ 내 줄 강조 */
         .my-row {
-            background: #f3edff; /* 은은한 연보라 배경 */
+            background: var(--primary-light); /* 은은한 연보라 배경 */
         }
 
         .my-row .gauge-bar {
-            background: #d8c8ff !important; /* 라이트 퍼플 */
+            background: var(--primary) !important; /* 라이트 퍼플 */
         }
 
         .my-row .gauge-fill {
-            background: #5a4398 !important; /* 시그니처 진보라 */
+            background: var(--primary-dark) !important; /* 시그니처 진보라 */
         }
 
         .my-row .gauge-text {
-            color: #fff !important;
+            color: var(--text-accent) !important;
             mix-blend-mode: normal !important;
         }
 
         /* ✅ 100% 게이지 색 강조 */
         .gauge-fill[data-full="true"] {
-            background: #5a4398;
+            background: var(--primary);
         }
 
         #loading {
             text-align: center;
-            color: #5a4398;
+            color: var(--primary);
             font-weight: 600;
             margin-top: 20px;
             display: none;
@@ -194,7 +194,7 @@
             align-items: center;
             margin: 0 30px 10px;
             font-weight: 600;
-            color: #5a4398;
+            color: var(--primary);
             font-size: 15px;
         }
 
@@ -266,7 +266,7 @@
             margin-top: 16px;
             width: 60px;
             height: 60px;
-            background: #fff;
+            background: var(--bg-main);
             color: #ff3b7a;
             border: 2px solid #ff3b7a;
             border-radius: 50%;
