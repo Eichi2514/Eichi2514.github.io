@@ -2184,55 +2184,55 @@ async function checkDailyAttendance(nickname) {
 
     // 이미 오늘 출석했으면 종료
     const ts = user.lastAttendDate || ""; // "25.01.08-00:03:21"
-    if (ts) {
-        const datePart = ts.split("-")[0];      // "25.01.08"
-        const [yy, mm, dd] = datePart.split(".");
-        const dateOnly = `20${yy}-${mm}-${dd}`; // "2025-01-08"
-        if (dateOnly === today) return;
-    }
+    if (ts.split("-")[0].replace(/\./g, "-") === `20${today.slice(2)}`) return;
 
-    // 랭킹 발급 (항상 새 번호)
-    const rankTx = await runTransaction(counterRef, (current) => {
-        return (current || 0) + 1;
-    });
-    if (!rankTx.committed) {
-        // 실패해도 다음 접속 시 다시 시도
-        return;
-    }
-    const newRank = rankTx.snapshot.val();
+    try {
+        // [3] 랭킹 번호 먼저 확보 (Transaction 필수)
+        const rankTx = await runTransaction(counterRef, (current) => (current || 0) + 1);
+        if (!rankTx.committed) throw new Error("Rank_Fail");
+        const newRank = rankTx.snapshot.val();
 
-    // 출석 시간
-    const now = new Date();
-    const attendTime =
-        String(now.getHours()).padStart(2, "0") + ":" +
-        String(now.getMinutes()).padStart(2, "0");
+        // [4] 데이터 준비
+        const now = new Date();
+        const attendTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+        const timestamp = getKoreanTimestamp();
 
-    // 출석 랭킹 저장
-    await set(ref(db, `coffeeDailyRank/${today}/${newRank}/${user.id}`), attendTime);
+        // 🔥 [핵심 변경] 모든 경로의 업데이트를 하나의 객체로 통합
+        const updates = {};
 
-    // 유저 개인 출석 처리
-    await update(userRef, {
-        dailyRank: newRank,
-        previousLoginAt: user.lastLogin || null,
-        lastAttendDate: getKoreanTimestamp()
-    });
+        // 내 정보 업데이트 경로
+        updates[`coffeeUsers/${nickname}/dailyRank`] = newRank;
+        updates[`coffeeUsers/${nickname}/lastAttendDate`] = timestamp;
 
-    // 1등 누적
-    if (newRank === 1) {
-        const firstRankRef = ref(db, `coffeeStats/firstRankTotal/${user.id}`);
-        await runTransaction(firstRankRef, (current) => (current || 0) + 1);
+        // 전체 랭킹 리스트 업데이트 경로
+        updates[`coffeeDailyRank/${today}/${newRank}/${user.id}`] = attendTime;
 
-        // 1등 10회 달성권한 부여 (누적 기준)
-        const totalSnap = await get(firstRankRef);
-        if (totalSnap.exists() && totalSnap.val() >= 10) {
-            await set(ref(db, `coffeeUsers/${nickname}/isFirst10`), true);
+        // ✅ [원자적 업데이트] 서버에서 두 정보를 동시에 처리 (하나라도 실패하면 둘 다 안 됨)
+        await update(ref(db), updates);
+
+        // [5] 출석 성공(update 완료) 이후에만 보상/기록 로직 진행
+        if (newRank === 1) {
+            const firstRankRef = ref(db, `coffeeStats/firstRankTotal/${user.id}`);
+            await runTransaction(firstRankRef, (current) => (current || 0) + 1);
+
+            const totalSnap = await get(firstRankRef);
+            if (totalSnap.exists() && totalSnap.val() >= 10) {
+                await set(ref(db, `coffeeUsers/${nickname}/isFirst10`), true);
+            }
         }
-    }
 
-    if (newRank <= 3) {
-        const success = await giveCoupon(nickname, 1, "출석보상");
-        if (!success) return;
+        if (newRank <= 3) {
+            const success = await giveCoupon(nickname, 1, "출석보상");
+            if (success) {
+                showAlert(`순위권 달성!\n축하 🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`);
+            }
+        }
 
-        showAlert(`순위권 달성!\n축하 🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`);
+    } catch (err) {
+        if (err.message === "Rank_Fail") {
+            showAlert("출석 인원이 많아 처리가 지연되었습니다.\n어플을 종료하고 잠시 후 다시 시도해주세요!");
+        } else {
+            showAlert(`오류가 발생했습니다 화면을 캡쳐 한 후 관리자에게 문의주세요.\n\n${err}`);
+        }
     }
 }
