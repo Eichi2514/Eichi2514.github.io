@@ -252,10 +252,12 @@ h3 {
 #customAlert .alert-text, #customConfirm .alert-text {
     font-size: 16px;
     font-weight: 500;
+    background: var(--bg-sub);
     color: var(--text-main);
     line-height: 1.4;
     flex: 1;
-    padding-right: 10px;
+    padding: 10px;
+    border-radius: 10px;
 
     white-space: pre-line; /* \n 줄바꿈 인식 */
     word-break: keep-all; /* 단어 기준 줄바꿈 */

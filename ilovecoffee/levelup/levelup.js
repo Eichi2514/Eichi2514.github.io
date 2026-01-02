@@ -2,10 +2,11 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-
 import {get, getDatabase, ref, remove, set, update, runTransaction} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // ✅ 공통 유틸 모듈
-import {calcAvgExp} from "../common/expUtils.js";
-import {levelExp} from "../common/levelExp.js";
+import { calcAvgExp } from "../common/expUtils.js";
+import { levelExp } from "../common/levelExp.js";
 import { PROFILE_GROUPS } from "../common/profileData.js";
-import {getSafeProfileById} from "../common/profileUtils.js";
+import { getSafeProfileById } from "../common/profileUtils.js";
+import { giveCoupon } from "../common/walletUtils.js";
 import {
     bindNumericCommaFormatter,
     closeAlert,
@@ -457,6 +458,40 @@ $("#toggleExpTableBtn").on("click", function () {
     }
 });
 
+// ✅ 로딩 중 단축키(F5, Ctrl+R) 방지
+function disableRefreshKeys(e) {
+    if ((e.which || e.keyCode) == 116 || // F5
+        (e.ctrlKey && (e.which || e.keyCode) == 82)) { // Ctrl + R
+        e.preventDefault();
+    }
+}
+
+// ✅ 당겨서 새로고침 차단
+function disablePullToRefresh() {
+    $('body').css('overscroll-behavior-y', 'contain');
+}
+
+// ✅ 당겨서 새로고침 다시 허용
+function enablePullToRefresh() {
+    $('body').css('overscroll-behavior-y', 'auto');
+}
+
+// ✅ 로딩 중 새로고침 방지 활성화
+const preventRefresh = (e) => {
+    e.preventDefault();
+    e.returnValue = "";
+};
+
+$(window).on('keydown', disableRefreshKeys);
+disablePullToRefresh();
+window.addEventListener("beforeunload", preventRefresh);
+
+async function hasTodayExpReward(nickname) {
+    const today = getKoreanDate();
+    const refIndex = ref(db, `coffeeWalletLogs/${nickname}/rewardIndex/expInput/${today}`);
+    return (await get(refIndex)).exists();
+}
+
 let profileNum = 1;
 let chartMode = localStorage.getItem('chartMode') || 'total'; // 이전 설정 유지 (없으면 기본 누적)
 let latestExpRecords = null;      // ✅ 최근 기록 캐싱용
@@ -493,18 +528,27 @@ $(function () {
                 await loadUserData(savedNick);
                 await loadTodayLevelUpUsers();
                 await new Promise(requestAnimationFrame);
+                $(window).off('keydown', disableRefreshKeys);
+                window.removeEventListener("beforeunload", preventRefresh);
+                enablePullToRefresh();
                 $loadingScreen.hide();
             } else {
                 // ❌ DB에 없는 닉네임일 경우 자동 제거
                 console.warn("저장된 닉네임이 유효하지 않아 초기화합니다.");
                 localStorage.removeItem("coffee-nickname");
                 $popup.show();
+                $(window).off('keydown', disableRefreshKeys);
+                window.removeEventListener("beforeunload", preventRefresh);
+                enablePullToRefresh();
                 $loadingScreen.hide();
             }
         }).catch(err => {
             console.error("데이터 확인 중 오류 발생:", err);
             localStorage.removeItem("coffee-nickname");
             $popup.show();
+            $(window).off('keydown', disableRefreshKeys);
+            window.removeEventListener("beforeunload", preventRefresh);
+            enablePullToRefresh();
             $loadingScreen.hide();
         });
     } else {
@@ -512,6 +556,9 @@ $(function () {
         $popup.show();
         localStorage.removeItem("coffee-nickname");
         localStorage.removeItem("coffee-subnickname");
+        $(window).off('keydown', disableRefreshKeys);
+        window.removeEventListener("beforeunload", preventRefresh);
+        enablePullToRefresh();
         $loadingScreen.hide();
     }
 
@@ -640,10 +687,25 @@ $(function () {
             }
         }
 
+        // 🎟️ 경험치 입력 보상 (하루 1회)
+        const today = getKoreanDate();
+        const rewarded = await hasTodayExpReward(nickname);
+        const ts = getKoreanTimestamp();
+
         // ✅ 새 기록 저장 (쉼표 없는 정수 저장)
         await set(ref(db, `coffeeUsers/${nickname}/expRecords/${selectedDate}`), {
-            level, exp, savedAt: getKoreanTimestamp(),
+            level, exp, savedAt: ts,
         });
+
+        let alertMessage = `레벨 ${level}\n경험치 ${exp.toLocaleString()} 저장 완료!`;
+
+        if (!rewarded) {
+            const success = await giveCoupon(nickname, 1, "경험치입력"); // 쿠폰 +1
+            if (!success) return;
+
+            await set(ref(db, `coffeeWalletLogs/${nickname}/rewardIndex/expInput/${today}`), ts);
+            alertMessage += `\n\n🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`
+        }
 
         // 🔹 현재 표시 중인 레벨 가져오기
         const currentLevelVal = parseInt($("#currentLevelDisplay").text()) || 1;
@@ -653,7 +715,7 @@ $(function () {
             await set(ref(db, `coffeeUsers/${nickname}/level`), level);
         }
 
-        showAlert(`레벨 ${level}\n경험치 ${exp.toLocaleString()} 저장 완료!`);
+        showAlert(alertMessage);
         $("#expModal").hide();
         $("#todayExp").val("");
 
@@ -1729,7 +1791,7 @@ $(function () {
             }
 
             // ✅ 닉네임 변경 로그 저장
-            const safeTimestamp = getKoreanTimestamp().replaceAll('.', '_');
+            const safeTimestamp = getKoreanTimestamp().replaceAll(/[.:]/g, '_');
             const randomSuffix = Math.floor(Math.random() * 100); // 0~99
             const logKey = `${safeTimestamp}_${randomSuffix}`;
 
@@ -2165,5 +2227,12 @@ async function checkDailyAttendance(nickname) {
         if (totalSnap.exists() && totalSnap.val() >= 10) {
             await set(ref(db, `coffeeUsers/${nickname}/isFirst10`), true);
         }
+    }
+
+    if (newRank <= 3) {
+        const success = await giveCoupon(nickname, 1, "출석보상");
+        if (!success) return;
+
+        showAlert(`순위권 달성!\n축하 🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`);
     }
 }
