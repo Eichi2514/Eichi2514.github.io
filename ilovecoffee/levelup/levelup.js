@@ -2184,7 +2184,7 @@ async function checkDailyAttendance(nickname) {
 
     // 이미 오늘 출석했으면 종료
     const ts = user.lastAttendDate || ""; // "25.01.08-00:03:21"
-    if (ts.split("-")[0].replace(/\./g, "-") === `20${today.slice(2)}`) return;
+    if (ts.split("-")[0].replace(/\./g, "-") === `${today.slice(2)}`) return;
 
     try {
         // [3] 랭킹 번호 먼저 확보 (Transaction 필수)
