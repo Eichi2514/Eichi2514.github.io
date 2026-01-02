@@ -1,0 +1,243 @@
+:root {
+    /* Brand */
+    --primary: #5a4398; /* var(--primary) */
+    --primary-light : #ede8ff; /* var(--primary-light) */
+    --primary-dark : #3b2d7a; /* var(--primary-dark) */
+
+    /* Background */
+    --bg-main: #ffffff; /* var(--bg-main) */
+    --bg-sub: #f6f4fc; /* var(--bg-sub) */
+    --bg-accent: #ede8ff; /* var(--bg-accent) */
+
+    /* Text */
+    --text-main: #333333; /* var(--text-main) */
+    --text-sub: #777777; /* var(--text-sub) */
+    --text-accent: #ffffff; /* var(--text-accent) */
+    --text-danger: #ff0000; /* var(--text-danger) */
+
+    /* Btn */
+    --btn-close: #333333; /* var(--btn-close) */
+    --btn-danger: #d9534f; /* var(--btn-danger) */
+    --btn-toggle: #cccccc; /* var(--btn-toggle) */
+
+    /* Border */
+    --border-main: #e0dff2; /* var(--border-main) */
+    --border-sub: #cccccc; /* var(--border-sub) */
+}
+
+/* 🔥 디버그 테마 – 인간 인지 최적화 (최종) */
+:root[data-theme="debug"] {
+    /* Brand (🔥 뜨거운 계열만) */
+    --primary: #FF0000;          /* 🔴 순수 빨강 */
+    --primary-light: #FF5E00;    /* 🟠 네온 오렌지 */
+    --primary-dark: #7A0000;     /* 🟥 피처럼 어두운 레드 */
+
+    /* Background (❄ 차가운 계열만) */
+    --bg-main: #00FF9C;          /* 🟢 민트 네온 */
+    --bg-sub: #0057FF;           /* 🔵 전기 블루 */
+    --bg-accent: #5B00FF;        /* 🟣 전기 퍼플 */
+
+    /* Text (📢 정보 계열) */
+    --text-main: #000000;        /* ⚫ 검정 (텍스트 기준점) */
+    --text-sub: #FFFF00;         /* 🟡 형광 노랑 */
+    --text-accent: #FFFFFF;      /* ⚪ 흰색 */
+    --text-danger: #FF00AA;      /* 💗 네온 핑크 */
+
+    /* Button (🧱 물리 오브젝트 느낌) */
+    --btn-close: #8B4513;        /* 🟤 브라운 */
+    --btn-danger: #FF1453;       /* ❤️ 네온 레드핑크 */
+    --btn-toggle: #39FF14;       /* 💚 독형광 그린 */
+
+    /* Border (✂ 경계 전용) */
+    --border-main: #000000;      /* ⚫ 절대 기준 */
+    --border-sub: #00FFFF;       /* 🔷 형광 시안 */
+}
+
+/* 🌕 화이트 테마 */
+:root[data-theme="WHITE"] {
+    --primary:       #BFBFBF;
+    --primary-light: #FFFFFF;
+    --primary-dark:  #7F7F7F;
+
+    --bg-main: #EFEFEF;
+    --bg-sub: #F5F5F5;
+    --bg-accent: #E5E5E5;
+
+    --text-main: #9A9A9A;
+    --text-sub: #6A6A6A;
+    --text-accent: #6F6F6F;
+    --text-danger: #D32F2F;
+
+    --btn-close: #1A1A1A;
+    --btn-danger: #D32F2F;
+    --btn-toggle: #4A4A4A;
+
+    --border-main: #AAAAAA;
+    --border-sub:  #CACACA;
+}
+
+/* 🌕 화이트 테마 */
+:root[data-theme="WHITE"] {
+    --primary: #9E9E9E;
+    --primary-light: #EDEDED;
+    --primary-dark: #2E2E2E;
+
+    --bg-main: #FFFFFF;
+    --bg-sub: #F7F7F7;
+    --bg-accent: #EEEEEE;
+
+    --text-main: #1A1A1A;
+    --text-sub: #5F5F5F;
+    --text-accent: #FFFFFF;
+    --text-danger: #C62828;
+
+    --btn-close: #2A2A2A;
+    --btn-danger: #C62828;
+    --btn-toggle: #9E9E9E;
+
+    --border-main: #E0E0E0;
+    --border-sub:  #CFCFCF;
+}
+
+/* 🌑 다크 테마 */
+:root[data-theme="DARK"] {
+    --primary: #0A0A0A;
+    --primary-light: #3A3A3A;
+    --primary-dark: #000000;
+
+    --bg-main: #4A4A4A;
+    --bg-sub: #424242;
+    --bg-accent: #5A5A5A;
+
+    --text-main: #E0E0E0;
+    --text-sub: #B5B5B5;
+    --text-accent: #F0F0F0;
+    --text-danger: #E85A5A;
+
+    --btn-close: #B5B5B5;
+    --btn-danger: #E85A5A;
+    --btn-toggle: #D0D0D0;
+
+    --border-main: #A8A8A8;
+    --border-sub:  #8A8A8A;
+}
+
+/* 크리스마스 테마 */
+:root[data-theme="CHRISTMAS"] {
+    /* Brand */
+    --primary: #B31904;
+    --primary-light: #F6D6D1;
+    --primary-dark: #7A0F03;
+
+    /* Background */
+    --bg-main: #6FB88A;
+    --bg-sub: #F6D6D1;
+    --bg-accent: #7A0F03;
+
+    /* Text */
+    --text-main: #3B0E0A;
+    --text-sub: #1F4D3A;
+    --text-accent: #ffffff;
+    --text-danger: #ff0000;
+
+    /* Button */
+    --btn-close: #333333;
+    --btn-danger: #d9534f;
+    --btn-toggle: #cccccc;
+
+    /* Border */
+    --border-main: #9C6B63;
+    --border-sub: #B9D8C3;
+}
+
+/* 🌸 봄 테마 */
+:root[data-theme="SPRING"] {
+    --primary: #E97AA8;
+    --primary-light: #FCE4EF;
+    --primary-dark: #B9577E;
+
+    --bg-main: #FFFFFF;
+    --bg-sub: #FFF4F8;
+    --bg-accent: #EAF6EE;
+
+    --text-main: #2F2F2F;
+    --text-sub: #6F6F6F;
+    --text-accent: #FFFFFF;
+    --text-danger: #E94B4B;
+
+    --btn-close: #333333;
+    --btn-danger: #d9534f;
+    --btn-toggle: #cccccc;
+
+    --border-main: #B9577E;
+    --border-sub:  #9C6B63;
+}
+
+/* 🌊 여름 테마 */
+:root[data-theme="SUMMER"] {
+    --primary: #1E88E5;
+    --primary-light: #E3F2FD;
+    --primary-dark: #0D47A1;
+
+    --bg-main: #FFFFFF;
+    --bg-sub: #F1F8FF;
+    --bg-accent: #E1F5FE;
+
+    --text-main: #1C1C1C;
+    --text-sub: #4A6FA5;
+    --text-accent: #FFFFFF;
+    --text-danger: #E53935;
+
+    --btn-close: #455A64;
+    --btn-danger: #E53935;
+    --btn-toggle: #4FC3F7;
+
+    --border-main: #2F5E8C;
+    --border-sub:  #1B2A3A;
+}
+
+/* 🍁 가을 테마 */
+:root[data-theme="AUTUMN"] {
+    --primary: #C65D3A;
+    --primary-light: #F4D3C2;
+    --primary-dark: #7A3A2A;
+
+    --bg-main: #FFFDF8;
+    --bg-sub: #F6EFE7;
+    --bg-accent: #EFE2D3;
+
+    --text-main: #2B1E17;
+    --text-sub: #6B4F3F;
+    --text-accent: #FFFFFF;
+    --text-danger: #B9382E;
+
+    --btn-close: #4A3A2F;
+    --btn-danger: #B9382E;
+    --btn-toggle: #D9A441;
+
+    --border-main: #5A3E2B;
+    --border-sub:  #3E2A1E;
+}
+
+/* ❄️ 겨울 테마 */
+:root[data-theme="WINTER"] {
+    --primary: #5B6775;
+    --primary-light: #ECEFF3;
+    --primary-dark: #2B3442;
+
+    --bg-main: #FFFFFF;
+    --bg-sub: #F4F6F8;
+    --bg-accent: #E9EDF2;
+
+    --text-main: #1F2937;
+    --text-sub: #6B7280;
+    --text-accent: #FFFFFF;
+    --text-danger: #9F2A2A;
+
+    --btn-close: #374151;
+    --btn-danger: #9F2A2A;
+    --btn-toggle: #9CA3AF;
+
+    --border-main: #2B3442;
+    --border-sub:  #111827;
+}
