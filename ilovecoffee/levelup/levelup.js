@@ -1965,6 +1965,9 @@ $(document) .off("click", ".user-profile-wrap") .on("click", ".user-profile-wrap
     $("#currentProfileImg").attr("src", current.src);
     $("#currentProfileName").text(current.name);
 
+    const currentBadge = $("#activeBadgeDisplay").text();
+    $("#modalBadgeDisplay").text(currentBadge);
+
     // 이미지 목록 채우기
     const $container = $("#profileImageContainer");
     $container.empty();
