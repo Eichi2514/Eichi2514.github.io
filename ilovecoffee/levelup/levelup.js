@@ -1989,7 +1989,7 @@ $("#applyProfileBtn").on("click", async function () {
         // 즉시 반영
         profileNum = selected;
         const profile = getSafeProfileById(selected);
-        $(".profile-img").attr("src", profile.src);
+        $(".user-profile").attr("src", profile.src);
     } catch (err) {
         console.error("프로필 변경 오류:", err);
         showAlert("프로필 변경 중 오류가 발생했습니다.");
