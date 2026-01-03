@@ -642,7 +642,7 @@ $(function () {
     });
 
     // ✅ 경험치 저장 버튼
-    $("#saveExpBtn").on("click", async function () {
+    $("#saveExpBtn").off("click").on("click", async function () {
         await saveExp();
         $("#todayExp").val("");
         $("#expModal").hide();
@@ -1073,7 +1073,7 @@ $(function () {
                                         ? goal.toLocaleString()
                                         : goal < 100000000
                                             ? `${Math.floor(goal / 10000)}만`
-                                            : `${Math.floor(goal / 100000000)}억`;
+                                            : `${parseFloat((goal / 100000000).toFixed(1))}억`;
 
                                     goalTable += `
                                             <tr>
