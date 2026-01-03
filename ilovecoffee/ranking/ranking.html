@@ -125,11 +125,32 @@
             width: 100%;
         }
 
-        .nick-cell img {
-            width: 20px;
+        .user-profile-wrap {
+            position: relative;
+            width: 20px; /* 기존 리스트 크기 유지 */
             height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .user-profile-wrap img {
+            width: 100%;
+            height: 100%;
             border-radius: 5px;
             object-fit: cover;
+        }
+
+        /* ✅ 4. [추가] 리스트용 뱃지 (작은 크기에 맞춰 위치 보정) */
+        .user-profile-wrap .badge-overlay {
+            position: absolute;
+            right: -4px;
+            bottom: 0;
+            font-size: 10px;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            pointer-events: none;
+            z-index: 2;
         }
 
         /* 🔍 모달 정렬 및 스타일 */
@@ -171,6 +192,21 @@
             font-weight: 600;
             font-size: 30px;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-profile-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .modal-badge-overlay {
+            position: absolute;
+            right: -10px;
+            bottom: 0;
+            font-size: 40px;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));
+            pointer-events: none;
+            line-height: 1;
         }
 
         .like-btn {
@@ -267,7 +303,10 @@
         <div id="modalNickname"></div>
         <div style="display: flex; gap: 10px; padding: 20px;">
             <div class="modal-content">
-                <img id="modalImg" src="" alt="profile">
+                <div class="modal-profile-container">
+                    <img id="modalImg" src="" alt="profile">
+                    <div id="modalBadgeIcon" class="modal-badge-overlay"></div>
+                </div>
                 <button id="likeBtn" class="like-btn">❤</button>
             </div>
 
@@ -353,6 +392,7 @@
 
     // ✅ 공통 유틸
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
+    import {SHOP_DATA} from "../common/shopData.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
@@ -470,11 +510,18 @@
                 const profileNum = u.profileImg || 1;
                 const profileSrc = `../image/profile${profileNum}.jpg`;
 
+                // ✅ 유저 데이터에서 뱃지 정보 추출 (SHOP_DATA 참조)
+                const activeBadgeId = u.activeBadge || "NONE";
+                const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+
                 $tbody.append(`
                     <tr>
                         <td>
                             <div class="nick-cell">
-                                <img src="${profileSrc}" alt="profile">
+                                <div class="user-profile-wrap">
+                                    <img src="${profileSrc}" alt="profile">
+                                    <div class="badge-overlay">${badgeIcon}</div>
+                                </div>
                                 <span>${u.key}</span>
                             </div>
                         </td>
@@ -534,17 +581,22 @@
 
         // 🔥 행 전체 클릭 시 프로필 모달 열기
         $(document).on("click", "#rankingTable tbody tr", function () {
-            const imgSrc = $(this).find("img").attr("src");
             const nickname = $(this).find(".nick-cell span").first().text().trim();
+            const userData = allUserDataMap[nickname];
 
-            if (!imgSrc) return; // 이미지 없으면 무시
+            if (!userData) return;
 
-            $("#modalImg").attr("src", imgSrc);
+            const profileNum = userData.profileImg || 1;
+            const profileSrc = `../image/profile${profileNum}.jpg`;
+
+            // ✅ 뱃지 아이콘 세팅
+            const activeBadgeId = userData.activeBadge || "NONE";
+            const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+
+            $("#modalImg").attr("src", profileSrc);
+            $("#modalBadgeIcon").text(badgeIcon); // ✅ 모달 뱃지 적용
             $("#modalNickname").text(nickname);
             $("#imgModal").addClass("active").hide().fadeIn(200);
-
-            // 🔥 전역에 저장해 둔 데이터에서 expRecords 가져오기
-            const userData = allUserDataMap[nickname];
 
             if (!userData || !userData.expRecords) {
                 $("#levelUpLogList").html("<p>레벨업 기록 없음</p>");

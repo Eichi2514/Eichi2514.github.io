@@ -205,11 +205,32 @@
             width: 100%;
         }
 
-        .nick-cell img {
+        /* 리스트 프로필 및 뱃지 */
+        .user-profile-wrap {
+            position: relative;
             width: 20px;
             height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .user-profile-wrap img {
+            width: 100%;
+            height: 100%;
             border-radius: 5px;
             object-fit: cover;
+        }
+
+        .user-profile-wrap .badge-overlay {
+            position: absolute;
+            right: -4px;
+            bottom: 0;
+            font-size: 10px;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            pointer-events: none;
+            z-index: 2;
         }
 
         .modal-content {
@@ -220,11 +241,34 @@
             align-items: center;
         }
 
+        /* 모달 프로필 및 뱃지 */
+        .modal-profile-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+        }
+
         #modalImg {
             max-width: 80%;
             max-height: 80%;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-badge-overlay {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));
+            pointer-events: none;
+            line-height: 1;
+            z-index: 5;
         }
 
         #modalNickname {
@@ -351,7 +395,10 @@
 <!-- 🔍 프로필 이미지 확대 모달 -->
 <div id="imgModal">
     <div class="modal-content">
-        <img id="modalImg" src="" alt="profile">
+        <div class="modal-profile-container">
+            <img id="modalImg" src="" alt="profile">
+            <div id="modalBadgeIcon" class="modal-badge-overlay"></div>
+        </div>
         <div id="modalNickname"></div>
         <button id="likeBtn" class="like-btn">❤</button>
     </div>
@@ -415,6 +462,7 @@
     import {getDatabase, ref, get, set, remove, query, orderByChild, equalTo} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
     import {goToPage, getActiveNickname, setActiveNickname} from "../common/utils.js";
     import {memoryData} from "../common/memoryData.js";
+    import { SHOP_DATA } from "../common/shopData.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
@@ -422,6 +470,9 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // ✅ 유저 목록 구성
+    let users = [];
 
     $(async function () {
         const nickname = getActiveNickname();
@@ -466,8 +517,6 @@
             }, 0);
         }, 0);
 
-        // ✅ 유저 목록 구성
-        let users = [];
         const memoryDataAll = memorySnap.val() || {};
         usersSnap.forEach(child => {
             const val = child.val();
@@ -475,7 +524,12 @@
             const collectedCount = Object.keys(userMemories).length;
 
             users.push({
-                key: child.key, level: val.level || 0, collectedCount, gauge: totalMemories > 0 ? Math.round((collectedCount / totalMemories) * 100) : 0, profileImg: val.profileImg, memoryRoomPublic: val.memoryRoomPublic
+                key: child.key,
+                level: val.level || 0, collectedCount,
+                gauge: totalMemories > 0 ? Math.round((collectedCount / totalMemories) * 100) : 0,
+                profileImg: val.profileImg,
+                activeBadge: val.activeBadge || "NONE",
+                memoryRoomPublic: val.memoryRoomPublic
             });
         });
 
@@ -496,12 +550,16 @@
             list.forEach(u => {
                 const profileNum = u.profileImg || 1;
                 const profileSrc = `../image/profile${profileNum}.jpg`;
+                const badgeIcon = SHOP_DATA.badges[u.activeBadge]?.icon || "";
 
                 $tbody.append(`
                         <tr>
                             <td>
                                 <div class="nick-cell">
-                                    <img src="${profileSrc}" alt="profile">
+                                    <div class="user-profile-wrap">
+                                        <img src="${profileSrc}" alt="profile">
+                                        <div class="badge-overlay">${badgeIcon}</div>
+                                    </div>
                                     <span>${u.key}</span>
                                 </div>
                             </td>
@@ -569,12 +627,17 @@
 
     // 🔥 행 전체 클릭 시 프로필 모달 열기
     $(document).on("click", "#userTable tbody tr", function () {
-        const imgSrc = $(this).find("img").attr("src");
         const nickname = $(this).find(".nick-cell span").first().text().trim();
+        const userData = users.find(u => u.key === nickname);
 
-        if (!imgSrc) return;
+        if (!userData) return;
 
-        $("#modalImg").attr("src", imgSrc);
+        const profileNum = userData.profileImg || 1;
+        const profileSrc = `../image/profile${profileNum}.jpg`;
+        const badgeIcon = SHOP_DATA.badges[userData.activeBadge]?.icon || "";
+
+        $("#modalImg").attr("src", profileSrc);
+        $("#modalBadgeIcon").text(badgeIcon);
         $("#modalNickname").text(nickname);
         $("#imgModal").addClass("active").hide().fadeIn(200);
     });

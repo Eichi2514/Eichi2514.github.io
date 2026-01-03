@@ -332,6 +332,27 @@
         .rankToggleBtn.active {
             background: var(--primary);
         }
+
+        /* 프로필 이미지를 감싸는 컨테이너에 적용 */
+        .profile-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* 뱃지 아이콘 스타일 */
+        .badge-overlay {
+            position: absolute;
+            right: -5px;
+            bottom: 0;
+            font-size: 14px; /* 리스트용 크기 */
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+            pointer-events: none;
+        }
+
+        /* TOP5 전용 뱃지 크기 조절 */
+        .rank-1 .badge-overlay { font-size: 32px; right: -16px; bottom: -8px; }
+        .rank-2-3 .badge-overlay { font-size: 28px; right: -12px; bottom: -6px; }
+        .rank-4-5 .badge-overlay { font-size: 24px; right: -10px; bottom: -4px; }
     </style>
 </head>
 <body>
@@ -474,6 +495,7 @@
         getKoreanDate,
         COLORS
     } from "../common/utils.js";
+    import { SHOP_DATA } from "../common/shopData.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -710,6 +732,12 @@
     const rankCache = {};
     const userInfoCache = {};
 
+    // 뱃지 ID를 이모지로 변환
+    function getBadgeIcon(badgeId) {
+        if (!badgeId || badgeId === "NONE") return "";
+        return SHOP_DATA.badges[badgeId]?.icon || "";
+    }
+
     async function preloadUsers(userIds) {
         // 🔹 중복 제거 + 캐시에 없는 것만
         const uniqueIds = [...new Set(userIds)]
@@ -747,6 +775,7 @@
                         <img src="../image/profile${users[0].profile}.jpg">
                     </div>
                     <div class="crown">👑</div>
+                    <div class="badge-overlay">${getBadgeIcon(users[0].badgeId)}</div>
                 </div>
                 <div class="top5-name">${users[0].nickname}</div>
                 <div class="top5-time">${users[0].time}</div>
@@ -767,6 +796,7 @@
                         <img src="../image/profile${users[i].profile}.jpg">
                     </div>
                     <div class="party">🎊</div>
+                    <div class="badge-overlay">${getBadgeIcon(users[i].badgeId)}</div>
                 </div>
                 <div class="top5-name">${users[i].nickname}</div>
                 <div class="top5-time">${users[i].time}</div>
@@ -786,6 +816,7 @@
                     <div class="top5-img-wrap">
                         <img src="../image/profile${users[i].profile}.jpg">
                     </div>
+                    <div class="badge-overlay">${getBadgeIcon(users[i].badgeId)}</div>
                 </div>
                 <div class="top5-name">${users[i].nickname}</div>
                 <div class="top5-time">${users[i].time}</div>
@@ -858,18 +889,20 @@
         // 2) 닉네임 요청
         const nickSnap = await get(ref(db, `coffeeUsersId/${id}`));
         if (!nickSnap.exists()) {
-            return userInfoCache[id] = { nickname: "탈퇴유저", profile: 1 };
+            return userInfoCache[id] = { nickname: "탈퇴유저", profile: 1, badge: "NONE" };
         }
 
         const nickname = nickSnap.val();
 
-        // 3) 프로필 번호만 조회 (전체 유저 데이터 NO)
+        // 3) 프로필 번호와 착용 뱃지 ID 동시 조회 (방대한 전체 데이터 NO)
         const profileSnap = await get(ref(db, `coffeeUsers/${nickname}/profileImg`));
+        const badgeSnap = await get(ref(db, `coffeeUsers/${nickname}/activeBadge`));
 
         const profile = profileSnap.exists() ? profileSnap.val() : 1;
+        const badgeId = badgeSnap.exists() ? badgeSnap.val() : null;
 
         // 캐싱
-        return userInfoCache[id] = { nickname, profile };
+        return userInfoCache[id] = { nickname, profile, badgeId };
     }
 
     async function loadRankChunk(startRank) {
@@ -918,8 +951,11 @@
             <div style="display:flex; align-items:center; margin-bottom:10px;">
                 <div style="font-weight:700; width:40px;">${item.rank}등</div>
 
-                <img src="../image/profile${user.profile}.jpg"
-                     style="width:40px; height:40px; border-radius:5px; margin-right:10px;">
+                <div class="profile-wrap" style="height:40px; margin-right:10px;">
+                    <img src="../image/profile${user.profile}.jpg"
+                         style="width:40px; height:40px; border-radius:5px;">
+                    <div class="badge-overlay">${getBadgeIcon(user.badgeId)}</div>
+                </div>
 
                 <div>
                     <div style="font-weight:600;">${user.nickname}</div>
@@ -1106,6 +1142,7 @@
                 userId,
                 nickname: info.nickname,
                 profile: info.profile,
+                badgeId: info.badgeId,
                 count: data[userId]
             });
         }
@@ -1161,16 +1198,19 @@
             if (!r.userId) {
                 r.nickname = "기록 없음";
                 r.profile = 1;
+                r.badgeId = null;
                 return;
             }
             const info = userInfoCache[r.userId];
             r.nickname = info.nickname;
             r.profile = info.profile;
+            r.badgeId = info.badgeId;
         });
 
         renderFirstRankList(result);
     }
 
+    // 날짜별 1등 리스트
     function renderFirstRankList(list) {
         const wrap = $("#firstRankList");
         wrap.empty();
@@ -1184,19 +1224,14 @@
                 : "";
 
             wrap.append(`
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:14px;
-                    padding:8px 10px;
-                    ${highlight}
-                ">
-                    <div style="width:50px; font-weight:700; color: ${COLORS.P};">
-                        ${item.date}
-                    </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:8px 10px; ${highlight}">
+                    <div style="width:50px; font-weight:700; color: ${COLORS.P};">${item.date}</div>
 
-                    <img src="../image/profile${item.profile}.jpg"
-                         style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                    <div class="profile-wrap" style="height:40px;">
+                        <img src="../image/profile${item.profile}.jpg"
+                             style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                        <div class="badge-overlay">${getBadgeIcon(item.badgeId)}</div>
+                    </div>
 
                     <div style="font-weight:600;">${item.nickname}</div>
                 </div>
@@ -1204,6 +1239,7 @@
         });
     }
 
+    // 누적 1등 리스트
     function renderTotalFirstRankList(list) {
         const wrap = $("#firstRankList");
         wrap.empty();
@@ -1216,29 +1252,20 @@
                 : "";
 
             wrap.append(`
-            <div style="
-                display:flex;
-                align-items:center;
-                gap:14px;
-                padding:8px 10px;
-                ${highlight}
-            ">
-                <div style="font-weight:700; width:40px; text-align:center; color:${COLORS.P};">
-                    ${index + 1}위
-                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:8px 10px; ${highlight}">
+                    <div style="font-weight:700; width:40px; text-align:center; color:${COLORS.P};">${index + 1}위</div>
 
-                <img src="../image/profile${item.profile}.jpg"
-                     style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                    <div class="profile-wrap" style="height:40px;">
+                        <img src="../image/profile${item.profile}.jpg"
+                             style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                        <div class="badge-overlay">${getBadgeIcon(item.badgeId)}</div>
+                    </div>
 
-                <div style="font-weight:600;">
-                    ${item.nickname}
-                </div>
+                    <div style="font-weight:600;">${item.nickname}</div>
 
-                <div style="margin-left:auto; font-weight:700; color:${COLORS.P};">
-                    ${item.count}회
+                    <div style="margin-left:auto; font-weight:700; color:${COLORS.P};">${item.count}회</div>
                 </div>
-            </div>
-        `);
+            `);
         });
     }
 

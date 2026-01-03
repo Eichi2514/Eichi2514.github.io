@@ -7,6 +7,7 @@ import { levelExp } from "../common/levelExp.js";
 import { PROFILE_GROUPS } from "../common/profileData.js";
 import { getSafeProfileById } from "../common/profileUtils.js";
 import { giveCoupon } from "../common/walletUtils.js";
+import {SHOP_DATA} from "../common/shopData.js";
 import {
     bindNumericCommaFormatter,
     closeAlert,
@@ -804,26 +805,19 @@ $(function () {
                 $("#levelModal").css("display", "flex");
                 return;
             } else {
-                // ✅ 프로필 이미지 표시 (닉네임 앞)
+                // 1) 프로필 이미지 설정
                 profileNum = Number(userData.profileImg) || 1;
                 const profile = getSafeProfileById(profileNum);
-                const profileSrc = profile.src;
 
-                // 프로필 이미지가 이미 있으면 갱신, 없으면 추가
-                if ($("#nicknameDisplay").prev(".profile-img").length > 0) {
-                    $("#nicknameDisplay").prev(".profile-img").attr("src", profileSrc);
-                } else {
-                    $("<img>")
-                        .attr("src", profileSrc)
-                        .attr("alt", "프로필 이미지")
-                        .addClass("profile-img")
-                        .css({
-                            width: "28px", height: "28px", borderRadius: "5px", objectFit: "cover",
-                        })
-                        .insertBefore("#nicknameDisplay");
-                }
+                // ✅ 동적 생성 대신, 미리 정의된 요소의 src와 text만 변경
+                $("#profileDisplay").attr("src", profile.src);
 
-                // 닉네임 / 레벨 표시
+                // 2) 착용 뱃지 설정
+                const activeBadgeId = userData.activeBadge || "NONE";
+                const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+                $("#activeBadgeDisplay").text(badgeIcon);
+
+                // 3) 닉네임 / 레벨 표시
                 $nicknameDisplay.text(`${nickname}`);
                 $currentLevelDisplay.text(`${userData.level}`);
             }
@@ -1964,7 +1958,7 @@ $(document).on("click", ".profile-tab", function () {
 });
 
 // ✅ 닉네임 앞의 프로필 클릭 시 모달 열기
-$(document) .off("click", ".profile-img") .on("click", ".profile-img", async function () {
+$(document) .off("click", ".user-profile-wrap") .on("click", ".user-profile-wrap", async function () {
     // 현재 프로필 표시
     const current = getSafeProfileById(profileNum);
 
@@ -2184,7 +2178,7 @@ async function checkDailyAttendance(nickname) {
 
     // 이미 오늘 출석했으면 종료
     const ts = user.lastAttendDate || ""; // "25.01.08-00:03:21"
-    if (ts.split("-")[0].replace(/\./g, "-") === `${today.slice(2)}`) return;
+    if (ts.split("-")[0].replace(/\./g, "-") === today.slice(2)) return;
 
     try {
         // [3] 랭킹 번호 먼저 확보 (Transaction 필수)

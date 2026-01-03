@@ -58,16 +58,13 @@
     </div>
 
     <div class="level-input">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span id="nicknameDisplay"
-                  style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color: var(--primary);">
-            </span>
-            <span id="currentLevelDisplay"
-                  style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color: var(--primary);">
-            </span>
-            <button id="expButton">입력</button>
+        <div class="user-info">
+            <div class="user-profile-wrap">
+                <img class="user-profile" src="../image/profile1.jpg" alt="프로필이미지" id="profileDisplay">
+                <div id="activeBadgeDisplay" class="badge-overlay"></div>
+            </div>
+            <span id="nicknameDisplay">닉네임</span>
+            <span id="currentLevelDisplay"></span>
         </div>
         <div id="rankingToggle" class="toggle-switch"></div>
     </div>

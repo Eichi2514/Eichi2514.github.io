@@ -41,7 +41,7 @@ export const PROFILE_GROUPS = {
     ],
 
     rank: [
-        {id: 91, name: "???", src: "../image/profile90.jpg"},
+        {id: 91, name: "뎐아짠", src: "../image/profile91.jpg"},
         {id: 92, name: "???", src: "../image/profile90.jpg"},
         {id: 93, name: "???", src: "../image/profile90.jpg"},
         {id: 94, name: "???", src: "../image/profile90.jpg"},

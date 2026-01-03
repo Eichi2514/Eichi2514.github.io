@@ -187,13 +187,52 @@
             color: var(--text-accent);
         }
 
+        /* ✅ 유저 정보 영역 수정 */
         .level-input {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             gap: 10px;
             padding: 0 24px;
             margin: 20px 0 8px;
             width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* 프로필 이미지 컨테이너 (뱃지 기준점) */
+        .user-profile-wrap {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 실제 프로필 이미지 */
+        .user-profile {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        /* 상단 프로필용 뱃지 전용 위치 (표준 준수) */
+        .user-profile-wrap .badge-overlay {
+            position: absolute;
+            right: -4px;
+            bottom: 0;
+            font-size: 14px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+            pointer-events: none;
+            z-index: 2;
         }
 
         .toggle-switch {
@@ -691,15 +730,13 @@
 <div class="subPage" id="filterSection" style="display: none;"></div>
 
 <div class="level-input">
-    <div style="display:flex; align-items:center; gap:10px;">
-            <span id="nicknameDisplay"
-                  style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:var(--primary);">
-            </span>
-        <span id="currentLevelDisplay"
-              style="display:inline-block; padding:8px 0;
-                  font-size:16px; font-weight:600; color:var(--primary);">
-            </span>
+    <div class="user-info">
+        <div class="user-profile-wrap">
+            <img class="user-profile" src="../image/profile1.jpg" alt="프로필이미지" id="profileDisplay">
+            <div id="activeBadgeDisplay" class="badge-overlay"></div>
+        </div>
+        <span id="nicknameDisplay">닉네임</span>
+        <span id="currentLevelDisplay"></span>
     </div>
     <div id="memoryRoomToggle" class="toggle-switch"></div>
 </div>
@@ -820,6 +857,7 @@
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {memoryData} from "../common/memoryData.js";
+    import { SHOP_DATA } from "../common/shopData.js";
     import {goToPage, showAlert, closeAlert, getActiveNickname, COLORS} from "../common/utils.js";
 
     const firebaseConfig = {
@@ -853,28 +891,23 @@
         // ✅ 필요한 필드만 병렬로 가져오기
         Promise.all([
             get(ref(db, `coffeeUsers/${activeNickname}/profileImg`)),
+            get(ref(db, `coffeeUsers/${activeNickname}/activeBadge`)),
             get(ref(db, `coffeeUsers/${activeNickname}/level`)),
             get(ref(db, `coffeeUsers/${activeNickname}/memoryRoomPublic`))
         ])
-            .then(([profileSnap, levelSnap, memorySnap, rankingSnap, adminSnap]) => {
+            .then(([profileSnap, badgeSnap, levelSnap, memorySnap, rankingSnap, adminSnap]) => {
                 const profileNum = profileSnap.exists() ? profileSnap.val() : 1;
+                const activeBadgeId = badgeSnap.exists() ? badgeSnap.val() : "NONE";
                 const level = levelSnap.exists() ? levelSnap.val() : 1;
                 const memoryRoomPublic = memorySnap.exists() ? memorySnap.val() : false;
 
-                // ✅ 프로필 이미지 표시 (닉네임 앞)
+                // ✅ 프로필 이미지 설정
                 const profileSrc = `../image/profile${profileNum}.jpg`;
-                if ($nicknameDisplay.prev(".profile-img").length > 0) {
-                    $nicknameDisplay.prev(".profile-img").attr("src", profileSrc);
-                } else {
-                    $("<img>")
-                        .attr("src", profileSrc)
-                        .attr("alt", "프로필 이미지")
-                        .addClass("profile-img")
-                        .css({
-                            width: "28px", height: "28px", borderRadius: "5px", objectFit: "cover"
-                        })
-                        .insertBefore("#nicknameDisplay");
-                }
+                $("#profileDisplay").attr("src", profileSrc);
+
+                // ✅ 뱃지 아이콘 설정
+                const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+                $("#activeBadgeDisplay").text(badgeIcon);
 
                 // ✅ 닉네임 / 레벨 표시
                 $nicknameDisplay.text(activeNickname);
