@@ -23,11 +23,7 @@
             height: 100%;
             margin: 0;
             font-family: sans-serif;
-            background: #f7f7f9;
-        }
-
-        :root {
-            --primary: #5a4398;
+            background: var(--bg-sub);
         }
 
         .page {
@@ -58,7 +54,7 @@
             justify-content: center;
             align-items: center;
             background: var(--primary);
-            color: #fff;
+            color: var(--text-accent);
             border-radius: 50%;
             cursor: pointer;
             font-size: 14px;
@@ -75,9 +71,9 @@
 
         .wrap {
             flex: 1;
-            border: 1px dashed #e5e7eb;
+            border: 1px dashed var(--border-main);
             border-radius: 12px;
-            background: #fafafa;
+            background: var(--bg-main);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -128,7 +124,7 @@
             align-items: center;
             justify-content: center;
             background: var(--primary);
-            color: #fff;
+            color: var(--text-accent);
             border-radius: 6px;
             font-size: 18px;
             font-weight: bold;
@@ -167,7 +163,7 @@
             font-size: 14px;
             font-weight: 600;
             background: var(--primary);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -179,7 +175,7 @@
             font-size: 14px;
             font-weight: 600;
             background: var(--primary);
-            color: #fff;
+            color: var(--text-accent);
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -258,7 +254,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            color: #374151;
+            color: var(--bg-accent);
             font-family: sans-serif;
             gap: 12px;
             height: 100vh;
@@ -293,7 +289,7 @@
 
         /* 스피너 */
         .spinner {
-            border: 6px solid #eee;
+            border: 6px solid var(--border-sub);
             border-top: 6px solid var(--primary);
             border-radius: 50%;
             width: 48px;
@@ -312,7 +308,7 @@
             width: 200px;
             height: 12px;
             border-radius: 6px;
-            background: #e5e7eb;
+            background: var(--primary-light);
             overflow: hidden;
         }
 
@@ -343,12 +339,12 @@
 
         /* 모달 박스 */
         .modal-content {
-            background: #fff;
+            background: var(--bg-main);
             padding: 20px;
             border-radius: 12px;
             max-width: max-content;
             width: 90%;
-            color: #333;
+            color: var(--text-main);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             animation: fadeIn 0.3s ease;
         }
@@ -359,7 +355,7 @@
             font-size: 20px;
             font-weight: bold;
             cursor: pointer;
-            color: #666;
+            color: var(--btn-toggle);
         }
 
         /* 모달 애니메이션 */
@@ -373,7 +369,7 @@
 <div id="page" class="page">
     <div class="head-line">
         <div class="title">작업대 배치도</div>
-        <div id="coord-box" style="margin-left:8px;font-size:14px;color:#333;">좌표 : -</div>
+        <div id="coord-box" style="margin-left:8px;font-size:14px;color:var(--text-main);">좌표 : -</div>
         <div style="display: flex; gap: 8px">
             <button id="backBtn">뒤로가기</button>
             <div id="help" class="help" title="배치 규칙 도움말">?</div>
@@ -435,7 +431,7 @@
             <h3>사용 방법</h3>
             <ol>
                 <li><b>기타칸 설정</b> :
-                    원하는 칸을 터치하면 <span style="color:#111827;font-weight:bold;">기타칸</span>으로 고정됩니다.</li>
+                    원하는 칸을 터치하면 <span style="color:var(--primary-dark);font-weight:bold;">기타칸</span>으로 고정됩니다.</li>
                 <li><b>머신 수 설정</b> :
                     오른쪽 패널에서 로머, 쿠머, 쇼케 등의 수를 조절하세요.</li>
                 <li><b>배치 시작</b> :
@@ -445,7 +441,7 @@
                 <li><b>초기화</b> :
                     모든 기타칸과 머신 수를 초기화하고 새로 시작합니다.</li>
             </ol>
-            <p style="margin-top:12px; font-size:13px; color:#555;">
+            <p style="margin-top:12px; font-size:13px; color:var(--text-sub);">
                 다시 확인하시려면 우측 상단의 <b>?</b> 버튼을 터치해주세요.
             </p>
         </div>
