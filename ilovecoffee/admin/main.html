@@ -166,8 +166,18 @@
             cursor: pointer;
         }
 
-        .move-btn {
+        .log-view-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .charge-open-btn {
             background: var(--primary);
+            color: var(--text-accent);
+        }
+
+        .move-btn {
+            background: var(--primary-dark);
             color: var(--text-accent);
         }
 
@@ -329,6 +339,129 @@
             border-color: var(--primary);
         }
 
+        /* ✅ 로그 모달 스타일 */
+        .log-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .log-modal .modal-content {
+            width: 320px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .log-header h4 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .date-nav-btn {
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #logContent {
+            flex: 1;
+            overflow-y: auto;
+            text-align: left;
+            min-height: 200px;
+            border-top: 1px solid var(--border-sub);
+            padding-top: 8px;
+        }
+
+        /* 로그 아이템 리스트 */
+        .log-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-sub);
+        }
+
+        .log-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .log-item-time {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        /* ✅ 재화 지급 모달 전용 스타일 */
+        .charge-modal .modal-content {
+            width: 280px;
+            padding: 24px;
+            background: var(--bg-main);
+            border-radius: 16px;
+        }
+
+        .charge-modal h4 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-sub);
+            border-radius: 8px;
+            background: var(--bg-sub);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .exec-btn {
+            background: var(--primary);
+            color: var(--text-accent);
+            margin-top: 10px;
+        }
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -350,6 +483,7 @@
         <option value="nickname">닉네임</option>
         <option value="recent">기록일</option>
         <option value="signup">가입순</option>
+        <option value="id">번호</option>
     </select>
 </div>
 
@@ -385,23 +519,66 @@
         <h3 id="modalNickname"></h3>
         <p id="modalSignupDate"></p>
         <p id="modalLastLogin"></p>
+        <button class="log-view-btn">재화 로그 확인</button>
+        <button class="charge-open-btn">재화 관리</button>
         <button class="move-btn">이동하기</button>
         <button class="delete-btn">삭제</button>
         <button class="close-btn">닫기</button>
     </div>
 </div>
 
+<div id="logModal" class="log-modal">
+    <div class="modal-content">
+        <div class="log-header">
+            <button id="prevDate" class="date-nav-btn">◀</button>
+            <h4 id="logDateTitle">2026-00-00</h4>
+            <button id="nextDate" class="date-nav-btn">▶</button>
+        </div>
+        <div id="logContent">
+        </div>
+        <button class="close-log-btn close-btn">닫기</button>
+    </div>
+</div>
+
+<div id="chargeModal" class="log-modal charge-modal">
+    <div class="modal-content">
+        <h4>재화 관리</h4>
+
+        <div class="input-group">
+            <label>자산 종류</label>
+            <select id="chargeAsset">
+                <option value="쿠폰">쿠폰</option>
+                <option value="H">H</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>수량 (차감은 -입력)</label>
+            <input type="number" id="chargeAmount" placeholder="숫자 입력">
+        </div>
+
+        <div class="input-group">
+            <label>지급 사유</label>
+            <input type="text" id="chargeReason" placeholder="사유를 입력하세요">
+        </div>
+
+        <button id="execChargeBtn" class="exec-btn">확인</button>
+        <button class="close-charge-btn close-btn">취소</button>
+    </div>
+</div>
+
 <script src="../theme/theme.js" type="module" defer></script>
 <script type="module">
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {getDatabase, ref, get, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, remove, query, orderByKey, startAt, endAt, runTransaction } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     // ✅ 공통 유틸
     import {calcAvgExp, calcDDay} from "../common/expUtils.js";
     import {dayDiff} from "../common/dateUtils.js";
-    import {goToPage, getActiveNickname, setActiveNickname} from "../common/utils.js";
+    import {goToPage, getActiveNickname, setActiveNickname, getKoreanTimestamp} from "../common/utils.js";
     import { getProfileName, getProfileImageSrc } from "../common/profileUtils.js";
     import { SHOP_DATA } from "../common/shopData.js";
+    import { writeWalletLog } from "../common/walletUtils.js";
 
     /* ======================
        Firebase 초기화
@@ -416,7 +593,7 @@
         appId: ".env/appId"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
     /* ======================
@@ -533,6 +710,7 @@
                         <span class="user-nick ${u.rankingPublic ? 'rank-public' : ''}">
                             ${u.key}
                         </span>
+                        <span>( ${u.id || "-"} )</span>
                     </div>
                     <div class="user-meta">
                         <span>경험치 : ${u.avgExp ? Math.floor(u.avgExp / 10000) + "만" : "-"}</span>
@@ -603,6 +781,9 @@
                 return new Date(`20${yy}-${mm}-${dd}T${hh}:${mi}:${ss}`).getTime();
             };
             list.sort((a, b) => parse(b.signupDate) - parse(a.signupDate));
+        }
+        else if (sortMode === "id"){
+            list.sort((a, b) => (a.id || 0) - (b.id || 0));
         }
 
         // ✅ 최종 렌더
@@ -718,6 +899,166 @@
         $("#userCount").text(`총 ${users.length}명`);
         renderProfileCounts(users);
         applyFiltersAndRender();
+    });
+
+    /* ======================
+        재화 로그 관리 상태
+    ====================== */
+    let currentLogNick = "";
+    let currentLogDate = new Date();
+
+    async function fetchWalletLogs(nickname, dateObj) {
+        // 1. 쿼리용 날짜 키 생성 (ID 포맷: 26_01_06)
+        const yy = String(dateObj.getFullYear()).slice(-2);
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+
+        const dateKeyPrefix = `${yy}_${mm}_${dd}`; // 결과: "26_01_06"
+
+        $("#logDateTitle").text(`${dateObj.getFullYear()}.${mm}.${dd}`);
+        $("#logContent").html("<div class='loading-text'>데이터 쿼리 중...</div>");
+
+        try {
+            // 2. 쿼리 최적화: 해당 날짜 키 범위만 가져옴
+            const logBaseRef = ref(db, `coffeeWalletLogs/${nickname}/logs`);
+            const logQuery = query(
+                logBaseRef,
+                orderByKey(),
+                startAt(dateKeyPrefix),
+                endAt(dateKeyPrefix + "\uf8ff") // 해당 접두사로 시작하는 모든 키 포함
+            );
+
+            const snap = await get(logQuery);
+
+            if (snap.exists()) {
+                const dayLogs = snap.val();
+                const keys = Object.keys(dayLogs).sort().reverse();
+
+                let html = '';
+                keys.forEach(key => {
+                    const logStr = dayLogs[key];
+                    const parts = logStr.split(' | ');
+                    if (parts.length < 6) return;
+
+                    const [result, time, action, asset, amountStr, reason] = parts;
+                    const isSuccess = result.trim() === "성공";
+                    const isPositive = !amountStr.includes('-');
+
+                    html += `
+                    <div class="log-item" style="${!isSuccess ? 'border-left: 4px solid var(--btn-danger);' : ''}">
+                        <div class="log-item-top">
+                            <span class="log-reason">${reason}</span>
+                            <span class="log-amount" style="color:${isPositive ? '#27ae60' : '#e74c3c'}">
+                                ${amountStr}
+                            </span>
+                        </div>
+                        <div class="log-item-time">${time.split('-')[1]} | ${asset} | ${result}</div>
+                    </div>`;
+                });
+                $("#logContent").html(html);
+            } else {
+                $("#logContent").html(`<div class='no-data' style="text-align: center;">${dateKeyPrefix.replace(/_/g, '.')} 기록이 없습니다.</div>`);
+            }
+        } catch (e) {
+            console.error("로그 쿼리 에러:", e);
+            $("#logContent").html(`<div class='error-text' style="text-align: center;">쿼리 오류가 발생했습니다.</div>`);
+        }
+    }
+
+    /* ======================
+       로그 관련 이벤트
+    ====================== */
+
+    // 1. 로그 버튼 클릭 시
+    $(document).on("click", ".log-view-btn", function() {
+        currentLogNick = $("#modalNickname").text();
+        currentLogDate = new Date();
+        $("#logModal").css("display", "flex").hide().fadeIn(200);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 2. 이전 날짜
+    $("#prevDate").on("click", function() {
+        currentLogDate.setDate(currentLogDate.getDate() - 1);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 3. 다음 날짜
+    $("#nextDate").on("click", function() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // 현재 보고 있는 날짜 복사
+        const checkDate = new Date(currentLogDate);
+        checkDate.setDate(checkDate.getDate() + 1);
+        checkDate.setHours(0, 0, 0, 0);
+
+        console.log(`checkDate : ${checkDate}`);
+        console.log(`today : ${today}`);
+        if (checkDate > today) {
+            alert("오늘 이후의 기록은 확인할 수 없습니다.");
+            return;
+        }
+
+        currentLogDate.setDate(currentLogDate.getDate() + 1);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 4. 로그 모달 닫기
+    $(".close-log-btn").on("click", function() {
+        $("#logModal").fadeOut(200);
+    });
+
+    // 지급 실행 이벤트
+    $("#execChargeBtn").on("click", async function() {
+        const nickname = $("#modalNickname").text();
+        const asset = $("#chargeAsset").val(); // "쿠폰" 또는 "포인트"
+        const amount = parseInt($("#chargeAmount").val());
+        const action = amount > 0 ? "획득" : "사용";
+        const defaultReason = (amount > 0) ? "시스템 보상" : "시스템 조정";
+        const reason = $("#chargeReason").val().trim() || defaultReason;
+
+        if (!nickname) return;
+        if (isNaN(amount) || amount === 0) {
+            alert("수량을 정확히 입력해주세요.");
+            return;
+        }
+
+        if (!confirm(`${nickname}님에게 ${asset} ${amount}개를 반영할까요?`)) return;
+
+        const ts = getKoreanTimestamp();
+        const absAmount = Math.abs(amount); // 로그 함수 내부에서 부호 처리를 하므로 절대값 전달
+
+        // DB 경로 설정 (이미지 구조 기반)
+        const dbPath = asset === "쿠폰" ? `coffeeStore/${nickname}/wallet/coupon` : `coffeeStore/${nickname}/wallet/h`;
+
+        try {
+            const tx = await runTransaction(ref(db, dbPath), (cur) => (cur || 0) + amount);
+
+            if (tx.committed) {
+                // ✅ 중복 함수 대신, 이미 정의된 writeWalletLog 직접 호출
+                // 파라미터: nickname, result, time, action, asset, amount, reason
+                await writeWalletLog(nickname, "성공", ts, action, asset, absAmount, reason);
+
+                alert(`${asset} 처리가 완료되었습니다.`);
+                $("#chargeModal").fadeOut(200);
+                $("#chargeAmount, #chargeReason").val(""); // 입력창 초기화
+            }
+        } catch (e) {
+            console.error("지급 실패:", e);
+            // 실패 시에도 기존 함수로 실패 로그 기록
+            await writeWalletLog(nickname, "실패", ts, action, asset, absAmount, reason);
+            alert("처리에 실패했습니다.");
+        }
+    });
+
+    // 모달 제어 이벤트
+    $(document).on("click", ".charge-open-btn", function() {
+        $("#chargeModal").css("display", "flex").hide().fadeIn(200);
+    });
+
+    $(".close-charge-btn").on("click", function() {
+        $("#chargeModal").fadeOut(200);
     });
 </script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
