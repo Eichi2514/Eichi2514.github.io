@@ -1,3 +1,4 @@
+/* modules/generalGuests.js */
 import {COLORS} from "../common/utils.js";
 
 const generalGuests = {

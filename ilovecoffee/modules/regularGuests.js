@@ -1,3 +1,4 @@
+/* modules/regularGuests.js */
 import {COLORS} from "../common/utils.js";
 
 // 🔹 단골손님 전체 데이터 (regularGuests.js)

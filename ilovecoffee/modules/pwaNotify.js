@@ -1,3 +1,4 @@
+/* modules/pwaNotify.js */
 import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {getDatabase, ref, set, get} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 import {getMessaging, onMessage, getToken} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging.js";

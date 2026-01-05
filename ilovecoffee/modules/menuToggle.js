@@ -1,3 +1,4 @@
+/* modules/menuToggle.js */
 // ✅ 메뉴 토글 + 자동 생성 + 관리자 모달 포함
 import {
     getDatabase,

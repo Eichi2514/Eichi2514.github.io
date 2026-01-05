@@ -1,3 +1,4 @@
+/* modules/helpModal.js */
 import {goToPage} from "../common/utils.js";
 
 // ✅ 도움말 페이지네이션 로직
