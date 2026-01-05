@@ -5,7 +5,7 @@
   "scope": "/ilovecoffee/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#5a4398",
+  "theme_color": "#3C2A21",
   "gcm_sender_id": "103953800507",
   "icons": [
     {
