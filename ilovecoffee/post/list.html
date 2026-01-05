@@ -374,6 +374,17 @@
     <button id="nextBtn">다음</button>
 </div>
 
+<!-- ===== 🔥 게시글 상세 모달 ===== -->
+<div class="login-overlay" id="postModal" style="display:none;">
+    <div class="login-modal">
+        <button id="closeModalBtn" class="closeBtn">✕</button>
+        <h2 id="modal-title"></h2>
+        <div id="modal-date" class="modal-date"></div>
+        <div id="modal-content" class="modal-content"></div>
+        <div id="modal-view" class="modal-view"></div>
+    </div>
+</div>
+<!--
 <div class="header-bar" style="margin-top: 40px; margin-bottom: 10px;">
     <div style="display: flex; gap: 4px; align-items: center">
         <h1>1등 리스트</h1>
@@ -387,18 +398,7 @@
 <div id="firstRankList"
      style="margin: 0 20px; display:flex; flex-direction:column; gap:14px;">
 </div>
-
-<!-- ===== 🔥 게시글 상세 모달 ===== -->
-<div class="login-overlay" id="postModal" style="display:none;">
-    <div class="login-modal">
-        <button id="closeModalBtn" class="closeBtn">✕</button>
-        <h2 id="modal-title"></h2>
-        <div id="modal-date" class="modal-date"></div>
-        <div id="modal-content" class="modal-content"></div>
-        <div id="modal-view" class="modal-view"></div>
-    </div>
-</div>
-
+ -->
 <!-- ===== 🔥 출석 랭킹 모달 ===== -->
 <div class="login-overlay" id="rankModal" style="display:none;">
     <div class="login-modal">
@@ -533,7 +533,7 @@
         } else {
             $("#viewTotal").addClass("active");
             $("#viewDaily").removeClass("active");
-            await loadTotalFirstRanks();
+            // await loadTotalFirstRanks();
         }
         $loadingScreen.hide();
     });

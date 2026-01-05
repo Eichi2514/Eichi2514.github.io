@@ -521,7 +521,7 @@ $(function () {
             if (snapshot.exists()) {
                 // ✅ 정상 계정이면 페이지 표시
                 if (savedNick == getActiveNickname()) {
-                    await checkDailyAttendance(savedNick);
+                    // await checkDailyAttendance(savedNick);
                     await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     await showLikeMessages(savedNick);
                 }
