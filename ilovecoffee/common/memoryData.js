@@ -163,7 +163,7 @@ export const memoryData = [{
         "name": "행복한 생일", "reward": "가브리엘 피규어 케이크", "items": [{
             "id": 73, "item": "허니카페 콘레체", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 74, "item": "베에비 컵케이크", "theme": "베이비파티", "color": "", "machine": "베이비파티 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
+            "id": 74, "item": "베이비 컵케이크", "theme": "베이비파티", "color": "", "machine": "베이비파티 쿠킹 머신", "attribute": "디저트", "price": "", "note": ""
         }, {
             "id": 75, "item": "생일 초 (50개)", "theme": "베이비파티", "color": "", "machine": "베이비파티 쿠킹 머신", "attribute": "디저트 토큰", "price": "", "note": "베이비 컵케이크 판매"
         }, {
