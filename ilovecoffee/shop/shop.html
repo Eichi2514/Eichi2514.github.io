@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상점 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="../../favicon/Eichi2.png" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- iOS 전체화면 설정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../../favicon/Eichi2.png">
+
+    <!-- Pretendard 웹폰트 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <link rel="stylesheet" href="../theme/theme.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--bg-main);
+            margin: 0;
+            padding: 20px 16px;
+            color: var(--text-main);
+        }
+
+        .header-bar {
+            background: var(--primary);
+            color: var(--text-accent);
+            padding: 14px 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-bar h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .header-bar button {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-accent);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #customAlert .alert-box, #customConfirm .alert-box, #themeSelectModal .alert-box, #badgeSelectModal .alert-box {
+            background: #ffbcae;
+            padding: 25px 25px 20px;
+            border-radius: 12px;
+            width: 360px;
+            max-width: fit-content;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            position: relative;
+        }
+
+        #customAlert .alert-content, #customConfirm .alert-content, #themeSelectModal .alert-content, #badgeSelectModal .alert-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #customAlert .alert-text, #customConfirm .alert-text, #themeSelectModal .alert-text, #badgeSelectModal .alert-text {
+            font-size: 16px;
+            font-weight: 500;
+            background: var(--bg-sub);
+            color: var(--text-main);
+            line-height: 1.4;
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+
+            white-space: pre-line; /* \n 줄바꿈 인식 */
+            word-break: keep-all; /* 단어 기준 줄바꿈 */
+            overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+        }
+
+        #customAlert .alert-img, #customConfirm .alert-img, #themeSelectModal .alert-img, #badgeSelectModal .alert-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        #alertConfirmBtn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: var(--text-accent);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        /* =========================
+           메뉴 선택 영역
+        ========================= */
+        .menu-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 0 8px;
+        }
+
+        .menu-tab {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: calc((100% / 3));
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--primary);
+            border-radius: 8px;
+            padding: 5px 0;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-tab.active {
+            background: var(--primary);
+            color: var(--text-accent);
+        }
+
+        /* =========================
+           유저 정보
+        ========================= */
+        /* 닉네임 영역 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            padding: 20px 8px 0 8px;
+        }
+
+        /* 프로필 이미지 컨테이너 (뱃지 기준점) */
+        .user-profile-wrap {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 실제 프로필 이미지 */
+        .user-profile {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        /* 상단 프로필용 뱃지 전용 위치 */
+        .user-profile-wrap .badge-overlay {
+            position: absolute;
+            right: -4px;
+            bottom: 0;
+            font-size: 12px;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            pointer-events: none;
+        }
+
+        /* 재화 영역 */
+        .user-currency {
+            display: grid;
+            grid-template-columns: 4fr 6fr;
+            gap: 10px;
+        }
+
+        /* 개별 재화 */
+        .currency-item {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            gap: 4px;
+            border-radius: 999px;
+            border: 1px solid var(--border-main);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        /* 재화 라벨 */
+        .currency-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-sub);
+            color: var(--primary);
+            font-weight: 500;
+            height: 30px;
+            width: 45px;
+            text-align: center;
+            border-left: 1px solid var(--border-main);
+            border-radius: 0 999px 999px 0;
+        }
+
+        /* 재화 값 */
+        .currency-value {
+            color: var(--primary);
+            font-weight: 700;
+            padding: 4px;
+        }
+
+        /* =========================
+           상품 공통 영역
+        ========================= */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .shop-item {
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            border-radius: 10px;
+            padding: 12px 4px 4px 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* =========================
+            재화 상자 영역
+        ========================= */
+        .box-image {
+            height: 48px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* =========================
+           테마 영역
+        ========================= */
+        .theme-color-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            height: 48px;
+            overflow: hidden;
+            border-radius: 6px;
+            border: 1px solid var(--border-main);
+        }
+
+        /* 개별 컬러 */
+        .theme-color-bar {
+            height: 100%;
+        }
+
+        /* =========================
+            로딩 영역
+        ========================= */
+        /* ===== 로딩 스크린 ===== */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-sub);
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        /* ===== 스피너 애니메이션 ===== */
+        .spinner {
+            border: 5px solid var(--border-main);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== 로딩 문구 ===== */
+        #loadingScreen p {
+            margin-top: 10px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* ===== 회전 애니메이션 ===== */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+            상자 개봉 연출
+        ========================= */
+        #boxOpenOverlay {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-open-container {
+            position: relative;
+            text-align: center;
+        }
+
+        #boxOpenImage {
+            width: 120px;
+            animation: shake 1s ease-in-out;
+            z-index: 1;
+        }
+
+        /* 흔들림 */
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(-10deg); }
+            40% { transform: rotate(10deg); }
+            60% { transform: rotate(-8deg); }
+            80% { transform: rotate(8deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* 확률 이펙트 */
+        #boxEffect {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            inset: 0;
+            border-radius: 50%;
+            animation: burst 1.5s ease-out forwards;
+            z-index: 2;
+        }
+
+        @keyframes burst {
+            from {
+                transform: scale(0.5);
+            }
+            to {
+                transform: scale(10);
+                opacity: 0;
+            }
+        }
+
+        #boxResultText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            z-index: 3;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        @keyframes resultFloatUp {
+            0% {
+                transform: translate(-50%, -100%) scale(0.5);
+            }
+            100% {
+                transform: translate(-50%, -500%) scale(1.5);
+            }
+        }
+
+        #boxResultText.show {
+            animation: resultFloatUp 0.6s ease-out forwards;
+        }
+
+        #boxHintText {
+            padding-top: 40px;
+            color: var(--text-sub);
+            opacity: 0.6;
+            letter-spacing: -0.3px;
+            animation: hintBlink 1.6s ease-in-out infinite;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        @keyframes hintBlink {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+    </style>
+    <link rel="stylesheet" href="../modules/helpModal.css"/>
+    <link rel="stylesheet" href="../modules/menuToggle.css"/>
+<body>
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>특별상점</h1>
+        <button id="helpBtn">?</button>
+    </div>
+    <button id="backBtn">뒤로가기</button>
+</div>
+
+<!-- ✅ 상단 메뉴 -->
+<div class="menu-tabs">
+    <div class="menu-tab" data-menu="boxes">
+        <span>재화 상자</span>
+    </div>
+    <div class="menu-tab" data-menu="themes">
+        <span>어플 테마</span>
+    </div>
+    <div class="menu-tab" data-menu="badges">
+        <span>프로필 뱃지</span>
+    </div>
+</div>
+
+<div class="user-info">
+    <div class="user-profile-wrap">
+        <img class="user-profile" src="../image/profile1.jpg" alt="프로필이미지" id="profileDisplay">
+        <div id="activeBadgeDisplay" class="badge-overlay"></div>
+    </div>
+    <span id="nicknameDisplay">닉네임</span>
+</div>
+
+<div class="user-currency">
+    <div class="currency-item">
+        <span id="couponDisplay" class="currency-value">0</span>
+        <span class="currency-label">🎫</span>
+    </div>
+    <div class="currency-item">
+        <span id="hDisplay" class="currency-value">0</span>
+        <span class="currency-label">H</span>
+    </div>
+</div>
+
+<div id="shopContents">
+    <div class="shop-content" data-content="boxes"></div>
+    <div class="shop-content" data-content="themes" style="display:none;"></div>
+    <div class="shop-content" data-content="badges" style="display:none;"></div>
+</div>
+
+<!-- 🎁 상자 개봉 연출 레이어 -->
+<div id="boxOpenOverlay" style="display:none;">
+    <div class="box-open-container">
+        <img id="boxOpenImage" src="" alt="box">
+        <div id="boxEffect"></div>
+        <div id="boxResultText"></div>
+        <div id="boxHintText">화면을 터치해 주세요</div>
+    </div>
+</div>
+
+<!-- 커스텀 알림 모달 -->
+<div id="customAlert" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div class="alert-content">
+            <div class="alert-text"></div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+        <button id="alertConfirmBtn">확인</button>
+    </div>
+</div>
+
+<!-- 커스텀 컨펌 모달 -->
+<div id="customConfirm" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div class="alert-content">
+            <div class="alert-text"></div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button id="confirmYesBtn"
+                    style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
+                확인
+            </button>
+            <button id="confirmNoBtn"
+                    style="flex:1; background:var(--btn-close); color:var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
+                취소
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 🎨 테마 선택 모달 -->
+<div id="themeSelectModal" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div id="themeModalText" style="text-align: center; margin-bottom: 20px;"></div>
+        <div class="alert-content">
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img" style="transform: scaleX(-1);">
+            <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
+                <button id="themeBuyBtn"
+                        style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    구매
+                </button>
+                <button id="themeApplyBtn"
+                        style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    적용
+                </button>
+                <button id="themePreviewBtn"
+                        style="flex:1; background:var(--bg-sub); color:var(--primary); border:1px solid var(--border-main); border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    미리보기
+                </button>
+                <button id="themeCancelBtn"
+                        style="flex:1; background:var(--btn-close); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    취소
+                </button>
+            </div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+    </div>
+</div>
+
+<!-- 🦊 뱃지 선택 모달 -->
+<div id="badgeSelectModal" class="login-overlay" style="display:none;">
+    <div class="alert-box">
+        <div id="badgeModalText" style="text-align: center; margin-bottom: 20px;"></div>
+        <div class="alert-content">
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img" style="transform: scaleX(-1);">
+            <div style="display: flex; flex-direction: column; gap: 10px; width:100%;">
+                <button id="badgeBuyBtn"
+                        style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    구매
+                </button>
+                <button id="badgeApplyBtn"
+                        style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    적용
+                </button>
+                <button id="badgePreviewBtn"
+                        style="flex:1; background:var(--bg-sub); color:var(--primary); border:1px solid var(--border-main); border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    미리보기
+                </button>
+                <button id="badgeCancelBtn"
+                        style="flex:1; background:var(--btn-close); color:var(--text-accent); border:none; border-radius:8px; font-size:15px; font-weight:600; padding:10px;">
+                    닫기
+                </button>
+            </div>
+            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+        </div>
+    </div>
+</div>
+
+<!-- 🦊 뱃지 미리보기 모달 -->
+<div id="badgePreviewOverlay" class="login-overlay" style="display:none; z-index: 10001;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+        <div id="previewNickname" style="color: #FFC90E; font-weight: 600; font-size: 24px; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></div>
+        <div style="position: relative; width: 200px; height: 200px;">
+            <img id="previewProfileImg" src="" alt="profile" style="width: 100%; height: 100%; border-radius: 15px; object-fit: cover; box-shadow: 0 0 15px rgba(0,0,0,0.3);">
+            <div id="previewBadgeIcon" style="position: absolute; right: -16px; bottom: -8px; font-size: 50px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));"></div>
+        </div>
+        <p style="color: white; font-size: 14px; opacity: 0.8;">화면을 터치하면 닫힙니다</p>
+    </div>
+</div>
+
+<!-- 로딩 스피너 -->
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>로딩 중...</p>
+</div>
+
+<script src="../theme/theme.js" type="module" defer></script>
+<script type="module" defer>
+    import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, set, runTransaction, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    import {SHOP_DATA} from "../common/shopData.js";
+    import {applySavedThemeOnLoad} from "../theme/theme.js";
+    import {goToPage, showAlert, closeAlert, showConfirm, getActiveNickname, getKoreanTimestamp, COLORS} from "../common/utils.js";
+    import { getProfileImageSrc } from "../common/profileUtils.js";
+    import { writeWalletLog } from "../common/walletUtils.js";
+
+    const firebaseConfig = {
+        apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
+    };
+
+    const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const $loadingScreen = $("#loadingScreen");
+
+    // 상점 페이지 전용 캐시
+    const shopProfileCache = {
+        nickname: null,
+        profileImgId: null,
+        profileImgSrc: null
+    };
+
+    let inventoryThemes = {};
+    let inventoryBadges = {};
+    let activeBadgeId = null;
+
+    // ✅ 알림 모달 닫기 버튼
+    $(document).on("click", "#alertConfirmBtn", function () {
+        closeAlert();
+    });
+
+    /** 상점 상단(프로필/닉네임/재화) 로딩 */
+    async function loadShopHeader() {
+        try {
+            const nickname = getActiveNickname();
+            if (!nickname) return;
+
+            // 1) 프로필 이미지 번호 (coffeeUsers)
+            const profileImgRef = ref(db, `coffeeUsers/${nickname}/profileImg`);
+            const activeBadgeRef = ref(db, `coffeeUsers/${nickname}/activeBadge`);
+
+            // 2) 재화/인벤토리 (coffeeStore)
+            const storeRef = ref(db, `coffeeStore/${nickname}`);
+
+            // ✅ 병렬 조회 (속도 이득)
+            const [profileSnap, badgeSnap, storeSnap] = await Promise.all([
+                get(profileImgRef),
+                get(activeBadgeRef),
+                get(storeRef)
+            ]);
+
+            // --- 프로필/닉네임 표시 ---
+            $("#nicknameDisplay").text(nickname);
+            const profileImgId = profileSnap.exists() ? profileSnap.val() : null;
+            const profileSrc = getProfileImageSrc(profileImgId);
+
+            // --- ✅ 착용 뱃지 정보 저장 (데이터 양 최소화) ---
+            activeBadgeId = badgeSnap.exists() ? badgeSnap.val() : "NONE";
+            const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+            $("#activeBadgeDisplay").text(badgeIcon);
+
+            // ✅ 캐시 저장 (최초 1회 기준값)
+            shopProfileCache.nickname = nickname;
+            shopProfileCache.profileImgId = profileImgId;
+            shopProfileCache.profileImgSrc = profileSrc;
+
+            $("#profileDisplay").attr("src", profileSrc);
+
+            // --- 재화 표시 ---
+            if (!storeSnap.exists() || !storeSnap.val().wallet) {
+                // 🎁 최초 방문 보상: 쿠폰 지급
+                const initWallet = {
+                    coupon: 1,
+                    h: 0
+                };
+
+                await update(ref(db, `coffeeStore/${nickname}`), {
+                    wallet: initWallet
+                });
+
+                applyWalletToUI(initWallet);
+                showAlert("🎁 첫 방문 보상!\n🎫 드릴게요~!");
+                return;
+            }
+
+            const store = storeSnap.val();
+            applyWalletToUI(store.wallet);
+            inventoryThemes = store.inventory?.themes || {};
+            inventoryBadges = store.inventory?.badges || {};
+
+        } finally {
+            $loadingScreen.hide();
+            if (rendered.themes) renderThemes();
+            if (rendered.badges) renderBadges();
+        }
+    }
+
+    /** 재화 UI 반영 */
+    function applyWalletToUI(wallet) {
+        const coupon = wallet && wallet.coupon != null ? Number(wallet.coupon) : 0;
+        const h = wallet && wallet.h != null ? Number(wallet.h) : 0;
+
+        $("#couponDisplay").text(coupon.toLocaleString());
+        $("#hDisplay").text(h.toLocaleString());
+    }
+
+    const rendered = {
+        boxes: false,
+        themes: false,
+        badges: false
+    };
+
+    const $menuTab = $(".menu-tab");
+
+    $menuTab.on("click", function () {
+        const target = $(this).data("menu");
+
+        // 🔑 URL 해시 변경
+        location.hash = target;
+
+        // 콘텐츠 전부 숨김
+        $(".shop-content").hide();
+
+        // 해당 콘텐츠 표시
+        const $targetContent = $('.shop-content[data-content="' + target + '"]');
+        $targetContent.show();
+
+        // 탭 활성화
+        $menuTab.removeClass("active");
+        $(this).addClass("active");
+
+        // ✅ 아직 렌더 안 했으면 여기서 렌더
+        if (!rendered[target]) {
+            if (target === "boxes") renderBoxes();
+            if (target === "themes") renderThemes();
+            if (target === "badges") renderBadges();
+            rendered[target] = true;
+        }
+    });
+
+    function activateTabByHash() {
+        const hash = location.hash.replace("#", "");
+        const target = hash || "boxes";
+
+        const $tab = $(`.menu-tab[data-menu="${target}"]`);
+
+        if ($tab.length) {
+            $tab.trigger("click");
+        } else {
+            $menuTab.first().trigger("click");
+        }
+    }
+
+    loadShopHeader();
+    activateTabByHash();
+
+    // ==============================
+    // SHOP_DATA 렌더링
+    // ==============================
+    function renderBoxes() {
+        const $container = $('.shop-content[data-content="boxes"]');
+        $container.empty();
+
+        const $grid = $('<div class="shop-grid"></div>');
+
+        Object.values(SHOP_DATA.boxes).forEach(box => {
+            const $item = $(`
+                <div class="shop-item">
+                    <div style="font-weight:600;">${box.name}</div>
+                    <div style="display: flex; justify-content: center;">
+                        <img src="${box.img}" alt="${box.name}" class="box-image">
+                    </div>
+                    <div style="font-size:12px; color:var(--text-sub); text-align: right;">
+                        ${box.couponCost.toLocaleString()}🎫
+                    </div>
+                </div>
+            `);
+            $item.on("click", () => confirmOpenBox(box));
+            $grid.append($item);
+        });
+
+        $container.append($grid);
+    }
+
+    function pickReward(rewards) {
+        const total = rewards.reduce((sum, r) => sum + r.rate, 0);
+        let roll = Math.random() * total;
+
+        for (const r of rewards) {
+            roll -= r.rate;
+            if (roll <= 0) return r.h;
+        }
+        return rewards[rewards.length - 1].h; // 안전장치
+    }
+
+    function buildProbabilityText(rewards) {
+        return rewards
+            .map(r => `• ${r.h}H (${r.rate}%)`)
+            .join("\n");
+    }
+
+    function confirmOpenBox(box) {
+        const probabilityText = buildProbabilityText(box.rewards);
+
+        showConfirm(
+            `${box.name}를 개봉하시겠습니까?\n\n` +
+            `필요 : ${box.couponCost.toLocaleString()}🎫\n\n` +
+            `[획득 확률]\n${probabilityText}`,
+            (confirmed) => {
+                if (!confirmed) return;
+                openBox(box);
+            }
+        );
+    }
+
+    function buildRewardTierMap(rewards) {
+        // h 기준 오름차순 정렬
+        const sorted = [...rewards]
+            .map(r => r.h)
+            .sort((a, b) => a - b);
+
+        const maxH = sorted[sorted.length - 1]; // 최고 보상
+        const rest = sorted.slice(0, -1);       // 나머지
+
+        const half = Math.ceil(rest.length / 2);
+
+        const lowTier = new Set(rest.slice(0, half));
+        const midTier = new Set(rest.slice(half));
+
+        return {
+            maxH,
+            midTier,
+            lowTier
+        };
+    }
+
+    function getEffectColorByBox(rewardH, box) {
+        const tierMap = buildRewardTierMap(box.rewards);
+
+        if (rewardH === tierMap.maxH) {
+            return "#FFC400"; // 최고 보상
+        }
+
+        if (tierMap.midTier.has(rewardH)) {
+            return "#CFCFCF"; // 중간 보상
+        }
+
+        return "#C48A5A";     // 최하 보상
+    }
+
+    async function openBox(box) {
+        const nickname = getActiveNickname();
+        if (!nickname) return;
+
+        const rewardH = pickReward(box.rewards);
+        const ts = getKoreanTimestamp();
+        const effectColor = getEffectColorByBox(rewardH, box);
+
+        // ✅ 1️⃣ 먼저 트랜잭션부터
+        const walletRef = ref(db, `coffeeStore/${nickname}/wallet`);
+        const result = await runTransaction(walletRef, (wallet) => {
+            const safeWallet = {
+                coupon: Number(wallet?.coupon ?? 0),
+                h: Number(wallet?.h ?? 0)
+            };
+
+            // 쿠폰 부족 → 트랜잭션 중단
+            if (wallet && safeWallet.coupon < box.couponCost) return;
+
+            safeWallet.coupon -= box.couponCost;
+            safeWallet.h += rewardH;
+            return safeWallet;
+        });
+
+        // ❌ 실패 시: 연출 없이 알림만
+        if (!result.committed) {
+            showAlert("🎫이 부족합니다!");
+            return;
+        }
+
+        // 1. 쿠폰 사용 로그
+        await writeWalletLog(nickname, "성공", ts, "사용", "쿠폰", box.couponCost, `${box.name} 개봉`);
+        // 2. H 획득 로그
+        await writeWalletLog(nickname, "성공", ts, "획득", "H", rewardH, `${box.name} 보상 획득`);
+
+        // ✅ 2️⃣ 성공했을 때만 연출 시작
+        applyWalletToUI(result.snapshot.val());
+
+        const $resultText = $("#boxResultText");
+
+        $("#boxOpenImage").attr("src", box.img);
+        $("#boxEffect").css("background", effectColor);
+        $resultText.hide();
+
+        $("#boxOpenOverlay").fadeIn(150);
+
+        // 흔들림 끝난 뒤 결과 표시
+        setTimeout(() => {
+            $resultText
+                .removeClass("show")
+                .text(`🦊 ${rewardH.toLocaleString()}H 획득!`)
+                .show();
+
+            // 애니메이션 재실행 보장
+            void $resultText[0].offsetWidth;
+            $resultText.addClass("show");
+        }, 800);
+    }
+
+    // ✅ 상자 개봉 연출 클릭 시 닫기
+    $(document).on("click", "#boxOpenOverlay", function () {
+        closeBoxOpenOverlay();
+    });
+
+    function closeBoxOpenOverlay() {
+        $("#boxOpenOverlay").fadeOut(300);
+
+        // 다음 연출을 위해 상태 초기화
+        $("#boxResultText").hide().css("opacity", 1);
+        $("#boxEffect").stop(true, true);
+    }
+
+    function renderThemes() {
+        const $container = $('.shop-content[data-content="themes"]');
+        $container.empty();
+
+        const $grid = $('<div class="shop-grid"></div>');
+
+        Object.values(SHOP_DATA.themes).forEach(theme => {
+            const owned = theme.priceH === 0 || inventoryThemes?.[theme.id];
+            const applied = localStorage.getItem("activeTheme") === theme.id;
+            const statusText = applied ? "적용 중" : owned ? "보유 중" : "";
+            const statusColor = applied ? "var(--primary)" : "var(--text-sub)";
+            const priceText = theme.priceH === 0 ? '무료' : `${theme.priceH.toLocaleString()}H`;
+
+            const colorBars = theme.previewColors.map(color =>
+                `<div class="theme-color-bar" style="background:${color}"></div>`
+            ).join("");
+
+            const $item = $(`
+                <div class="shop-item">
+                    <div style="font-weight:600;">${theme.name}</div>
+                    <div class="theme-color-strip">${colorBars}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:${statusColor}; font-weight:600;">
+                            ${statusText}
+                        </span>
+                        <span style="color:var(--text-sub);">
+                            ${priceText}
+                        </span>
+                    </div>
+                </div>
+            `);
+            $item.on("click", () => onThemeClick(theme, owned));
+            $grid.append($item);
+        });
+
+        $container.append($grid);
+    }
+
+    let currentThemeTarget = null;
+    function onThemeClick(theme, isOwned) {
+        currentThemeTarget = theme;
+
+        $("#themeModalText").text(`${theme.name} 테마`);
+
+        if (isOwned) {
+            $("#themeBuyBtn").hide();
+            $("#themePreviewBtn").hide();
+            $("#themeApplyBtn").show();
+        } else {
+            $("#themeBuyBtn").show();
+            $("#themePreviewBtn").show();
+            $("#themeApplyBtn").hide();
+        }
+
+        $("#themeSelectModal").fadeIn(150);
+    }
+
+    $("#themeBuyBtn").on("click", function () {
+        if (!currentThemeTarget) return;
+
+        purchaseTheme(currentThemeTarget);
+        $("#themeSelectModal").fadeOut(150);
+    });
+
+    $("#themePreviewBtn").on("click", function () {
+        if (!currentThemeTarget) return;
+
+        $("html").attr("data-theme", currentThemeTarget.id);
+        $("#themeSelectModal").fadeOut(150);
+    });
+
+    $("#themeApplyBtn").on("click", function () {
+        if (!currentThemeTarget) return;
+
+        applyTheme(currentThemeTarget.id);
+    });
+
+    $("#themeCancelBtn").on("click", function () {
+        $("#themeSelectModal").fadeOut(150);
+    });
+
+    function applyTheme(themeId) {
+        $("html").attr("data-theme", themeId);
+        localStorage.setItem("activeTheme", themeId);
+        location.reload();
+    }
+
+    async function purchaseTheme(theme) {
+        const nickname = getActiveNickname();
+        if (!nickname) return;
+
+        const walletRef = ref(db, `coffeeStore/${nickname}/wallet`);
+        const inventoryRef = ref(db, `coffeeStore/${nickname}/inventory/themes/${theme.id}`);
+        const ts = getKoreanTimestamp();
+
+        const result = await runTransaction(walletRef, (wallet) => {
+            const safeWallet = {
+                coupon: Number(wallet?.coupon ?? 0),
+                h: Number(wallet?.h ?? 0)
+            };
+
+            if (wallet && safeWallet.h < theme.priceH) return;
+
+            safeWallet.h -= theme.priceH;
+            return safeWallet;
+        });
+
+        if (!result.committed) {
+            showAlert("H가 부족합니다!");
+            return;
+        }
+
+        // 1. H 사용 로그
+        await writeWalletLog(nickname, "성공", ts, "사용", "H", theme.priceH, `${theme.name} 테마 구매`);
+
+        // ✅ 테마 소유 처리
+        await set(inventoryRef, true);
+
+        localStorage.setItem("activeTheme", theme.id);
+        applySavedThemeOnLoad();
+        applyWalletToUI(result.snapshot.val());
+        location.reload();
+    }
+
+    function renderBadges() {
+        const $container = $('.shop-content[data-content="badges"]');
+        $container.empty();
+
+        const $grid = $('<div class="shop-grid"></div>');
+
+        Object.values(SHOP_DATA.badges).forEach(badge => {
+            const owned = badge.priceH === 0 || inventoryBadges?.[badge.id];
+            const applied = activeBadgeId === badge.id;
+            const statusText = applied ? "적용 중" : owned ? "보유 중" : "";
+            const statusColor = applied ? "var(--primary)" : "var(--text-sub)";
+            const priceText = badge.priceH === 0 ? '무료' : badge.priceH.toLocaleString() + 'H';
+
+
+            const badgeIcon = badge.icon ? badge.icon : `🚫`;
+
+            const $item = $(`
+                <div class="shop-item">
+                    <div style="font-weight:600;">${badge.name}</div>
+                    <div style="font-size:36px;">${badgeIcon}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                        <span style="color:${statusColor}; font-weight:600;">
+                            ${statusText}
+                        </span>
+                        <span style="color:var(--text-sub);">
+                            ${priceText}
+                        </span>
+                    </div>
+                </div>
+            `);
+            $item.on("click", () => onBadgeClick(badge, owned));
+            $grid.append($item);
+        });
+
+        $container.append($grid);
+    }
+
+    let currentBadgeTarget = null;
+    function onBadgeClick(badge, isOwned) {
+        currentBadgeTarget = badge;
+        $("#badgeModalText").text(`${badge.name} 뱃지`);
+
+        if (isOwned) {
+            $("#badgeBuyBtn").hide();
+            $("#badgePreviewBtn").hide();
+            $("#badgeApplyBtn").show();
+        } else {
+            $("#badgeBuyBtn").show();
+            $("#badgePreviewBtn").show();
+            $("#badgeApplyBtn").hide();
+        }
+
+        $("#badgeSelectModal").fadeIn(150);
+    }
+
+    // ✅ 뱃지 미리보기 버튼 클릭 시
+    $("#badgePreviewBtn").on("click", function () {
+        if (!currentBadgeTarget) return;
+
+        const nickname = shopProfileCache.nickname;
+        const profileSrc = shopProfileCache.profileImgSrc;
+
+        $("#previewNickname").text(nickname);
+        $("#previewProfileImg").attr("src", profileSrc);
+        $("#previewBadgeIcon").text(currentBadgeTarget.icon || "");
+
+        $("#badgeSelectModal").hide(); // 뱃지 선택 모달 잠시 숨김
+        $("#badgePreviewOverlay").fadeIn(150);
+    });
+
+    // ✅ 뱃지 구매 버튼 클릭 시
+    $("#badgeBuyBtn").on("click", function () {
+        if (!currentBadgeTarget) return;
+
+        purchaseBadge(currentBadgeTarget);
+        $("#badgeSelectModal").fadeOut(150);
+    });
+
+    // ✅ 뱃지 구매 및 서버 적용 함수
+    async function purchaseBadge(badge) {
+        const nickname = getActiveNickname();
+        if (!nickname) return;
+
+        const walletRef = ref(db, `coffeeStore/${nickname}/wallet`);
+        const inventoryRef = ref(db, `coffeeStore/${nickname}/inventory/badges/${badge.id}`);
+        const activeBadgeRef = ref(db, `coffeeUsers/${nickname}/activeBadge`);
+        const ts = getKoreanTimestamp();
+
+        const result = await runTransaction(walletRef, (wallet) => {
+            const safeWallet = {
+                coupon: Number(wallet?.coupon ?? 0),
+                h: Number(wallet?.h ?? 0)
+            };
+
+            // 재화 부족 시 중단
+            if (wallet && safeWallet.h < badge.priceH) return;
+
+            safeWallet.h -= badge.priceH;
+            return safeWallet;
+        });
+
+        if (!result.committed) {
+            showAlert("H가 부족합니다!");
+            return;
+        }
+
+        // 1. H 사용 로그 기록
+        await writeWalletLog(nickname, "성공", ts, "사용", "H", badge.priceH, `${badge.name} 뱃지 구매`);
+
+        // 2. 통합 업데이트: 단 한 번의 서버 통신으로 인벤토리 추가와 착용 뱃지 변경 처리
+        const updates = {};
+        updates[`coffeeStore/${nickname}/inventory/badges/${badge.id}`] = true;
+        updates[`coffeeUsers/${nickname}/activeBadge`] = badge.id;
+
+        await update(ref(db), updates);
+
+        // UI 갱신을 위해 페이지 리로드 (또는 재렌더링 처리)
+        applyWalletToUI(result.snapshot.val());
+        location.reload();
+    }
+
+    // ✅ 미리보기 레이어 닫기
+    $(document).on("click", "#badgePreviewOverlay", function () {
+        $(this).fadeOut(150);
+    });
+
+    // ✅ 뱃지 적용 버튼 클릭 시 (보유 중인 뱃지 장착)
+    $("#badgeApplyBtn").on("click", async function () {
+        if (!currentBadgeTarget) return;
+
+        const nickname = getActiveNickname();
+        if (!nickname) return;
+
+        // 적용은 재화 소모가 없으므로 transaction 없이 바로 set 처리
+        const activeBadgeRef = ref(db, `coffeeUsers/${nickname}/activeBadge`);
+
+        try {
+            await set(activeBadgeRef, currentBadgeTarget.id);
+
+            $("#badgeSelectModal").fadeOut(150);
+            location.reload();
+        } catch (err) {
+            console.error("Badge Apply Error:", err);
+            showAlert("뱃지 적용 중 오류가 발생했습니다.");
+        }
+    });
+
+    // 닫기 버튼 이벤트
+    $(document).on("click", "#badgeCancelBtn", function () {
+        $("#badgeSelectModal").fadeOut(150);
+    });
+</script>
+<script src="../modules/helpModal.js" type="module" defer></script>
+<script src="../modules/menuToggle.js" type="module" defer></script>
+</body>
+</html>

@@ -50,11 +50,6 @@ $(".logoutBtn").on("click", function () {
     });
 });
 
-$(document).on("click", ".layoutBtn", () => goToPage("layout"));
-$(document).on("click", ".baristaBtn", () => goToPage("barista"));
-$(document).on("click", ".memoryBtn", () => goToPage("memory"));
-$(document).on("click", ".postsBtn", () => goToPage("postList"));
-
 // ✅ 부캐 등록 모달 열기
 $(document).on("click", ".addSubCharacterBtn", function () {
     $("#subLoginPopup").show();

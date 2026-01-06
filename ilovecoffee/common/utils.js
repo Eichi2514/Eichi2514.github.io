@@ -243,6 +243,8 @@ export function goToPage(target = "levelup") {
         layout: `${basePath}/layout/layout.html`,
         barista: `${basePath}/barista/barista.html`,
 
+        shop: `${basePath}/shop/shop.html`,
+
         test: `${basePath}/test/test.html`,
     };
 

@@ -1,12 +1,14 @@
+/* modules/favoriteBtns.js */
 import {BUTTONS} from "../common/buttonInfo.js";
-import {COLORS} from "../common/utils.js";
+import {goToPage, COLORS, getKoreanDate} from "../common/utils.js";
 
 let favoriteOrder = JSON.parse(localStorage.getItem("favorites") || "[]");
+const defaultfavList = ["postsBtn", "shopBtn", "memoryBtn"];
 
 $(document).on("click", ".favoriteSettingBtn", function () {
     favoriteOrder = JSON.parse(localStorage.getItem("favorites")) || [];
     if (!favoriteOrder || favoriteOrder.length === 0) {
-        favoriteOrder = ["postsBtn", "baristaBtn", "memoryBtn"];
+        favoriteOrder = defaultfavList;
     }
 
     renderFavoriteSelect();
@@ -30,7 +32,7 @@ function renderFavoriteSelect() {
     let favList = JSON.parse(localStorage.getItem("favorites"));
 
     if (!favList || favList.length === 0) {
-        favList = ["postsBtn", "baristaBtn", "memoryBtn"];
+        favList = defaultfavList;
     }
 
     $("#favoriteSelectArea").empty();
@@ -111,7 +113,7 @@ function renderQuickButtons() {
     let favList = JSON.parse(localStorage.getItem("favorites"));
 
     if (!favList || favList.length === 0) {
-        favList = ["postsBtn", "baristaBtn", "memoryBtn"];
+        favList = defaultfavList;
     }
 
     $(".quickBtn-bar").empty();
@@ -133,7 +135,7 @@ function renderSettingsButtons() {
     let favList = JSON.parse(localStorage.getItem("favorites"));
 
     if (!favList || favList.length === 0) {
-        favList = ["postsBtn", "baristaBtn", "memoryBtn"];
+        favList = defaultfavList;
     }
     const restBtns = BUTTONS.filter(btn => !favList.includes(btn.key));
 
@@ -153,3 +155,9 @@ $(document).ready(function () {
     renderQuickButtons();
     renderSettingsButtons();
 });
+
+$(document).on("click", ".layoutBtn", () => goToPage("layout"));
+$(document).on("click", ".baristaBtn", () => goToPage("barista"));
+$(document).on("click", ".memoryBtn", () => goToPage("memory"));
+$(document).on("click", ".postsBtn", () => goToPage("postList"));
+$(document).on("click", ".shopBtn", () => goToPage("shop"));
