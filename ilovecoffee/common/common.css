@@ -1,0 +1,234 @@
+/* ../common/common.css */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: flex-start; /* 위쪽부터 배치 */
+    gap: 10px;
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    padding: 20px 16px 300px 16px;
+}
+
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.login-modal {
+    position: relative;
+    background: var(--bg-main);
+    padding: 30px 25px 50px 25px;
+    border-radius: 12px;
+    width: 360px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== 헤더 스타일 ===== */
+.header-bar {
+    background: var(--primary);
+    color: var(--text-accent);
+    padding: 14px 16px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-bar h1 {
+    color: var(--text-accent); /* 흰 글씨 */
+    font-size: 20px;
+    margin: 0;
+}
+
+.header-bar button {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-accent);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
+#customAlert,
+#customConfirm {
+    z-index: 100; /* 다른 모든 모달보다 앞 */
+}
+
+#customAlert .alert-box,
+#customConfirm .alert-box {
+    position: relative;
+    z-index: 101; /* 내부 콘텐츠도 최상단 */
+}
+
+.login-modal h2 {
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.login-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid var(--border-sub);
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.login-modal select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 17px;
+    margin-top: 10px;
+}
+
+.login-modal button {
+    width: 100%;
+    padding: 10px;
+    background: var(--primary);
+    color: var(--text-accent);
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.login-modal button:disabled {
+    background: var(--btn-toggle);
+    color: var(--text-sub);
+}
+
+.msg {
+    margin-top: 10px;
+    font-size: 20px;
+    height: 24px;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none !important;
+    border: none;
+    font-size: 20px;
+    color: var(--btn-close) !important;
+    transition: color 0.2s;
+    padding: 0;
+    margin: 0;
+    width: max-content !important;
+}
+
+
+#customAlert .alert-box, #customConfirm .alert-box, #themeSelectModal .alert-box, #badgeSelectModal .alert-box {
+    background: #ffbcae;
+    padding: 25px 25px 20px;
+    border-radius: 12px;
+    width: 360px;
+    max-width: fit-content;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    position: relative;
+}
+
+#customAlert .alert-content, #customConfirm .alert-content, #themeSelectModal .alert-content, #badgeSelectModal .alert-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#customAlert .alert-text, #customConfirm .alert-text, #themeSelectModal .alert-text, #badgeSelectModal .alert-text {
+    font-size: 16px;
+    font-weight: 500;
+    background: var(--bg-sub);
+    color: var(--text-main);
+    line-height: 1.4;
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+
+    white-space: pre-line; /* \n 줄바꿈 인식 */
+    word-break: keep-all; /* 단어 기준 줄바꿈 */
+    overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+}
+
+#customAlert .alert-img, #customConfirm .alert-img, #themeSelectModal .alert-img, #badgeSelectModal .alert-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+#alertConfirmBtn {
+    display: block;
+    width: 100%;
+    background: var(--primary);
+    color: var(--text-accent);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px;
+    margin-top: 20px;
+    transition: background 0.2s;
+}
+
+/* ===== 로딩 스크린 ===== */
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-sub);
+    z-index: 9999;
+    flex-direction: column;
+}
+
+/* ===== 스피너 애니메이션 ===== */
+.spinner {
+    border: 5px solid var(--border-main);
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+/* ===== 로딩 문구 ===== */
+#loadingScreen p {
+    margin-top: 10px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* ===== 회전 애니메이션 ===== */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
