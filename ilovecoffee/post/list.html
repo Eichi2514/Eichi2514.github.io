@@ -19,67 +19,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../theme/theme.css">
+    <link rel="stylesheet" href="../common/common.css">
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg-main);
-            color: var(--text-main);
-        }
-
-        .header-bar {
-            background: var(--primary);
-            color: var(--text-accent);
-            padding: 14px 16px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px;
-        }
-
-        .header-bar h1 {
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .header-bar button {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
         /* 공지 영역 */
         .notice-box {
             background: var(--bg-sub);
             border: 1px solid var(--border-main);
             border-radius: 10px;
-            margin: 0 20px;
         }
 
         .notice-item {
             padding: 16px;
             position: relative;
-        }
-
-        .postList {
-            margin: 0 20px 0 20px;
         }
 
         /* 업데이트 리스트 */
@@ -279,46 +232,6 @@
             border-radius: 8px;
             border: none;
             font-weight: 600;
-        }
-
-        /* ===== 로딩 스크린 ===== */
-        #loadingScreen {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-sub);
-            z-index: 9999;
-            flex-direction: column;
-        }
-
-        /* ===== 스피너 애니메이션 ===== */
-        .spinner {
-            border: 5px solid var(--border-main);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        /* ===== 로딩 문구 ===== */
-        #loadingScreen p {
-            margin-top: 10px;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        /* ===== 회전 애니메이션 ===== */
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
         }
 
         .rankToggleBtn {

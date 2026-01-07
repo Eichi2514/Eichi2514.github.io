@@ -19,54 +19,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../theme/theme.css">
+    <link rel="stylesheet" href="../common/common.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        body {
-            background: var(--bg-sub);
-            margin: 0;
-            color: var(--text-main);
-        }
-
-        .header-bar {
-            background: var(--primary);
-            color: var(--text-accent);
-            padding: 14px 16px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px;
-        }
-
-        .header-bar h1 {
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .header-bar button {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
         #controlBar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 10px 20px;
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -95,7 +53,7 @@
             justify-content: space-between; /* ← 양쪽 배치 */
             align-items: center;
             flex-wrap: wrap;
-            margin: 10px 30px;
+            margin: 0 10px;
         }
 
         #userCount {
@@ -191,12 +149,9 @@
             color: var(--text-accent);
         }
 
-        #userList {
-            padding: 0 20px 20px;
-        }
-
         .user-card {
-            background: var(--bg-main);
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 12px;
             padding: 4px;
             margin-bottom: 12px;
@@ -286,7 +241,7 @@
             padding: 1px 2px;
             font-size: 12px;
             border-radius: 6px;
-            background: var(--bg-sub);
+            background: var(--bg-main);
             color: var(--text-main);
             border: 1px solid var(--border-main);
             white-space: nowrap;
@@ -294,10 +249,10 @@
 
         /* ===== 프로필 카운트 카드 ===== */
         #profileCountBar {
-            background: var(--bg-main);
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 12px;
             padding: 10px 12px;
-            margin: 10px 20px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
             display: flex;
             flex-wrap: wrap;
@@ -310,7 +265,7 @@
             width: 136px;
             border-radius: 999px;
             font-size: 13px;
-            background: var(--bg-sub);
+            background: var(--bg-main);
             border: 1px solid var(--border-main);
             color: var(--primary);
             cursor: pointer;
@@ -363,6 +318,7 @@
         .log-header {
             display: flex;
             justify-content: space-between;
+            gap: 30px;
             align-items: center;
             margin-bottom: 16px;
         }
@@ -487,7 +443,7 @@
     </select>
 </div>
 
-<div id="profileCountBar" style="margin: 10px 20px; font-size: 14px; color: var(--text-main);">
+<div id="profileCountBar" style="font-size: 14px; color: var(--text-main);">
     <!-- JS에서 채움 -->
 </div>
 

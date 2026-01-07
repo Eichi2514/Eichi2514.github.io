@@ -19,104 +19,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../theme/theme.css">
+    <link rel="stylesheet" href="../common/common.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: var(--bg-main);
-            margin: 0;
-            padding: 20px 16px;
-            color: var(--text-main);
-        }
-
-        .header-bar {
-            background: var(--primary);
-            color: var(--text-accent);
-            padding: 14px 16px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-bar h1 {
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .header-bar button {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        #customAlert .alert-box, #customConfirm .alert-box, #themeSelectModal .alert-box, #badgeSelectModal .alert-box {
-            background: #ffbcae;
-            padding: 25px 25px 20px;
-            border-radius: 12px;
-            width: 360px;
-            max-width: fit-content;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            text-align: left;
-            position: relative;
-        }
-
-        #customAlert .alert-content, #customConfirm .alert-content, #themeSelectModal .alert-content, #badgeSelectModal .alert-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        #customAlert .alert-text, #customConfirm .alert-text, #themeSelectModal .alert-text, #badgeSelectModal .alert-text {
-            font-size: 16px;
-            font-weight: 500;
-            background: var(--bg-sub);
-            color: var(--text-main);
-            line-height: 1.4;
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-
-            white-space: pre-line; /* \n 줄바꿈 인식 */
-            word-break: keep-all; /* 단어 기준 줄바꿈 */
-            overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
-        }
-
-        #customAlert .alert-img, #customConfirm .alert-img, #themeSelectModal .alert-img, #badgeSelectModal .alert-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-        }
-
-        #alertConfirmBtn {
-            display: block;
-            width: 100%;
-            background: var(--primary);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 10px;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-
         /* =========================
            메뉴 선택 영역
         ========================= */
@@ -279,49 +183,6 @@
         }
 
         /* =========================
-            로딩 영역
-        ========================= */
-        /* ===== 로딩 스크린 ===== */
-        #loadingScreen {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-sub);
-            z-index: 9999;
-            flex-direction: column;
-        }
-
-        /* ===== 스피너 애니메이션 ===== */
-        .spinner {
-            border: 5px solid var(--border-main);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        /* ===== 로딩 문구 ===== */
-        #loadingScreen p {
-            margin-top: 10px;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        /* ===== 회전 애니메이션 ===== */
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* =========================
             상자 개봉 연출
         ========================= */
         #boxOpenOverlay {
@@ -474,37 +335,6 @@
         <div id="boxEffect"></div>
         <div id="boxResultText"></div>
         <div id="boxHintText">화면을 터치해 주세요</div>
-    </div>
-</div>
-
-<!-- 커스텀 알림 모달 -->
-<div id="customAlert" class="login-overlay" style="display:none;">
-    <div class="alert-box">
-        <div class="alert-content">
-            <div class="alert-text"></div>
-            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
-        </div>
-        <button id="alertConfirmBtn">확인</button>
-    </div>
-</div>
-
-<!-- 커스텀 컨펌 모달 -->
-<div id="customConfirm" class="login-overlay" style="display:none;">
-    <div class="alert-box">
-        <div class="alert-content">
-            <div class="alert-text"></div>
-            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
-        </div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button id="confirmYesBtn"
-                    style="flex:1; background:var(--primary); color:var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
-                확인
-            </button>
-            <button id="confirmNoBtn"
-                    style="flex:1; background:var(--btn-close); color:var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px; transition:background 0.2s;">
-                취소
-            </button>
-        </div>
     </div>
 </div>
 

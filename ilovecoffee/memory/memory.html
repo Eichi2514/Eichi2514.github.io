@@ -19,133 +19,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../theme/theme.css">
+    <link rel="stylesheet" href="../common/common.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        body {
-            background: var(--bg-main);
-            margin: 0;
-            color: var(--text-main);
-        }
-
-        .header-bar {
-            background: var(--primary);
-            color: var(--text-accent);
-            padding: 14px 16px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px;
-        }
-
-        .header-bar h1 {
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .header-bar button {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* ===== 모달 공통 ===== */
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
-
-        /* ===== 커스텀 알림/컨펌 모달 최상단 고정 ===== */
-        #customAlert,
-        #customConfirm {
-            z-index: 100; /* 다른 모든 모달보다 앞 */
-        }
-
-        #customAlert .alert-box,
-        #customConfirm .alert-box {
-            position: relative;
-            z-index: 101; /* 내부 콘텐츠도 최상단 */
-        }
-
-        #customAlert .alert-box, #customConfirm .alert-box {
-            background: #ffbcae;
-            padding: 25px 25px 20px;
-            border-radius: 12px;
-            width: 360px;
-            max-width: fit-content;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            text-align: left;
-            position: relative;
-        }
-
-        #customAlert .alert-content, #customConfirm .alert-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        #customAlert .alert-text, #customConfirm .alert-text {
-            font-size: 16px;
-            font-weight: 500;
-            background: var(--bg-sub);
-            color: var(--text-main);
-            line-height: 1.4;
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-
-            white-space: pre-line; /* \n 줄바꿈 인식 */
-            word-break: keep-all; /* 단어 기준 줄바꿈 */
-            overflow-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
-        }
-
-
-        #customAlert .alert-img, #customConfirm .alert-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-        }
-
-        #alertConfirmBtn {
-            display: block;
-            width: 100%;
-            background: var(--primary);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-
         /* ✅ 캐릭터 선택 영역 */
         .character-tabs {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px; /* 버튼 간 간격 */
-            padding: 0 24px;
         }
 
         .character-tab {
@@ -194,8 +75,8 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
-            padding: 0 24px;
-            margin: 20px 0 8px;
+            margin-top: 20px;
+            padding: 0 8px;
             width: 100%;
         }
 
@@ -231,7 +112,7 @@
             right: -4px;
             bottom: 0;
             font-size: 14px;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
             pointer-events: none;
             z-index: 2;
         }
@@ -281,7 +162,6 @@
             gap: 6px;
             flex: 1 1 auto;
             min-width: 0;
-            padding: 0 16px;
         }
 
         #searchInput {
@@ -310,7 +190,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            padding: 8px 16px;
             word-break: keep-all;
         }
 
@@ -319,7 +198,6 @@
             background: var(--bg-sub);
             border: 1px solid var(--border-sub);
             border-radius: 10px;
-            padding: 10px 14px;
             width: calc(50% - 4px);
             height: 54px;
             display: flex;
@@ -393,11 +271,6 @@
             padding: 8px 14px;
             cursor: pointer;
             transition: background 0.2s ease;
-        }
-
-        /* ✅ 보상 + 아이템 카드 */
-        .reward-section {
-            padding: 0 16px 16px;
         }
 
         .reward-box {
@@ -537,7 +410,6 @@
             justify-content: space-between;
             align-items: center;
             gap: 8px;
-            padding: 0 24px;
             width: 100%;
             box-sizing: border-box;
         }
@@ -580,7 +452,6 @@
             justify-content: right;
             font-size: 14px;
             color: var(--text-sub);
-            padding: 0 24px;
         }
 
         .legend-item {
@@ -597,14 +468,9 @@
         }
 
         /* ===== 아이템 테이블 ===== */
-        #tableSection {
-            padding: 0 16px;
-        }
-
         .item-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
             font-size: 14px;
         }
 
@@ -775,17 +641,6 @@
 <!-- ✅ 필터모드 : 아이템 표 -->
 <div class="subPage" id="tableSection" style="display: none;"></div>
 
-<!-- 커스텀 알림 모달 -->
-<div id="customAlert" class="login-overlay" style="display:none;">
-    <div class="alert-box">
-        <div class="alert-content">
-            <div class="alert-text"></div>
-            <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
-        </div>
-        <button id="alertConfirmBtn">확인</button>
-    </div>
-</div>
-
 <!-- ✅ 도움말 모달 -->
 <div id="helpModal" class="login-overlay" style="display:none;">
     <div class="login-modal help-modal">
@@ -858,11 +713,17 @@
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {memoryData} from "../common/memoryData.js";
-    import { SHOP_DATA } from "../common/shopData.js";
+    import {SHOP_DATA} from "../common/shopData.js";
     import {goToPage, showAlert, closeAlert, getActiveNickname, COLORS} from "../common/utils.js";
 
     const firebaseConfig = {
-        apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -1303,9 +1164,9 @@
             const sort = $("#sortOption").val();
 
             // 변경된 값 저장
-            localStorage.setItem("coffee-advancedFilter", JSON.stringify({ theme, collect, option, sort }));
+            localStorage.setItem("coffee-advancedFilter", JSON.stringify({theme, collect, option, sort}));
 
-            applyAndRenderFilter(allItems, { theme, collect, option, sort });
+            applyAndRenderFilter(allItems, {theme, collect, option, sort});
         });
     }
 

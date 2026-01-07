@@ -19,68 +19,6 @@
     line-height: 1;
 }
 
-/* ===== 도움말 모달 디자인 ===== */
-.login-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-}
-
-.login-modal {
-    position: relative;
-    background: var(--bg-main);
-    padding: 30px 25px 50px 25px;
-    border-radius: 12px;
-    width: 360px;
-    max-height: 85vh;
-    overflow-y: auto;
-    text-align: center;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-}
-
-.login-modal select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;    
-    font-size: 17px;
-    margin-top: 10px;
- }
-
-.login-modal button {
-    width: 100%;
-    padding: 10px;
-    background: var(--primary);
-    color: var(--text-accent);
-    border: none;
-    border-radius: 6px;
-    font-size: 17px;
-    margin-top: 10px;
-    transition: 0.2s;
-}
-
-.login-modal button:disabled {
-    background: var(--btn-toggle);
-    color: var(--text-sub);
-}
-
-.login-modal h2 {
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-.login-modal input {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0;
-    border: 1px solid var(--border-sub);
-    border-radius: 6px;
-    font-size: 16px;
-}
-
 .help-modal {
     width: 360px;
     max-height: 85vh;
@@ -90,20 +28,6 @@
     background: var(--bg-main);
     box-shadow: 0 8px 25px rgba(90, 67, 152, 0.25);
     position: relative;
-}
-
-.closeBtn {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    background: none !important;
-    border: none;
-    font-size: 20px;
-    color: var(--btn-close) !important;
-    transition: color 0.2s;
-    padding: 0;
-    margin: 0;
-    width: max-content !important;
 }
 
 .help-title {

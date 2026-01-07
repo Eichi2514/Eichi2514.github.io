@@ -16,48 +16,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
     <link rel="stylesheet" href="../theme/theme.css">
+    <link rel="stylesheet" href="../common/common.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        body {
-            background: var(--bg-sub);
-            margin: 0;
-            color: var(--text-main);
-        }
-
-        /* 상단 헤더 */
-        .header-bar {
-            background: var(--primary);
-            color: var(--text-accent);
-            padding: 14px 16px;
-            border-radius: 10px;
+        .mainPage, .subPage {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px;
-        }
-
-        .header-bar h1 {
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .header-bar button {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-accent);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
+            flex-direction: column; /* 세로 정렬 */
+            justify-content: flex-start; /* 위쪽부터 배치 */
+            gap: 10px;
         }
 
         /* 입력 / 검색 영역 */
@@ -66,7 +31,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin: 15px 20px;
         }
 
         .input-groups {
@@ -79,7 +43,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--bg-main);
+            background: var(--bg-sub);
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 10px 14px;
@@ -102,7 +66,7 @@
             width: 50%;
             padding: 6px 8px;
             border-radius: 6px;
-            background: var(--bg-sub);
+            background: var(--bg-main);
             color: var(--text-main);
             transition: all 0.2s ease;
             font-size: 16px;
@@ -126,7 +90,7 @@
             padding: 12px 14px;
             font-size: 16px;
             font-weight: 600;
-            background: var(--bg-main);
+            background: var(--bg-sub);
             transition: 0.2s;
             width: 100%;
         }
@@ -166,7 +130,7 @@
         }
 
         #buffInfo {
-            background: var(--bg-main);
+            background: var(--bg-sub);
             border:1px solid var(--border-main);
             border-radius:10px;
             padding:10px 14px;
@@ -194,8 +158,8 @@
 
         /* ✅ 즐겨찾기 목록 */
         #quickSelect {
-            margin: 10px 20px;
-            background: var(--bg-main);
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 10px;
@@ -214,7 +178,7 @@
 
         .favorite-item {
             display: inline-block;
-            background: var(--bg-sub);
+            background: var(--bg-main);
             border: 1px solid var(--border-main);
             border-radius: 8px;
             padding: 6px 10px;
@@ -233,9 +197,7 @@
         }
 
         .coffee-list {
-            width: calc(100% - 40px);
-            margin: 10px 20px;
-            background: var(--bg-main);
+            background: var(--bg-sub);
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             overflow: hidden;
@@ -267,10 +229,9 @@
 
         /* 커피 정보 카드 */
         #coffeeInfo {
-            width: calc(100% - 40px);
             position: relative;
-            margin: 10px 20px;
-            background: var(--bg-main);
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 15px 20px 5px 20px;
@@ -315,10 +276,8 @@
         /* 표 영역 */
         #coffeeTable,
         #subTable {
-            width: calc(100% - 40px);
-            margin: 10px 20px;
             border-collapse: collapse;
-            background: var(--bg-main);
+            background: var(--bg-sub);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -359,10 +318,6 @@
         }
 
         /* ===== 서브페이지 컨트롤 ===== */
-        .sub-control-bar {
-            margin: 0 20px;
-        }
-
         #sortSelect {
             width: 100%;
             padding: 12px 14px;
@@ -370,7 +325,7 @@
             border: 1px solid var(--border-sub);
             font-size: 15px;
             font-weight: 600;
-            background: var(--bg-main);
+            background: var(--bg-sub);
             color: var(--text-main);
             transition: 0.2s;
         }

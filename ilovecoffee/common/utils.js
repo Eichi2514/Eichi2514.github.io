@@ -255,7 +255,47 @@ export function goToPage(target = "levelup") {
 // ==============================
 // ✅ 커스텀 알림 / 컨펌 모달
 // ==============================
+// 🔹 HTML 구조를 자동으로 주입하는 내부 함수
+function ensureModalExists() {
+    // 알림창이 없으면 body 끝에 추가
+    if ($("#customAlert").length === 0) {
+        const alertHtml = `
+        <div id="customAlert" class="login-overlay" style="display:none; z-index: 10000;">
+            <div class="alert-box">
+                <div class="alert-content">
+                    <div class="alert-text"></div>
+                    <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+                </div>
+                <button id="alertConfirmBtn">확인</button>
+            </div>
+        </div>`;
+        $("body").append(alertHtml);
+
+        // 알림창 확인 버튼 이벤트 연결
+        $(document).on("click", "#alertConfirmBtn", closeAlert);
+    }
+
+    // 컨펌창이 없으면 body 끝에 추가
+    if ($("#customConfirm").length === 0) {
+        const confirmHtml = `
+        <div id="customConfirm" class="login-overlay" style="display:none; z-index: 10000;">
+            <div class="alert-box">
+                <div class="alert-content">
+                    <div class="alert-text"></div>
+                    <img src="../../favicon/Eichi2.png" alt="Eichi" class="alert-img">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="confirmYesBtn" style="flex:1; background: var(--primary); color: var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px;">확인</button>
+                    <button id="confirmNoBtn" style="flex:1; background: var(--btn-close); color: var(--text-accent); border:none; border-radius:8px; font-size:16px; font-weight:600; padding:10px;">취소</button>
+                </div>
+            </div>
+        </div>`;
+        $("body").append(confirmHtml);
+    }
+}
+
 export function showAlert(message) {
+    ensureModalExists();
     $("#customAlert .alert-text").html(message);
     $("#customAlert").fadeIn(150);
 }
@@ -265,6 +305,7 @@ export function closeAlert() {
 }
 
 export function showConfirm(message, onConfirm, yesText = "확인", noText = "취소") {
+    ensureModalExists();
     $("#customConfirm .alert-text").html(message);
     $("#confirmYesBtn").text(yesText);
     $("#confirmNoBtn").text(noText);
