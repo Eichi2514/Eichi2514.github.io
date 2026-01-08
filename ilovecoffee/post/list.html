@@ -536,7 +536,7 @@
             const isModified = n.updated && n.updated !== n.created;
 
             const dateText = `${isModified ? "수정" : "작성"} : ${formatDisplayDate(finalDate)}`;
-            const createdText = formatDisplayDate(n.created);
+            const createdText = formatDisplayDate(finalDate);
             const showNew = isToday(finalDate);
 
             box.append(`
