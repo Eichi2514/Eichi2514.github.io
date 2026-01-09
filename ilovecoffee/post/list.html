@@ -91,7 +91,7 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
         .pagination button {
@@ -297,6 +297,16 @@
         <div id="modal-view" class="modal-view"></div>
     </div>
 </div>
+
+<div class="header-bar">
+    <div style="display: flex; gap: 4px; align-items: center">
+        <h1>최근 접속</h1>
+    </div>
+    <button class="del-btn">계정삭제</button>
+</div>
+<div id="coffeeRecentList">
+</div>
+
 <!--
 <div class="header-bar" style="margin-top: 40px; margin-bottom: 10px;">
     <div style="display: flex; gap: 4px; align-items: center">
@@ -406,6 +416,8 @@
         isToday,
         formatDisplayDate,
         getKoreanDate,
+        showAlert,
+        showConfirm,
         COLORS
     } from "../common/utils.js";
     import { SHOP_DATA } from "../common/shopData.js";
@@ -448,6 +460,9 @@
             $("#viewDaily").removeClass("active");
             // await loadTotalFirstRanks();
         }
+
+        // 🔥 최근 접속 명단
+        await renderRecentList();
         $loadingScreen.hide();
     });
 
@@ -1205,6 +1220,120 @@
         await loadTotalFirstRanks();
         $loadingScreen.hide();
     });
+
+    $(document).on("click", ".del-btn", function() {
+        const nickname = getActiveNickname();
+
+        // 1. 먼저 확인창을 띄움
+        showConfirm(
+            "정말로 그럴수이치를<br>떠나시겠습니까?",
+            function(isConfirmed) {
+                if (isConfirmed) {
+                    // 2. '확인'을 눌렀을 때만 나타나는 아련한 메시지
+                    showAlert(`그동안 감사했습니다...<br>${nickname}님의 앞날을 응원할게요.....🦊️`);
+                } else {
+                    // '취소'를 눌렀을 때 (안심 시키기)
+                    showAlert(`휴... 가지 마세요! <br>커피 한 잔 더 내리러 가시죠.`);
+                }
+            },
+            "떠나기", // 확인 버튼 텍스트
+            "남아있기" // 취소 버튼 텍스트
+        );
+    });
+
+    /**
+     * ✅ 최근 접속자 명단을 가져와 TOP5 레이아웃으로 렌더링
+     */
+    async function renderRecentList() {
+        const wrap = $("#coffeeRecentList");
+        const recentRef = ref(db, `coffeeRecentUsers`);
+
+        try {
+            const snap = await get(recentRef);
+            if (!snap.exists()) {
+                wrap.html('<div style="text-align:center; padding:20px; color:var(--text-sub);">최근 접속 정보가 없습니다.</div>');
+                return;
+            }
+
+            let list = snap.val();
+            if (!Array.isArray(list)) list = Object.values(list);
+
+            // 🔥 [중요] 최신 접속자가 배열의 맨 뒤에 있으므로, reverse()해서
+            // 0번 인덱스(1등 자리)에 가장 최근 접속자가 오게 합니다.
+            list.reverse();
+
+            // 사용자 정보(닉네임, 프로필, 뱃지) 미리 로드
+            await preloadUsers(list.map(i => i.id));
+
+            const users = list.map(item => ({
+                ...item,
+                ...userInfoCache[item.id]
+            }));
+
+            // 렌더링 시작
+            wrap.empty();
+
+            // --- 1등 (가장 최근 접속) ---
+            if (users[0]) {
+                wrap.append(`
+                <div id="top5Wrapper">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="top5-box rank-1">
+                            <div class="top5-img-wrap">
+                                <img src="../image/profile${users[0].profile}.jpg">
+                            </div>
+                            <div class="crown">👑</div>
+                            <div class="badge-overlay">${getBadgeIcon(users[0].badgeId)}</div>
+                        </div>
+                        <div class="top5-name">${users[0].nickname}</div>
+                        <div class="top5-time">${users[0].time}</div>
+                    </div>
+                    <div id="recent-mid" style="display:flex; justify-content: space-between; width: 100%; margin-top:20px;"></div>
+                    <div id="recent-bottom" style="display:flex; gap:20px; margin-top:20px;"></div>
+                </div>
+            `);
+            }
+
+            // --- 2등, 3등 ---
+            const mid = $("#recent-mid");
+            for (let i = 1; i <= 2; i++) {
+                if (!users[i]) continue;
+                mid.append(`
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="top5-box rank-2-3">
+                        <div class="top5-img-wrap">
+                            <img src="../image/profile${users[i].profile}.jpg">
+                        </div>
+                        <div class="badge-overlay">${getBadgeIcon(users[i].badgeId)}</div>
+                    </div>
+                    <div class="top5-name">${users[i].nickname}</div>
+                    <div class="top5-time">${users[i].time}</div>
+                </div>
+            `);
+            }
+
+            // --- 4등, 5등 ---
+            const bottom = $("#recent-bottom");
+            for (let i = 3; i <= 4; i++) {
+                if (!users[i]) continue;
+                bottom.append(`
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="top5-box rank-4-5">
+                        <div class="top5-img-wrap">
+                            <img src="../image/profile${users[i].profile}.jpg">
+                        </div>
+                        <div class="badge-overlay">${getBadgeIcon(users[i].badgeId)}</div>
+                    </div>
+                    <div class="top5-name">${users[i].nickname}</div>
+                    <div class="top5-time">${users[i].time}</div>
+                </div>
+            `);
+            }
+
+        } catch (error) {
+            console.error("최근 접속 명단 렌더링 실패:", error);
+        }
+    }
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>

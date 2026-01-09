@@ -301,16 +301,16 @@ function renderExpTablePage(userLevel) {
     for (let i = start; i < end; i++) {
         const need = levelExp[i];
         const isMyLevel = i === userLevel;
-        const bg = isMyLevel ? `${COLORS.P_L}` : i % 2 === 0 ? `${COLORS.BG_M}` : `${COLORS.BG_S}`;
-        const color = isMyLevel ? COLORS.P : COLORS.TXT_M;
+        const bg = isMyLevel ? `var(--primary-light)` : i % 2 === 0 ? `var(--bg-main)` : `var(--bg-sub)`;
+        const color = isMyLevel ? `var(--primary)` : `var(--text-main)`;
         const fontWeight = isMyLevel ? "700" : "500";
 
         $("#expChartTable tbody").append(`
                 <tr style="background:${bg}; color:${color}; font-weight:${fontWeight};">
-                    <td style="padding:8px; border:1px solid ${COLORS.BO_M};">
+                    <td style="padding:8px; border:1px solid var(--border-main);">
                         ${i} -> ${i + 1}
                     </td>
-                    <td style="padding:8px; border:1px solid ${COLORS.BO_M};">
+                    <td style="padding:8px; border:1px solid var(--border-main);">
                         ${need ? need.toLocaleString() : '-'}
                     </td>
                 </tr>
@@ -441,7 +441,7 @@ $("#toggleExpTableBtn").on("click", function () {
     for (const r of rows) {
         const gainedTd = showLevelUpOnly
             ? `<td> - </td>`
-            : `<td>${r.gained}<br><span style="color:${COLORS.TXT_D}">${r.approx}</span></td>`;
+            : `<td>${r.gained}<br><span style="color:var(--text-danger)">${r.approx}</span></td>`;
 
         $tbody.append(`
                 <tr class="exp-row" data-date="${r.date}">
@@ -517,6 +517,7 @@ $(function () {
                 // ✅ 정상 계정이면 페이지 표시
                 if (savedNick == getActiveNickname()) {
                     // await checkDailyAttendance(savedNick);
+                    await updateRecentUsers(snapshot.val().id);
                     await set(ref(db, `coffeeUsers/${savedNick}/lastLogin`), getKoreanTimestamp());
                     await showLikeMessages(savedNick);
                 }
@@ -700,7 +701,7 @@ $(function () {
             if (!success) return;
 
             await set(ref(db, `coffeeWalletLogs/${nickname}/rewardIndex/expInput/${today}`), ts);
-            alertMessage += `\n\n🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`
+            alertMessage += `\n\n🎫이 지급되었습니다!`
         }
 
         // 🔹 현재 표시 중인 레벨 가져오기
@@ -932,7 +933,7 @@ $(function () {
                                     <td>${formattedDate}</td>
                                     <td>${currentLevel}</td>
                                     <td>${currentExp.toLocaleString()}</td>
-                                    <td>${gained}<br><span style="color:${COLORS.TXT_D}">${approx}</span></td>
+                                    <td>${gained}<br><span style="color:var(--text-danger)">${approx}</span></td>
                                 </tr>
                             `);
 
@@ -962,7 +963,7 @@ $(function () {
                     const avgGain = calcAvgExp(recordArray);
 
                     if (!avgGain || avgGain <= 0 || isNaN(avgGain)) {
-                        $("#levelUpBox").html(`<p style="color:${COLORS.TXT_S};">최근 경험치 기록이 없습니다.</p>`);
+                        $("#levelUpBox").html(`<p style="color:var(--text-sub);">최근 경험치 기록이 없습니다.</p>`);
                     } else {
                         // ✅ 최근 기록 및 현재 상태 계산
                         const sortedDates = Object.keys(records).sort();
@@ -1042,10 +1043,10 @@ $(function () {
                             let goalTable = `
                                     <table style="width:100%; border-collapse:collapse; font-size:14px;">
                                         <thead>
-                                            <tr style="background:${COLORS.BG_S}; color:${COLORS.P};">
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">목표</th>
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">D-day</th>
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">예상 도달일</th>
+                                            <tr style="background:var(--bg-sub); color:var(--primary);">
+                                                <th style="padding:8px; border:1px solid var(--border-main);">목표</th>
+                                                <th style="padding:8px; border:1px solid var(--border-main);">D-day</th>
+                                                <th style="padding:8px; border:1px solid var(--border-main);">예상 도달일</th>
                                             </tr>
                                         </thead>
                                     <tbody>
@@ -1072,9 +1073,9 @@ $(function () {
 
                                     goalTable += `
                                             <tr>
-                                               <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${formattedGoal}</td>
-                                               <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
-                                               <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${yyyy}-${mm}-${dd}</td>
+                                               <td style="padding:8px; border:1px solid var(--border-main);">${formattedGoal}</td>
+                                               <td style="padding:8px; border:1px solid var(--border-main);">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
+                                               <td style="padding:8px; border:1px solid var(--border-main);">${yyyy}-${mm}-${dd}</td>
                                             </tr>`;
 
                                 });
@@ -1087,10 +1088,10 @@ $(function () {
                             let tableHTML = `
                                     <table style="width:100%; border-collapse:collapse; font-size:14px;">
                                         <thead>
-                                            <tr style="background:${COLORS.BG_S}; color:${COLORS.P};">
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">목표 레벨</th>
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">D-day</th>
-                                                <th style="padding:8px; border:1px solid ${COLORS.BO_M};">예상 도달일</th>
+                                            <tr style="background:var(--bg-sub); color:var(--primary);">
+                                                <th style="padding:8px; border:1px solid var(--border-main);">목표 레벨</th>
+                                                <th style="padding:8px; border:1px solid var(--border-main);">D-day</th>
+                                                <th style="padding:8px; border:1px solid var(--border-main);">예상 도달일</th>
                                             </tr>
                                         </thead>
                                     <tbody>
@@ -1140,9 +1141,9 @@ $(function () {
 
                                 tableHTML += `
                                         <tr>
-                                            <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${lvl + 1}레벨</td>
-                                            <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
-                                            <td style="padding:8px; border:1px solid ${COLORS.BO_M};">${yyyy}-${mm}-${dd}</td>
+                                            <td style="padding:8px; border:1px solid var(--border-main);">${lvl + 1}레벨</td>
+                                            <td style="padding:8px; border:1px solid var(--border-main);">${dDay > 0 ? 'D-' + dDay : dDay === 0 ? 'D-day' : '-'}</td>
+                                            <td style="padding:8px; border:1px solid var(--border-main);">${yyyy}-${mm}-${dd}</td>
                                         </tr>
                                     `;
                                 curExp = 0;
@@ -1152,7 +1153,7 @@ $(function () {
                         }
                     }
                 } else {
-                    $("#levelUpBox").html(`<p style="color:${COLORS.TXT_S};">계산할 데이터가 부족합니다...<br> 내일도 입력 부탁드려요~!</p>`);
+                    $("#levelUpBox").html(`<p style="color:var(--text-sub);">계산할 데이터가 부족합니다...<br> 내일도 입력 부탁드려요~!</p>`);
                 }
 
                 // ============================
@@ -1179,11 +1180,11 @@ $(function () {
                                 <div class="login-modal" style="position:relative; width:360px;">
                                     <button id="closeEditModal" class="closeBtn">✕</button>
                                     <h2>경험치 수정</h2>
-                                    <label style="display:block; text-align:left; color:${COLORS.TXT_S};">날짜</label>
+                                    <label style="display:block; text-align:left; color:var(--text-sub);">날짜</label>
                                     <input id="editExpDate" type="date" style="margin-bottom:10px;">
-                                    <label style="display:block; text-align:left; color:${COLORS.TXT_S};">현재 레벨</label>
+                                    <label style="display:block; text-align:left; color:var(--text-sub);">현재 레벨</label>
                                     <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
-                                    <label style="display:block; text-align:left; color:${COLORS.TXT_S};">현재 경험치</label>
+                                    <label style="display:block; text-align:left; color:var(--text-sub);">현재 경험치</label>
                                     <input id="editExpValue" type="text" inputmode="numeric" style="margin-bottom:10px;">
                                     <button id="updateExpBtn">저장</button>
                                 </div>
@@ -1205,7 +1206,7 @@ $(function () {
 
                 renderExpChart(userData.expRecords); // ✅ 최근 10일 그래프 표시
             } else {
-                $("#levelUpBox").html(`<p style="color:${COLORS.TXT_S};">상단의 입력 버튼을 눌러<br>오늘의 경험치를 기록해보세요..!</p>`);
+                $("#levelUpBox").html(`<p style="color:var(--text-sub);">상단의 입력 버튼을 눌러<br>오늘의 경험치를 기록해보세요..!</p>`);
             }
 
             // ✅ 아카이브 공개 토글 스위치 상태 반영
@@ -1413,7 +1414,7 @@ $(function () {
             if (window.expChartInstance) window.expChartInstance.destroy();
 
             const labelName = chartMode === 'gain' ? '획득 경험치' : '누적 경험치';
-            const color = chartMode === 'gain' ? COLORS.P : COLORS.P_D;
+            const color = chartMode === 'gain' ? `var(--primary)` : `var(--primary-dark)`;
 
             window.expChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -1463,9 +1464,9 @@ $(function () {
                                     }
                                 }
                             },
-                            grid: {color: `${COLORS.BO_S}`}
+                            grid: {color: `var(--border-sub)`}
                         },
-                        x: {grid: {display: false}, ticks: {color: `${COLORS.TXT_S}`}}
+                        x: {grid: {display: false}, ticks: {color: `var(--text-sub)`}}
                     }
                 }
             });
@@ -1673,7 +1674,7 @@ $(function () {
                 $goalInputs.append(`
                             <input type="text" class="goalInput" placeholder="목표 경험치 ${i + 1}" value="${val}"
                                    style="width:100%; padding:8px; margin-bottom:8px;
-                                   font-size:16px; border:1px solid ${COLORS.TXT_S}; border-radius:6px;">
+                                   font-size:16px; border:1px solid var(--text-sub); border-radius:6px;">
                         `);
             }
 
@@ -1748,7 +1749,7 @@ $(function () {
                             <button id="closeNicknameModal" class="closeBtn">✕</button>
                             <h2>닉네임 변경</h2>
                             <input id="newNicknameInput" type="text" value="${nickname}"
-                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid ${COLORS.BO_S}; border-radius:6px; font-size:16px;">
+                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid var(--border-sub); border-radius:6px; font-size:16px;">
                             <button id="saveNicknameBtn">저장</button>
                         </div>
                     </div>
@@ -1826,7 +1827,7 @@ $(function () {
                             <button id="closePasswordModal" class="closeBtn">✕</button>
                             <h2>비밀번호 변경</h2>
                             <input id="newPasswordInput" type="password" placeholder="새 비밀번호 입력 (4자 이상)"
-                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid ${COLORS.BO_S}; border-radius:6px; font-size:16px;">
+                                   style="width:100%; padding:10px; margin-bottom:10px; border:1px solid var(--border-sub); border-radius:6px; font-size:16px;">
                             <button id="savePasswordBtn">저장</button>
                         </div>
                     </div>
@@ -1912,14 +1913,14 @@ function renderProfileList(list, type, unlockLimit, progressValue) {
             borderRadius: "50%",
             objectFit: "cover",
             cursor: isLocked ? "not-allowed" : "pointer",
-            border: Number(p.id) === Number(profileNum) ? `3px solid ${COLORS.P}` : `2px solid ${COLORS.BG_S}`,
+            border: Number(p.id) === Number(profileNum) ? `3px solid var(--primary)` : `2px solid var(--bg-sub)`,
             filter: isLocked ? "grayscale(100%) brightness(80%)" : "none"
         });
 
         if (!isLocked) {
             img.on("click", () => {
-                $("#profileImageContainer img").css("border", `2px solid ${COLORS.BO_S}`);
-                img.find("img").css("border", `3px solid ${COLORS.P}`);
+                $("#profileImageContainer img").css("border", `2px solid var(--border-sub)`);
+                img.find("img").css("border", `3px solid var(--primary)`);
                 const safe = getSafeProfileById(p.id);
                 $("#currentProfileImg").attr("src", safe.src);
                 $("#currentProfileName").text(safe.name);
@@ -2216,7 +2217,7 @@ async function checkDailyAttendance(nickname) {
         if (newRank <= 3) {
             const success = await giveCoupon(nickname, 1, "출석보상");
             if (success) {
-                showAlert(`순위권 달성!\n축하 🎫이 지급되었습니다!\n\n추후 업데이트될 상점을 기대해주세요~!`);
+                showAlert(`순위권 달성!\n축하 🎫이 지급되었습니다!`);
             }
         }
 
@@ -2226,5 +2227,49 @@ async function checkDailyAttendance(nickname) {
         } else {
             showAlert(`오류가 발생했습니다 화면을 캡쳐 한 후 관리자에게 문의주세요.\n\n${err}`);
         }
+    }
+}
+
+const MAX_RECENT_USERS = 5;
+
+// 최근 접속자 5명 관리 (FIFO)
+async function updateRecentUsers(userId) {
+    if (userId === undefined || userId === null) {
+        console.error("❌ updateRecentUsers 실패: userId가 정의되지 않았습니다.");
+        return;
+    }
+
+    const targetId = Number(userId);
+    const recentRef = ref(db, `coffeeRecentUsers`);
+
+    // 현재 시간 (시:분) 추출
+    const now = new Date();
+    const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+
+    try {
+        await runTransaction(recentRef, (currentData) => {
+            // 1. 데이터가 없으면 현재 유저 객체로 시작
+            if (currentData === null) {
+                return [{ id: targetId, time: timeStr }];
+            }
+
+            // 배열 형태 보장
+            let list = Array.isArray(currentData) ? currentData : Object.values(currentData);
+
+            // 2. 중복 ID 검사: 리스트에 이미 내 ID가 있으면 제거 (최신 접속 시간으로 갱신하기 위함)
+            list = list.filter(user => user.id !== targetId);
+
+            // 3. 새 접속 정보 객체 추가
+            list.push({ id: targetId, time: timeStr });
+
+            // 4. 5명이 넘으면 가장 오래된 데이터(첫 번째 요소) 제거
+            if (list.length > MAX_RECENT_USERS) {
+                list.shift();
+            }
+
+            return list;
+        });
+    } catch (error) {
+        console.error("최근 접속자 명단 갱신 중 오류:", error);
     }
 }

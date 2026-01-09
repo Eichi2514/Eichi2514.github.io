@@ -121,7 +121,6 @@
             border: none;
             border-radius: 8px;
             font-size: 15px;
-            cursor: pointer;
         }
 
         .log-view-btn {
@@ -268,7 +267,6 @@
             background: var(--bg-main);
             border: 1px solid var(--border-main);
             color: var(--primary);
-            cursor: pointer;
             user-select: none;
             transition: all 0.15s ease;
             white-space: nowrap;
@@ -335,7 +333,6 @@
             color: var(--text-main);
             padding: 4px 12px;
             border-radius: 6px;
-            cursor: pointer;
         }
 
         #logContent {
@@ -949,8 +946,6 @@
         checkDate.setDate(checkDate.getDate() + 1);
         checkDate.setHours(0, 0, 0, 0);
 
-        console.log(`checkDate : ${checkDate}`);
-        console.log(`today : ${today}`);
         if (checkDate > today) {
             alert("오늘 이후의 기록은 확인할 수 없습니다.");
             return;
