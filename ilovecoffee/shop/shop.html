@@ -57,6 +57,21 @@
         /* =========================
            유저 정보
         ========================= */
+        .user-info-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px;
+            margin-top: 20px;
+        }
+
+        .info-side-icon {
+            color: var(--primary);
+            border: 1px solid var(--border-main);
+            border-radius: 4px;
+        }
+
         /* 닉네임 영역 */
         .user-info {
             display: flex;
@@ -64,7 +79,7 @@
             gap: 10px;
             font-weight: 600;
             color: var(--primary);
-            padding: 20px 8px 0 8px;
+            padding: 0 8px;
         }
 
         /* 프로필 이미지 컨테이너 (뱃지 기준점) */
@@ -278,6 +293,98 @@
             50% { opacity: 0.8; }
         }
 
+        /* ✅ 로그 모달 스타일 */
+        .log-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .log-modal .modal-content {
+            background: var(--bg-main);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            width: 320px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .close-btn {
+            background: var(--btn-close);
+            color: var(--text-accent);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .log-header h4 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .date-nav-btn {
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        #logContent {
+            flex: 1;
+            overflow-y: auto;
+            text-align: left;
+            min-height: 200px;
+            border-top: 1px solid var(--border-sub);
+            padding-top: 8px;
+        }
+
+        /* 로그 아이템 리스트 */
+        .log-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-sub);
+        }
+
+        .log-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .log-item-time {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -303,12 +410,21 @@
     </div>
 </div>
 
-<div class="user-info">
-    <div class="user-profile-wrap">
-        <img class="user-profile" src="../image/profile1.jpg" alt="프로필이미지" id="profileDisplay">
-        <div id="activeBadgeDisplay" class="badge-overlay"></div>
+<div class="user-info-container">
+    <div class="user-info">
+        <div class="user-profile-wrap">
+            <img class="user-profile" src="../image/profile1.jpg" alt="프로필이미지" id="profileDisplay">
+            <div id="activeBadgeDisplay" class="badge-overlay"></div>
+        </div>
+        <span id="nicknameDisplay">닉네임</span>
     </div>
-    <span id="nicknameDisplay">닉네임</span>
+    <div class="info-side-icon log-view-btn">
+        <svg viewBox="0 0 28 28" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none">
+            <line x1="3" y1="7" x2="25" y2="7"></line>
+            <line x1="3" y1="14" x2="25" y2="14"></line>
+            <line x1="3" y1="21" x2="25" y2="21"></line>
+        </svg>
+    </div>
 </div>
 
 <div class="user-currency">
@@ -408,6 +524,19 @@
     </div>
 </div>
 
+<div id="logModal" class="log-modal">
+    <div class="modal-content">
+        <div class="log-header">
+            <button id="prevDate" class="date-nav-btn">◀</button>
+            <h4 id="logDateTitle">2026-00-00</h4>
+            <button id="nextDate" class="date-nav-btn">▶</button>
+        </div>
+        <div id="logContent">
+        </div>
+        <button class="close-log-btn close-btn">닫기</button>
+    </div>
+</div>
+
 <!-- 로딩 스피너 -->
 <div id="loadingScreen">
     <div class="spinner"></div>
@@ -417,13 +546,13 @@
 <script src="../theme/theme.js" type="module" defer></script>
 <script type="module" defer>
     import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getDatabase, ref, get, set, runTransaction, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { getDatabase, ref, get, set, runTransaction, update, query, orderByKey, startAt, endAt } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {SHOP_DATA} from "../common/shopData.js";
     import {applySavedThemeOnLoad} from "../theme/theme.js";
     import {goToPage, showAlert, closeAlert, showConfirm, getActiveNickname, getKoreanTimestamp, COLORS} from "../common/utils.js";
     import { getProfileImageSrc } from "../common/profileUtils.js";
-    import { writeWalletLog } from "../common/walletUtils.js";
+    import { writeWalletLog, giveCoupon } from "../common/walletUtils.js";
 
     const firebaseConfig = {
         apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
@@ -488,9 +617,11 @@
 
             // --- 재화 표시 ---
             if (!storeSnap.exists() || !storeSnap.val().wallet) {
+                const ts = getKoreanTimestamp();
+                const startCoupon = 1;
                 // 🎁 최초 방문 보상: 쿠폰 지급
                 const initWallet = {
-                    coupon: 1,
+                    coupon: startCoupon,
                     h: 0
                 };
 
@@ -499,6 +630,7 @@
                 });
 
                 applyWalletToUI(initWallet);
+                await writeWalletLog(nickname, "성공", ts, "획득", "쿠폰", startCoupon, "첫 방문 보상");
                 showAlert("🎁 첫 방문 보상!\n🎫 드릴게요~!");
                 return;
             }
@@ -1014,6 +1146,114 @@
     // 닫기 버튼 이벤트
     $(document).on("click", "#badgeCancelBtn", function () {
         $("#badgeSelectModal").fadeOut(150);
+    });
+
+    /* ======================
+        재화 로그 관리 상태
+    ====================== */
+    let currentLogNick = "";
+    let currentLogDate = new Date();
+
+    async function fetchWalletLogs(nickname, dateObj) {
+        // 1. 쿼리용 날짜 키 생성 (ID 포맷: 26_01_06)
+        const yy = String(dateObj.getFullYear()).slice(-2);
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+
+        const dateKeyPrefix = `${yy}_${mm}_${dd}`; // 결과: "26_01_06"
+
+        $("#logDateTitle").text(`${dateObj.getFullYear()}.${mm}.${dd}`);
+        $("#logContent").html("<div class='loading-text'>데이터 쿼리 중...</div>");
+
+        try {
+            // 2. 쿼리 최적화: 해당 날짜 키 범위만 가져옴
+            const logBaseRef = ref(db, `coffeeWalletLogs/${nickname}/logs`);
+            const logQuery = query(
+                logBaseRef,
+                orderByKey(),
+                startAt(dateKeyPrefix),
+                endAt(dateKeyPrefix + "\uf8ff") // 해당 접두사로 시작하는 모든 키 포함
+            );
+
+            const snap = await get(logQuery);
+
+            if (snap.exists()) {
+                const dayLogs = snap.val();
+                const keys = Object.keys(dayLogs).sort().reverse();
+
+                let html = '';
+                keys.forEach(key => {
+                    const logStr = dayLogs[key];
+                    const parts = logStr.split(' | ');
+                    if (parts.length < 6) return;
+
+                    const [result, time, action, asset, amountStr, reason] = parts;
+                    const isSuccess = result.trim() === "성공";
+                    if (!isSuccess) return;
+                    const isPositive = !amountStr.includes('-');
+                    const assetVeiw = asset === "쿠폰" ? "🎫" : "H";
+
+                    html += `
+                    <div class="log-item" style="${!isSuccess ? 'border-left: 4px solid var(--btn-danger);' : ''}">
+                        <div class="log-item-top">
+                            <span class="log-reason">${reason}</span>
+                            <span class="log-amount" style="color:${isPositive ? '#27ae60' : '#e74c3c'}">
+                                ${amountStr}${assetVeiw}
+                            </span>
+                        </div>
+                        <div class="log-item-time">${time.split('-')[1]}</div>
+                    </div>`;
+                });
+                $("#logContent").html(html);
+            } else {
+                $("#logContent").html(`<div class='no-data' style="text-align: center;">${dateKeyPrefix.replace(/_/g, '.')} 기록이 없습니다.</div>`);
+            }
+        } catch (e) {
+            console.error("로그 쿼리 에러:", e);
+            $("#logContent").html(`<div class='error-text' style="text-align: center;">쿼리 오류가 발생했습니다.</div>`);
+        }
+    }
+
+    /* ======================
+       로그 관련 이벤트
+    ====================== */
+
+    // 1. 로그 버튼 클릭 시
+    $(document).on("click", ".log-view-btn", function() {
+        currentLogNick = getActiveNickname();
+        currentLogDate = new Date();
+        $("#logModal").css("display", "flex").hide().fadeIn(200);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 2. 이전 날짜
+    $("#prevDate").on("click", function() {
+        currentLogDate.setDate(currentLogDate.getDate() - 1);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 3. 다음 날짜
+    $("#nextDate").on("click", function() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // 현재 보고 있는 날짜 복사
+        const checkDate = new Date(currentLogDate);
+        checkDate.setDate(checkDate.getDate() + 1);
+        checkDate.setHours(0, 0, 0, 0);
+
+        if (checkDate > today) {
+            showAlert("오늘 이후의 기록은 확인할 수 없습니다.");
+            return;
+        }
+
+        currentLogDate.setDate(currentLogDate.getDate() + 1);
+        fetchWalletLogs(currentLogNick, currentLogDate);
+    });
+
+    // 4. 로그 모달 닫기
+    $(".close-log-btn").on("click", function() {
+        $("#logModal").fadeOut(200);
     });
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
