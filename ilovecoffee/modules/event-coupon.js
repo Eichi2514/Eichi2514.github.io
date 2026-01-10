@@ -46,7 +46,7 @@ function spawnCharacter() {
     // 이미 떠있으면 중단
     if ($('.event-coupon-character').length > 0) return;
 
-// 캐릭터의 크기 (CSS와 동일하게)
+    // 캐릭터의 크기 (CSS와 동일하게)
     const charSize = 28;
     // 화면 끝에 너무 붙지 않게 최소한의 여백만 설정 (기존 80에서 축소)
     const margin = 20;

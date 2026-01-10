@@ -1,10 +1,20 @@
 // 파일명 : layout.js
 import { goToPage } from "../common/utils.js";
 
+let lastOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
 $(function () {
     // ===================== 화면/보드 초기화 =====================
     function checkOrientation() {
-        if ($(window).width() < $(window).height()) {
+        const currentOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+
+        // 방향이 실제로 바뀌었을 때만 새로고침 (불필요한 리로드 방지)
+        if (currentOrientation !== lastOrientation) {
+            location.reload();
+            return;
+        }
+
+        // UI 표시 처리
+        if (currentOrientation === 'portrait') {
             $("#landscape").show();
             $("#page").hide();
         } else {
