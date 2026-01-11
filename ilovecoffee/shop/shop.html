@@ -1521,7 +1521,7 @@
 
             try {
                 // 1. 쿠폰 지급 및 일반 로그 기록
-                await giveCoupon(nickname, 1, "미니게임 성공");
+                await giveCoupon(nickname, 1, `미니게임 성공(${currentTargetWidth/5})`);
                 localStorage.setItem('lastMiniGameDate', getKoreanDate());
 
                 // 2. 중복 확인용 인덱스 서버 기록
