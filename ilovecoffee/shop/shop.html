@@ -26,7 +26,8 @@
         ========================= */
         .menu-tabs {
             display: flex;
-            justify-content: center;
+            flex-wrap: wrap;
+            justify-content: right;
             align-items: center;
             gap: 8px;
             padding: 0 8px;
@@ -37,7 +38,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            width: calc((100% / 3));
+            width: calc((100% - 16px) / 3);
             background: var(--bg-sub);
             border: 1px solid var(--border-main);
             color: var(--primary);
@@ -106,7 +107,7 @@
             right: -4px;
             bottom: 0;
             font-size: 12px;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
             pointer-events: none;
         }
 
@@ -223,12 +224,24 @@
 
         /* 흔들림 */
         @keyframes shake {
-            0% { transform: rotate(0deg); }
-            20% { transform: rotate(-10deg); }
-            40% { transform: rotate(10deg); }
-            60% { transform: rotate(-8deg); }
-            80% { transform: rotate(8deg); }
-            100% { transform: rotate(0deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            20% {
+                transform: rotate(-10deg);
+            }
+            40% {
+                transform: rotate(10deg);
+            }
+            60% {
+                transform: rotate(-8deg);
+            }
+            80% {
+                transform: rotate(8deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
         }
 
         /* 확률 이펙트 */
@@ -289,8 +302,12 @@
         }
 
         @keyframes hintBlink {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.8;
+            }
         }
 
         /* ✅ 로그 모달 스타일 */
@@ -385,6 +402,81 @@
             margin-top: 2px;
         }
 
+        /* =========================
+            미니게임 (골든샷 추출)
+        ========================= */
+        /* 게이지 트랙 (배경 바) */
+        .gauge-track {
+            position: relative;
+            width: 100%;
+            height: 35px;
+            background: var(--bg-main); /* 프로젝트 공통 배경색 */
+            background-image: linear-gradient(90deg, var(--border-main) 1px, transparent 1px);
+            background-size: 10% 100%;
+            border: 2px solid var(--border-main);
+            border-radius: 20px;
+            margin: 25px 0;
+            overflow: visible;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 목표 지점 (Golden Zone) */
+        #target-zone {
+            position: absolute;
+            left: 70%; /* 성공 범위 시작 */
+            width: 5%; /* 성공 범위 너비 */
+            height: 100%;
+            background: #FFC90E; /* 골드 색상 */
+            box-shadow: 0 0 15px #FFC90E; /* 황금빛 광채 */
+            animation: glow 0.8s ease-in-out infinite alternate;
+            opacity: 0.6;
+            border-left: 2px dashed rgba(255, 255, 255, 0.5);
+            border-right: 2px dashed rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes glow {
+            from { opacity: 0.5; }
+            to { opacity: 1; box-shadow: 0 0 25px #FFC90E; }
+        }
+
+        /* 움직이는 게이지 바 */
+        #gauge-bar {
+            position: absolute;
+            width: 8px;
+            height: 100%;
+            background: var(--primary); /* 프로젝트 포인트 컬러 */
+            left: 0;
+            box-shadow: 0 0 10px var(--primary);
+            z-index: 2;
+            border-radius: 4px;
+        }
+
+        #gauge-bar > div {
+            animation: float 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translateX(-50%) translateY(0); }
+            to { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* 미니게임 버튼 스타일링 (기존 버튼과 통일감) */
+        #miniGameActionBtn {
+            flex: 2;
+            background: var(--primary);
+            color: var(--text-accent);
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: transform 0.1s;
+        }
+
+        #miniGameActionBtn:active {
+            transform: scale(0.96); /* 클릭 시 눌리는 효과 */
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -407,6 +499,9 @@
     </div>
     <div class="menu-tab" data-menu="badges">
         <span>프로필 뱃지</span>
+    </div>
+    <div class="menu-tab" data-menu="miniGame">
+        미니게임
     </div>
 </div>
 
@@ -442,6 +537,23 @@
     <div class="shop-content" data-content="boxes"></div>
     <div class="shop-content" data-content="themes" style="display:none;"></div>
     <div class="shop-content" data-content="badges" style="display:none;"></div>
+    <div class="shop-content" data-content="miniGame" style="display:none;">
+        <div class="mini-game-wrapper" style="padding: 20px; text-align: center;">
+            <h2 style="color:var(--primary);">GOLDEN SHOT</h2>
+            <p style="color:var(--text-sub); font-size: 14px;">타이밍에 맞춰 추출 버튼을 누르세요!</p>
+
+            <div class="gauge-track">
+                <div id="target-zone"></div>
+                <div id="gauge-bar" style="overflow: visible;">
+                    <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 25px;">🦊</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button id="miniGameActionBtn" style="width: 100%;">추출 시작</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- 🎁 상자 개봉 연출 레이어 -->
@@ -513,12 +625,15 @@
 </div>
 
 <!-- 🦊 뱃지 미리보기 모달 -->
-<div id="badgePreviewOverlay" class="login-overlay" style="display:none; z-index: 10001;">
+<div id="badgePreviewOverlay" class="login-overlay" style="display:none;">
     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-        <div id="previewNickname" style="color: #FFC90E; font-weight: 600; font-size: 24px; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></div>
+        <div id="previewNickname"
+             style="color: #FFC90E; font-weight: 600; font-size: 24px; text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></div>
         <div style="position: relative; width: 200px; height: 200px;">
-            <img id="previewProfileImg" src="" alt="profile" style="width: 100%; height: 100%; border-radius: 15px; object-fit: cover; box-shadow: 0 0 15px rgba(0,0,0,0.3);">
-            <div id="previewBadgeIcon" style="position: absolute; right: -16px; bottom: -8px; font-size: 50px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));"></div>
+            <img id="previewProfileImg" src="" alt="profile"
+                 style="width: 100%; height: 100%; border-radius: 15px; object-fit: cover; box-shadow: 0 0 15px rgba(0,0,0,0.3);">
+            <div id="previewBadgeIcon"
+                 style="position: absolute; right: -16px; bottom: -8px; font-size: 50px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));"></div>
         </div>
         <p style="color: white; font-size: 14px; opacity: 0.8;">화면을 터치하면 닫힙니다</p>
     </div>
@@ -546,16 +661,41 @@
 <script src="../theme/theme.js" type="module" defer></script>
 <script type="module" defer>
     import {initializeApp, getApps, getApp} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getDatabase, ref, get, set, runTransaction, update, query, orderByKey, startAt, endAt } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import {
+        getDatabase,
+        ref,
+        get,
+        set,
+        runTransaction,
+        update,
+        query,
+        orderByKey,
+        startAt,
+        endAt
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
     import {SHOP_DATA} from "../common/shopData.js";
     import {applySavedThemeOnLoad} from "../theme/theme.js";
-    import {goToPage, showAlert, closeAlert, showConfirm, getActiveNickname, getKoreanTimestamp, COLORS} from "../common/utils.js";
-    import { getProfileImageSrc } from "../common/profileUtils.js";
-    import { writeWalletLog, giveCoupon } from "../common/walletUtils.js";
+    import {
+        goToPage,
+        showAlert,
+        closeAlert,
+        showConfirm,
+        getActiveNickname,
+        getKoreanTimestamp,
+        getKoreanDate
+    } from "../common/utils.js";
+    import {getProfileImageSrc} from "../common/profileUtils.js";
+    import {writeWalletLog, giveCoupon} from "../common/walletUtils.js";
 
     const firebaseConfig = {
-        apiKey: ".env/apiKey", authDomain: ".env/authDomain", databaseURL: "https://test-948ba-default-rtdb.firebaseio.com", projectId: ".env/projectId", storageBucket: ".env/storageBucket", messagingSenderId: ".env/messagingSenderId", appId: ".env/appId"
+        apiKey: ".env/apiKey",
+        authDomain: ".env/authDomain",
+        databaseURL: "https://test-948ba-default-rtdb.firebaseio.com",
+        projectId: ".env/projectId",
+        storageBucket: ".env/storageBucket",
+        messagingSenderId: ".env/messagingSenderId",
+        appId: ".env/appId"
     };
 
     const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -659,7 +799,8 @@
     const rendered = {
         boxes: false,
         themes: false,
-        badges: false
+        badges: false,
+        miniGame: false
     };
 
     const $menuTab = $(".menu-tab");
@@ -686,6 +827,7 @@
             if (target === "boxes") renderBoxes();
             if (target === "themes") renderThemes();
             if (target === "badges") renderBadges();
+            if (target === "miniGame") initMiniGameTab();
             rendered[target] = true;
         }
     });
@@ -911,6 +1053,7 @@
     }
 
     let currentThemeTarget = null;
+
     function onThemeClick(theme, isOwned) {
         currentThemeTarget = theme;
 
@@ -1034,6 +1177,7 @@
     }
 
     let currentBadgeTarget = null;
+
     function onBadgeClick(badge, isOwned) {
         currentBadgeTarget = badge;
         $("#badgeModalText").text(`${badge.name} 뱃지`);
@@ -1219,7 +1363,7 @@
     ====================== */
 
     // 1. 로그 버튼 클릭 시
-    $(document).on("click", ".log-view-btn", function() {
+    $(document).on("click", ".log-view-btn", function () {
         currentLogNick = getActiveNickname();
         currentLogDate = new Date();
         $("#logModal").css("display", "flex").hide().fadeIn(200);
@@ -1227,13 +1371,13 @@
     });
 
     // 2. 이전 날짜
-    $("#prevDate").on("click", function() {
+    $("#prevDate").on("click", function () {
         currentLogDate.setDate(currentLogDate.getDate() - 1);
         fetchWalletLogs(currentLogNick, currentLogDate);
     });
 
     // 3. 다음 날짜
-    $("#nextDate").on("click", function() {
+    $("#nextDate").on("click", function () {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -1252,9 +1396,159 @@
     });
 
     // 4. 로그 모달 닫기
-    $(".close-log-btn").on("click", function() {
+    $(".close-log-btn").on("click", function () {
         $("#logModal").fadeOut(200);
     });
+
+    /* ======================
+        미니게임 로직
+    ====================== */
+    let gameActive = false;
+    let gamePos = 0;
+    let gameDir = 1;
+    let gameAnimId = null;
+    const GAME_SPEED = 2.5;     // 속도 조절
+    let currentTargetWidth = 5; // 현재 타겟 넓이 (기본 5)
+
+    /** 미니게임 완료 화면 렌더링 */
+    function renderMiniGameCompleted() {
+        $('.shop-content[data-content="miniGame"]').html(
+            `
+                <div style="padding: 50px 0; text-align: center;">
+                    <p style="font-size: 40px;">☕</p>
+                    <p style="color:var(--text-main); font-weight:600;">오늘의 추출 성공!</p>
+                    <p style="color:var(--text-sub); font-size:13px;">내일 다시 도전해 주세요.</p>
+                </div>
+            `
+        );
+    }
+
+    async function initMiniGameTab() {
+        const today = getKoreanDate();
+        const nickname = getActiveNickname();
+
+        // 이미 오늘 성공했다면 화면을 '완료' 상태로 교체
+        if (localStorage.getItem('lastMiniGameDate') === today) {
+            renderMiniGameCompleted();
+            return;
+        }
+
+        try {
+            // [2단계] 서버 DB 확인 (다른 기기 중복 수령 방지)
+            const logRef = ref(db, `coffeeWalletLogs/${nickname}/rewardIndex/miniGame/${today}`);
+            const snapshot = await get(logRef);
+
+            if (snapshot.exists()) {
+                // 서버에 기록이 있다면 로컬도 업데이트하고 차단
+                localStorage.setItem('lastMiniGameDate', today);
+                renderMiniGameCompleted();
+                return;
+            }
+        } catch (error) {
+            console.error("미니게임 중복 확인 중 에러:", error);
+        }
+
+        // 게임 설정 (난이도 등)
+        setDifficulty(5);
+    }
+
+    function setDifficulty(width) {
+        currentTargetWidth = width;
+        const targetStartPos = 70;
+        const targetZone = $("#target-zone");
+
+        // 시각적으로 넓이 변경
+        targetZone.css({
+            "width": width + "%",
+            "left": targetStartPos + "%"
+        });
+        return targetStartPos;
+    }
+
+    // 2. 추출 버튼 클릭 (시작/중지)
+    const $miniGameActionBtn = $("#miniGameActionBtn");
+    $miniGameActionBtn.on("click", function () {
+        if (!gameActive) {
+            // 게임 시작
+            if (gameAnimId) cancelAnimationFrame(gameAnimId);
+            gameActive = true;
+            gamePos = 0;
+            gameDir = 1;
+            $(this).text("지금이야! 추출!!");
+            runGameAnimation();
+        } else {
+            // 추출 판정
+            stopGameAndCheck();
+        }
+    });
+
+    function runGameAnimation() {
+        if (!gameActive) return;
+
+        gamePos += GAME_SPEED * gameDir;
+
+        // [수정] 떨림 방지 경계 처리
+        if (gamePos >= 100) {
+            gamePos = 100;
+            gameDir = -1;
+        } else if (gamePos <= 0) {
+            gamePos = 0;
+            gameDir = 1;
+        }
+
+        $("#gauge-bar").css("left", gamePos + "%");
+        gameAnimId = requestAnimationFrame(runGameAnimation);
+    }
+
+    async function stopGameAndCheck() {
+        cancelAnimationFrame(gameAnimId);
+        gameActive = false;
+
+        // 성공 판정 (시작점 70 + 현재 넓이만큼)
+        const targetStart = 70;
+        if (gamePos >= targetStart && gamePos <= (targetStart + currentTargetWidth)) {
+            const $celebration = $('<div style="position:absolute; left:'+gamePos+'%; top:0; font-size:30px; z-index:10; pointer-events:none;">✨☕✨</div>');
+            $(".gauge-track").append($celebration);
+
+            $celebration.animate({
+                top: '-50px',
+                opacity: 0
+            }, 800, function() { $(this).remove(); });
+
+            const nickname = getActiveNickname();
+            const today = getKoreanDate();
+            const ts = getKoreanTimestamp();
+
+            try {
+                // 1. 쿠폰 지급 및 일반 로그 기록
+                await giveCoupon(nickname, 1, "미니게임 성공");
+                localStorage.setItem('lastMiniGameDate', getKoreanDate());
+
+                // 2. 중복 확인용 인덱스 서버 기록
+                const rewardRef = ref(db, `coffeeWalletLogs/${nickname}/rewardIndex/miniGame/${today}`);
+                await set(rewardRef, ts);
+
+                showAlert("☕ 완벽한 타이밍!\n골든샷 추출에 성공하여\n🎫를 얻었습니다!");
+                renderMiniGameCompleted();
+                setDifficulty(5);
+
+                // UI 재화 수치 갱신
+                const currentCoupon = parseInt($("#couponDisplay").text().replace(/,/g, ''));
+                $("#couponDisplay").text((currentCoupon + 1).toLocaleString());
+            } catch (e) {
+                showAlert("보상 지급 중 오류가 발생했습니다.");
+            }
+        } else {
+            let nextWidth = currentTargetWidth + 5;
+            if (nextWidth > 25) nextWidth = 25; // 최대 15%까지만
+
+            showAlert("온도가 맞지 않아 추출에 실패했습니다.\n다시 시도해 보세요!");
+            setDifficulty(nextWidth);
+            gamePos = 0;
+            $("#gauge-bar").css("left", "0%");
+        }
+        $miniGameActionBtn.text("추출 시작");
+    }
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
