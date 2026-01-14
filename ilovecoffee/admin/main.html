@@ -436,6 +436,18 @@
             background: var(--primary);
         }
 
+        .insight-item {
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .insight-item.active {
+            border-color: var(--primary) !important;
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
         .insight-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -617,6 +629,7 @@
     ====================== */
     let users = [];
     let activeProfileFilter = null;
+    let activeInsightFilter = null;
     let searchKeyword = "";           // 🔹 검색어 상태
     let sortMode = "lastlogin";       // 🔹 셀렉트 정렬 상태
 
@@ -755,6 +768,26 @@
     ====================== */
     function applyFiltersAndRender() {
         let list = [...users];
+        const now = new Date();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const todayPrefix = `${String(now.getFullYear()).slice(-2)}.${mm}.${dd}`;
+        const todayISO = `${now.getFullYear()}-${mm}-${dd}`;
+
+        if (activeInsightFilter === 'login') {
+            list = list.filter(u => u.lastLogin && u.lastLogin.startsWith(todayPrefix));
+        } else if (activeInsightFilter === 'active') {
+            list = list.filter(u => {
+                const records = u.expRecords ? Object.entries(u.expRecords) : [];
+                const lastDateStr = records.length ? records.at(-1)[0] : null;
+                return lastDateStr === todayISO;
+            });
+        } else if (activeInsightFilter === 'coupon') {
+            list = list.filter(u => {
+                const rs = u.rewardStatus || { exp: false, mini: false, random: false };
+                return rs.exp || rs.mini || rs.random;
+            });
+        }
 
         // 1️⃣ 프로필 필터
         if (activeProfileFilter !== null) {
@@ -815,6 +848,18 @@
         // ✅ 최종 렌더
         renderProfileCounts(users);
         renderList(list);
+        $(".insight-item").removeClass("active"); // 우선 모두 해제
+
+        if (activeInsightFilter) {
+            const labelMap = { 'login': '오늘 접속', 'active': '오늘 활동', 'coupon': '발급 쿠폰' };
+            const targetLabel = labelMap[activeInsightFilter];
+
+            $(".insight-item").each(function() {
+                if ($(this).find(".label").text() === targetLabel) {
+                    $(this).addClass("active");
+                }
+            });
+        }
     }
 
     /* ======================
@@ -1113,6 +1158,21 @@
 
     $(".close-charge-btn").on("click", function() {
         $("#chargeModal").fadeOut(200);
+    });
+
+    // 이벤트 섹션에 추가
+    $(document).on("click", ".insight-item", function () {
+        const label = $(this).find(".label").text();
+        let filterType = null;
+
+        if (label === "오늘 접속") filterType = "login";
+        else if (label === "오늘 활동") filterType = "active";
+        else if (label === "발급 쿠폰") filterType = "coupon";
+
+        // 이미 선택된 걸 다시 누르면 필터 해제
+        activeInsightFilter = (activeInsightFilter === filterType) ? null : filterType;
+
+        applyFiltersAndRender();
     });
 
     // 통계 업데이트 함수
