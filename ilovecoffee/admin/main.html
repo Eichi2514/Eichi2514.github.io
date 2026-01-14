@@ -435,6 +435,34 @@
         .status-dot.active {
             background: var(--primary);
         }
+
+        .insight-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .insight-item {
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 10px 4px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .insight-item .label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 2px;
+        }
+
+        .insight-item .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -458,6 +486,21 @@
         <option value="signup">가입순</option>
         <option value="id">번호</option>
     </select>
+</div>
+
+<div id="insightBar" class="insight-container">
+    <div class="insight-item">
+        <span class="label">오늘 접속</span>
+        <span class="value" id="todayLoginCount">0</span>
+    </div>
+    <div class="insight-item">
+        <span class="label">오늘 활동</span>
+        <span class="value" id="todayActiveCount">0</span>
+    </div>
+    <div class="insight-item">
+        <span class="label">발급 쿠폰</span>
+        <span class="value" id="totalCoupons">0</span>
+    </div>
 </div>
 
 <div id="profileCountBar" style="font-size: 14px; color: var(--text-main);">
@@ -910,6 +953,7 @@
 
         $("#userCount").text(`총 ${users.length}명`);
         renderProfileCounts(users);
+        updateInsights(users);
         applyFiltersAndRender();
     });
 
@@ -1070,6 +1114,48 @@
     $(".close-charge-btn").on("click", function() {
         $("#chargeModal").fadeOut(200);
     });
+
+    // 통계 업데이트 함수
+    function updateInsights(allUsers) {
+        const now = new Date();
+        // 오늘 날짜 접두사 (YY.MM.DD)
+        const yy = String(now.getFullYear()).slice(-2);
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const todayPrefix = `${yy}.${mm}.${dd}`;
+        const todayISO = `${now.getFullYear()}-${mm}-${dd}`;
+
+        let totalLogin = 0;
+        let totalActive = 0;
+        let totalIssuedCoupons = 0; // 오늘 발급된 총 쿠폰 합계
+
+        allUsers.forEach(u => {
+            const rs = u.rewardStatus || { exp: false, mini: false, random: false };
+
+            // 1. 오늘 접속 카운트
+            if (u.lastLogin && u.lastLogin.startsWith(todayPrefix)) {
+                totalLogin++;
+            }
+
+            // 2. 오늘 활동 카운트 (3종 보상 중 하나라도 수령했다면 활동한 유저)
+            const records = u.expRecords ? Object.entries(u.expRecords) : [];
+            const lastDateStr = records.length ? records.at(-1)[0] : null; // 가장 최근 기록일
+            if (lastDateStr === todayISO) {
+                totalActive++;
+            }
+
+            // 3. 발급 쿠폰 합계 (유저당 최대 3개)
+            // 각 상태값이 true(보상 수령)인 개수만큼 더함
+            if (rs.exp) totalIssuedCoupons++;
+            if (rs.mini) totalIssuedCoupons++;
+            if (rs.random) totalIssuedCoupons++;
+        });
+
+        // UI 반영
+        $("#todayLoginCount").text(totalLogin + "명");
+        $("#todayActiveCount").text(totalActive + "명");
+        $("#totalCoupons").text(totalIssuedCoupons + "개");
+    }
 </script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
 </body>
