@@ -450,7 +450,8 @@
 
         .insight-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-auto-flow: column;
+            grid-auto-columns: 1fr;
             gap: 8px;
         }
 
@@ -512,6 +513,25 @@
     <div class="insight-item">
         <span class="label">발급 쿠폰</span>
         <span class="value" id="totalCoupons">0</span>
+    </div>
+</div>
+
+<div id="statusSummaryBar" class="insight-container">
+    <div class="insight-item">
+        <span class="label">미접 2일</span>
+        <span class="value" id="count-bg2">0</span>
+    </div>
+    <div class="insight-item">
+        <span class="label">미접 5일</span>
+        <span class="value" id="count-bg5">0</span>
+    </div>
+    <div class="insight-item">
+        <span class="label">미접 7일</span>
+        <span class="value" id="count-bg7">0</span>
+    </div>
+    <div class="insight-item">
+        <span class="label">기록없음</span>
+        <span class="value" id="count-bgNone">0</span>
     </div>
 </div>
 
@@ -1178,43 +1198,51 @@
     // 통계 업데이트 함수
     function updateInsights(allUsers) {
         const now = new Date();
-        // 오늘 날짜 접두사 (YY.MM.DD)
-        const yy = String(now.getFullYear()).slice(-2);
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const todayPrefix = `${yy}.${mm}.${dd}`;
-        const todayISO = `${now.getFullYear()}-${mm}-${dd}`;
+        const todayISO = getKoreanDate();
+        const todayPrefix = todayISO.slice(2).replace(/-/g, '.');
 
         let totalLogin = 0;
         let totalActive = 0;
-        let totalIssuedCoupons = 0; // 오늘 발급된 총 쿠폰 합계
+        let totalIssuedCoupons = 0;
+
+        // --- 추가될 상태 카운트 변수 ---
+        let countBg2 = 0;
+        let countBg5 = 0;
+        let countBg7 = 0;
+        let countBgNone = 0;
 
         allUsers.forEach(u => {
-            const rs = u.rewardStatus || { exp: false, mini: false, random: false };
-
-            // 1. 오늘 접속 카운트
-            if (u.lastLogin && u.lastLogin.startsWith(todayPrefix)) {
-                totalLogin++;
-            }
-
-            // 2. 오늘 활동 카운트 (3종 보상 중 하나라도 수령했다면 활동한 유저)
+            // 기존 통계 로직
+            if (u.lastLogin && u.lastLogin.startsWith(todayPrefix)) totalLogin++;
             const records = u.expRecords ? Object.entries(u.expRecords) : [];
-            const lastDateStr = records.length ? records.at(-1)[0] : null; // 가장 최근 기록일
-            if (lastDateStr === todayISO) {
-                totalActive++;
-            }
-
-            // 3. 발급 쿠폰 합계 (유저당 최대 3개)
-            // 각 상태값이 true(보상 수령)인 개수만큼 더함
+            const lastDateStr = records.length ? records.at(-1)[0] : null;
+            if (lastDateStr === todayISO) totalActive++;
+            const rs = u.rewardStatus || { exp: false, mini: false, random: false };
             if (rs.exp) totalIssuedCoupons++;
             if (rs.mini) totalIssuedCoupons++;
             if (rs.random) totalIssuedCoupons++;
+
+            // --- 상태별 인원 체크 (기존 bgClass 판정 로직과 동일하게) ---
+            if (records.length > 0) {
+                const diff = dayDiff(new Date(lastDateStr), now);
+                if (diff >= 7) countBg7++;
+                else if (diff >= 5) countBg5++;
+                else if (diff >= 2) countBg2++;
+            } else {
+                countBgNone++;
+            }
         });
 
         // UI 반영
         $("#todayLoginCount").text(totalLogin + "명");
         $("#todayActiveCount").text(totalActive + "명");
         $("#totalCoupons").text(totalIssuedCoupons + "개");
+
+        // --- 추가된 UI 반영 ---
+        $("#count-bg2").text(countBg2 + "명");
+        $("#count-bg5").text(countBg5 + "명");
+        $("#count-bg7").text(countBg7 + "명");
+        $("#count-bgNone").text(countBgNone + "명");
     }
 </script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
