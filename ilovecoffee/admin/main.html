@@ -502,34 +502,34 @@
 </div>
 
 <div id="insightBar" class="insight-container">
-    <div class="insight-item">
+    <div class="insight-item" data-filter="login">
         <span class="label">오늘 접속</span>
         <span class="value" id="todayLoginCount">0</span>
     </div>
-    <div class="insight-item">
+    <div class="insight-item" data-filter="active">
         <span class="label">오늘 활동</span>
         <span class="value" id="todayActiveCount">0</span>
     </div>
-    <div class="insight-item">
+    <div class="insight-item" data-filter="coupon">
         <span class="label">발급 쿠폰</span>
         <span class="value" id="totalCoupons">0</span>
     </div>
 </div>
 
 <div id="statusSummaryBar" class="insight-container">
-    <div class="insight-item">
+    <div class="insight-item" data-filter="bg2">
         <span class="label">미접 2일</span>
         <span class="value" id="count-bg2">0</span>
     </div>
-    <div class="insight-item">
+    <div class="insight-item" data-filter="bg5">
         <span class="label">미접 5일</span>
         <span class="value" id="count-bg5">0</span>
     </div>
-    <div class="insight-item">
+    <div class="insight-item" data-filter="bg7">
         <span class="label">미접 7일</span>
         <span class="value" id="count-bg7">0</span>
     </div>
-    <div class="insight-item">
+    <div class="insight-item" data-filter="bgNone">
         <span class="label">기록없음</span>
         <span class="value" id="count-bgNone">0</span>
     </div>
@@ -789,23 +789,42 @@
     function applyFiltersAndRender() {
         let list = [...users];
         const now = new Date();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const todayPrefix = `${String(now.getFullYear()).slice(-2)}.${mm}.${dd}`;
-        const todayISO = `${now.getFullYear()}-${mm}-${dd}`;
+        const todayISO = getKoreanDate();
+        const todayPrefix = todayISO.slice(2).replace(/-/g, '.');
 
-        if (activeInsightFilter === 'login') {
-            list = list.filter(u => u.lastLogin && u.lastLogin.startsWith(todayPrefix));
-        } else if (activeInsightFilter === 'active') {
+        if (activeInsightFilter) {
             list = list.filter(u => {
                 const records = u.expRecords ? Object.entries(u.expRecords) : [];
                 const lastDateStr = records.length ? records.at(-1)[0] : null;
-                return lastDateStr === todayISO;
-            });
-        } else if (activeInsightFilter === 'coupon') {
-            list = list.filter(u => {
-                const rs = u.rewardStatus || { exp: false, mini: false, random: false };
-                return rs.exp || rs.mini || rs.random;
+
+                let diff = -1;
+                if (lastDateStr) {
+                    diff = dayDiff(new Date(lastDateStr), now);
+                }
+
+                if (activeInsightFilter === 'login') {
+                    return u.lastLogin && u.lastLogin.startsWith(todayPrefix);
+                }
+                else if (activeInsightFilter === 'active') {
+                    return lastDateStr === todayISO;
+                }
+                else if (activeInsightFilter === 'coupon') {
+                    const rs = u.rewardStatus || { exp: false, mini: false, random: false };
+                    return rs.exp || rs.mini || rs.random;
+                }
+                else if (activeInsightFilter === 'bg2') {
+                    return diff >= 2 && diff < 5;
+                }
+                else if (activeInsightFilter === 'bg5') {
+                    return diff >= 5 && diff < 7;
+                }
+                else if (activeInsightFilter === 'bg7') {
+                    return diff >= 7;
+                }
+                else if (activeInsightFilter === 'bgNone') {
+                    return records.length === 0;
+                }
+                return true;
             });
         }
 
@@ -865,20 +884,13 @@
             list.sort((a, b) => (a.id || 0) - (b.id || 0));
         }
 
-        // ✅ 최종 렌더
         renderProfileCounts(users);
         renderList(list);
-        $(".insight-item").removeClass("active"); // 우선 모두 해제
+
+        $(".insight-item").removeClass("active");
 
         if (activeInsightFilter) {
-            const labelMap = { 'login': '오늘 접속', 'active': '오늘 활동', 'coupon': '발급 쿠폰' };
-            const targetLabel = labelMap[activeInsightFilter];
-
-            $(".insight-item").each(function() {
-                if ($(this).find(".label").text() === targetLabel) {
-                    $(this).addClass("active");
-                }
-            });
+            $(`.insight-item[data-filter="${activeInsightFilter}"]`).addClass("active");
         }
     }
 
@@ -1182,12 +1194,8 @@
 
     // 이벤트 섹션에 추가
     $(document).on("click", ".insight-item", function () {
-        const label = $(this).find(".label").text();
-        let filterType = null;
-
-        if (label === "오늘 접속") filterType = "login";
-        else if (label === "오늘 활동") filterType = "active";
-        else if (label === "발급 쿠폰") filterType = "coupon";
+        const filterType = $(this).data("filter");
+        if (!filterType) return;
 
         // 이미 선택된 걸 다시 누르면 필터 해제
         activeInsightFilter = (activeInsightFilter === filterType) ? null : filterType;
