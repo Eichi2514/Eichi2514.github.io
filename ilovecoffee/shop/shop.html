@@ -477,6 +477,85 @@
             transform: scale(0.96); /* 클릭 시 눌리는 효과 */
         }
 
+        /* =========================
+           오늘의 바리스타 (대형 스포트라이트)
+        ========================= */
+        .spotlight-label-layout {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .spotlight-body {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spotlight-card {
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* 1등 스타일 박스 이식 */
+        .spotlight-profile-box {
+            width: 110px;
+            height: 110px;
+            flex-shrink: 0;
+            border-radius: 16px;
+            border: 6px solid #FFC400; /* 골드 보더 */
+            box-shadow: inset 0 0 0 3px #FFC400, 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: visible;
+        }
+
+        .spotlight-img-wrap {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .spotlight-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 뱃지 위치 및 크기 강화 */
+        .spotlight-badge {
+            position: absolute;
+            right: -14px;
+            bottom: -8px;
+            font-size: 32px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            pointer-events: none;
+        }
+
+        .spotlight-label {
+            display: inline-block;
+            padding: 2px 10px;
+            background: var(--primary);
+            color: var(--text-accent);
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .spotlight-msg {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -652,6 +731,23 @@
     </div>
 </div>
 
+<div class="spotlight-label-layout">
+    <div class="spotlight-label">🍀 TODAY'S BARISTA 🍀</div>
+</div>
+
+<div class="spotlight-body">
+    <div class="spotlight-profile-box">
+        <div class="spotlight-img-wrap">
+            <img id="spotlightImg" src="" alt="바리스타">
+        </div>
+        <div id="spotlightBadge" class="spotlight-badge"></div>
+    </div>
+
+    <div class="spotlight-card">
+        <div id="spotlightMsg" class="spotlight-msg">"반갑습니다!"</div>
+    </div>
+</div>
+
 <!-- 로딩 스피너 -->
 <div id="loadingScreen">
     <div class="spinner"></div>
@@ -779,7 +875,7 @@
             applyWalletToUI(store.wallet);
             inventoryThemes = store.inventory?.themes || {};
             inventoryBadges = store.inventory?.badges || {};
-
+            await loadRandomBarista();
         } finally {
             $loadingScreen.hide();
             if (rendered.themes) renderThemes();
@@ -1548,6 +1644,113 @@
             $("#gauge-bar").css("left", "0%");
         }
         $miniGameActionBtn.text("추출 시작");
+    }
+
+    /** 오늘의 바리스타 로드 */
+    async function loadRandomBarista() {
+        const GREETINGS = [
+            // 🌟 일상 응원
+            "오늘 하루도 정말 고생 많으셨어요.",
+            "당신의 오늘이 어제보다 더 행복하기를 바랍니다.",
+            "포기하지 않고 버틴 오늘, 당신이 제일 멋져요.",
+            "가끔은 아무 생각 없이 푹 쉬어도 괜찮아요.",
+            "잘해왔고, 잘하고 있고, 앞으로도 잘될 거예요.",
+            "오늘따라 당신의 발걸음이 유난히 빛나네요.",
+            "무너지지 않고 이 자리에 있어줘서 고마워요.",
+
+            // 💖 따뜻한 위로
+            "잠시 숨을 고르고 하늘을 한 번 봐보세요.",
+            "세상 그 누구보다 당신 자신을 먼저 아껴주세요.",
+            "당신은 생각보다 훨씬 더 단단한 사람입니다.",
+            "서두르지 않아도 괜찮아요. 당신만의 속도가 정답이니까요.",
+            "힘든 일은 흘러가는 구름처럼 곧 지나갈 거예요.",
+            "오늘 하루, 스스로에게 '참 잘했다'고 말해주세요.",
+
+            // ✨ 긍정 에너지
+            "당신의 미소가 누군가에게는 큰 힘이 됩니다.",
+            "작은 행복들이 모여 당신의 큰 기쁨이 되길.",
+            "오늘은 당신이 가장 주인공인 날이에요.",
+            "어떤 선택을 하든, 저는 당신의 편입니다.",
+            "당신이 꿈꾸는 모든 일들이 선물처럼 다가오기를.",
+
+            // ☕ 은은한 감성 (커피 살짝 믹스)
+            "마음의 온도가 1도 더 올라가는 따뜻한 시간 되세요.",
+            "지친 마음에 은은한 향기 같은 휴식이 깃들길.",
+            "쓰디쓴 하루 끝에 달콤한 휴식이 기다리고 있을 거예요.",
+
+            // 🍀 행운과 기회
+            "생각지도 못한 곳에서 기분 좋은 소식이 들려올 거예요.",
+            "오늘은 당신이 가는 길이 곧 지름길이 되는 날입니다.",
+            "망설이던 일을 오늘 시작해보세요. 행운이 따를 거예요.",
+            "가까운 곳에서 당신을 돕고 싶어 하는 귀인을 만나게 됩니다.",
+            "오랫동안 기다려온 보상이 곧 당신의 품으로 들어옵니다.",
+
+            // ✨ 마음과 위로
+            "당신의 미소가 오늘 누군가의 하루를 구원할 거예요.",
+            "지금 고민하는 일은 결국 아무 일도 아니었다는 듯 해결됩니다.",
+            "당신은 충분히 빛나고 있어요. 스스로를 더 믿어주세요.",
+            "잠시 쉬어가는 오늘이 내일의 더 큰 도약이 될 거예요.",
+            "당신이 뿌린 친절의 씨앗이 오늘 예쁜 꽃으로 피어납니다.",
+
+            // ☕ 바리스타 감성 한 스푼
+            "오늘은 완벽한 샷을 내린 듯이 깔끔한 하루가 될 거예요.",
+            "인생의 쓴맛 뒤에는 라떼처럼 부드러운 행복이 기다립니다.",
+            "오늘 당신이 내린 결정은 최고의 블렌딩이 될 거예요.",
+
+            // 🎁 특별한 예언
+            "오늘 상점에서 고른 아이템이 당신에게 큰 행운을 가져다줄지도?",
+            "지금 이 메시지를 읽는 순간부터 기적 같은 일이 시작됩니다.",
+            "당신의 진심은 말하지 않아도 이미 상대방에게 닿아있어요."
+        ];
+
+        try {
+            const myNickname = getActiveNickname();
+            if (!myNickname) return;
+
+            // 1. 내 ID와 최근 접속자 명단 병렬 로드
+            const [myIdSnap, recentSnap] = await Promise.all([
+                get(ref(db, `coffeeUsers/${myNickname}/id`)),
+                get(ref(db, `coffeeRecentUsers`))
+            ]);
+
+            if (!myIdSnap.exists() || !recentSnap.exists()) return;
+            const myId = Number(myIdSnap.val());
+
+            let list = Array.isArray(recentSnap.val()) ? recentSnap.val() : Object.values(recentSnap.val());
+
+            // 2. 본인 제외 필터링
+            const otherUsers = list.filter(u => Number(u.id) !== myId);
+            if (otherUsers.length === 0) return;
+
+            // 3. 랜덤 한 명 선택
+            const luckyTarget = otherUsers[Math.floor(Math.random() * otherUsers.length)];
+
+            // 4. ID로 닉네임 찾기
+            const nickSnap = await get(ref(db, `coffeeUsersId/${luckyTarget.id}`));
+            if (!nickSnap.exists()) return;
+            const luckyNickname = nickSnap.val();
+
+            // 5. ✅ 핵심 최적화: 프로필 이미지와 뱃지만 콕 집어서 가져오기
+            const [imgSnap, badgeSnap] = await Promise.all([
+                get(ref(db, `coffeeUsers/${luckyNickname}/profileImg`)),
+                get(ref(db, `coffeeUsers/${luckyNickname}/activeBadge`))
+            ]);
+
+            const profileImgId = imgSnap.exists() ? imgSnap.val() : 1;
+            const activeBadgeId = badgeSnap.exists() ? badgeSnap.val() : "NONE";
+
+            // 6. UI 렌더링
+            $("#spotlightImg").attr("src", getProfileImageSrc(profileImgId));
+
+            const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
+            $("#spotlightBadge").text(badgeIcon);
+
+            const randomMsg = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+            $("#spotlightMsg").text(`${randomMsg}`);
+
+        } catch (e) {
+            console.warn("바리스타 스포트라이트 로드 실패:", e);
+        }
     }
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
