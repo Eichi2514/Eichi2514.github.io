@@ -491,11 +491,19 @@
             gap: 10px;
         }
 
+        .spotlight-msg-title {
+            font-weight: 800;
+            color: var(--primary); /* 프로젝트 포인트 컬러 */
+            margin-bottom: 2px;
+            width: 100%;
+            text-align: left;
+        }
+
         .spotlight-card {
             background: var(--bg-sub);
             border: 1px solid var(--border-main);
             border-radius: 20px;
-            padding: 20px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -735,7 +743,7 @@
     <div class="spotlight-label">🍀 TODAY'S BARISTA 🍀</div>
 </div>
 
-<div class="spotlight-body">
+<div id="spotlightBody" class="spotlight-body">
     <div class="spotlight-profile-box">
         <div class="spotlight-img-wrap">
             <img id="spotlightImg" src="" alt="바리스타">
@@ -744,6 +752,7 @@
     </div>
 
     <div class="spotlight-card">
+        <div class="spotlight-msg-title">오늘의 한마디</div>
         <div id="spotlightMsg" class="spotlight-msg">"반갑습니다!"</div>
     </div>
 </div>
@@ -1646,6 +1655,8 @@
         $miniGameActionBtn.text("추출 시작");
     }
 
+    let currentSpotlightNick = "";
+
     /** 오늘의 바리스타 로드 */
     async function loadRandomBarista() {
         const GREETINGS = [
@@ -1745,6 +1756,8 @@
             const badgeIcon = SHOP_DATA.badges[activeBadgeId]?.icon || "";
             $("#spotlightBadge").text(badgeIcon);
 
+            currentSpotlightNick = luckyNickname;
+
             const randomMsg = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
             $("#spotlightMsg").text(`${randomMsg}`);
 
@@ -1752,6 +1765,13 @@
             console.warn("바리스타 스포트라이트 로드 실패:", e);
         }
     }
+
+    $(document).on("click", "#spotlightBody", function() {
+        if (!currentSpotlightNick) return;
+
+        // 아는 사이니까 좀 더 친근한 문구로 정체를 공개합니다.
+        showAlert(`행운의 메신저는 바로🍀\n\n"${currentSpotlightNick}"님입니다!`);
+    });
 </script>
 <script src="../modules/helpModal.js" type="module" defer></script>
 <script src="../modules/menuToggle.js" type="module" defer></script>
