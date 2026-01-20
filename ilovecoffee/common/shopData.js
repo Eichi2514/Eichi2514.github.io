@@ -155,6 +155,6 @@ export const SHOP_DATA = {
 
         HEART: { id: "HEART", name: "하트", icon: "❤️", priceH: 500 },
 
-        FOX: { id: "FOX", name: "여우", icon: "🦊", priceH: 10000 }
+        FOX: { id: "FOX", name: "여우", icon: "🦊", priceH: 31452 }
     }
 };

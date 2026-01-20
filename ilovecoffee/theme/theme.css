@@ -241,3 +241,31 @@
     --border-main: #2B3442;
     --border-sub:  #111827;
 }
+
+/* ⚠️ ERROR 테마 – 시스템 오류/글리치 컨셉 */
+:root[data-theme="ERROR"] {
+    /* Brand - 경고등처럼 깜빡이는 느낌 */
+    --primary: #FF0000;
+    --primary-light: #222222;    /* 배경과 비슷하게 하여 경계 모호화 */
+    --primary-dark: #550000;
+
+    /* Background - 깨진 모니터 느낌 */
+    --bg-main: #0a0a0a;          /* 완전 어두움 */
+    --bg-sub: #1a1a1a;
+    --bg-accent: #330000;        /* 핏빛 강조 */
+
+    /* Text - 가독성을 일부러 떨어뜨림 */
+    --text-main: #00FF00;        /* 옛날 터미널 초록색 */
+    --text-sub: #444444;         /* 거의 안 보이게 함 */
+    --text-accent: #FFFFFF;      /* 중요한 건 하얗게 */
+    --text-danger: #FFFF00;      /* 노란색 경고 */
+
+    /* Button - 고장난 장비 느낌 */
+    --btn-close: #FF0000;
+    --btn-danger: #AA0000;
+    --btn-toggle: #222222;
+
+    /* Border - 노이즈 느낌 */
+    --border-main: #333333;
+    --border-sub:  #FF0000;
+}

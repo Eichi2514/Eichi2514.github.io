@@ -1230,7 +1230,20 @@
             function(isConfirmed) {
                 if (isConfirmed) {
                     // 2. '확인'을 눌렀을 때만 나타나는 아련한 메시지
+                    const currentTheme = localStorage.getItem("activeTheme");
+
+                    if (currentTheme === "ERROR") {
+                        // 1. 이미 에러 테마인 경우 -> 바로 흔적 지우기
+                        localStorage.removeItem("activeTheme");
+                        $("html").removeAttr("data-theme"); // 즉시 기본 테마로 복구
+                    } else {
+                        // 2. 테마가 없거나(null) 다른 테마인 경우 -> 에러
+                        // 즉시 에러 테마 적용 (시각적 연출)
+                        $("html").attr("data-theme", "ERROR");
+                        localStorage.setItem("activeTheme", "ERROR");
+                    }
                     showAlert(`그동안 감사했습니다...<br>${nickname}님의 앞날을 응원할게요.....🦊️`);
+
                 } else {
                     // '취소'를 눌렀을 때 (안심 시키기)
                     showAlert(`휴... 가지 마세요! <br>커피 한 잔 더 내리러 가시죠.`);
