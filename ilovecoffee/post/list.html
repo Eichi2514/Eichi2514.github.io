@@ -266,6 +266,20 @@
         .rank-1 .badge-overlay { font-size: 32px; right: -16px; bottom: -8px; }
         .rank-2-3 .badge-overlay { font-size: 28px; right: -12px; bottom: -6px; }
         .rank-4-5 .badge-overlay { font-size: 24px; right: -10px; bottom: -4px; }
+
+        /* 글리치 느낌의 텍스트 효과 (예시) */
+        .del-btn {
+            font-family: 'Courier New', Courier, monospace; /* 시스템 폰트 느낌 */
+            color: var(--text-danger);
+            text-shadow: 1px 1px #00ff00, -1px -1px #ff00ff; /* 색상 분리 효과 */
+            animation: glitch-text 0.5s infinite;
+        }
+
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            100% { transform: translate(1px, -1px); }
+        }
     </style>
 </head>
 <body>
@@ -302,7 +316,8 @@
     <div style="display: flex; gap: 4px; align-items: center">
         <h1>최근 접속</h1>
     </div>
-    <button class="del-btn">계정삭제</button>
+    <!-- 계정삭제 -->
+    <button class="del-btn">냨솤믨솦</button>
 </div>
 <div id="coffeeRecentList">
 </div>
@@ -1225,8 +1240,9 @@
         const nickname = getActiveNickname();
 
         // 1. 먼저 확인창을 띄움
+        // "정말로 그럴수이치를<br>떠나시겠습니까?",
         showConfirm(
-            "정말로 그럴수이치를<br>떠나시겠습니까?",
+            "솤뢻럎+뇗랲볶샌쒡뢦<br>뚰뎪뷃냚뷀듏뇮?",
             function(isConfirmed) {
                 if (isConfirmed) {
                     // 2. '확인'을 눌렀을 때만 나타나는 아련한 메시지
@@ -1242,15 +1258,17 @@
                         $("html").attr("data-theme", "ERROR");
                         localStorage.setItem("activeTheme", "ERROR");
                     }
-                    showAlert(`그동안 감사했습니다...<br>${nickname}님의 앞날을 응원할게요.....🦊️`);
+                    // showAlert(`그동안 감사했습니다...<br>${nickname}님의 앞날을 응원할게요.....🦊️`);
+                    showAlert(`뇗떿뻈+남믧쟟뷀듏듙...<br>${nickname}듔샇+뻕뎯삻+샀뿸쟒냔뿤.....🦊️`);
 
                 } else {
                     // '취소'를 눌렀을 때 (안심 시키기)
-                    showAlert(`휴... 가지 마세요! <br>커피 한 잔 더 내리러 가시죠.`);
+                    // showAlert(`휴... 가지 마세요! <br>커피 한 잔 더 내리러 가시죠.`);
+                    showAlert(`죞...+낡쇶+뢶벼뿤� <br>쒿쟇+쟑+샜+듵+뎻뢮랯+낡뷃쇒.`);
                 }
             },
-            "떠나기", // 확인 버튼 텍스트
-            "남아있기" // 취소 버튼 텍스트
+            "뚰뎪뇢", // 확인 버튼 텍스트 "떠나기"
+            "뎲뻆샖뇢" // 취소 버튼 텍스트 "남아있기"
         );
     });
 
