@@ -1053,9 +1053,13 @@
 
         const rewardH = pickReward(box.rewards);
         const ts = getKoreanTimestamp();
-        const effectColor = getEffectColorByBox(rewardH, box);
 
-        // ✅ 1️⃣ 먼저 트랜잭션부터
+        // 1. 등급 판정 데이터 생성
+        const tierMap = buildRewardTierMap(box.rewards);
+        const effectColor = getEffectColorByBox(rewardH, box);
+        const isJackpot = (rewardH === tierMap.maxH); // 잭팟 여부 확인
+
+        // 2. 트랜잭션 (재화 차감 및 지급)
         const walletRef = ref(db, `coffeeStore/${nickname}/wallet`);
         const result = await runTransaction(walletRef, (wallet) => {
             const safeWallet = {
@@ -1077,33 +1081,44 @@
             return;
         }
 
-        // 1. 쿠폰 사용 로그
+        // 로그 기록
         await writeWalletLog(nickname, "성공", ts, "사용", "쿠폰", box.couponCost, `${box.name} 개봉`);
-        // 2. H 획득 로그
         await writeWalletLog(nickname, "성공", ts, "획득", "H", rewardH, `${box.name} 보상 획득`);
 
-        // ✅ 2️⃣ 성공했을 때만 연출 시작
+        // UI 반영
         applyWalletToUI(result.snapshot.val());
 
+        // --- 3. 연출 시작 ---
         const $resultText = $("#boxResultText");
+        const $overlay = $("#boxOpenOverlay");
+        const $boxImg = $("#boxOpenImage");
 
-        $("#boxOpenImage").attr("src", box.img);
+        // 초기화
+        $boxImg.attr("src", box.img);
         $("#boxEffect").css("background", effectColor);
-        $resultText.hide();
+        $resultText.hide().removeClass("show");
 
-        $("#boxOpenOverlay").fadeIn(150);
+        // 잭팟 전용 초기 스타일 (이전 기록 초기화)
+        $overlay.css("box-shadow", "none");
+        $boxImg.css("filter", "none");
 
-        // 흔들림 끝난 뒤 결과 표시
+        $overlay.fadeIn(150);
+
+        // 흔들림 애니메이션 후 결과 표시
         setTimeout(() => {
-            $resultText
-                .removeClass("show")
-                .text(`🦊 ${rewardH.toLocaleString()}H 획득!`)
-                .show();
+            if (isJackpot) {
+                // 잭팟(최고보상)일 때 화려한 효과 추가
+                $overlay.css("box-shadow", "inset 0 0 50px #FFC400");
+                $boxImg.css("filter", "drop-shadow(0 0 20px #FFC400)");
+                $resultText.html(`🎊 <b style="color:#FFC400; text-shadow: 0 0 10px rgba(255,196,0,0.5);">${rewardH.toLocaleString()}H</b> 대박! 🎊`);
+            } else {
+                $resultText.text(`🦊 ${rewardH.toLocaleString()}H 획득!`);
+            }
 
-            // 애니메이션 재실행 보장
-            void $resultText[0].offsetWidth;
+            $resultText.show();
+            void $resultText[0].offsetWidth; // 리플로우 강제 발생 (애니메이션 재시작)
             $resultText.addClass("show");
-        }, 800);
+        }, 800); // 흔들림 시간(1s) 보다 약간 짧게 설정하여 긴장감 유지
     }
 
     // ✅ 상자 개봉 연출 클릭 시 닫기
