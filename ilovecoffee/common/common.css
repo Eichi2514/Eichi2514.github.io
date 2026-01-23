@@ -18,6 +18,12 @@ body {
     background: var(--bg-main);
     color: var(--text-main);
     padding: 20px 16px 300px 16px;
+
+    /* 텍스트 드래그 방지 (버튼 클릭 시 파랗게 선택되는 현상 제거) */
+    -webkit-user-select: none;
+    user-select: none;
+    /* 모바일 탭 하이라이트 제거 */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .login-overlay {
