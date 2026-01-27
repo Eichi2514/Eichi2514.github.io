@@ -74,8 +74,11 @@ input {
     text-align: center;
 }
 
-.title-container .calendar {
+.calendar {
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
 }
 
 #title {

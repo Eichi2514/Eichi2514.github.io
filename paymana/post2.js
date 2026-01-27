@@ -517,3 +517,30 @@ $('#calendar').on('change', function () {
     const selectedMonth = $(this).val();
     window.location.href = `../paymana/post2.html?${postId}&${selectedMonth}`;
 });
+
+/**
+ * 월 이동 함수
+ * @param {number} offset - -1이면 이전달, 1이면 다음달
+ */
+function moveMonth(offset) {
+    // 1. 현재 dateString (YYYY-MM) 기반으로 1일 날짜 객체 생성
+    const current = new Date(dateString + "-01");
+
+    // 2. 월 이동
+    current.setMonth(current.getMonth() + offset);
+
+    // 3. YYYY-MM 형식으로 변환
+    const newYyyy = current.getFullYear();
+    const newMm = String(current.getMonth() + 1).padStart(2, '0');
+    const newDateString = `${newYyyy}-${newMm}`;
+
+    // 4. 페이지 이동
+    window.location.href = `../paymana/post2.html?${postId}&${newDateString}`;
+}
+
+$('#calendar').on('change', function () {
+    const selectedMonth = $(this).val();
+    if (selectedMonth) {
+        window.location.href = `../paymana/post2.html?${postId}&${selectedMonth}`;
+    }
+});
