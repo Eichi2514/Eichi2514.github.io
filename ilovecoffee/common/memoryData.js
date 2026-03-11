@@ -503,7 +503,7 @@ export const memoryData = [{
         }, {
             "id": 181, "item": "레몬진저티", "theme": "", "color": "", "machine": "", "attribute": "음료", "price": "", "note": ""
         }, {
-            "id": 182, "item": "티백", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "레몬진저티 판매"
+            "id": 182, "item": "티백 (60개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "레몬진저티 판매"
         }, {
             "id": 183, "item": "스텔라 욕조", "theme": "스텔라", "color": "네이비", "machine": "", "attribute": "골드", "price": "1,120,000 G", "note": ""
         }, {
@@ -621,7 +621,7 @@ export const memoryData = [{
         }, {
             "id": 234, "item": "감기약 (100개)", "theme": "", "color": "", "machine": "", "attribute": "음료 토큰", "price": "", "note": "크리스탈볼 프라페 판매"
         }, {
-            "id": 235, "item": "뜨개질공방 옷입은 겨울나무", "theme": "뜨개질 공방", "color": "회색", "machine": "", "attribute": "골드", "price": "365,000 G", "note": ""
+            "id": 235, "item": "뜨개질공방 옷 입은 겨울나무", "theme": "뜨개질 공방", "color": "회색", "machine": "", "attribute": "골드", "price": "365,000 G", "note": ""
         }, {
             "id": 236, "item": "문구점 실내화 코너", "theme": "문구점", "color": "", "machine": "", "attribute": "캐시", "price": "26 C", "note": ""
         }]
