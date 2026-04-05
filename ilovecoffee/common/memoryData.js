@@ -215,7 +215,7 @@ export const memoryData = [{
         }]
     }, {
         "name": "내 마음의 안식처", "reward": "싱그러운 오렌지 프레임", "items": [{
-            "id": 97, "item": "플랜테리어 프레임 화분 조명", "theme": "플랜테리어", "color": "", "machine": "", "attribute": "골드", "price": "287,000 G", "note": ""
+            "id": 97, "item": "플랜테리어 프레임 화분 조명", "theme": "플랜테리어", "color": "골드", "machine": "", "attribute": "골드", "price": "287,000 G", "note": ""
         }, {
             "id": 98, "item": "플랜테리어 조형 화분", "theme": "플랜테리어", "color": "화이트", "machine": "", "attribute": "캐시", "price": "16 C", "note": ""
         }, {
