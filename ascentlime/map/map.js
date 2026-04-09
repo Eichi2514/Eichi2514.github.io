@@ -2303,10 +2303,17 @@ function weapon_img(img) {
     else if (front_weaponUpgrade <= 80) shadowColor = 'rgba(255, 127, 39, 0.7)';
     else if (front_weaponUpgrade <= 90) shadowColor = 'rgba(224, 0, 64, 0.7)';
 
+    console.log(`front_weaponUpgrade : ${front_weaponUpgrade}`);
+
     if (front_weaponUpgrade > 0) {
         $weapon_img.css({
             'box-shadow': `0 0 1.5vh 0.5vh ${shadowColor}, inset 0 0 1.5vh 0.5vh ${shadowColor}`,
             'border-radius': '10vh 0 10vh 0'
+        });
+    } else {
+        $weapon_img.css({
+            'box-shadow': 'none',
+            'border-radius': '0'
         });
     }
 }

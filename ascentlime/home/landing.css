@@ -802,7 +802,6 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
     top: 7vh;
     width: 10vh;
     height: 10vh;
-    border-radius: 10vh 0 10vh 0;
 }
 
 .weaponUpgrade_count {
@@ -813,46 +812,55 @@ input:-moz-placeholder { /* 파이어폭스 4-18 */
 .upgrade-10 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(255, 255, 255, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(255, 255, 255, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-20 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(150, 150, 150, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(150, 150, 150, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-30 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(163, 73, 164, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(163, 73, 164, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-40 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(63, 72, 204, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(63, 72, 204, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-50 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(0, 162, 232, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(0, 162, 232, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-60 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(34, 177, 76, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(34, 177, 76, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-70 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(224, 224, 64, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(224, 224, 64, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-80 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(255, 127, 39, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(255, 127, 39, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .upgrade-90 {
     box-shadow: 0 0 1.5vh 0.5vh rgba(224, 0, 64, 0.7),
     inset 0 0 1.5vh 0.5vh rgba(224, 0, 64, 0.7);
+    border-radius: 10vh 0 10vh 0;
 }
 
 .weapon_img_text {
