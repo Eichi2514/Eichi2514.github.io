@@ -808,7 +808,6 @@ async function getIntentAnswer(text) {
             "마음은 이해했어. 천천히 말해줘!"
         ]);
     }
- */
 
     // 사이트 관련 기본 질문
     for (const intent of intentList) {
@@ -817,6 +816,7 @@ async function getIntentAnswer(text) {
             return getRandomAnswer([directAnswer.answer]);
         }
     }
+ */
 
     return null;
 }
