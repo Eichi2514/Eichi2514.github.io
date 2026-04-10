@@ -31,6 +31,14 @@
     <div class="popup-form-container chatBot-form-container">
     </div>
     <div class="chatBot-input-container">
+        <div class="accuracy-controller">
+            <button type="button" id="acc-up" style="font-size: 1rem">+</button>
+            <div class="acc-display">
+                <span style="font-size: 0.7rem">정확도</span>
+                <span id="accuracy-val" style="font-size: 1rem">0.60</span>
+            </div>
+            <button type="button" id="acc-down" style="font-size: 1rem">-</button>
+        </div>
         <label class="chatBot-input">
             <textarea name="chatBot-question"></textarea>
         </label>

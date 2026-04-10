@@ -170,6 +170,24 @@ const observer = new ResizeObserver(() => {
 
 observer.observe(container);
 
+let currentAccuracy = 0.6;
+
+// 증가 버튼 (+)
+$(document).on('click', '#acc-up', function() {
+    if (currentAccuracy < 0.9) {
+        currentAccuracy = (parseFloat(currentAccuracy) + 0.05).toFixed(2);
+        $('#accuracy-val').text(currentAccuracy);
+    }
+});
+
+// 감소 버튼 (-)
+$(document).on('click', '#acc-down', function() {
+    if (currentAccuracy > 0.6) {
+        currentAccuracy = (currentAccuracy - 0.05).toFixed(2);
+        $('#accuracy-val').text(currentAccuracy);
+    }
+});
+
 
 $(document).on('click', '.chatBot-sand', async function () {
     const $textarea = $('textarea[name="chatBot-question"]');
@@ -233,7 +251,11 @@ $(document).on('click', '.chatBot-sand', async function () {
                             const data = await response.json();
                             // 허깅페이스에서 받아온 감성 답변을 출력!
                             console.log(`log-8 : 허깅페이스 유사도 점수: ${data.score}`);
-                            appendChat(data.answer);
+                            if (data.score < currentAccuracy) {
+                                appendChat(`미안해, 그건 내가 아직 모르는 말이야😅<br>혹시 <b>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"</b>같은 형식으로 직접 가르쳐줄래?`);
+                            } else {
+                                appendChat(data.answer);
+                            }
                         } else {
                             throw new Error('log-8 : 서버 응답 오류');
                         }
