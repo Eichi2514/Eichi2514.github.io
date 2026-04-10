@@ -252,7 +252,22 @@ $(document).on('click', '.chatBot-sand', async function () {
                     appendChat(intentAnswer);
                 } else {
                     console.log(`대답8`);
-                    appendChat(`미안해 그건 내가 모르는 말이야😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 말해주면 내가 기억해둘게!`);
+                    try {
+                        // 🚀 허깅페이스 서버로 유저의 질문을 보냅니다. (한글 깨짐 방지를 위해 encodeURIComponent 사용)
+                        const response = await fetch(`https://eichi2514-ascentlime-chatbot.hf.space/chat?q=${encodeURIComponent(question)}`);
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            // 허깅페이스에서 받아온 감성 답변을 출력!
+                            appendChat(data.answer);
+                        } else {
+                            throw new Error('서버 응답 오류');
+                        }
+                    } catch (error) {
+                        console.error("허깅페이스 API 에러:", error);
+                        // 서버가 잠들었거나 오류가 났을 때의 최후의 방어선
+                        appendChat(`미안해, 지금 머리가 좀 아파서 대답하기 어려워😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 직접 가르쳐줄래?`);
+                    }
                 }
             }
         }
