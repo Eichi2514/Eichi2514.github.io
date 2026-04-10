@@ -116,49 +116,23 @@ function appendChat(text, isUser = false) {
 }
 
 function parseQuestion(question) {
-    const patterns = [
-        // 1. "A라고 [서술어] B라고 [서술어]" 형태 (가장 유연한 버전)
-        // '말할게', '할게', '칠게', '입력할게' 등 모두 대응
-        /^\s*(.+?)\s*(?:이라고|라고|이라|라)\s*(?:말할게|할게|칠게|입력할게|칠게|할게|하면|했을 때|말하면)\s*(.+?)\s*$/i,
+    // [[질문]] [[답변]] 형식만 허용하는 정규식
+    const strictRegex = /^\s*\[\[(.+?)\]\]\s*\[\[(.+?)\]\]\s*$/;
 
-        // 2. 기존의 "A라고 하면 B라고 해" 계열 (순서 유지)
-        /^\s*(.+?)\s*(?:이라고|라고|이라|라)?\s*(?:말하면|하면|했을 때|할 때|들으면|입력하면|묻는다면)\s*(.+?)\s*$/i,
+    const match = question.match(strictRegex);
 
-        // 3. 화살표, 은/는, 만약 등 나머지 패턴들 (기존과 동일)
-        /(.+?)\s*(?:->|=>)\s*(.+)/,
-        /^(.+?)\s*(?:은|는|이|가)\s+(.+?)\s*(?:야|이다|다|라고 해|라고)\s*$/,
-        /만약\s*(.+?)\s*(?:라고)?\s*(?:묻는다면|물으면|말하면)\s*(.+?)\s*$/
-    ];
+    if (match) {
+        // 쌍대괄호 안에 있는 글자만 추출
+        const qText = match[1].trim();
+        const aText = match[2].trim();
 
-    for (const pattern of patterns) {
-        const match = question.match(pattern);
-        if (match) {
-            let qText = match[1].trim().replace(/^<br>|<br>$/g, '');
-            let aText = match[2].trim().replace(/^<br>|<br>$/g, '');
-
-            // 답변(aText)에서 "안녕이라고 해" -> "안녕"만 남기기
-            const junkWords = [
-                "라고 대답해줘", "라고 대답해", "라고 말해줘", "라고 말해",
-                "라고 해줘", "라고 해", "라고 해라", "라고", "라고 대답", "대답해", "말해"
-            ];
-
-            for (const word of junkWords) {
-                if (aText.endsWith(word)) {
-                    aText = aText.slice(0, -word.length).trim();
-                    break;
-                }
-            }
-
-            // 만약 '안녕이라고'에서 '라고'가 남았다면 최종 제거
-            if (aText.endsWith("라고")) aText = aText.slice(0, -2).trim();
-
-            return {
-                qText: qText,
-                aText: aText,
-                editable: match[3] || undefined
-            };
-        }
+        return {
+            qText: qText,
+            aText: aText
+        };
     }
+
+    // 쌍대괄호 형식이 아니면 학습하지 않고 그냥 대화로 넘김
     return null;
 }
 
@@ -215,43 +189,42 @@ $(document).on('click', '.chatBot-sand', async function () {
     if (parsed) {
         const { qText, aText, editable } = parsed;
         if (forbiddenChars.test(qText)) {
-            console.log(`대답1`);
-            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
+            console.log(`log-1`);
+            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어😐");
         } else {
             const existing = await fetchAnswer(qText);
             if (existing) {
                 if (existing.editable === true) {
-                    console.log(`대답2`);
+                    console.log(`log-2`);
                     appendChat("이 질문은 수정할 수 없어요");
                 } else {
-                    console.log(`대답3`);
-                    appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게요😊`);
+                    console.log(`log-3`);
+                    appendChat(`'${qText}'(이)라는 질문이 수정되었고,<br>'${aText}'(이)라고 다시 대답할게😊`);
                     await storeAnswer(qText, aText);
                 }
             } else {
-                console.log(`대답4`);
-                appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게요😄`);
+                console.log(`log-4`);
+                appendChat(`'${qText}'(이)라는 질문이 등록되었고,<br>'${aText}'(이)라고 대답할게😄`);
                 const isEditable = editable === '2514';
                 await storeAnswer(qText, aText, isEditable);
             }
         }
     } else {
         if (forbiddenChars.test(question)) {
-            console.log(`대답5`);
-            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어요😐");
+            console.log(`log-5`);
+            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어😐");
         } else {
             const directAnswer = await fetchAnswer(question);
 
             if (directAnswer) {
-                console.log(`대답6`);
+                console.log(`log-6`);
                 appendChat(directAnswer.answer);
             } else {
                 const intentAnswer = await getIntentAnswer(question);
                 if (intentAnswer) {
-                    console.log(`대답7`);
+                    console.log(`log-7`);
                     appendChat(intentAnswer);
                 } else {
-                    console.log(`대답8`);
                     try {
                         // 🚀 허깅페이스 서버로 유저의 질문을 보냅니다. (한글 깨짐 방지를 위해 encodeURIComponent 사용)
                         const response = await fetch(`https://eichi2514-ascentlime-chatbot.hf.space/chat?q=${encodeURIComponent(question)}`);
@@ -259,14 +232,15 @@ $(document).on('click', '.chatBot-sand', async function () {
                         if (response.ok) {
                             const data = await response.json();
                             // 허깅페이스에서 받아온 감성 답변을 출력!
+                            console.log(`log-8 : 허깅페이스 유사도 점수: ${data.score}`);
                             appendChat(data.answer);
                         } else {
-                            throw new Error('서버 응답 오류');
+                            throw new Error('log-8 : 서버 응답 오류');
                         }
                     } catch (error) {
-                        console.error("허깅페이스 API 에러:", error);
+                        console.error("log-8 : 허깅페이스 API 에러:", error);
                         // 서버가 잠들었거나 오류가 났을 때의 최후의 방어선
-                        appendChat(`미안해, 지금 머리가 좀 아파서 대답하기 어려워😅<br>"안녕이라고 말하면 안녕하세요라고 대답해줘"<br>같은 형식으로 직접 가르쳐줄래?`);
+                        appendChat(`미안해, 지금 머리가 좀 아파서 대답하기 어려워😅<br>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"<br>같은 형식으로 직접 가르쳐줄래?`);
                     }
                 }
             }
@@ -282,6 +256,7 @@ function getRandomAnswer(answers) {
 
 // \s* == 0개 이상의 공백
 async function getIntentAnswer(text) {
+    /*
     // 인사
     if (/안\s*녕|하\s*이|h\s*e\s*l\s*l\s*o|ㅎ\s*ㅇ|h\s*i/i.test(text)) {
         return getRandomAnswer([
@@ -811,6 +786,7 @@ async function getIntentAnswer(text) {
             "마음은 이해했어. 천천히 말해줘!"
         ]);
     }
+ */
 
     // 사이트 관련 기본 질문
     for (const intent of intentList) {
