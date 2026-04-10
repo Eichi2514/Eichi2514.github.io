@@ -116,23 +116,19 @@ function appendChat(text, isUser = false) {
 }
 
 function parseQuestion(question) {
-    // [[질문]] [[답변]] 형식만 허용하는 정규식
-    const strictRegex = /^\s*\[\[(.+?)\]\]\s*\[\[(.+?)\]\]\s*$/;
+    // 문장 전체에서 [[ ]]로 감싸진 모든 텍스트를 찾아냅니다.
+    const bracketRegex = /\[\[(.+?)\]\]/g;
+    const matches = [...question.matchAll(bracketRegex)];
 
-    const match = question.match(strictRegex);
-
-    if (match) {
-        // 쌍대괄호 안에 있는 글자만 추출
-        const qText = match[1].trim();
-        const aText = match[2].trim();
-
+    // 대괄호 쌍이 2개 이상(질문, 답변) 발견되었을 때만 학습 데이터로 간주
+    if (matches.length >= 2) {
         return {
-            qText: qText,
-            aText: aText
+            qText: matches[0][1].trim(), // 첫 번째 [[ ]] 내용
+            aText: matches[1][1].trim()  // 두 번째 [[ ]] 내용
         };
     }
 
-    // 쌍대괄호 형식이 아니면 학습하지 않고 그냥 대화로 넘김
+    // 대괄호가 부족하면 일반 대화로 리턴
     return null;
 }
 
@@ -229,8 +225,7 @@ $(document).on('click', '.chatBot-sand', async function () {
         }
     } else {
         if (forbiddenChars.test(question)) {
-            console.log(`log-5`);
-            appendChat("질문에 '.', '#', '$', '[', ']' 문자는 사용할 수 없어😐");
+            await callHuggingFace(question);
         } else {
             const directAnswer = await fetchAnswer(question);
 
@@ -243,28 +238,7 @@ $(document).on('click', '.chatBot-sand', async function () {
                     console.log(`log-7`);
                     appendChat(intentAnswer);
                 } else {
-                    try {
-                        // 🚀 허깅페이스 서버로 유저의 질문을 보냅니다. (한글 깨짐 방지를 위해 encodeURIComponent 사용)
-                        const response = await fetch(`https://eichi2514-ascentlime-chatbot.hf.space/chat?q=${encodeURIComponent(question)}`);
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            // 허깅페이스에서 받아온 감성 답변을 출력!
-                            console.log(`log-8 : 허깅페이스 유사도 점수: ${data.score}`);
-                            console.log(`범위(0.02) 내에 ${data.variant_count}개의 답변중 하나`);
-                            if (data.score < currentAccuracy) {
-                                appendChat(`미안해, 그건 내가 아직 모르는 말이야😅<br>혹시 <b>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"</b>같은 형식으로 직접 가르쳐줄래?`);
-                            } else {
-                                appendChat(data.answer);
-                            }
-                        } else {
-                            throw new Error('log-8 : 서버 응답 오류');
-                        }
-                    } catch (error) {
-                        console.error("log-8 : 허깅페이스 API 에러:", error);
-                        // 서버가 잠들었거나 오류가 났을 때의 최후의 방어선
-                        appendChat(`미안해, 지금 머리가 좀 아파서 대답하기 어려워😅<br>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"<br>같은 형식으로 직접 가르쳐줄래?`);
-                    }
+                    await callHuggingFace(question);
                 }
             }
         }
@@ -272,6 +246,31 @@ $(document).on('click', '.chatBot-sand', async function () {
     $textarea.val('');
     scrollToBottom();
 });
+
+async function callHuggingFace(question) {
+    try {
+        // 🚀 허깅페이스 서버로 유저의 질문을 보냅니다. (한글 깨짐 방지를 위해 encodeURIComponent 사용)
+        const response = await fetch(`https://eichi2514-ascentlime-chatbot.hf.space/chat?q=${encodeURIComponent(question)}`);
+
+        if (response.ok) {
+            const data = await response.json();
+            // 허깅페이스에서 받아온 감성 답변을 출력!
+            console.log(`log-8 : 허깅페이스 유사도 점수: ${data.score}`);
+            console.log(`범위(0.02) 내에 ${data.variant_count}개의 답변중 하나`);
+            if (data.score < currentAccuracy) {
+                appendChat(`미안해, 그건 내가 아직 모르는 말이야😅<br>혹시 <b>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"</b>같은 형식으로 직접 가르쳐줄래?`);
+            } else {
+                appendChat(data.answer);
+            }
+        } else {
+            throw new Error('log-8 : 서버 응답 오류');
+        }
+    } catch (error) {
+        console.error("log-8 : 허깅페이스 API 에러:", error);
+        // 서버가 잠들었거나 오류가 났을 때의 최후의 방어선
+        appendChat(`미안해, 지금 머리가 좀 아파서 대답하기 어려워😅<br>"[[안녕]]이라고 말하면 [[안녕하세요]]라고 대답해줘"<br>같은 형식으로 직접 가르쳐줄래?`);
+    }
+}
 
 function getRandomAnswer(answers) {
     return answers[Math.floor(Math.random() * answers.length)];
