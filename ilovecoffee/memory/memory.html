@@ -218,7 +218,17 @@
             font-weight: 600;
         }
 
-        /* ✅ 진행률 - 오른쪽 상단 */
+        /* ✅ 인덱스 - 왼쪽 하단 */
+        .sub-index {
+            position: absolute;
+            bottom: 3px;
+            left: 8px;
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        /* ✅ 진행률 - 오른쪽 하단 */
         .sub-progress {
             position: absolute;
             bottom: 3px;
@@ -315,6 +325,12 @@
             word-break: keep-all;
             font-weight: 600;
             color: var(--text-main);
+        }
+
+        .category-name {
+            word-break: keep-all;
+            font-size: 11px;
+            color: var(--text-sub);
         }
 
         .item-detail {
@@ -562,11 +578,6 @@
             background: #ffffff;
             color: #555;
             border-color: #ddd;
-        }
-
-        /* ✅ 아이템명 */
-        .item-name {
-            font-weight: 600;
         }
 
         /* ✅ 첫줄과 두번째줄을 하나처럼 붙이기 */
@@ -872,8 +883,10 @@
         $("#subcategoryList").empty();
         if (!activeNickname) return;
 
+        const catIdx = memoryData.findIndex(c => c.category1 === cat.category1) + 1;
+
         // ✅ 각 서브카테고리 렌더링
-        cat.categories2.forEach(sub => {
+        cat.categories2.forEach((sub, subIdx) => {
             const totalItems = sub.items.length;
             const collectedCount = sub.items.filter(i => collected[i.id]).length;
 
@@ -882,9 +895,11 @@
 
             // ✅ 진행률 텍스트 (완료가 아니면 표시)
             const progressHTML = !isAllCollected ? `<span class="sub-progress">${collectedCount}/${totalItems}</span>` : '';
+            const indexHTML = `<span class="sub-index">${catIdx}-${subIdx + 1}</span>`;
 
             $("#subcategoryList").append(`
                 <div class="subcategory ${collectedClass}" data-cat="${cat.category1}" data-sub="${sub.name}">
+                    ${indexHTML}
                     ${progressHTML}
                     <span class="sub-name">${sub.name}</span>
                 </div>
@@ -1099,11 +1114,11 @@
         const themeSet = new Set();
         const optionSet = new Set();
 
-        memoryData.forEach(cat => {
-            cat.categories2.forEach(sub => {
+        memoryData.forEach((cat, i) => {
+            cat.categories2.forEach((sub, j) => {
                 sub.items.forEach(item => {
                     allItems.push({
-                        ...item, id: item.id, category1: cat.category1, category2: sub.name
+                        ...item, id: item.id, categoryIndex: `${i+1}-${j+1}`, category1: cat.category1, category2: sub.name
                     });
 
                     if (item.theme) themeSet.add(item.theme.trim());
@@ -1227,6 +1242,7 @@
             // ✅ 획득된 경우 이름 앞에 이미지 추가
             const nameHTML = `
                             <span class="item-name">${i.item}</span>
+                            <span class="category-name">${i.categoryIndex}</span>
                         `;
 
             // ✅ 획득된 아이템은 배경 강조
@@ -1234,7 +1250,10 @@
 
             return `
                             <tr class="${rowClass}" data-id="${i.id}">
-                                <td>${nameHTML}<br>${tags.join(" ")}</td>
+                                <td>
+                                    ${nameHTML}<br>
+                                    ${tags.join(" ")}
+                                </td>
                             </tr>
                         `;
         }).join("")}
