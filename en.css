@@ -219,7 +219,6 @@ a:hover object {
     text-align: center;
     font-size: 2rem;
     font-weight: 600;
-    padding-bottom: 30px;
 }
 
 .project-container {
@@ -301,6 +300,11 @@ a:hover object {
 
 .project6 {
     background: #5a4398;
+    color: #F4F6F9;
+}
+
+.project7 {
+    background: #8D8C81;
     color: #F4F6F9;
 }
 

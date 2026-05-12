@@ -183,7 +183,7 @@ function scrollToSection(index) {
 
 // 휠 이벤트 처리
 $portfolio.on('wheel', function (e) {
-    // e.preventDefault(); // 기본 스크롤 방지
+    e.preventDefault(); // 기본 스크롤 방지
 
     // 애니메이션이 진행 중이면 아무 동작도 하지 않음
     if (isAnimating) return;
