@@ -60,6 +60,7 @@ async function hashPassword(password, salt) {
     }
 
     try {
+        /*
         const response = await fetch(scriptURL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -70,7 +71,8 @@ async function hashPassword(password, salt) {
         });
 
         const hashedPassword = await response.text();
-        return hashedPassword.trim();
+         */
+        return password.trim();
 
     } catch (error) {
         console.error("비밀번호 해싱 중 오류 발생:", error);
