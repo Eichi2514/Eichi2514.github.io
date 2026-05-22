@@ -541,7 +541,7 @@ a:hover object {
     left: 10px;
     border-radius: 25px;
     background: #4c51bf;
-    cursor: auto;
+    cursor: pointer;
     padding: 0 5px;
 }
 
@@ -563,9 +563,12 @@ a:hover object {
     border-radius: 30px;
     background: #1e3a8a;
     transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.language-toggle a:hover {
+.language-toggle:hover {
     opacity: 0.8;
 }
 
