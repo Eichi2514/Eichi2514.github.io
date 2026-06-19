@@ -308,6 +308,10 @@ a:hover object {
     color: #F4F6F9;
 }
 
+.project8 {
+    background: rgb(0, 0, 30);
+}
+
 .skills {
     width: 400px;
     display: flex;
