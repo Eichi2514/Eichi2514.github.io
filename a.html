@@ -18,6 +18,7 @@
     <style>
         html, body {
             min-width: max-content;
+            min-height: 100vh;
             font-family: 'Helvetica', sans-serif;
             background: linear-gradient(to bottom right, #ffffff, #BBDEFB);
             margin: 0;
@@ -86,7 +87,7 @@
 <body class="p-8">
 <h1 class="text-5xl font-bold text-center mb-6">📌 즐겨찾기</h1>
 <div class="max-w-3xl flex flex-col gap-8 mx-auto">
-    <div class="flex gap-8">
+    <div class="flex justify-between">
         <div class="bg-card">
             <h2 class="text-2xl font-semibold section-title mb-4">🔎 개인 사이트</h2>
             <ul class="flex flex-col gap-3">
@@ -151,7 +152,7 @@
                 </ul>
             </div>
 
-            <div class="bg-card flex-grow">
+            <div class="bg-card">
                 <h2 class="text-2xl font-semibold section-title mb-4">📚 문제 풀이</h2>
                 <ul class="flex flex-col gap-3">
                     <li>
@@ -162,6 +163,17 @@
                     </li>
                     <li>
                         <a href="https://www.acmicpc.net/" class="section-link" target="_blank">백준</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-card flex-grow">
+                <h2 class="text-2xl font-semibold section-title mb-4">🎨 기타</h2>
+                <ul class="flex flex-col gap-3">
+                    <li>
+                        <a href="https://emoticonstudio.kakao.com/" class="section-link" target="_blank">
+                            카카오 이모티콘
+                        </a>
                     </li>
                 </ul>
             </div>
