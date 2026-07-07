@@ -1,6 +1,6 @@
 // 파일 경로 : worklog/summary/summary.js
 // ========= 유틸 =========
-import { extractSortedCategories, renderCategoryFilter, bindModalEvents } from '../common/modalUtils.js';
+import { extractSortedCategories, renderCategoryFilter, bindModalEvents, bindStorageBackupEvents } from '../common/modalUtils.js';
 
 const pad2 = n => String(n).padStart(2, '0');
 const formatDateKorean = (s) => {
@@ -428,6 +428,16 @@ $(function () {
 
     // ========= 모달 관련 =========
     bindModalEvents('#btn-filter', ['#btn-filter-close', '#btn-filter-apply'], '#filter-modal');
+
+    // ========= 백업 / 복원 =========
+    bindStorageBackupEvents({
+        exportBtn: '#btn-export',
+        importBtn: '#btn-import',
+        fileInput: '#import-file',
+        storageKey: STORAGE_KEY,
+        fileName: `worklog-${new Date().toISOString().slice(0, 10)}.json`,
+        reload: true
+    });
 
     // ========= 검색 =========
     $('#btn-title-search').on('click', function () {

@@ -22,8 +22,12 @@
                 <input id="search-title" type="text" class="pill flex-1" placeholder="제목">
                 <button id="btn-title-search" class="btn btn-outline shrink-0">검색</button>
             </div>
-
-            <a href="../main/main.html" class="btn btn-outline no-wrap">작업일지</a>
+            <div>
+                <button id="btn-import" class="btn btn-outline" type="button">업로드</button>
+                <input type="file" id="import-file" accept="application/json,.json" hidden>
+                <button id="btn-export" class="btn btn-outline" type="button">내보내기</button>
+                <a href="../main/main.html" class="btn btn-outline no-wrap">작업일지</a>
+            </div>
         </div>
     </div>
 

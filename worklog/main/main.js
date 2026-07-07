@@ -1,6 +1,6 @@
 // 파일 경로 : worklog/main/main.js
 // ========= 유틸 =========
-import { extractSortedCategories, renderCategoryFilter, bindModalEvents } from '../common/modalUtils.js';
+import { extractSortedCategories, renderCategoryFilter, bindModalEvents, bindStorageBackupEvents } from '../common/modalUtils.js';
 
 // ====== 상태 & 캐시 ======
 let chart = null;
@@ -813,4 +813,14 @@ $(function () {
 
     // ========= 모달 관련 =========
     bindModalEvents('#btn-filter', ['#btn-filter-close', '#btn-filter-apply'], '#filter-modal');
+
+    // ========= 백업 / 복원 =========
+    bindStorageBackupEvents({
+        exportBtn: '#btn-export',
+        importBtn: '#btn-import',
+        fileInput: '#import-file',
+        storageKey: STORAGE_KEY,
+        fileName: `worklog-${todayStr()}.json`,
+        reload: true
+    });
 });

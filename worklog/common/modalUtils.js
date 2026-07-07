@@ -104,3 +104,182 @@ export function renderCategoryFilter(selector, allCategories, selectedCats, onCh
         if (typeof onChange === 'function') onChange(newSelected);
     });
 }
+
+// ========= localStorage 압축 저장 / 압축 해제 유틸 =========
+const LZ_PREFIX = "__LZUTF16__";
+
+function assertLZString() {
+    if (typeof LZString === 'undefined') {
+        throw new Error('LZString 라이브러리가 로드되지 않았습니다.');
+    }
+}
+
+export function saveCompressedStorage(key, obj) {
+    assertLZString();
+
+    const json = JSON.stringify(obj);
+    const compressed = LZString.compressToUTF16(json);
+
+    localStorage.setItem(key, LZ_PREFIX + compressed);
+}
+
+export function loadStorageDecompressed(key) {
+    assertLZString();
+
+    const value = localStorage.getItem(key);
+
+    if (value == null) {
+        return null;
+    }
+
+    // 새 압축 포맷
+    if (value.startsWith(LZ_PREFIX)) {
+        const json = LZString.decompressFromUTF16(value.slice(LZ_PREFIX.length));
+        return json ? JSON.parse(json) : null;
+    }
+
+    // 비압축 JSON
+    try {
+        return JSON.parse(value);
+    } catch {
+        // 구 압축 포맷
+        const json = LZString.decompressFromUTF16(value);
+        return json ? JSON.parse(json) : null;
+    }
+}
+
+// ========= 전체 내역 내보내기 =========
+export function exportStorageJson({
+                                      storageKey,
+                                      fileName = 'worklog-export.json'
+                                  }) {
+    const data = loadStorageDecompressed(storageKey) || {};
+
+    const exportData = {
+        app: 'worklog',
+        storageKey,
+        exportedAt: new Date().toISOString(),
+        data
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(exportData, null, 2)],
+        {type: 'application/json;charset=utf-8'}
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    URL.revokeObjectURL(url);
+}
+
+// ========= 전체 내역 업로드 =========
+export function importStorageJson({
+                                      storageKey,
+                                      file,
+                                      onSuccess,
+                                      onError,
+                                      reload = true
+                                  }) {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        try {
+            const parsed = JSON.parse(reader.result);
+
+            // exportStorageJson()으로 내보낸 파일이면 parsed.data 사용
+            // 순수 데이터 JSON이면 parsed 자체 사용
+            const data = parsed && typeof parsed === 'object' && 'data' in parsed
+                ? parsed.data
+                : parsed;
+
+            if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                throw new Error('올바른 작업일지 JSON 형식이 아닙니다.');
+            }
+
+            saveCompressedStorage(storageKey, data);
+
+            if (typeof onSuccess === 'function') {
+                onSuccess(data);
+            }
+
+            if (reload) {
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error(err);
+
+            if (typeof onError === 'function') {
+                onError(err);
+            } else {
+                window.alert('업로드에 실패했습니다. JSON 파일 형식을 확인해 주세요.');
+            }
+        }
+    };
+
+    reader.onerror = function () {
+        const err = new Error('파일을 읽는 중 오류가 발생했습니다.');
+
+        if (typeof onError === 'function') {
+            onError(err);
+        } else {
+            window.alert(err.message);
+        }
+    };
+
+    reader.readAsText(file, 'utf-8');
+}
+
+// ========= 버튼 바인딩 공통 함수 =========
+export function bindStorageBackupEvents({
+                                            exportBtn,
+                                            importBtn,
+                                            fileInput,
+                                            storageKey,
+                                            fileName = 'worklog-export.json',
+                                            reload = true
+                                        }) {
+    $(document).on('click', exportBtn, function () {
+        exportStorageJson({
+            storageKey,
+            fileName
+        });
+    });
+
+    $(document).on('click', importBtn, function () {
+        $(fileInput).val('');
+        $(fileInput).trigger('click');
+    });
+
+    $(document).on('change', fileInput, function () {
+        const file = this.files && this.files[0];
+
+        if (!file) return;
+
+        const ok = window.confirm(
+            '업로드하면 현재 저장된 전체 작업일지가 업로드한 파일 내용으로 교체됩니다. 계속하시겠습니까?'
+        );
+
+        if (!ok) {
+            $(fileInput).val('');
+            return;
+        }
+
+        importStorageJson({
+            storageKey,
+            file,
+            reload,
+            onError(error) {
+                window.alert(error.message || '업로드에 실패했습니다.');
+            }
+        });
+    });
+}
