@@ -312,6 +312,10 @@ a:hover object {
     background: rgb(0, 0, 30);
 }
 
+.project9 {
+    background: #929292;
+}
+
 .skills {
     width: 400px;
     display: flex;
