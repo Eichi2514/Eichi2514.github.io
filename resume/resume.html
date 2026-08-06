@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>유건혁 개발자 이력서</title>
+
+    <!-- PDF 다운로드용 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --ink: #111827;
+            --muted: #667085;
+            --line: #dfe4ec;
+            --accent: #5b5cf0;
+            --accent-dark: #4445d8;
+            --accent2: #12a3a6;
+            --accent-soft: #eef0ff;
+            --soft: #f6f8fb;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at 15% 10%, rgba(91, 92, 240, 0.10), transparent 26%),
+            radial-gradient(circle at 85% 90%, rgba(18, 163, 166, 0.08), transparent 24%),
+            #e9edf3;
+            color: var(--ink);
+            font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+        }
+
+        .download-btn {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+
+            border: 0;
+            border-radius: 999px;
+            padding: 11px 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(91, 92, 240, 0.28);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(91, 92, 240, 0.34);
+        }
+
+        .resume-page {
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+
+            display: grid;
+            grid-template-columns: 44mm 1fr;
+
+            background: white;
+            box-shadow: 0 18px 60px rgba(17, 24, 39, 0.18);
+            overflow: hidden;
+        }
+
+        .resume-page.pdf-export {
+            margin: 0;
+            box-shadow: none;
+        }
+
+        /* 상단 얇은 포인트 바 */
+        .resume-page::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent) 0 64%, var(--accent2) 64% 100%);
+            z-index: 5;
+        }
+
+        /* 우측 상단 장식 */
+        .resume-page::after {
+            content: "";
+            position: absolute;
+            top: -58px;
+            right: -42px;
+            width: 150px;
+            height: 150px;
+            border: 22px solid rgba(91, 92, 240, 0.07);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .side {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #121827 0%, #171d2d 58%, #101521 100%);
+            color: white;
+            padding: 18mm 7mm 12mm;
+        }
+
+        .side::before {
+            content: "";
+            position: absolute;
+            top: 34mm;
+            right: -28mm;
+            width: 50mm;
+            height: 50mm;
+            border-radius: 50%;
+            background: rgba(91, 92, 240, 0.20);
+            filter: blur(2px);
+        }
+
+        .side::after {
+            content: "";
+            position: absolute;
+            left: -18mm;
+            bottom: 33mm;
+            width: 48mm;
+            height: 48mm;
+            border-radius: 50%;
+            background: rgba(18, 163, 166, 0.12);
+        }
+
+        .photo-frame {
+            position: relative;
+            z-index: 2;
+            padding: 2.2mm;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(91, 92, 240, 0.65));
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .photo {
+            display: block;
+            width: 100%;
+            aspect-ratio: 0.78;
+            object-fit: cover;
+            object-position: center 18%;
+            border-radius: 11px;
+            background: white;
+        }
+
+        .name {
+            position: relative;
+            z-index: 2;
+            margin: 10mm 0 1.5mm;
+            font-size: 27px;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -1.4px;
+        }
+
+        .name::after {
+            content: "";
+            display: block;
+            width: 22mm;
+            height: 2px;
+            margin-top: 3.5mm;
+            background: linear-gradient(90deg, var(--accent2), transparent);
+        }
+
+        .role {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 11mm;
+            color: #b7c0d2;
+            font-size: 9px;
+            font-weight: 800;
+            line-height: 1.45;
+            letter-spacing: 1.25px;
+        }
+
+        .contact-group {
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-block {
+            margin-bottom: 6.5mm;
+        }
+
+        .contact-label {
+            display: block;
+            margin-bottom: 2px;
+            color: #8792a7;
+            font-size: 7.5px;
+            font-weight: 900;
+            letter-spacing: 0.9px;
+        }
+
+        .contact-value {
+            font-size: 8.7px;
+            line-height: 1.45;
+            word-break: break-all;
+        }
+
+        .contact-link {
+            color: #ffffff;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .contact-link:hover {
+            color: #9fa8ff;
+            border-color: #9fa8ff;
+        }
+
+        .side-badge {
+            position: relative;
+            z-index: 2;
+            margin-top: 12mm;
+            padding: 4mm;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .side-badge strong {
+            display: block;
+            margin-bottom: 1.5mm;
+            color: white;
+            font-size: 8px;
+        }
+
+        .side-badge span {
+            color: #aab4c8;
+            font-size: 7.3px;
+            line-height: 1.5;
+        }
+
+        .vertical-copy {
+            position: absolute;
+            left: 4mm;
+            bottom: 12mm;
+            z-index: 2;
+            transform: rotate(-90deg);
+            transform-origin: left bottom;
+            color: #6f7a91;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.6px;
+            white-space: nowrap;
+        }
+
+        .main {
+            position: relative;
+            padding: 12mm 10mm 7mm 9mm;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 2mm;
+            margin-bottom: 3mm;
+            color: var(--accent);
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 10mm;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .headline {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.28;
+            letter-spacing: -1.2px;
+            font-weight: 900;
+        }
+
+        .headline strong {
+            position: relative;
+            color: var(--accent);
+        }
+
+        .headline strong::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 1px;
+            height: 5px;
+            background: rgba(91, 92, 240, 0.12);
+            z-index: -1;
+        }
+
+        .intro {
+            margin: 5mm 0 0;
+            max-width: 97%;
+            color: var(--muted);
+            font-size: 9.7px;
+            line-height: 1.72;
+        }
+
+        .proof-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3mm;
+            margin: 7mm 0 8mm;
+        }
+
+        .proof {
+            position: relative;
+            min-height: 19mm;
+            padding: 4mm 3.6mm;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+        }
+
+        .proof::after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: -12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(91, 92, 240, 0.07);
+        }
+
+        .proof strong {
+            display: block;
+            margin-bottom: 1mm;
+            font-size: 18px;
+            line-height: 1;
+            color: var(--accent);
+        }
+
+        .proof span {
+            color: var(--muted);
+            font-size: 8px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 3mm;
+            margin: 0 0 4mm;
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.6px;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 15px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+        }
+
+        .section-title span {
+            color: var(--accent);
+        }
+
+        .project-list {
+            position: relative;
+        }
+
+        .project-list::before {
+            content: "";
+            position: absolute;
+            top: 5mm;
+            bottom: 5mm;
+            left: 5mm;
+            width: 1px;
+            background: linear-gradient(180deg, var(--accent), rgba(91, 92, 240, 0.15));
+        }
+
+        .project {
+            position: relative;
+            display: grid;
+            grid-template-columns: 10mm 1fr;
+            gap: 3mm;
+            padding: 2mm 0 4mm;
+        }
+
+        .project + .project {
+            margin-top: 2.5mm;
+        }
+
+        .project-index {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 10mm;
+            height: 10mm;
+            border: 2px solid var(--accent-soft);
+            border-radius: 50%;
+            background: white;
+            color: var(--accent);
+            font-size: 10px;
+            line-height: 1;
+            font-weight: 900;
+            box-shadow: 0 0 0 3px white;
+        }
+
+        .project-card {
+            position: relative;
+            padding: 4mm 4mm 4mm 7mm;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.045);
+        }
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 11px;
+            height: calc(100% + 2px);
+            border-radius: 11px 0 0 11px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+        }
+
+        .project-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .project-name {
+            margin: 0;
+            font-size: 12.6px;
+            font-weight: 900;
+        }
+
+        .project-role {
+            padding: 1.2mm 2.2mm;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            font-size: 6.7px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .project-desc,
+        .project-work {
+            margin: 2mm 0 0;
+            font-size: 8.2px;
+            line-height: 1.55;
+        }
+
+        .project-desc {
+            color: var(--muted);
+        }
+
+        .project-work {
+            padding-top: 2mm;
+            border-top: 1px dashed #e5e8ef;
+        }
+
+        .project-work strong {
+            color: var(--accent);
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.08fr 0.92fr;
+            gap: 7mm;
+            margin-top: 6mm;
+        }
+
+        .bottom-panel {
+            padding-top: 1mm;
+        }
+
+        .mini-title {
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+            margin: 0 0 3.5mm;
+            color: var(--ink);
+            font-size: 9.5px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .mini-title::before {
+            content: "";
+            width: 3px;
+            height: 13px;
+            border-radius: 999px;
+            background: var(--accent2);
+        }
+
+        .skill-row {
+            display: grid;
+            grid-template-columns: 16mm 1fr;
+            gap: 3mm;
+            margin-bottom: 2.8mm;
+            padding-bottom: 2.8mm;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 8.2px;
+            line-height: 1.45;
+        }
+
+        .skill-row:last-child {
+            margin-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .skill-row strong {
+            color: var(--accent2);
+            font-size: 7.5px;
+            letter-spacing: 0.5px;
+        }
+
+        .more-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .more-list li {
+            position: relative;
+            margin-bottom: 2.4mm;
+            padding: 2.4mm 2.8mm 2.4mm 7mm;
+            border-radius: 8px;
+            background: var(--soft);
+            font-size: 8px;
+            line-height: 1.4;
+        }
+
+        .more-list li::before {
+            content: "↗";
+            position: absolute;
+            left: 2.5mm;
+            top: 2.1mm;
+            color: var(--accent);
+            font-weight: 900;
+        }
+
+        .education {
+            position: relative;
+            display: grid;
+            grid-template-columns: 22mm 1fr 1fr;
+            gap: 5mm;
+            align-items: start;
+            margin-top: 6mm;
+            padding: 4mm 4mm 4mm 5mm;
+            overflow: hidden;
+            border: 1px solid #e4e7ef;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--accent-soft), #f8fbfb);
+        }
+
+        .education::after {
+            content: "";
+            position: absolute;
+            right: -12mm;
+            bottom: -15mm;
+            width: 32mm;
+            height: 32mm;
+            border-radius: 50%;
+            background: rgba(18, 163, 166, 0.08);
+        }
+
+        .education-label {
+            color: var(--accent);
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .education-item strong {
+            display: block;
+            margin-bottom: 1mm;
+            font-size: 8.2px;
+            line-height: 1.45;
+        }
+
+        .education-item span {
+            color: var(--muted);
+            font-size: 7.3px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .download-btn {
+                display: none !important;
+            }
+
+            .resume-page {
+                margin: 0;
+                box-shadow: none;
+                width: 210mm;
+                min-width: 210mm;
+                height: 297mm;
+                min-height: 297mm;
+                overflow: hidden;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<button
+        class="download-btn"
+        id="downloadPdf"
+        data-html2canvas-ignore="true"
+>
+    PDF
+</button>
+
+<main class="resume-page" id="resume">
+    <aside class="side">
+        <div class="photo-frame">
+            <img class="photo" src="./resume-img.png" alt="유건혁 증명사진"/>
+        </div>
+
+        <h1 class="name">유건혁</h1>
+        <div class="role">FULL-STACK DEVELOPER</div>
+
+        <div class="contact-group">
+            <div class="contact-block">
+                <span class="contact-label">PHONE</span>
+                <div class="contact-value">010-2229-6877</div>
+            </div>
+
+            <div class="contact-block">
+                <span class="contact-label">EMAIL</span>
+                <div class="contact-value">picon1317@gmail.com</div>
+            </div>
+
+            <div class="contact-block">
+                <span class="contact-label">PORTFOLIO</span>
+                <div class="contact-value">
+                    <a
+                            id="portfolioLink"
+                            class="contact-link"
+                            href="https://h2514.shop/ko"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                    >
+                        h2514.shop/ko
+                    </a>
+                </div>
+            </div>
+
+            <div class="contact-block">
+                <span class="contact-label">GITHUB</span>
+                <div class="contact-value">github.com/Eichi2514</div>
+            </div>
+
+            <div class="contact-block">
+                <span class="contact-label">BLOG</span>
+                <div class="contact-value">velog.io/@ichi2514</div>
+            </div>
+        </div>
+
+        <div class="side-badge">
+            <strong>END-TO-END EXECUTION</strong>
+            <span>
+                사용자 화면, API 연동,<br/>
+                데이터 흐름, 배포 환경을<br/>
+                서비스로 연결합니다.
+            </span>
+        </div>
+
+        <div class="vertical-copy">BUILD THE WHOLE FLOW</div>
+    </aside>
+
+    <section class="main">
+        <div class="eyebrow">DEVELOPER RESUME</div>
+
+        <h2 class="headline">
+            사용자 화면에서 배포까지,<br/>
+            <strong>서비스의 전체 흐름을 완성합니다.</strong>
+        </h2>
+
+        <p class="intro">
+            화면 구현, API 연동, 데이터 흐름, 배포 환경을 하나의 제품 경험으로 연결해 온 개발자입니다.
+            기능을 맡으면 사용자가 실제로 사용하는 단계까지 끝까지 확인합니다.
+        </p>
+
+        <div class="proof-strip">
+            <div class="proof">
+                <strong>BUILD</strong>
+                <span>사용자 기능 설계·개발</span>
+            </div>
+
+            <div class="proof">
+                <strong>CONNECT</strong>
+                <span>화면·API·데이터 연결</span>
+            </div>
+
+            <div class="proof">
+                <strong>DELIVER</strong>
+                <span>배포·모니터링까지 완성</span>
+            </div>
+        </div>
+
+        <section>
+            <h3 class="section-title"><span>01</span> 주요 프로젝트</h3>
+
+            <div class="project-list">
+                <article class="project">
+                    <div class="project-index">A</div>
+                    <div class="project-card">
+                        <div class="project-head">
+                            <h4 class="project-name">병원 고객관계관리(CRM)</h4>
+                            <span class="project-role">WEB SERVICE · OPERATION</span>
+                        </div>
+                        <p class="project-desc">
+                            예약·고객·직원·매출 관리와 카카오 알림톡 자동화를 포함한 병원 운영 시스템.
+                        </p>
+                        <p class="project-work">
+                            <strong>담당</strong> 기능 개발과 유지보수, 실제 운영 환경을 고려한 화면·데이터 흐름 개선.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project">
+                    <div class="project-index">B</div>
+                    <div class="project-card">
+                        <div class="project-head">
+                            <h4 class="project-name">MAMAPAPA TELLAR</h4>
+                            <span class="project-role">TEAM LEAD · DEVOPS · E2E</span>
+                        </div>
+                        <p class="project-desc">
+                            부모님의 목소리로 맞춤형 동화를 들려주는 음성 기반 서비스.
+                        </p>
+                        <p class="project-work">
+                            <strong>담당</strong> 팀장·일정 관리, UI·UX, 인프라, 시스템 통합, 배포·모니터링, CI/CD 구축.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project">
+                    <div class="project-index">C</div>
+                    <div class="project-card">
+                        <div class="project-head">
+                            <h4 class="project-name">Resuming</h4>
+                            <span class="project-role">FRONTEND · API INTEGRATION</span>
+                        </div>
+                        <p class="project-desc">
+                            이력서 기반 질문과 발화·시선 분석을 제공하는 면접 연습 서비스.
+                        </p>
+                        <p class="project-work">
+                            <strong>담당</strong> 사용자 화면·UI·UX 구현, 등록 API와 연동한 조회·수정·삭제 기능 개발.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <div class="bottom-grid">
+            <section class="bottom-panel">
+                <h3 class="mini-title">02 기술 역량</h3>
+
+                <div class="skill-row">
+                    <strong>FRONT</strong>
+                    <span>React · JavaScript · HTML · CSS · Tailwind · Figma</span>
+                </div>
+                <div class="skill-row">
+                    <strong>BACK</strong>
+                    <span>Java · Spring Boot · Python · FastAPI · REST API</span>
+                </div>
+                <div class="skill-row">
+                    <strong>DATA</strong>
+                    <span>MySQL · PostgreSQL · H2 · MyBatis</span>
+                </div>
+                <div class="skill-row">
+                    <strong>OPS</strong>
+                    <span>AWS · Docker · Nginx · GitHub Actions</span>
+                </div>
+            </section>
+
+            <section class="bottom-panel">
+                <h3 class="mini-title">03 기타 프로젝트</h3>
+                <ul class="more-list">
+                    <li>Nodevelture — AI 웹소설 창작 시뮬레이션</li>
+                    <li>TailsRoute — 반려견 종합 플랫폼</li>
+                    <li>AscentLime — 커뮤니티형 로그라이크 게임</li>
+                    <li>PayMana — 모임 비용 자동 계산 서비스</li>
+                    <li>Portfolio — 개인 웹 포트폴리오</li>
+                </ul>
+            </section>
+        </div>
+
+        <section class="education">
+            <div class="education-label">교육 이력</div>
+
+            <div class="education-item">
+                <strong>[산대특] 공공데이터 활용 웹앱개발자 양성과정</strong>
+                <span>2024.05 - 2024.12</span>
+            </div>
+
+            <div class="education-item">
+                <strong>[AI휴먼] 실무중심 AI엔지니어 교육과정</strong>
+                <span>2026.03 - 2026.07</span>
+            </div>
+        </section>
+    </section>
+</main>
+
+<script>
+    document.getElementById("downloadPdf").addEventListener("click", async () => {
+        const target = document.getElementById("resume");
+        const button = document.getElementById("downloadPdf");
+
+        try {
+            button.disabled = true;
+            button.textContent = "PDF 생성 중...";
+
+            target.classList.add("pdf-export");
+
+            const canvas = await html2canvas(target, {
+                scale: 2.5,
+                useCORS: true,
+                backgroundColor: "#ffffff",
+                scrollX: 0,
+                scrollY: 0,
+                width: target.offsetWidth,
+                height: target.offsetHeight,
+                windowWidth: target.scrollWidth,
+                windowHeight: target.scrollHeight
+            });
+
+            const imageData = canvas.toDataURL("image/jpeg", 0.98);
+
+            // html2pdf 번들 안에 포함된 jsPDF 사용
+            const { jsPDF } = window.jspdf;
+
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: "a4",
+                compress: true
+            });
+
+            // A4 한 페이지에 이미지를 직접 삽입
+            pdf.addImage(
+                imageData,
+                "JPEG",
+                0,
+                0,
+                210,
+                297,
+                undefined,
+                "FAST"
+            );
+
+            // HTML의 포트폴리오 링크 위치를 PDF 좌표(mm)로 변환해
+            // 이미지 위에 실제 클릭 가능한 링크 영역을 추가합니다.
+            const portfolioLink = document.getElementById("portfolioLink");
+            const targetRect = target.getBoundingClientRect();
+            const linkRect = portfolioLink.getBoundingClientRect();
+
+            const scaleX = 210 / targetRect.width;
+            const scaleY = 297 / targetRect.height;
+
+            const linkX = (linkRect.left - targetRect.left) * scaleX;
+            const linkY = (linkRect.top - targetRect.top) * scaleY;
+            const linkWidth = linkRect.width * scaleX;
+            const linkHeight = linkRect.height * scaleY;
+
+            pdf.link(
+                linkX,
+                linkY,
+                linkWidth,
+                linkHeight,
+                { url: "https://h2514.shop/ko" }
+            );
+
+            pdf.save("유건혁.pdf");
+
+        } catch (error) {
+            console.error("PDF 생성 실패:", error);
+            alert("PDF 생성에 실패했습니다. 이미지 경로를 확인해 주세요.");
+
+        } finally {
+            target.classList.remove("pdf-export");
+            button.disabled = false;
+            button.textContent = "PDF";
+        }
+    });
+</script>
+</body>
+</html>
