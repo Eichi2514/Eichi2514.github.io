@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex, nofollow, noarchive">
     <title>유건혁 개발자 이력서</title>
 
     <!-- PDF 다운로드용 -->
@@ -43,27 +45,44 @@
             font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
         }
 
-        .download-btn {
+        .action-buttons {
             position: fixed;
             top: 24px;
             right: 24px;
             z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
 
+        .action-btn {
             border: 0;
             border-radius: 999px;
             padding: 11px 20px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: #fff;
             font-size: 14px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(91, 92, 240, 0.28);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            box-shadow: 0 8px 20px rgba(91, 92, 240, 0.28);
         }
 
         .download-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 12px 26px rgba(91, 92, 240, 0.34);
+        }
+
+        .print-btn {
+            background: #111827;
+            box-shadow: 0 8px 20px rgba(17, 24, 39, 0.22);
+        }
+
+        .print-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(17, 24, 39, 0.3);
         }
 
         .resume-page {
@@ -603,12 +622,17 @@
             font-size: 7.3px;
         }
 
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
         @media print {
             body {
                 background: white;
             }
 
-            .download-btn {
+            .action-buttons {
                 display: none !important;
             }
 
@@ -626,13 +650,10 @@
 </head>
 
 <body>
-<button
-        class="download-btn"
-        id="downloadPdf"
-        data-html2canvas-ignore="true"
->
-    PDF
-</button>
+<div class="action-buttons" data-html2canvas-ignore="true">
+    <button class="action-btn download-btn" id="downloadPdf">PDF</button>
+    <button class="action-btn print-btn" id="printResume">인쇄</button>
+</div>
 
 <main class="resume-page" id="resume">
     <aside class="side">
@@ -828,16 +849,12 @@
 </main>
 
 <script>
-    document.getElementById("downloadPdf").addEventListener("click", async () => {
+    async function createResumePdf() {
         const target = document.getElementById("resume");
-        const button = document.getElementById("downloadPdf");
+
+        target.classList.add("pdf-export");
 
         try {
-            button.disabled = true;
-            button.textContent = "PDF 생성 중...";
-
-            target.classList.add("pdf-export");
-
             const canvas = await html2canvas(target, {
                 scale: 2.5,
                 useCORS: true,
@@ -874,8 +891,7 @@
                 "FAST"
             );
 
-            // HTML의 포트폴리오 링크 위치를 PDF 좌표(mm)로 변환해
-            // 이미지 위에 실제 클릭 가능한 링크 영역을 추가합니다.
+            // 포트폴리오 클릭 링크
             const portfolioLink = document.getElementById("portfolioLink");
             const targetRect = target.getBoundingClientRect();
             const linkRect = portfolioLink.getBoundingClientRect();
@@ -883,29 +899,89 @@
             const scaleX = 210 / targetRect.width;
             const scaleY = 297 / targetRect.height;
 
-            const linkX = (linkRect.left - targetRect.left) * scaleX;
-            const linkY = (linkRect.top - targetRect.top) * scaleY;
-            const linkWidth = linkRect.width * scaleX;
-            const linkHeight = linkRect.height * scaleY;
-
             pdf.link(
-                linkX,
-                linkY,
-                linkWidth,
-                linkHeight,
+                (linkRect.left - targetRect.left) * scaleX,
+                (linkRect.top - targetRect.top) * scaleY,
+                linkRect.width * scaleX,
+                linkRect.height * scaleY,
                 { url: "https://h2514.shop/ko" }
             );
 
-            pdf.save("유건혁.pdf");
-
-        } catch (error) {
-            console.error("PDF 생성 실패:", error);
-            alert("PDF 생성에 실패했습니다. 이미지 경로를 확인해 주세요.");
+            return pdf;
 
         } finally {
             target.classList.remove("pdf-export");
+        }
+    }
+
+
+    // PDF 다운로드
+    document.getElementById("downloadPdf").addEventListener("click", async () => {
+        const button = document.getElementById("downloadPdf");
+
+        try {
+            button.disabled = true;
+            button.textContent = "PDF 생성 중...";
+
+            const pdf = await createResumePdf();
+            pdf.save("유건혁_이력서.pdf");
+
+        } catch (error) {
+            console.error("PDF 생성 실패:", error);
+            alert("PDF 생성에 실패했습니다.");
+
+        } finally {
             button.disabled = false;
             button.textContent = "PDF";
+        }
+    });
+
+
+    // 바로 인쇄
+    document.getElementById("printResume").addEventListener("click", async () => {
+        const button = document.getElementById("printResume");
+
+        try {
+            button.disabled = true;
+            button.textContent = "인쇄 준비 중...";
+
+            const pdf = await createResumePdf();
+            const pdfBlob = pdf.output("blob");
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            const iframe = document.createElement("iframe");
+
+            iframe.style.position = "fixed";
+            iframe.style.right = "0";
+            iframe.style.bottom = "0";
+            iframe.style.width = "0";
+            iframe.style.height = "0";
+            iframe.style.border = "0";
+            iframe.src = pdfUrl;
+
+            document.body.appendChild(iframe);
+
+            iframe.onload = () => {
+                const printWindow = iframe.contentWindow;
+
+                printWindow.addEventListener("afterprint", () => {
+                    URL.revokeObjectURL(pdfUrl);
+                    iframe.remove();
+                }, { once: true });
+
+                setTimeout(() => {
+                    printWindow.focus();
+                    printWindow.print();
+                }, 500);
+            };
+
+        } catch (error) {
+            console.error("인쇄 준비 실패:", error);
+            alert("인쇄 준비에 실패했습니다.");
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "인쇄";
         }
     });
 </script>
