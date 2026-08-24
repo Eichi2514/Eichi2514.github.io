@@ -39,6 +39,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const MAX_LEVEL = levelExp.length;
 
 $(".logoutBtn").on("click", function () {
     showConfirm("정말 로그아웃할까요?", async (ok) => {
@@ -323,7 +324,8 @@ function renderExpTablePage(userLevel) {
 // ✅ 모달 열 때 현재 구간부터 표시
 $(document).on("click", ".expTableBtn", function () {
     const userLevel = parseInt($("#currentLevelDisplay").text()) || 1;
-    currentExpPage = Math.floor((userLevel - 1) / levelsPerPage);
+    const totalPages = Math.ceil(levelExp.length / levelsPerPage);
+    currentExpPage = Math.min(Math.floor(userLevel / levelsPerPage), totalPages - 1);
     $("#expTableModal").css("display", "flex");
     renderExpTablePage(userLevel);
 });
@@ -657,7 +659,7 @@ $(function () {
         const selectedDate = dateInput || getKoreanDate();
 
         if (isNaN(exp) || exp < 0) return showAlert("경험치를 올바르게 입력해주세요.");
-        if (!level || level < 1 || level > 100) return showAlert("레벨은 1~100 사이여야 합니다.");
+        if (!level || level < 1 || level > MAX_LEVEL) return showAlert(`레벨은 1~ ${MAX_LEVEL} 사이여야 합니다.`);
 
         // ✅ 전체 기록 한 번만 가져오기
         const recordsRef = ref(db, `coffeeUsers/${nickname}/expRecords`);
@@ -1183,7 +1185,7 @@ $(function () {
                                     <label style="display:block; text-align:left; color:var(--text-sub);">날짜</label>
                                     <input id="editExpDate" type="date" style="margin-bottom:10px;">
                                     <label style="display:block; text-align:left; color:var(--text-sub);">현재 레벨</label>
-                                    <input id="editLevelValue" type="number" min="1" max="100" style="margin-bottom:10px;">
+                                    <input id="editLevelValue" type="number" min="1" style="margin-bottom:10px;">
                                     <label style="display:block; text-align:left; color:var(--text-sub);">현재 경험치</label>
                                     <input id="editExpValue" type="text" inputmode="numeric" style="margin-bottom:10px;">
                                     <button id="updateExpBtn">저장</button>
@@ -1552,7 +1554,7 @@ $(function () {
         const levelVal = parseInt($("#levelInput").val());
 
         if (!nickname) return showAlert("로그인 후 이용해주세요.");
-        if (!levelVal || levelVal < 1 || levelVal > 100) return showAlert("1~100 사이의 값을 입력하세요.");
+        if (!levelVal || levelVal < 1 || levelVal > MAX_LEVEL) return showAlert(`1~${MAX_LEVEL} 사이의 값을 입력하세요.`);
 
         await set(ref(db, `coffeeUsers/${nickname}/level`), levelVal);
         showAlert(`레벨 ${levelVal}이(가) 저장되었습니다!`);
@@ -1604,7 +1606,7 @@ $(function () {
         const newDate = $("#editExpDate").val();
 
         if (!nickname) return showAlert("로그인 후 이용해주세요.");
-        if (!newDate || isNaN(newExp) || newLevel < 1 || newLevel > 100) return showAlert("값이 올바르지 않습니다.");
+        if (!newDate || isNaN(newExp) || newLevel < 1 || newLevel > MAX_LEVEL) return showAlert("값이 올바르지 않습니다.");
         if (!validateDateNotFuture(newDate)) return;
 
         // 🔹 기존 선택된 날짜(selectedDate)는 loadUserData 내부에서 전역변수로 선언되어 있음
