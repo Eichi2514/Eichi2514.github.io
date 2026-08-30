@@ -62,13 +62,16 @@
             min-height: 500px;
             border: 1px solid #d8dce2;
             border-radius: 12px;
-            background:
-                linear-gradient(45deg, #eee 25%, transparent 25%),
-                linear-gradient(-45deg, #eee 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #eee 75%),
-                linear-gradient(-45deg, transparent 75%, #eee 75%);
+
+            background-color: #ffffff;
+            background-image:
+                    linear-gradient(45deg, #ddd 25%, transparent 25%),
+                    linear-gradient(-45deg, #ddd 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #ddd 75%),
+                    linear-gradient(-45deg, transparent 75%, #ddd 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+
             display: flex;
             align-items: center;
             justify-content: center;
@@ -186,6 +189,26 @@
             .grid { grid-template-columns: 1fr; }
             .preview-wrap { min-height: 350px; }
         }
+        .preview-bg-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-bg-control span {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .preview-bg-control input[type="color"] {
+            width: 42px;
+            height: 40px;
+            padding: 3px;
+            border: 1px solid #ccd1d8;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -205,6 +228,12 @@
         <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
 
         <div class="save-row">
+            <div class="preview-bg-control">
+                <span>확인 배경</span>
+                <input type="color" id="previewBgColor" value="#000000">
+                <button type="button" id="checkerBgBtn" class="secondary">체크무늬</button>
+            </div>
+
             <button type="button" id="saveBtn" disabled>현재 이미지 저장</button>
             <button type="button" id="saveAllBtn" disabled>전체 저장</button>
         </div>
@@ -342,6 +371,8 @@
     const sizeInfo = document.getElementById('sizeInfo');
     const fileInput = document.getElementById('fileInput');
     const previewWrap = document.getElementById('previewWrap');
+    const previewBgColor = document.getElementById('previewBgColor');
+    const checkerBgBtn = document.getElementById('checkerBgBtn');
     const imageSelect = document.getElementById('imageSelect');
 
     const openUploadBtn = document.getElementById('openUploadBtn');
@@ -1167,6 +1198,7 @@
         sizeInfo.textContent = `${progressText} · 배경 제거 중...`;
 
         const img = item.originalImage;
+
         const workCanvas = document.createElement('canvas');
         workCanvas.width = img.naturalWidth;
         workCanvas.height = img.naturalHeight;
@@ -1174,39 +1206,122 @@
         const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
         workCtx.drawImage(img, 0, 0);
 
-        const imageData = workCtx.getImageData(0, 0, workCanvas.width, workCanvas.height);
-        const data = imageData.data;
+        const imageData = workCtx.getImageData(
+            0,
+            0,
+            workCanvas.width,
+            workCanvas.height
+        );
 
+        const data = imageData.data;
         const width = workCanvas.width;
         const height = workCanvas.height;
+
+        /*
+         * 네 이미지처럼 배경이 흰색/밝은색인 경우를 기준으로
+         * 이미지 네 모서리에서 실제 배경색을 구한다.
+         */
+        function getBackgroundColor() {
+            const samples = [];
+            const sampleSize = Math.max(
+                2,
+                Math.min(10, Math.floor(Math.min(width, height) * 0.03))
+            );
+
+            function collect(startX, startY) {
+                for (let y = startY; y < startY + sampleSize; y++) {
+                    for (let x = startX; x < startX + sampleSize; x++) {
+                        const i = (y * width + x) * 4;
+
+                        if (data[i + 3] === 0) continue;
+
+                        samples.push([
+                            data[i],
+                            data[i + 1],
+                            data[i + 2]
+                        ]);
+                    }
+                }
+            }
+
+            collect(0, 0);
+            collect(width - sampleSize, 0);
+            collect(0, height - sampleSize);
+            collect(width - sampleSize, height - sampleSize);
+
+            if (!samples.length) {
+                return { r: 255, g: 255, b: 255 };
+            }
+
+            samples.sort((a, b) =>
+                (a[0] + a[1] + a[2]) -
+                (b[0] + b[1] + b[2])
+            );
+
+            const middle = samples[Math.floor(samples.length / 2)];
+
+            return {
+                r: middle[0],
+                g: middle[1],
+                b: middle[2]
+            };
+        }
+
+        const bg = getBackgroundColor();
+
         const visited = new Uint8Array(width * height);
         const queue = [];
 
-        function isBackground(x, y) {
-            const i = (y * width + x) * 4;
+        /*
+         * 작을수록 배경과 거의 동일
+         * 클수록 캐릭터 색에 가까움
+         */
+        const FULL_REMOVE_DISTANCE = 18;
+        const EDGE_DISTANCE = 75;
 
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            const a = data[i + 3];
+        function colorDistance(index) {
+            const i = index * 4;
 
-            if (a === 0) return true;
+            const dr = data[i] - bg.r;
+            const dg = data[i + 1] - bg.g;
+            const db = data[i + 2] - bg.b;
 
-            return r >= 220 && g >= 220 && b >= 220;
+            return Math.sqrt(
+                dr * dr +
+                dg * dg +
+                db * db
+            );
+        }
+
+        function canBeBackground(x, y) {
+            const index = y * width + x;
+            const i = index * 4;
+
+            if (data[i + 3] === 0) return true;
+
+            return colorDistance(index) <= EDGE_DISTANCE;
         }
 
         function add(x, y) {
-            if (x < 0 || y < 0 || x >= width || y >= height) return;
+            if (
+                x < 0 ||
+                y < 0 ||
+                x >= width ||
+                y >= height
+            ) {
+                return;
+            }
 
             const index = y * width + x;
 
             if (visited[index]) return;
-            if (!isBackground(x, y)) return;
+            if (!canBeBackground(x, y)) return;
 
             visited[index] = 1;
             queue.push(index);
         }
 
+        // 바깥쪽에서만 배경 탐색
         for (let x = 0; x < width; x++) {
             add(x, 0);
             add(x, height - 1);
@@ -1221,22 +1336,96 @@
 
         while (head < queue.length) {
             const index = queue[head++];
+            const i = index * 4;
+
             const x = index % width;
             const y = Math.floor(index / width);
 
-            const i = index * 4;
+            const originalAlpha = data[i + 3];
 
-            data[i + 3] = 0;
+            // 원래 투명이면 계속 투명
+            if (originalAlpha === 0) {
+                addNeighbours(x, y);
+                continue;
+            }
+
+            const distance = colorDistance(index);
+
+            let alpha;
+
+            if (distance <= FULL_REMOVE_DISTANCE) {
+                alpha = 0;
+            } else {
+                alpha =
+                    (distance - FULL_REMOVE_DISTANCE) /
+                    (EDGE_DISTANCE - FULL_REMOVE_DISTANCE);
+
+                alpha = Math.max(0, Math.min(1, alpha));
+            }
+
+            /*
+             * 핵심:
+             * 단순히 Alpha만 바꾸지 않고
+             * 배경색이 섞인 RGB도 제거한다.
+             */
+            if (alpha > 0.01 && alpha < 1) {
+                const inverseAlpha = 1 - alpha;
+
+                data[i] = Math.round(
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            (data[i] - bg.r * inverseAlpha) / alpha
+                        )
+                    )
+                );
+
+                data[i + 1] = Math.round(
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            (data[i + 1] - bg.g * inverseAlpha) / alpha
+                        )
+                    )
+                );
+
+                data[i + 2] = Math.round(
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            (data[i + 2] - bg.b * inverseAlpha) / alpha
+                        )
+                    )
+                );
+            }
+
+            data[i + 3] = Math.round(
+                alpha * originalAlpha
+            );
+
+            addNeighbours(x, y);
+        }
+
+        function addNeighbours(x, y) {
+            add(x - 1, y - 1);
+            add(x,     y - 1);
+            add(x + 1, y - 1);
 
             add(x - 1, y);
             add(x + 1, y);
-            add(x, y - 1);
-            add(x, y + 1);
+
+            add(x - 1, y + 1);
+            add(x,     y + 1);
+            add(x + 1, y + 1);
         }
 
         workCtx.putImageData(imageData, 0, 0);
 
         const blob = await canvasToBlob(workCanvas);
+
         item.image = await blobToImage(blob);
         item.backgroundRemoved = true;
 
@@ -1259,7 +1448,7 @@
             sizeInfo.textContent = `${item.fileName} · 배경 제거 중...`;
 
             await removeItemBackground(item, `${item.fileName} · 배경 제거 중`);
-
+            showCheckerBackground();
             render();
         } catch (error) {
             console.error(error);
@@ -1293,7 +1482,7 @@
 
                 if (i === currentIndex) render();
             }
-
+            showCheckerBackground();
             render();
         } catch (error) {
             console.error(error);
@@ -1329,6 +1518,35 @@
             });
         }
     });
+
+    const CHECKER_BACKGROUND_IMAGE = `
+        linear-gradient(45deg, #ddd 25%, transparent 25%),
+        linear-gradient(-45deg, #ddd 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ddd 75%),
+        linear-gradient(-45deg, transparent 75%, #ddd 75%)
+    `;
+
+    function showCheckerBackground() {
+        previewWrap.style.backgroundColor = '#ffffff';
+        previewWrap.style.backgroundImage = CHECKER_BACKGROUND_IMAGE;
+        previewWrap.style.backgroundSize = '20px 20px';
+        previewWrap.style.backgroundPosition =
+            '0 0, 0 10px, 10px -10px, -10px 0';
+    }
+
+    function showSolidBackground(color) {
+        previewWrap.style.backgroundColor = color;
+        previewWrap.style.backgroundImage = 'none';
+    }
+
+    previewBgColor.addEventListener('input', () => {
+        showSolidBackground(previewBgColor.value);
+    });
+
+    checkerBgBtn.addEventListener('click', showCheckerBackground);
+
+    // 최초 상태
+    showCheckerBackground();
 </script>
 </body>
 </html>
