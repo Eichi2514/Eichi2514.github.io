@@ -209,6 +209,118 @@
             background: #fff;
             cursor: pointer;
         }
+
+        .wand-row {
+            flex-basis: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px 0 2px;
+        }
+
+        .wand-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .wand-control input[type="number"] {
+            width: 88px;
+            height: 40px;
+            padding: 0 10px;
+            border: 1px solid #ccd1d8;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .wand-control input[type="color"] {
+            width: 42px;
+            height: 40px;
+            padding: 3px;
+            border: 1px solid #ccd1d8;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .wand-control input[type="text"] {
+            width: 100px;
+            height: 40px;
+            padding: 0 10px;
+            border: 1px solid #ccd1d8;
+            border-radius: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        #wandBtn.active {
+            background: #0f62fe;
+            color: #fff;
+        }
+
+        #wandStatus {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .favorite-colors {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .favorite-color-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #ccd1d8 inset;
+            padding: 0;
+            min-width: 28px;
+        }
+
+        .favorite-color-btn:disabled {
+            opacity: .45;
+            cursor: default;
+        }
+
+        .preview-wrap {
+            position: relative;
+        }
+
+        .preview-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            line-height: 1;
+            background: rgba(34,34,34,.78);
+            color: #fff;
+            z-index: 5;
+            user-select: none;
+        }
+
+        .preview-nav:hover {
+            background: rgba(34,34,34,.92);
+        }
+
+        .preview-nav-left {
+            left: 14px;
+        }
+
+        .preview-nav-right {
+            right: 14px;
+        }
     </style>
 </head>
 <body>
@@ -227,6 +339,26 @@
         <button type="button" id="removeBgBtn" class="secondary" disabled>현재 배경 제거</button>
         <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
 
+        <div class="wand-row">
+            <button type="button" id="wandBtn" class="secondary" disabled>마법봉</button>
+
+            <label class="wand-control">
+                <span>허용 오차</span>
+                <input type="number" id="wandTolerance" min="0" max="255" step="1" value="25">
+            </label>
+
+            <label class="wand-control">
+                <span>변경 색</span>
+                <input type="color" id="wandColor" value="#da312b">
+                <input type="text" id="wandHex" value="#DA312B" maxlength="7"
+                       placeholder="#DA312B" spellcheck="false" aria-label="HEX 색상 코드">
+            </label>
+
+            <button type="button" id="applyWandColorBtn" disabled>선택 영역 색상 변경</button>
+            <div id="favoriteColors" class="favorite-colors"></div>
+            <span id="wandStatus">마법봉을 켠 뒤 이미지를 클릭하세요. Shift/Ctrl + 클릭은 영역 추가입니다.</span>
+        </div>
+
         <div class="save-row">
             <div class="preview-bg-control">
                 <span>확인 배경</span>
@@ -242,6 +374,8 @@
     <div id="sizeInfo" class="info">이미지를 선택해주세요.</div>
 
     <div class="preview-wrap" id="previewWrap">
+        <button type="button" id="prevImageBtn" class="preview-nav preview-nav-left" hidden aria-label="이전 이미지">‹</button>
+        <button type="button" id="nextImageBtn" class="preview-nav preview-nav-right" hidden aria-label="다음 이미지">›</button>
         <div id="emptyText" class="empty">
             아직 이미지가 없습니다.<br>
             '이미지 넣기'를 눌러 이미지를 선택해주세요.
@@ -384,6 +518,16 @@
     const removeAllBgBtn = document.getElementById('removeAllBgBtn');
     const applyBtn = document.getElementById('applyBtn');
 
+    const wandBtn = document.getElementById('wandBtn');
+    const wandTolerance = document.getElementById('wandTolerance');
+    const wandColor = document.getElementById('wandColor');
+    const wandHex = document.getElementById('wandHex');
+    const applyWandColorBtn = document.getElementById('applyWandColorBtn');
+    const favoriteColors = document.getElementById('favoriteColors');
+    const wandStatus = document.getElementById('wandStatus');
+    const prevImageBtn = document.getElementById('prevImageBtn');
+    const nextImageBtn = document.getElementById('nextImageBtn');
+
     const topInput = document.getElementById('topValue');
     const bottomInput = document.getElementById('bottomValue');
     const leftInput = document.getElementById('leftValue');
@@ -428,6 +572,17 @@
     let textSelected = false;
     let draggingText = false;
     let dragAxis = null;
+
+    let wandMode = false;
+    let wandSelection = null;
+    let wandSelectionOverlay = null;
+
+    const FAVORITE_COLORS_KEY = 'imageEditorFavoriteColors';
+    const defaultFavoriteColors = [
+        '#DA312B', '#454035', '#FDE7C6', '#F89583', '#FFFFFF',
+        '#000000', '#FFD54F', '#66BB6A', '#42A5F5', '#AB47BC'
+    ];
+    let favoriteColorValues = loadFavoriteColors();
 
     let dragStart = {
         pointerX: 0,
@@ -495,7 +650,13 @@
         draggingText = false;
         dragAxis = null;
 
+        wandMode = false;
+        clearWandSelection(false);
+
         updateTextButton();
+        updateImageNavigation();
+        renderFavoriteButtons();
+        updateWandControls();
         render();
     }
 
@@ -603,6 +764,357 @@
     let imageItems = [];
     let currentIndex = 0;
     let values = loadSavedValues();
+
+    function updateImageNavigation() {
+        const showNav = imageItems.length > 1;
+        prevImageBtn.hidden = !showNav;
+        nextImageBtn.hidden = !showNav;
+        prevImageBtn.disabled = !showNav;
+        nextImageBtn.disabled = !showNav;
+    }
+
+    function goToImage(index) {
+        if (!imageItems.length) return;
+
+        const max = imageItems.length - 1;
+        currentIndex = Math.max(0, Math.min(max, index));
+        imageSelect.value = currentIndex;
+
+        clearWandSelection(false);
+        updateWandControls();
+        render();
+    }
+
+    function goToPrevImage() {
+        if (currentIndex <= 0) return;
+        goToImage(currentIndex - 1);
+    }
+
+    function goToNextImage() {
+        if (currentIndex >= imageItems.length - 1) return;
+        goToImage(currentIndex + 1);
+    }
+
+    function loadFavoriteColors() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(FAVORITE_COLORS_KEY));
+            if (!Array.isArray(saved)) return [...defaultFavoriteColors];
+
+            const normalized = saved
+                .map(color => normalizeHex(color))
+                .filter(Boolean);
+
+            return [
+                ...normalized.slice(0, 10),
+                ...defaultFavoriteColors.slice(normalized.length, 10)
+            ];
+        } catch {
+            return [...defaultFavoriteColors];
+        }
+    }
+
+    function saveFavoriteColors() {
+        localStorage.setItem(FAVORITE_COLORS_KEY, JSON.stringify(favoriteColorValues));
+    }
+
+    function setWandColorValue(hex) {
+        const normalized = normalizeHex(hex);
+        if (!normalized) return false;
+
+        wandHex.value = normalized;
+        wandColor.value = normalized;
+        return true;
+    }
+
+    function renderFavoriteButtons() {
+        favoriteColors.innerHTML = '';
+
+        favoriteColorValues.forEach((color, index) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'favorite-color-btn';
+            button.style.background = color;
+            button.title = `즐겨찾기 ${index + 1} · 클릭: 바로 적용 · 우클릭: 현재 색 저장`;
+            button.disabled = !imageItems.length;
+            button.setAttribute('aria-label', `즐겨찾기 색상 ${index + 1} ${color}`);
+
+            button.addEventListener('click', async () => {
+                setWandColorValue(color);
+
+                if (
+                    wandSelection &&
+                    wandSelection.index === currentIndex &&
+                    wandSelection.count > 0
+                ) {
+                    await applySelectedColor(color);
+                } else {
+                    wandStatus.textContent = `${color} 색상이 선택되었습니다. 마법봉으로 영역을 먼저 선택해주세요.`;
+                    updateWandControls();
+                }
+            });
+
+            button.addEventListener('contextmenu', event => {
+                event.preventDefault();
+
+                const normalized = normalizeHex(wandHex.value) || normalizeHex(wandColor.value);
+                if (!normalized) return;
+
+                favoriteColorValues[index] = normalized;
+                saveFavoriteColors();
+                renderFavoriteButtons();
+                wandStatus.textContent = `즐겨찾기 ${index + 1}번에 ${normalized} 저장됨`;
+            });
+
+            favoriteColors.appendChild(button);
+        });
+    }
+
+    function getWandTolerance() {
+        const value = parseInt(wandTolerance.value || 0, 10);
+        const safeValue = Math.max(0, Math.min(255, Number.isNaN(value) ? 0 : value));
+        wandTolerance.value = safeValue;
+        return safeValue;
+    }
+
+    function updateWandControls() {
+        const hasImages = imageItems.length > 0;
+        const hasSelection = !!wandSelection && wandSelection.index === currentIndex && wandSelection.count > 0;
+
+        wandBtn.disabled = !hasImages;
+        applyWandColorBtn.disabled = !hasSelection;
+
+        wandBtn.classList.toggle('active', wandMode);
+        wandBtn.textContent = wandMode ? '마법봉 켜짐' : '마법봉';
+
+        if (!hasSelection) {
+            wandStatus.textContent = wandMode
+                ? '이미지를 클릭하면 새 선택 · Shift/Ctrl + 클릭하면 영역 추가 · 마법봉을 끄면 선택 해제'
+                : '마법봉을 켠 뒤 이미지를 클릭하세요. Shift/Ctrl + 클릭은 영역 추가입니다.';
+        }
+    }
+
+    function clearWandSelection(renderAfter = true) {
+        wandSelection = null;
+        wandSelectionOverlay = null;
+        updateWandControls();
+
+        if (renderAfter && imageItems.length) render();
+    }
+
+    function normalizeHex(value) {
+        let hex = String(value || '').trim().replace(/^#/, '');
+
+        if (/^[0-9a-fA-F]{3}$/.test(hex)) {
+            hex = hex.split('').map(char => char + char).join('');
+        }
+
+        if (!/^[0-9a-fA-F]{6}$/.test(hex)) return null;
+
+        return '#' + hex.toUpperCase();
+    }
+
+    function hexToRgb(hex) {
+        const value = hex.replace('#', '');
+        return {
+            r: parseInt(value.slice(0, 2), 16),
+            g: parseInt(value.slice(2, 4), 16),
+            b: parseInt(value.slice(4, 6), 16)
+        };
+    }
+
+    function buildWandOverlay() {
+        if (!wandSelection || wandSelection.index !== currentIndex) {
+            wandSelectionOverlay = null;
+            return;
+        }
+
+        const overlay = document.createElement('canvas');
+        overlay.width = wandSelection.width;
+        overlay.height = wandSelection.height;
+
+        const overlayCtx = overlay.getContext('2d');
+        const overlayData = overlayCtx.createImageData(overlay.width, overlay.height);
+        const pixels = overlayData.data;
+        const mask = wandSelection.mask;
+
+        for (let i = 0; i < mask.length; i++) {
+            if (!mask[i]) continue;
+
+            const p = i * 4;
+            pixels[p] = 35;
+            pixels[p + 1] = 125;
+            pixels[p + 2] = 255;
+            pixels[p + 3] = 90;
+        }
+
+        overlayCtx.putImageData(overlayData, 0, 0);
+        wandSelectionOverlay = overlay;
+    }
+
+    function drawWandSelection(targetCtx, metrics) {
+        if (
+            !wandSelection ||
+            !wandSelectionOverlay ||
+            wandSelection.index !== currentIndex ||
+            wandSelection.count <= 0
+        ) {
+            return;
+        }
+
+        targetCtx.save();
+        targetCtx.drawImage(
+            wandSelectionOverlay,
+            metrics.cropLeft,
+            metrics.cropTop,
+            metrics.sourceWidth,
+            metrics.sourceHeight,
+            metrics.addLeft,
+            metrics.addTop,
+            metrics.sourceWidth,
+            metrics.sourceHeight
+        );
+        targetCtx.restore();
+    }
+
+    function getWandSourcePoint(point, item) {
+        const metrics = getMetrics(item.image, values);
+        if (!metrics) return null;
+
+        const x = Math.floor(point.x - metrics.addLeft + metrics.cropLeft);
+        const y = Math.floor(point.y - metrics.addTop + metrics.cropTop);
+
+        if (
+            x < metrics.cropLeft ||
+            y < metrics.cropTop ||
+            x >= metrics.cropLeft + metrics.sourceWidth ||
+            y >= metrics.cropTop + metrics.sourceHeight ||
+            x < 0 ||
+            y < 0 ||
+            x >= item.image.naturalWidth ||
+            y >= item.image.naturalHeight
+        ) {
+            return null;
+        }
+
+        return { x, y };
+    }
+
+    function createImageDataFromImage(img) {
+        const workCanvas = document.createElement('canvas');
+        workCanvas.width = img.naturalWidth;
+        workCanvas.height = img.naturalHeight;
+
+        const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
+        workCtx.drawImage(img, 0, 0);
+
+        return {
+            canvas: workCanvas,
+            ctx: workCtx,
+            imageData: workCtx.getImageData(0, 0, workCanvas.width, workCanvas.height)
+        };
+    }
+
+    function selectWandRegion(sourceX, sourceY, addToSelection) {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        const { imageData } = createImageDataFromImage(item.image);
+        const data = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        const tolerance = getWandTolerance();
+        const startIndex = sourceY * width + sourceX;
+        const startPixel = startIndex * 4;
+
+        const startR = data[startPixel];
+        const startG = data[startPixel + 1];
+        const startB = data[startPixel + 2];
+        const startA = data[startPixel + 3];
+
+        let mask;
+
+        if (
+            addToSelection &&
+            wandSelection &&
+            wandSelection.index === currentIndex &&
+            wandSelection.width === width &&
+            wandSelection.height === height
+        ) {
+            mask = wandSelection.mask.slice();
+        } else {
+            mask = new Uint8Array(width * height);
+        }
+
+        const visited = new Uint8Array(width * height);
+        const queue = new Int32Array(width * height);
+        let head = 0;
+        let tail = 0;
+
+        function matches(index) {
+            const p = index * 4;
+            const a = data[p + 3];
+
+            if (startA === 0 && a === 0) return true;
+            if (Math.abs(a - startA) > tolerance) return false;
+
+            return (
+                Math.abs(data[p] - startR) <= tolerance &&
+                Math.abs(data[p + 1] - startG) <= tolerance &&
+                Math.abs(data[p + 2] - startB) <= tolerance
+            );
+        }
+
+        function add(index) {
+            if (index < 0 || index >= width * height || visited[index]) return;
+            if (!matches(index)) return;
+
+            visited[index] = 1;
+            queue[tail++] = index;
+        }
+
+        add(startIndex);
+
+        while (head < tail) {
+            const index = queue[head++];
+            mask[index] = 1;
+
+            const x = index % width;
+            const y = Math.floor(index / width);
+
+            if (x > 0) add(index - 1);
+            if (x < width - 1) add(index + 1);
+            if (y > 0) add(index - width);
+            if (y < height - 1) add(index + width);
+
+            if (x > 0 && y > 0) add(index - width - 1);
+            if (x < width - 1 && y > 0) add(index - width + 1);
+            if (x > 0 && y < height - 1) add(index + width - 1);
+            if (x < width - 1 && y < height - 1) add(index + width + 1);
+        }
+
+        let count = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i]) count++;
+        }
+
+        wandSelection = {
+            index: currentIndex,
+            width,
+            height,
+            mask,
+            count
+        };
+
+        buildWandOverlay();
+        updateWandControls();
+
+        wandStatus.textContent =
+            `${count.toLocaleString()}px 선택됨` +
+            (addToSelection ? ' · 영역 추가됨' : '') +
+            ' · Shift/Ctrl + 클릭으로 더 추가 가능';
+
+        render();
+    }
 
     function loadSavedValues() {
         try {
@@ -850,7 +1362,12 @@
             removeAllBgBtn.disabled = false;
             saveBtn.disabled = false;
             saveAllBtn.disabled = false;
+            wandBtn.disabled = false;
 
+            clearWandSelection(false);
+            updateImageNavigation();
+            renderFavoriteButtons();
+            updateWandControls();
             render();
         } catch {
             alert('이미지를 불러오는 중 오류가 발생했습니다.');
@@ -872,8 +1389,7 @@
     }
 
     imageSelect.addEventListener('change', () => {
-        currentIndex = Number(imageSelect.value);
-        render();
+        goToImage(Number(imageSelect.value));
     });
 
     fileInput.addEventListener('change', () => {
@@ -970,6 +1486,10 @@
 
         const metrics = drawImage(canvas, item.image, values, true);
 
+        if (metrics) {
+            drawWandSelection(ctx, metrics);
+        }
+
         if (!metrics) {
             canvas.hidden = true;
             emptyText.hidden = false;
@@ -1010,6 +1530,28 @@
     }
 
     canvas.addEventListener('pointerdown', event => {
+        if (wandMode) {
+            event.preventDefault();
+
+            const item = getCurrentItem();
+            if (!item) return;
+
+            const point = getCanvasPoint(event);
+            const sourcePoint = getWandSourcePoint(point, item);
+
+            if (!sourcePoint) {
+                wandStatus.textContent = '이미지 영역 안쪽을 클릭해주세요.';
+                return;
+            }
+
+            selectWandRegion(
+                sourcePoint.x,
+                sourcePoint.y,
+                event.shiftKey || event.ctrlKey
+            );
+            return;
+        }
+
         if (!textSettings.enabled || !textSettings.text.trim()) return;
 
         const point = getCanvasPoint(event);
@@ -1040,6 +1582,11 @@
 
     canvas.addEventListener('pointermove', event => {
         const point = getCanvasPoint(event);
+
+        if (wandMode && !draggingText) {
+            canvas.style.cursor = 'crosshair';
+            return;
+        }
 
         if (!draggingText) {
             canvas.style.cursor = isPointOnText(point) ? 'move' : 'default';
@@ -1103,6 +1650,8 @@
     canvas.addEventListener('pointercancel', stopTextDrag);
 
     canvas.addEventListener('dblclick', event => {
+        if (wandMode) return;
+
         const point = getCanvasPoint(event);
 
         if (!isPointOnText(point)) return;
@@ -1112,6 +1661,139 @@
         openTextEditor();
     });
 
+    wandTolerance.addEventListener('input', () => {
+        getWandTolerance();
+    });
+
+    wandTolerance.addEventListener('blur', () => {
+        getWandTolerance();
+    });
+
+    wandColor.addEventListener('input', () => {
+        wandHex.value = wandColor.value.toUpperCase();
+    });
+
+    wandHex.addEventListener('input', () => {
+        const normalized = normalizeHex(wandHex.value);
+        if (normalized) wandColor.value = normalized;
+    });
+
+    function commitWandHex() {
+        const normalized = normalizeHex(wandHex.value);
+
+        if (!normalized) {
+            wandHex.value = wandColor.value.toUpperCase();
+            return;
+        }
+
+        wandHex.value = normalized;
+        wandColor.value = normalized;
+    }
+
+    wandHex.addEventListener('blur', commitWandHex);
+    wandHex.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            commitWandHex();
+            wandHex.blur();
+        }
+    });
+
+    wandBtn.addEventListener('click', () => {
+        if (!imageItems.length) return;
+
+        const nextMode = !wandMode;
+        wandMode = nextMode;
+        textSelected = false;
+        draggingText = false;
+        dragAxis = null;
+
+        if (!wandMode) {
+            clearWandSelection(false);
+        }
+
+        canvas.style.cursor = wandMode ? 'crosshair' : 'default';
+        updateWandControls();
+        render();
+    });
+
+    async function applySelectedColor(forcedHex = null) {
+        const item = getCurrentItem();
+
+        if (
+            !item ||
+            !wandSelection ||
+            wandSelection.index !== currentIndex ||
+            wandSelection.count <= 0
+        ) {
+            return;
+        }
+
+        applyWandColorBtn.disabled = true;
+
+        try {
+            const { canvas: workCanvas, ctx: workCtx, imageData } =
+                createImageDataFromImage(item.image);
+
+            const data = imageData.data;
+            const mask = wandSelection.mask;
+            const normalizedHex =
+                normalizeHex(forcedHex) ||
+                normalizeHex(wandHex.value) ||
+                normalizeHex(wandColor.value) ||
+                '#000000';
+
+            setWandColorValue(normalizedHex);
+
+            const color = hexToRgb(normalizedHex);
+
+            for (let i = 0; i < mask.length; i++) {
+                if (!mask[i]) continue;
+
+                const p = i * 4;
+                data[p] = color.r;
+                data[p + 1] = color.g;
+                data[p + 2] = color.b;
+            }
+
+            workCtx.putImageData(imageData, 0, 0);
+
+            const blob = await canvasToBlob(workCanvas);
+            if (!blob) throw new Error('색상 변경 이미지를 만들지 못했습니다.');
+
+            item.image = await blobToImage(blob);
+
+            buildWandOverlay();
+            wandStatus.textContent =
+                `${wandSelection.count.toLocaleString()}px 영역의 색상을 ${wandHex.value}로 변경했습니다.`;
+
+            render();
+        } catch (error) {
+            console.error(error);
+            alert('선택 영역 색상 변경 중 오류가 발생했습니다.\n' + error.message);
+        } finally {
+            updateWandControls();
+        }
+    }
+
+    applyWandColorBtn.addEventListener('click', async () => {
+        await applySelectedColor();
+    });
+
+    prevImageBtn.addEventListener('click', event => {
+        event.preventDefault();
+        goToPrevImage();
+    });
+
+    nextImageBtn.addEventListener('click', event => {
+        event.preventDefault();
+        goToNextImage();
+    });
+
+    canvas.addEventListener('contextmenu', event => {
+        if (wandMode && event.ctrlKey) event.preventDefault();
+    });
+
     window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-backdrop.show').forEach(modal => {
@@ -1119,6 +1801,13 @@
             });
 
             textSelected = false;
+
+            if (wandMode || wandSelection) {
+                wandMode = false;
+                clearWandSelection(false);
+                canvas.style.cursor = 'default';
+                updateWandControls();
+            }
 
             if (imageItems.length) render();
 
@@ -1448,6 +2137,8 @@
             sizeInfo.textContent = `${item.fileName} · 배경 제거 중...`;
 
             await removeItemBackground(item, `${item.fileName} · 배경 제거 중`);
+            clearWandSelection(false);
+            clearWandSelection(false);
             showCheckerBackground();
             render();
         } catch (error) {
@@ -1547,6 +2238,9 @@
 
     // 최초 상태
     showCheckerBackground();
+    updateImageNavigation();
+    renderFavoriteButtons();
+    updateWandControls();
 </script>
 </body>
 </html>
