@@ -84,6 +84,7 @@
             max-height: 70vh;
             object-fit: contain;
             box-shadow: 0 4px 20px rgba(0,0,0,.12);
+            touch-action: none;
         }
         .empty {
             color: #888;
@@ -164,6 +165,15 @@
             border-radius: 8px;
             font-size: 15px;
         }
+        .field select {
+            width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid #ccd1d8;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+        }
         .summary {
             margin-top: 18px;
             padding: 12px 14px;
@@ -189,6 +199,7 @@
         <button type="button" id="openUploadBtn">이미지 넣기</button>
         <select id="imageSelect" hidden></select>
         <button type="button" id="openEditBtn" class="secondary" disabled>상하좌우 편집</button>
+        <button type="button" id="openTextBtn" class="secondary" disabled>텍스트 추가</button>
         <button type="button" id="resetBtn" class="secondary" disabled>원본으로 초기화</button>
         <button type="button" id="removeBgBtn" class="secondary" disabled>현재 배경 제거</button>
         <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
@@ -253,6 +264,74 @@
     </div>
 </div>
 
+<div id="textModal" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="textModalTitle">텍스트 추가</h2>
+            <button type="button" class="close" data-close="textModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="field" style="margin-bottom:14px;">
+                <label for="textValue">텍스트</label>
+                <input id="textValue" type="text" placeholder="텍스트를 입력하세요">
+            </div>
+
+            <div class="grid">
+                <div class="field">
+                    <label for="fontSize">글자 크기 (px)</label>
+                    <input id="fontSize" type="number" value="50" min="1">
+                </div>
+
+                <div class="field">
+                    <label for="outlineWidth">테두리 두께 (px)</label>
+                    <input id="outlineWidth" type="number" value="3" min="0" step="0.5">
+                </div>
+
+                <div class="field">
+                    <label for="textColor">글자 색</label>
+                    <input id="textColor" type="color" value="#ffffff">
+                </div>
+
+                <div class="field">
+                    <label for="outlineColor">테두리 색</label>
+                    <input id="outlineColor" type="color" value="#000000">
+                </div>
+
+                <div class="field">
+                    <label for="textX">X 위치</label>
+                    <input id="textX" type="number" value="50">
+                </div>
+
+                <div class="field">
+                    <label for="textY">Y 위치</label>
+                    <input id="textY" type="number" value="50">
+                </div>
+            </div>
+
+            <div class="field" style="margin-top:14px;">
+                <label for="fontSelect">글꼴</label>
+
+                <div style="display:flex; gap:8px;">
+                    <select id="fontSelect" style="flex:1;">
+                        <option value="Arial">Arial</option>
+                    </select>
+
+                    <button type="button" id="loadLocalFontsBtn" class="secondary">
+                        불러오기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" id="removeTextBtn" class="secondary">텍스트 제거</button>
+            <button type="button" class="secondary" data-close="textModal">취소</button>
+            <button type="button" id="applyTextBtn">적용</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const STORAGE_KEY = 'imageCropPaddingValues';
     const defaultValues = { top: 0, bottom: 0, left: 0, right: 0 };
@@ -279,6 +358,216 @@
     const leftInput = document.getElementById('leftValue');
     const rightInput = document.getElementById('rightValue');
     const editSummary = document.getElementById('editSummary');
+
+    const openTextBtn = document.getElementById('openTextBtn');
+    const applyTextBtn = document.getElementById('applyTextBtn');
+    const removeTextBtn = document.getElementById('removeTextBtn');
+
+    const textValue = document.getElementById('textValue');
+    const fontSize = document.getElementById('fontSize');
+    const outlineWidth = document.getElementById('outlineWidth');
+    const textColor = document.getElementById('textColor');
+    const outlineColor = document.getElementById('outlineColor');
+    const textX = document.getElementById('textX');
+    const textY = document.getElementById('textY');
+
+    const fontSelect = document.getElementById('fontSelect');
+    const loadLocalFontsBtn = document.getElementById('loadLocalFontsBtn');
+
+    let localFonts = [];
+    const loadedFontFaces = new Map();
+
+    const textModalTitle = document.getElementById('textModalTitle');
+
+    const defaultTextSettings = {
+        enabled: false,
+        text: '',
+        fontSize: 50,
+        fontFamily: 'Arial',
+        fontOption: 'Arial',
+        color: '#000000',
+        outlineColor: '#ffffff',
+        outlineWidth: 1,
+        x: 50,
+        y: 10
+    };
+
+    let textSettings = { ...defaultTextSettings };
+
+    let textSelected = false;
+    let draggingText = false;
+    let dragAxis = null;
+
+    let dragStart = {
+        pointerX: 0,
+        pointerY: 0,
+        textX: 0,
+        textY: 0
+    };
+
+    function updateTextButton() {
+        const hasText = textSettings.enabled && textSettings.text.trim();
+
+        openTextBtn.textContent = hasText ? '텍스트 수정' : '텍스트 추가';
+    }
+
+    function openTextEditor() {
+        const hasText = textSettings.enabled && textSettings.text.trim();
+
+        textModalTitle.textContent = hasText ? '텍스트 수정' : '텍스트 추가';
+
+        textValue.value = textSettings.text;
+        fontSize.value = textSettings.fontSize;
+        textColor.value = textSettings.color;
+        outlineColor.value = textSettings.outlineColor;
+        outlineWidth.value = textSettings.outlineWidth;
+        textX.value = textSettings.x.toFixed(2);
+        textY.value = textSettings.y.toFixed(2);
+
+        if ([...fontSelect.options].some(option => option.value === textSettings.fontOption)) {
+            fontSelect.value = textSettings.fontOption;
+        }
+
+        removeTextBtn.disabled = !hasText;
+
+        openModal('textModal');
+    }
+
+    openTextBtn.addEventListener('click', openTextEditor);
+
+    applyTextBtn.addEventListener('click', () => {
+        const text = textValue.value.trim();
+
+        textSettings = {
+            enabled: text.length > 0,
+            text: text,
+            fontSize: Number(fontSize.value) || 50,
+            fontFamily: textSettings.fontFamily || 'Arial',
+            fontOption: textSettings.fontOption || 'Arial',
+            color: textColor.value,
+            outlineColor: outlineColor.value,
+            outlineWidth: Number(outlineWidth.value) || 0,
+            x: Number(textX.value) || 50,
+            y: Number(textY.value) || 10
+        };
+
+        textSelected = textSettings.enabled;
+
+        updateTextButton();
+        render();
+        closeModal('textModal');
+    });
+
+    function removeText() {
+        textSettings = { ...defaultTextSettings };
+        textSelected = false;
+        draggingText = false;
+        dragAxis = null;
+
+        updateTextButton();
+        render();
+    }
+
+    removeTextBtn.addEventListener('click', () => {
+        removeText();
+        closeModal('textModal');
+    });
+
+    loadLocalFontsBtn.addEventListener('click', async () => {
+        if (!('queryLocalFonts' in window)) {
+            alert(
+                '현재 브라우저는 PC 글꼴 불러오기를 지원하지 않습니다.\n' +
+                'Chrome 또는 Edge 최신 버전을 사용해주세요.'
+            );
+            return;
+        }
+
+        try {
+            localFonts = await window.queryLocalFonts();
+
+            fontSelect.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'Arial';
+            defaultOption.textContent = 'Arial';
+            fontSelect.appendChild(defaultOption);
+
+            localFonts
+                .sort((a, b) =>
+                    a.fullName.localeCompare(b.fullName, 'ko')
+                )
+                .forEach((font, index) => {
+                    const option = document.createElement('option');
+
+                    option.value = `local:${index}`;
+                    option.textContent = font.fullName;
+
+                    fontSelect.appendChild(option);
+                });
+
+            alert(`${localFonts.length}개의 설치된 글꼴을 불러왔습니다.`);
+
+        } catch (error) {
+            console.error(error);
+
+            if (error.name === 'NotAllowedError') {
+                alert('PC 글꼴 접근 권한이 허용되지 않았습니다.');
+            } else {
+                alert(
+                    'PC 글꼴을 불러오지 못했습니다.\n\n' +
+                    '이 기능은 localhost 또는 HTTPS 환경에서 실행해야 합니다.'
+                );
+            }
+        }
+    });
+
+    fontSelect.addEventListener('change', async () => {
+        const value = fontSelect.value;
+        textSettings.fontOption = value;
+
+        if (!value.startsWith('local:')) {
+            textSettings.fontFamily = value;
+            render();
+            return;
+        }
+
+        const index = Number(value.replace('local:', ''));
+        const fontData = localFonts[index];
+
+        if (!fontData) return;
+
+        try {
+            const key = fontData.postscriptName || fontData.fullName;
+
+            let familyName = loadedFontFaces.get(key);
+
+            if (!familyName) {
+                familyName = `LocalFont_${loadedFontFaces.size}`;
+
+                const blob = await fontData.blob();
+                const buffer = await blob.arrayBuffer();
+
+                const fontFace = new FontFace(
+                    familyName,
+                    buffer
+                );
+
+                await fontFace.load();
+
+                document.fonts.add(fontFace);
+
+                loadedFontFaces.set(key, familyName);
+            }
+
+            textSettings.fontFamily = familyName;
+
+            render();
+
+        } catch (error) {
+            console.error(error);
+            alert('선택한 글꼴을 적용하지 못했습니다.');
+        }
+    });
 
     let imageItems = [];
     let currentIndex = 0;
@@ -336,6 +625,94 @@
         updateEditSummary();
         openModal('editModal');
     });
+
+    function applyTextStyle(targetCtx) {
+        targetCtx.font = `${textSettings.fontSize}px "${textSettings.fontFamily || 'Arial'}"`;
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+        targetCtx.lineJoin = 'round';
+    }
+
+    function getTextBounds(targetCtx, targetCanvas) {
+        if (!textSettings.enabled || !textSettings.text.trim()) return null;
+
+        targetCtx.save();
+        applyTextStyle(targetCtx);
+
+        const metrics = targetCtx.measureText(textSettings.text);
+
+        const x = targetCanvas.width * (textSettings.x / 100);
+        const y = targetCanvas.height * (textSettings.y / 100);
+
+        const ascent = metrics.actualBoundingBoxAscent || textSettings.fontSize * 0.8;
+        const descent = metrics.actualBoundingBoxDescent || textSettings.fontSize * 0.2;
+
+        const padding = textSettings.outlineWidth + 8;
+
+        const bounds = {
+            left: x - metrics.width / 2 - padding,
+            right: x + metrics.width / 2 + padding,
+            top: y - ascent - padding,
+            bottom: y + descent + padding
+        };
+
+        targetCtx.restore();
+
+        return bounds;
+    }
+
+    function drawText(targetCtx, targetCanvas, showSelection = false) {
+        if (!textSettings.enabled || !textSettings.text.trim()) return;
+
+        const x = targetCanvas.width * (textSettings.x / 100);
+        const y = targetCanvas.height * (textSettings.y / 100);
+
+        targetCtx.save();
+
+        applyTextStyle(targetCtx);
+
+        if (textSettings.outlineWidth > 0) {
+            targetCtx.strokeStyle = textSettings.outlineColor;
+            targetCtx.lineWidth = textSettings.outlineWidth * 2;
+
+            targetCtx.strokeText(
+                textSettings.text,
+                x,
+                y
+            );
+        }
+
+        targetCtx.fillStyle = textSettings.color;
+
+        targetCtx.fillText(
+            textSettings.text,
+            x,
+            y
+        );
+
+        targetCtx.restore();
+
+        if (showSelection && textSelected) {
+            const bounds = getTextBounds(targetCtx, targetCanvas);
+
+            if (bounds) {
+                targetCtx.save();
+
+                targetCtx.strokeStyle = '#333';
+                targetCtx.lineWidth = 1;
+                targetCtx.setLineDash([5, 4]);
+
+                targetCtx.strokeRect(
+                    bounds.left,
+                    bounds.top,
+                    bounds.right - bounds.left,
+                    bounds.bottom - bounds.top
+                );
+
+                targetCtx.restore();
+            }
+        }
+    }
 
     [topInput, bottomInput, leftInput, rightInput].forEach(input => {
         input.addEventListener('input', updateEditSummary);
@@ -436,6 +813,7 @@
             updateImageSelect();
 
             openEditBtn.disabled = false;
+            openTextBtn.disabled = false;
             resetBtn.disabled = false;
             removeBgBtn.disabled = false;
             removeAllBgBtn.disabled = false;
@@ -519,10 +897,16 @@
             item.backgroundRemoved = false;
         });
 
+        textSettings = { ...defaultTextSettings };
+        textSelected = false;
+        draggingText = false;
+        dragAxis = null;
+
+        updateTextButton();
         render();
     });
 
-    function drawImage(targetCanvas, img, v) {
+    function drawImage(targetCanvas, img, v, showTextSelection = false) {
         const metrics = getMetrics(img, v);
         if (!metrics) return null;
 
@@ -544,6 +928,8 @@
             metrics.sourceHeight
         );
 
+        drawText(targetCtx, targetCanvas, showTextSelection);
+
         return metrics;
     }
 
@@ -551,7 +937,7 @@
         const item = getCurrentItem();
         if (!item) return;
 
-        const metrics = drawImage(canvas, item.image, values);
+        const metrics = drawImage(canvas, item.image, values, true);
 
         if (!metrics) {
             canvas.hidden = true;
@@ -568,6 +954,164 @@
             `원본 ${item.image.naturalWidth} × ${item.image.naturalHeight}px → ` +
             `결과 ${metrics.resultWidth} × ${metrics.resultHeight}px`;
     }
+
+    function getCanvasPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+
+        return {
+            x: (event.clientX - rect.left) * (canvas.width / rect.width),
+            y: (event.clientY - rect.top) * (canvas.height / rect.height)
+        };
+    }
+
+    function isPointOnText(point) {
+        if (!textSettings.enabled || !textSettings.text.trim()) return false;
+
+        const bounds = getTextBounds(ctx, canvas);
+        if (!bounds) return false;
+
+        return (
+            point.x >= bounds.left &&
+            point.x <= bounds.right &&
+            point.y >= bounds.top &&
+            point.y <= bounds.bottom
+        );
+    }
+
+    canvas.addEventListener('pointerdown', event => {
+        if (!textSettings.enabled || !textSettings.text.trim()) return;
+
+        const point = getCanvasPoint(event);
+
+        if (!isPointOnText(point)) {
+            textSelected = false;
+            render();
+            return;
+        }
+
+        event.preventDefault();
+
+        textSelected = true;
+        draggingText = true;
+        dragAxis = null;
+
+        dragStart.pointerX = point.x;
+        dragStart.pointerY = point.y;
+
+        dragStart.textX = canvas.width * (textSettings.x / 100);
+        dragStart.textY = canvas.height * (textSettings.y / 100);
+
+        canvas.setPointerCapture(event.pointerId);
+        canvas.style.cursor = 'grabbing';
+
+        render();
+    });
+
+    canvas.addEventListener('pointermove', event => {
+        const point = getCanvasPoint(event);
+
+        if (!draggingText) {
+            canvas.style.cursor = isPointOnText(point) ? 'move' : 'default';
+            return;
+        }
+
+        event.preventDefault();
+
+        let dx = point.x - dragStart.pointerX;
+        let dy = point.y - dragStart.pointerY;
+
+        const straightMode = event.shiftKey || event.ctrlKey;
+
+        if (straightMode) {
+            if (!dragAxis && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+                dragAxis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+            }
+
+            if (dragAxis === 'x') {
+                dy = 0;
+            }
+
+            if (dragAxis === 'y') {
+                dx = 0;
+            }
+        } else {
+            dragAxis = null;
+        }
+
+        let newX = dragStart.textX + dx;
+        let newY = dragStart.textY + dy;
+
+        newX = Math.max(0, Math.min(canvas.width, newX));
+        newY = Math.max(0, Math.min(canvas.height, newY));
+
+        textSettings.x = (newX / canvas.width) * 100;
+        textSettings.y = (newY / canvas.height) * 100;
+
+        render();
+    });
+
+    function stopTextDrag(event) {
+        if (!draggingText) return;
+
+        draggingText = false;
+        dragAxis = null;
+
+        if (canvas.hasPointerCapture(event.pointerId)) {
+            canvas.releasePointerCapture(event.pointerId);
+        }
+
+        canvas.style.cursor = 'move';
+
+        textX.value = textSettings.x.toFixed(2);
+        textY.value = textSettings.y.toFixed(2);
+
+        render();
+    }
+
+    canvas.addEventListener('pointerup', stopTextDrag);
+    canvas.addEventListener('pointercancel', stopTextDrag);
+
+    canvas.addEventListener('dblclick', event => {
+        const point = getCanvasPoint(event);
+
+        if (!isPointOnText(point)) return;
+
+        textSelected = true;
+        render();
+        openTextEditor();
+    });
+
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-backdrop.show').forEach(modal => {
+                closeModal(modal.id);
+            });
+
+            textSelected = false;
+
+            if (imageItems.length) render();
+
+            return;
+        }
+
+        const activeTag = document.activeElement?.tagName;
+
+        if (
+            activeTag === 'INPUT' ||
+            activeTag === 'TEXTAREA' ||
+            activeTag === 'SELECT'
+        ) {
+            return;
+        }
+
+        if (
+            textSelected &&
+            (e.key === 'Delete' || e.key === 'Backspace')
+        ) {
+            e.preventDefault();
+            removeText();
+        }
+    });
 
     function downloadBlob(blob, fileName) {
         const url = URL.createObjectURL(blob);
