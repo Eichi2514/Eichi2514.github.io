@@ -133,7 +133,6 @@
 
         .wand-control > span:first-child,
         .preview-bg-control > span:first-child {
-            min-width: 60px;
             font-size: 13px;
             color: #555;
         }
@@ -486,20 +485,16 @@
             <button type="button" id="openUploadBtn">이미지 넣기</button>
             <select id="imageSelect" hidden></select>
             <button type="button" id="openEditBtn" class="secondary" disabled>상하좌우 편집</button>
+            <button type="button" id="openResizeBtn" class="secondary" disabled>크기 조정</button>
             <button type="button" id="openTextBtn" class="secondary" disabled>텍스트 추가</button>
             <button type="button" id="resetBtn" class="secondary" disabled>원본으로 초기화</button>
             <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
+            <button type="button" id="wandBtn" class="secondary" disabled>마법봉</button>
 
             <div class="wand-row">
-                <button type="button" id="wandBtn" class="secondary" disabled>마법봉</button>
-
                 <label class="wand-control">
-                    <span>허용 오차</span>
+                    <span>허용</span>
                     <input type="number" id="wandTolerance" min="0" max="255" step="1" value="25">
-                </label>
-
-                <label class="wand-control">
-                    <span>변경 색</span>
                     <input type="color" id="wandColor" value="#da312b">
                     <input type="text" id="wandHex" value="#DA312B" maxlength="7"
                            placeholder="#DA312B" spellcheck="false" aria-label="HEX 색상 코드">
@@ -588,6 +583,41 @@
         <div class="modal-footer">
             <button type="button" class="secondary" data-close="editModal">취소</button>
             <button type="button" id="applyBtn">적용</button>
+        </div>
+    </div>
+</div>
+
+<!-- 이미지 크기 조정 모달 -->
+<div id="resizeModal" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>이미지 크기 조정</h2>
+            <button type="button" class="close" data-close="resizeModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="guide">
+                이미지 모양은 그대로 유지하면서 실제 픽셀 크기만 변경합니다.
+            </div>
+
+            <div class="grid">
+                <div class="field">
+                    <label for="resizeWidth">너비 (px)</label>
+                    <input id="resizeWidth" type="number" min="1" step="1">
+                </div>
+
+                <div class="field">
+                    <label for="resizeHeight">높이 (px)</label>
+                    <input id="resizeHeight" type="number" min="1" step="1">
+                </div>
+            </div>
+
+             <div id="resizeSummary" class="summary"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="secondary" data-close="resizeModal">취소</button>
+            <button type="button" id="applyResizeBtn">적용</button>
         </div>
     </div>
 </div>
@@ -682,6 +712,13 @@
 
     const openUploadBtn = document.getElementById('openUploadBtn');
     const openEditBtn = document.getElementById('openEditBtn');
+    const openResizeBtn = document.getElementById('openResizeBtn');
+    const resizeWidth = document.getElementById('resizeWidth');
+    const resizeHeight = document.getElementById('resizeHeight');
+    const resizeSummary = document.getElementById('resizeSummary');
+    const applyResizeBtn = document.getElementById('applyResizeBtn');
+    let resizeMode = 'width';
+
     const resetBtn = document.getElementById('resetBtn');
     const saveBtn = document.getElementById('saveBtn');
     const saveAllBtn = document.getElementById('saveAllBtn');
@@ -1375,6 +1412,221 @@
         openModal('editModal');
     });
 
+    openResizeBtn.addEventListener('click', () => {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        resizeWidth.value = item.image.naturalWidth;
+        resizeHeight.value = item.image.naturalHeight;
+
+        // 처음 열었을 때 기본 기준은 너비
+        resizeMode = 'width';
+
+        updateResizeSummary();
+        openModal('resizeModal');
+    });
+
+
+    function updateResizeSummary() {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        const width = Math.max(
+            1,
+            parseInt(resizeWidth.value || 1, 10)
+        );
+
+        const height = Math.max(
+            1,
+            parseInt(resizeHeight.value || 1, 10)
+        );
+
+        const modeText =
+            resizeMode === 'width'
+                ? `너비 ${width}px 기준`
+                : `높이 ${height}px 기준`;
+
+        resizeSummary.innerHTML =
+            `총 <b>${imageItems.length}장</b> 일괄 적용<br>` +
+            `기준: <b>${modeText}</b><br>` +
+            `현재 사진 예상: <b>${width} × ${height}px</b><br>` +
+            `각 사진은 원래 비율을 유지합니다.`;
+    }
+
+
+    // 너비를 직접 입력하면 → 너비 기준
+    resizeWidth.addEventListener('input', () => {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        resizeMode = 'width';
+
+        const width = Math.max(
+            1,
+            parseInt(resizeWidth.value || 1, 10)
+        );
+
+        const ratio =
+            item.image.naturalWidth /
+            item.image.naturalHeight;
+
+        resizeHeight.value = Math.max(
+            1,
+            Math.round(width / ratio)
+        );
+
+        updateResizeSummary();
+    });
+
+
+    // 높이를 직접 입력하면 → 높이 기준
+    resizeHeight.addEventListener('input', () => {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        resizeMode = 'height';
+
+        const height = Math.max(
+            1,
+            parseInt(resizeHeight.value || 1, 10)
+        );
+
+        const ratio =
+            item.image.naturalWidth /
+            item.image.naturalHeight;
+
+        resizeWidth.value = Math.max(
+            1,
+            Math.round(height * ratio)
+        );
+
+        updateResizeSummary();
+    });
+
+
+    applyResizeBtn.addEventListener('click', async () => {
+        if (!imageItems.length) return;
+
+        const targetWidth = Math.max(
+            1,
+            parseInt(resizeWidth.value || 1, 10)
+        );
+
+        const targetHeight = Math.max(
+            1,
+            parseInt(resizeHeight.value || 1, 10)
+        );
+
+        applyResizeBtn.disabled = true;
+
+        try {
+            for (let i = 0; i < imageItems.length; i++) {
+                const item = imageItems[i];
+                const img = item.image;
+
+                // 각 사진마다 자기 비율 계산
+                const ratio =
+                    img.naturalWidth /
+                    img.naturalHeight;
+
+                let newWidth;
+                let newHeight;
+
+                if (resizeMode === 'width') {
+                    // 너비를 입력했다면
+                    // 모든 이미지의 너비를 똑같이 맞춤
+                    newWidth = targetWidth;
+
+                    // 높이는 각 이미지 비율에 따라 계산
+                    newHeight = Math.max(
+                        1,
+                        Math.round(newWidth / ratio)
+                    );
+
+                } else {
+                    // 높이를 입력했다면
+                    // 모든 이미지의 높이를 똑같이 맞춤
+                    newHeight = targetHeight;
+
+                    // 너비는 각 이미지 비율에 따라 계산
+                    newWidth = Math.max(
+                        1,
+                        Math.round(newHeight * ratio)
+                    );
+                }
+
+                sizeInfo.textContent =
+                    `${i + 1} / ${imageItems.length} · ` +
+                    `${item.fileName} · ` +
+                    `${newWidth} × ${newHeight}px 조정 중...`;
+
+                const resizeCanvas =
+                    document.createElement('canvas');
+
+                resizeCanvas.width = newWidth;
+                resizeCanvas.height = newHeight;
+
+                const resizeCtx =
+                    resizeCanvas.getContext('2d');
+
+                resizeCtx.imageSmoothingEnabled = true;
+                resizeCtx.imageSmoothingQuality = 'high';
+
+                resizeCtx.clearRect(
+                    0,
+                    0,
+                    newWidth,
+                    newHeight
+                );
+
+                resizeCtx.drawImage(
+                    img,
+                    0,
+                    0,
+                    img.naturalWidth,
+                    img.naturalHeight,
+                    0,
+                    0,
+                    newWidth,
+                    newHeight
+                );
+
+                const blob =
+                    await canvasToBlob(resizeCanvas);
+
+                if (!blob) {
+                    throw new Error(
+                        `"${item.fileName}" 크기 조정 실패`
+                    );
+                }
+
+                item.image =
+                    await blobToImage(blob);
+            }
+
+            clearWandSelection(false);
+
+            manualZoom = false;
+
+            closeModal('resizeModal');
+
+            render();
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                '전체 이미지 크기 조정 중 오류가 발생했습니다.\n' +
+                error.message
+            );
+
+            render();
+
+        } finally {
+            applyResizeBtn.disabled = false;
+        }
+    });
+
     function applyTextStyle(targetCtx) {
         targetCtx.font = `${textSettings.fontSize}px "${textSettings.fontFamily || 'Arial'}"`;
         targetCtx.textAlign = 'center';
@@ -1562,6 +1814,7 @@
             updateImageSelect();
 
             openEditBtn.disabled = false;
+            openResizeBtn.disabled = false;
             openTextBtn.disabled = false;
             resetBtn.disabled = false;
             removeAllBgBtn.disabled = false;
