@@ -23,6 +23,11 @@
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
+        .save-row {
+            flex-basis: 100%;
+            display: flex;
+            gap: 10px;
+        }
         #imageSelect {
             min-width: 220px;
             height: 40px;
@@ -185,8 +190,13 @@
         <select id="imageSelect" hidden></select>
         <button type="button" id="openEditBtn" class="secondary" disabled>상하좌우 편집</button>
         <button type="button" id="resetBtn" class="secondary" disabled>원본으로 초기화</button>
-        <button type="button" id="saveBtn" disabled>현재 이미지 저장</button>
-        <button type="button" id="saveAllBtn" disabled>전체 저장</button>
+        <button type="button" id="removeBgBtn" class="secondary" disabled>현재 배경 제거</button>
+        <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
+
+        <div class="save-row">
+            <button type="button" id="saveBtn" disabled>현재 이미지 저장</button>
+            <button type="button" id="saveAllBtn" disabled>전체 저장</button>
+        </div>
     </div>
 
     <div id="sizeInfo" class="info">이미지를 선택해주세요.</div>
@@ -260,6 +270,8 @@
     const resetBtn = document.getElementById('resetBtn');
     const saveBtn = document.getElementById('saveBtn');
     const saveAllBtn = document.getElementById('saveAllBtn');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+    const removeAllBgBtn = document.getElementById('removeAllBgBtn');
     const applyBtn = document.getElementById('applyBtn');
 
     const topInput = document.getElementById('topValue');
@@ -392,7 +404,10 @@
                 const img = new Image();
 
                 img.onload = () => resolve({
+                    file: file,
                     image: img,
+                    originalImage: img,
+                    backgroundRemoved: false,
                     fileName: file.name,
                     outputName: file.name.replace(/\.[^.]+$/, '') + '.png'
                 });
@@ -422,6 +437,8 @@
 
             openEditBtn.disabled = false;
             resetBtn.disabled = false;
+            removeBgBtn.disabled = false;
+            removeAllBgBtn.disabled = false;
             saveBtn.disabled = false;
             saveAllBtn.disabled = false;
 
@@ -496,6 +513,12 @@
 
         values = { ...defaultValues };
         saveValues();
+
+        imageItems.forEach(item => {
+            item.image = item.originalImage;
+            item.backgroundRemoved = false;
+        });
+
         render();
     });
 
@@ -573,6 +596,169 @@
 
         const blob = await canvasToBlob(resultCanvas);
         if (blob) downloadBlob(blob, item.outputName);
+    });
+
+    let removeBackgroundFn = null;
+
+    function blobToImage(blob) {
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                resolve(img);
+            };
+
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error('배경제거 결과 이미지를 불러오지 못했습니다.'));
+            };
+
+            img.src = url;
+        });
+    }
+
+    async function removeItemBackground(item, progressText) {
+        sizeInfo.textContent = `${progressText} · 배경 제거 중...`;
+
+        const img = item.originalImage;
+        const workCanvas = document.createElement('canvas');
+        workCanvas.width = img.naturalWidth;
+        workCanvas.height = img.naturalHeight;
+
+        const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
+        workCtx.drawImage(img, 0, 0);
+
+        const imageData = workCtx.getImageData(0, 0, workCanvas.width, workCanvas.height);
+        const data = imageData.data;
+
+        const width = workCanvas.width;
+        const height = workCanvas.height;
+        const visited = new Uint8Array(width * height);
+        const queue = [];
+
+        function isBackground(x, y) {
+            const i = (y * width + x) * 4;
+
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+
+            if (a === 0) return true;
+
+            return r >= 220 && g >= 220 && b >= 220;
+        }
+
+        function add(x, y) {
+            if (x < 0 || y < 0 || x >= width || y >= height) return;
+
+            const index = y * width + x;
+
+            if (visited[index]) return;
+            if (!isBackground(x, y)) return;
+
+            visited[index] = 1;
+            queue.push(index);
+        }
+
+        for (let x = 0; x < width; x++) {
+            add(x, 0);
+            add(x, height - 1);
+        }
+
+        for (let y = 0; y < height; y++) {
+            add(0, y);
+            add(width - 1, y);
+        }
+
+        let head = 0;
+
+        while (head < queue.length) {
+            const index = queue[head++];
+            const x = index % width;
+            const y = Math.floor(index / width);
+
+            const i = index * 4;
+
+            data[i + 3] = 0;
+
+            add(x - 1, y);
+            add(x + 1, y);
+            add(x, y - 1);
+            add(x, y + 1);
+        }
+
+        workCtx.putImageData(imageData, 0, 0);
+
+        const blob = await canvasToBlob(workCanvas);
+        item.image = await blobToImage(blob);
+        item.backgroundRemoved = true;
+
+        sizeInfo.textContent = `${item.fileName} · 배경 제거 완료`;
+    }
+
+    removeBgBtn.addEventListener('click', async () => {
+        const item = getCurrentItem();
+        if (!item) return;
+
+        if (item.backgroundRemoved) {
+            alert('현재 이미지는 이미 배경이 제거되었습니다.');
+            return;
+        }
+
+        removeBgBtn.disabled = true;
+        removeAllBgBtn.disabled = true;
+
+        try {
+            sizeInfo.textContent = `${item.fileName} · 배경 제거 중...`;
+
+            await removeItemBackground(item, `${item.fileName} · 배경 제거 중`);
+
+            render();
+        } catch (error) {
+            console.error(error);
+            alert('배경 제거 중 오류가 발생했습니다.\n' + error.message);
+            render();
+        } finally {
+            removeBgBtn.disabled = false;
+            removeAllBgBtn.disabled = false;
+        }
+    });
+
+    removeAllBgBtn.addEventListener('click', async () => {
+        if (!imageItems.length) return;
+
+        removeBgBtn.disabled = true;
+        removeAllBgBtn.disabled = true;
+
+        try {
+            for (let i = 0; i < imageItems.length; i++) {
+                const item = imageItems[i];
+
+                if (item.backgroundRemoved) continue;
+
+                sizeInfo.textContent =
+                    `${i + 1} / ${imageItems.length} · ${item.fileName} · 배경 제거 중...`;
+
+                await removeItemBackground(
+                    item,
+                    `${i + 1} / ${imageItems.length} · ${item.fileName}`
+                );
+
+                if (i === currentIndex) render();
+            }
+
+            render();
+        } catch (error) {
+            console.error(error);
+            alert('전체 배경 제거 중 오류가 발생했습니다.\n' + error.message);
+            render();
+        } finally {
+            removeBgBtn.disabled = false;
+            removeAllBgBtn.disabled = false;
+        }
     });
 
     saveAllBtn.addEventListener('click', async () => {
