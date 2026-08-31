@@ -484,17 +484,17 @@
         <div class="toolbar">
             <button type="button" id="openUploadBtn">이미지 넣기</button>
             <select id="imageSelect" hidden></select>
-            <button type="button" id="openEditBtn" class="secondary" disabled>상하좌우 편집</button>
-            <button type="button" id="openResizeBtn" class="secondary" disabled>크기 조정</button>
-            <button type="button" id="openTextBtn" class="secondary" disabled>텍스트 추가</button>
-            <button type="button" id="resetBtn" class="secondary" disabled>원본으로 초기화</button>
-            <button type="button" id="removeAllBgBtn" class="secondary" disabled>전체 배경 제거</button>
-            <button type="button" id="wandBtn" class="secondary" disabled>마법봉</button>
+            <button type="button" id="openEditBtn" class="secondary" title="단축키: Ctrl + Q" disabled>Q) 상하좌우 편집</button>
+            <button type="button" id="openResizeBtn" class="secondary" title="단축키: Ctrl + W" disabled>W) 크기 조정</button>
+            <button type="button" id="openTextBtn" class="secondary" title="단축키: Ctrl + A" disabled>A) 텍스트 추가</button>
+            <button type="button" id="resetBtn" class="secondary" title="단축키: Ctrl + S" disabled>S) 원본으로 초기화</button>
+            <button type="button" id="removeAllBgBtn" class="secondary" title="단축키: Ctrl + Z" disabled>Z) 전체 배경 제거</button>
+            <button type="button" id="wandBtn" class="secondary" title="단축키: Ctrl + X" disabled>X) 마법봉</button>
 
             <div class="wand-row">
                 <label class="wand-control">
                     <span>허용</span>
-                    <input type="number" id="wandTolerance" min="0" max="255" step="1" value="25">
+                    <input type="number" id="wandTolerance" min="0" max="255" step="1" value="20">
                     <input type="color" id="wandColor" value="#da312b">
                     <input type="text" id="wandHex" value="#DA312B" maxlength="7"
                            placeholder="#DA312B" spellcheck="false" aria-label="HEX 색상 코드">
@@ -512,8 +512,8 @@
                     <button type="button" id="checkerBgBtn" class="secondary">체크무늬</button>
                 </div>
 
-                <button type="button" id="saveBtn" disabled>현재 이미지 저장</button>
-                <button type="button" id="saveAllBtn" disabled>전체 저장</button>
+                <button type="button" id="saveBtn" title="단축키: S" disabled>현재 이미지 저장</button>
+                <button type="button" id="saveAllBtn" title="단축키: Shift + S" disabled>전체 저장</button>
             </div>
         </div>
 
@@ -521,7 +521,7 @@
             <button type="button" id="zoomOutBtn" class="secondary">축소</button>
             <button type="button" id="zoomInBtn" class="secondary">확대</button>
             <button type="button" id="zoomResetBtn" class="secondary">100%</button>
-            <button type="button" id="zoomFitBtn" class="secondary">높이맞춤</button>
+            <button type="button" id="zoomFitBtn" class="secondary">화면맞춤</button>
             <span id="zoomLabel" class="zoom-label">100%</span>
         </div>
 
@@ -801,13 +801,13 @@
     function updateTextButton() {
         const hasText = textSettings.enabled && textSettings.text.trim();
 
-        openTextBtn.textContent = hasText ? '텍스트 수정' : '텍스트 추가';
+        openTextBtn.textContent = hasText ? 'A) 텍스트 수정' : 'A) 텍스트 추가';
     }
 
     function openTextEditor() {
         const hasText = textSettings.enabled && textSettings.text.trim();
 
-        textModalTitle.textContent = hasText ? '텍스트 수정' : '텍스트 추가';
+        textModalTitle.textContent = hasText ? 'A) 텍스트 수정' : 'A) 텍스트 추가';
 
         textValue.value = textSettings.text;
         fontSize.value = textSettings.fontSize;
@@ -995,7 +995,14 @@
         if (canvas.hidden || !canvas.width || !canvas.height) return;
 
         const availableHeight = Math.max(previewWrap.clientHeight - 24, 50);
-        setZoom(availableHeight / canvas.height, false);
+        const availableWidth = Math.max(previewWrap.clientWidth - 24, 50);
+
+        const scaleHeight = availableHeight / canvas.height;
+        const scaleWidth = availableWidth / canvas.width;
+
+        const finalScale = scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
+
+        setZoom(finalScale, false);
 
         previewWrap.scrollTop = Math.max(0, (previewWrap.scrollHeight - previewWrap.clientHeight) / 2);
         previewWrap.scrollLeft = Math.max(0, (previewWrap.scrollWidth - previewWrap.clientWidth) / 2);
@@ -1127,7 +1134,7 @@
         applyWandColorBtn.disabled = !hasSelection;
 
         wandBtn.classList.toggle('active', wandMode);
-        wandBtn.textContent = wandMode ? '마법봉 켜짐' : '마법봉';
+        wandBtn.textContent = wandMode ? 'X) 마법봉 켜짐' : 'X) 마법봉';
 
         if (!hasSelection) {
             wandStatus.textContent = wandMode
@@ -2321,7 +2328,6 @@
             }
 
             if (imageItems.length) render();
-
             return;
         }
 
@@ -2335,6 +2341,87 @@
             return;
         }
 
+        const key = e.key.toLowerCase();
+
+        // Ctrl 단축키
+        if (e.ctrlKey && !e.shiftKey && !e.altKey && imageItems.length) {
+            if (key === 'q') {
+                e.preventDefault();
+                if (!openEditBtn.disabled) openEditBtn.click();
+                return;
+            }
+
+            if (key === 'w') {
+                e.preventDefault();
+                if (!openResizeBtn.disabled) openResizeBtn.click();
+                return;
+            }
+
+            if (key === 'a') {
+                e.preventDefault();
+                if (!openTextBtn.disabled) openTextBtn.click();
+                return;
+            }
+
+            if (key === 's') {
+                e.preventDefault();
+                if (!resetBtn.disabled) resetBtn.click();
+                return;
+            }
+
+            if (key === 'z') {
+                e.preventDefault();
+                if (!removeAllBgBtn.disabled) removeAllBgBtn.click();
+                return;
+            }
+
+            if (key === 'x') {
+                e.preventDefault();
+                if (!wandBtn.disabled) wandBtn.click();
+                return;
+            }
+        }
+
+        // 즐겨찾기 색상 단축키: 1~9, 0
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && /^[0-9]$/.test(e.key) && imageItems.length) {
+            const index = e.key === '0' ? 9 : Number(e.key) - 1;
+            const color = favoriteColorValues[index];
+
+            if (color) {
+                e.preventDefault();
+                setWandColorValue(color);
+
+                if (
+                    wandSelection &&
+                    wandSelection.index === currentIndex &&
+                    wandSelection.count > 0
+                ) {
+                    applySelectedColor(color);
+                } else {
+                    wandStatus.textContent =
+                        `${color} 색상이 선택되었습니다. 마법봉으로 영역을 먼저 선택해주세요.`;
+                    updateWandControls();
+                }
+            }
+
+            return;
+        }
+
+        // 현재 이미지 저장: S
+        // 전체 이미지 저장: Shift + S
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && key === 's' && imageItems.length) {
+            e.preventDefault();
+
+            if (e.shiftKey) {
+                if (!saveAllBtn.disabled) saveAllBtn.click();
+            } else {
+                if (!saveBtn.disabled) saveBtn.click();
+            }
+
+            return;
+        }
+
+        // 이미지 이동
         if (imageItems.length > 1) {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
