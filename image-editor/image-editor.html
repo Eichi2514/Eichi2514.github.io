@@ -2016,6 +2016,8 @@
     }
 
     canvas.addEventListener('pointerdown', event => {
+        if (event.button === 2) return;
+
         if (wandMode) {
             event.preventDefault();
 
@@ -2309,7 +2311,11 @@
     });
 
     canvas.addEventListener('contextmenu', event => {
-        if (wandMode && event.ctrlKey) event.preventDefault();
+        event.preventDefault();
+
+        if (imageItems.length > 1) {
+            goToNextImage();
+        }
     });
 
     window.addEventListener('keydown', e => {
