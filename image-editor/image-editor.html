@@ -2337,6 +2337,28 @@
             return;
         }
 
+        // 모달이 열려 있을 때 Enter → 적용/확인
+        if (e.key === 'Enter' && !e.isComposing) {
+            const modalActions = {
+                editModal: applyBtn,
+                resizeModal: applyResizeBtn,
+                textModal: applyTextBtn
+            };
+
+            const openedModal = document.querySelector('.modal-backdrop.show');
+
+            if (openedModal) {
+                const actionButton = modalActions[openedModal.id];
+
+                if (actionButton && !actionButton.disabled) {
+                    e.preventDefault();
+                    actionButton.click();
+                }
+
+                return;
+            }
+        }
+
         const activeTag = document.activeElement?.tagName;
 
         if (
