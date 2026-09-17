@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL → XLSX 변환기</title>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+    <style>
+        body {
+            font-family: Arial, "Noto Sans KR", sans-serif;
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6
+        }
+
+        h1 {
+            margin-bottom: 8px
+        }
+
+        .box {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0
+        }
+
+        button {
+            padding: 11px 20px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        progress {
+            width: 100%;
+            height: 18px;
+            margin-top: 16px
+        }
+
+        #status {
+            white-space: pre-wrap;
+            background: #f7f7f7;
+            padding: 14px;
+            border-radius: 8px;
+            min-height: 100px;
+            font-family: Consolas, monospace;
+            font-size: 13px
+        }
+
+        .small {
+            color: #666;
+            font-size: 13px;
+            margin-top: 12px
+        }
+    </style>
+</head>
+<body>
+
+<h1>SQL → XLSX 변환기</h1>
+<p>
+    DB 백업 SQL 파일을 하나 선택하면 모든 테이블을 각각의 시트로 넣은
+    Excel 파일 하나를 생성합니다.
+</p>
+
+<div class="box">
+    <input type="file" id="sqlFile" accept=".sql,.txt">
+    <br><br>
+    <button id="convertBtn" disabled>Excel 변환</button>
+    <progress id="progress" value="0" max="100" style="display:none"></progress>
+    <div class="small">
+        SQL 파일은 외부 서버로 업로드하지 않고 브라우저 안에서만 처리합니다.
+    </div>
+</div>
+
+<div id="status">SQL 파일을 선택해주세요.</div>
+
+<script>
+    const fileInput = document.getElementById('sqlFile');
+    const convertBtn = document.getElementById('convertBtn');
+    const statusEl = document.getElementById('status');
+    const progressEl = document.getElementById('progress');
+
+    const encoder = new TextEncoder();
+
+    fileInput.addEventListener('change', () => {
+        convertBtn.disabled = !fileInput.files.length;
+        progressEl.style.display = 'none';
+
+        statusEl.textContent = fileInput.files.length
+            ? '선택됨: ' + fileInput.files[0].name + '\n\n[Excel 변환]을 눌러주세요.'
+            : 'SQL 파일을 선택해주세요.';
+    });
+
+    convertBtn.addEventListener('click', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        convertBtn.disabled = true;
+        progressEl.style.display = 'block';
+        progressEl.value = 0;
+
+        try {
+            const zipChunks = [];
+            let resolveZip;
+            let rejectZip;
+
+            const zipDone = new Promise((resolve, reject) => {
+                resolveZip = resolve;
+                rejectZip = reject;
+            });
+
+            const zip = new fflate.Zip((err, chunk, final) => {
+                if (err) {
+                    rejectZip(err);
+                    return;
+                }
+
+                // 최종 XLSX 압축 데이터만 메모리에 보관
+                zipChunks.push(chunk);
+
+                if (final) {
+                    resolveZip();
+                }
+            });
+
+            const sheets = [];
+            const usedSheetNames = new Set();
+
+            let current = null;
+            let currentCreateTable = null;
+            let inCreate = false;
+            let tableCount = 0;
+            let totalRows = 0;
+            let processedBytes = 0;
+
+            function addStaticEntry(path, text) {
+                const entry = new fflate.ZipDeflate(path, {level: 6});
+                zip.add(entry);
+                entry.push(encoder.encode(text), true);
+            }
+
+            function startTable(tableName) {
+                tableCount++;
+
+                const sheetName = uniqueSheetName(tableName, usedSheetNames);
+                usedSheetNames.add(sheetName);
+
+                const entry = new fflate.ZipDeflate(
+                    'xl/worksheets/sheet' + tableCount + '.xml',
+                    {level: 6}
+                );
+
+                zip.add(entry);
+
+                current = {
+                    tableName,
+                    sheetName,
+                    entry,
+                    columns: [],
+                    headerWritten: false,
+                    rowNumber: 0,
+                    buffer: [],
+                    bufferSize: 0,
+                    dataRows: 0
+                };
+
+                sheets.push({
+                    name: sheetName,
+                    id: tableCount
+                });
+
+                pushSheetXml(
+                    current,
+                    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+                    '<sheetData>'
+                );
+
+                statusEl.textContent =
+                    '[' + tableCount + '] ' + tableName + '\n데이터 변환 중...';
+            }
+
+            function ensureTable(tableName) {
+                if (!current) {
+                    startTable(tableName);
+                    return;
+                }
+
+                if (current.tableName !== tableName) {
+                    finishCurrentTable();
+                    startTable(tableName);
+                }
+            }
+
+            function writeHeaderIfNeeded(columnsFromInsert = null) {
+                if (!current || current.headerWritten) return;
+
+                if ((!current.columns || !current.columns.length) && columnsFromInsert) {
+                    current.columns = columnsFromInsert.slice();
+                }
+
+                if (current.columns && current.columns.length) {
+                    current.rowNumber++;
+                    pushSheetXml(
+                        current,
+                        makeRowXml(current.rowNumber, current.columns.map(v => ({
+                            kind: 'string',
+                            value: v
+                        })))
+                    );
+                }
+
+                current.headerWritten = true;
+            }
+
+            function writeDataRow(values, columnsFromInsert) {
+                writeHeaderIfNeeded(columnsFromInsert);
+
+                current.rowNumber++;
+                current.dataRows++;
+                totalRows++;
+
+                pushSheetXml(
+                    current,
+                    makeRowXml(current.rowNumber, values)
+                );
+            }
+
+            function pushSheetXml(sheet, text) {
+                sheet.buffer.push(text);
+                sheet.bufferSize += text.length;
+
+                // 약 256KB 단위로 XLSX ZIP 엔트리에 밀어 넣고 문자열 메모리 해제
+                if (sheet.bufferSize >= 262144) {
+                    flushSheetBuffer(sheet, false);
+                }
+            }
+
+            function flushSheetBuffer(sheet, final) {
+                if (sheet.buffer.length) {
+                    const text = sheet.buffer.join('');
+                    sheet.buffer = [];
+                    sheet.bufferSize = 0;
+                    sheet.entry.push(encoder.encode(text), false);
+                }
+
+                if (final) {
+                    sheet.entry.push(new Uint8Array(0), true);
+                }
+            }
+
+            function finishCurrentTable() {
+                if (!current) return;
+
+                writeHeaderIfNeeded();
+
+                pushSheetXml(current, '</sheetData></worksheet>');
+                flushSheetBuffer(current, true);
+
+                statusEl.textContent =
+                    current.tableName + ' 완료: ' +
+                    current.dataRows.toLocaleString() + '행';
+
+                current = null;
+                currentCreateTable = null;
+                inCreate = false;
+            }
+
+            statusEl.textContent = 'SQL 파일을 읽는 중...';
+
+            for await (const item of readLinesWithProgress(file)) {
+                const line = item.line;
+                processedBytes = item.processed;
+
+                progressEl.value = Math.min(
+                    95,
+                    Math.floor((processedBytes / file.size) * 95)
+                );
+
+                // Java export에서 각 테이블 전에 생성하는 주석
+                const tableComment = line.match(
+                    /^\s*--\s*Table:\s*`([^`]+)`/i
+                );
+
+                if (tableComment) {
+                    const name = tableComment[1];
+
+                    if (current && current.tableName !== name) {
+                        finishCurrentTable();
+                    }
+
+                    if (!current) {
+                        startTable(name);
+                    }
+
+                    continue;
+                }
+
+                const createMatch = line.match(
+                    /^\s*CREATE\s+TABLE\s+`((?:``|[^`])+)`/i
+                );
+
+                if (createMatch) {
+                    const tableName = createMatch[1].replace(/``/g, '`');
+                    ensureTable(tableName);
+
+                    inCreate = true;
+                    currentCreateTable = tableName;
+                    continue;
+                }
+
+                if (inCreate && current && currentCreateTable === current.tableName) {
+                    const columnMatch = line.match(
+                        /^\s*`((?:``|[^`])+)`\s+/
+                    );
+
+                    if (columnMatch) {
+                        current.columns.push(
+                            columnMatch[1].replace(/``/g, '`')
+                        );
+                    }
+
+                    if (
+                        /^\s*\)\s*ENGINE\b/i.test(line) ||
+                        /^\s*\)\s*;/i.test(line)
+                    ) {
+                        inCreate = false;
+                        currentCreateTable = null;
+                    }
+
+                    continue;
+                }
+
+                const insertMatch = line.match(
+                    /^\s*INSERT\s+INTO\s+`((?:``|[^`])+)`/i
+                );
+
+                if (insertMatch) {
+                    const tableName = insertMatch[1].replace(/``/g, '`');
+                    ensureTable(tableName);
+
+                    const parsed = parseInsertLine(line);
+
+                    if (
+                        current.columns.length &&
+                        parsed.columns.length !== current.columns.length
+                    ) {
+                        throw new Error(
+                            '테이블 "' + tableName +
+                            '" 컬럼 수가 CREATE TABLE과 INSERT에서 다릅니다.'
+                        );
+                    }
+
+                    writeDataRow(parsed.values, parsed.columns);
+
+                    if (totalRows % 3000 === 0) {
+                        statusEl.textContent =
+                            '[' + tableCount + '] ' + tableName +
+                            '\n현재 테이블: ' +
+                            current.dataRows.toLocaleString() +
+                            '행\n전체: ' +
+                            totalRows.toLocaleString() + '행';
+
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                }
+            }
+
+            finishCurrentTable();
+
+            if (!sheets.length) {
+                throw new Error('SQL 파일에서 테이블을 찾지 못했습니다.');
+            }
+
+            progressEl.value = 96;
+            statusEl.textContent =
+                'Excel 파일 구조 마무리 중...\n' +
+                '테이블: ' + sheets.length + '개\n' +
+                '데이터: ' + totalRows.toLocaleString() + '행';
+
+            addStaticEntry(
+                '[Content_Types].xml',
+                makeContentTypesXml(sheets.length)
+            );
+
+            addStaticEntry(
+                '_rels/.rels',
+                makeRootRelsXml()
+            );
+
+            addStaticEntry(
+                'xl/workbook.xml',
+                makeWorkbookXml(sheets)
+            );
+
+            addStaticEntry(
+                'xl/_rels/workbook.xml.rels',
+                makeWorkbookRelsXml(sheets.length)
+            );
+
+            addStaticEntry(
+                'xl/styles.xml',
+                makeStylesXml()
+            );
+
+            zip.end();
+            await zipDone;
+
+            progressEl.value = 99;
+
+            const blob = new Blob(zipChunks, {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            const outputName =
+                file.name.replace(/\.(sql|txt)$/i, '') + '.xlsx';
+
+            downloadBlob(blob, outputName);
+
+            progressEl.value = 100;
+            statusEl.textContent =
+                '완료!\n\n' +
+                '테이블(시트): ' + sheets.length + '개\n' +
+                '데이터 행: ' + totalRows.toLocaleString() + '건\n' +
+                '파일명: ' + outputName;
+
+        } catch (e) {
+            console.error(e);
+
+            statusEl.textContent =
+                '변환 실패:\n' + (e?.message || e);
+
+        } finally {
+            convertBtn.disabled = false;
+        }
+    });
+
+    async function* readLinesWithProgress(file) {
+        const reader =
+            file.stream()
+                .pipeThrough(new TextDecoderStream('utf-8'))
+                .getReader();
+
+        let buffer = '';
+        let processed = 0;
+
+        while (true) {
+            const {value, done} = await reader.read();
+
+            if (done) break;
+
+            // TextDecoderStream 이후라 byte와 문자 길이는 완전히 같지 않을 수 있지만
+            // 진행률 표시 용도라 충분함
+            processed += value.length;
+            buffer += value;
+
+            let index;
+
+            while ((index = buffer.indexOf('\n')) >= 0) {
+                let line = buffer.slice(0, index);
+                buffer = buffer.slice(index + 1);
+
+                if (line.endsWith('\r')) {
+                    line = line.slice(0, -1);
+                }
+
+                yield {line, processed};
+            }
+        }
+
+        if (buffer.length) {
+            yield {line: buffer, processed: file.size};
+        }
+    }
+
+    function parseInsertLine(line) {
+        const prefix = line.match(
+            /^\s*INSERT\s+INTO\s+`((?:``|[^`])+)`\s*/i
+        );
+
+        if (!prefix) {
+            throw new Error('INSERT 문을 해석할 수 없습니다.');
+        }
+
+        let pos = prefix[0].length;
+
+        while (pos < line.length && /\s/.test(line[pos])) {
+            pos++;
+        }
+
+        if (line[pos] !== '(') {
+            throw new Error('INSERT 컬럼 시작 괄호를 찾지 못했습니다.');
+        }
+
+        const columnEnd = findMatchingParen(line, pos);
+
+        if (columnEnd < 0) {
+            throw new Error('INSERT 컬럼 괄호가 닫히지 않았습니다.');
+        }
+
+        const columns = splitTopLevel(
+            line.slice(pos + 1, columnEnd),
+            ','
+        ).map(item => {
+            const m = item.trim().match(
+                /^`((?:``|[^`])+)`$/
+            );
+
+            if (!m) {
+                throw new Error('컬럼명 해석 실패: ' + item.trim());
+            }
+
+            return m[1].replace(/``/g, '`');
+        });
+
+        const afterColumns = line.slice(columnEnd + 1);
+        const valuesMatch = afterColumns.match(/^\s*VALUES\s*/i);
+
+        if (!valuesMatch) {
+            throw new Error('VALUES 구문을 찾지 못했습니다.');
+        }
+
+        pos = columnEnd + 1 + valuesMatch[0].length;
+
+        while (pos < line.length && /\s/.test(line[pos])) {
+            pos++;
+        }
+
+        if (line[pos] !== '(') {
+            throw new Error('VALUES 시작 괄호를 찾지 못했습니다.');
+        }
+
+        const valueEnd = findMatchingParen(line, pos);
+
+        if (valueEnd < 0) {
+            throw new Error('VALUES 괄호가 닫히지 않았습니다.');
+        }
+
+        const rawValues = splitTopLevel(
+            line.slice(pos + 1, valueEnd),
+            ','
+        );
+
+        const values = rawValues.map(convertSqlTokenForExcel);
+
+        if (columns.length !== values.length) {
+            throw new Error(
+                '테이블 "' +
+                prefix[1].replace(/``/g, '`') +
+                '" 파싱 오류: 컬럼 ' +
+                columns.length +
+                '개 / 값 ' +
+                values.length +
+                '개\n\n' +
+                line.slice(0, 500)
+            );
+        }
+
+        return {columns, values};
+    }
+
+    function splitTopLevel(text, separator) {
+        const parts = [];
+        let current = '';
+        let depth = 0;
+        let inString = false;
+        let escaped = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+
+            if (inString) {
+                current += ch;
+
+                if (escaped) {
+                    escaped = false;
+                    continue;
+                }
+
+                if (ch === '\\') {
+                    escaped = true;
+                    continue;
+                }
+
+                if (ch === "'") {
+                    inString = false;
+                }
+
+                continue;
+            }
+
+            if (ch === "'") {
+                inString = true;
+                current += ch;
+                continue;
+            }
+
+            if (ch === '(') {
+                depth++;
+                current += ch;
+                continue;
+            }
+
+            if (ch === ')') {
+                depth--;
+                current += ch;
+                continue;
+            }
+
+            if (ch === separator && depth === 0) {
+                parts.push(current);
+                current = '';
+                continue;
+            }
+
+            current += ch;
+        }
+
+        parts.push(current);
+        return parts;
+    }
+
+    function findMatchingParen(text, openIndex) {
+        let depth = 0;
+        let inString = false;
+        let escaped = false;
+
+        for (let i = openIndex; i < text.length; i++) {
+            const ch = text[i];
+
+            if (inString) {
+                if (escaped) {
+                    escaped = false;
+                    continue;
+                }
+
+                if (ch === '\\') {
+                    escaped = true;
+                    continue;
+                }
+
+                if (ch === "'") {
+                    inString = false;
+                }
+
+                continue;
+            }
+
+            if (ch === "'") {
+                inString = true;
+                continue;
+            }
+
+            if (ch === '(') {
+                depth++;
+                continue;
+            }
+
+            if (ch === ')') {
+                depth--;
+
+                if (depth === 0) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    function convertSqlTokenForExcel(rawToken) {
+        const token = rawToken.trim();
+
+        if (/^NULL$/i.test(token)) {
+            return {kind: 'blank', value: null};
+        }
+
+        if (/^X'[0-9A-Fa-f]*'$/.test(token)) {
+            return {kind: 'string', value: token};
+        }
+
+        if (token.startsWith("'") && token.endsWith("'")) {
+            const inner = token.slice(1, -1);
+
+            let result = '';
+            let escaped = false;
+
+            for (let i = 0; i < inner.length; i++) {
+                const ch = inner[i];
+
+                if (!escaped) {
+                    if (ch === '\\') {
+                        escaped = true;
+                    } else {
+                        result += ch;
+                    }
+                    continue;
+                }
+
+                if (ch === '0') result += '\\0';
+                else if (ch === 'n') result += '\n';
+                else if (ch === 'r') result += '\r';
+                else if (ch === 'Z') result += '\\x1A';
+                else if (ch === "'") result += "'";
+                else if (ch === '\\') result += '\\';
+                else result += '\\' + ch;
+
+                escaped = false;
+            }
+
+            if (escaped) {
+                result += '\\';
+            }
+
+            return {
+                kind: 'string',
+                value: result
+            };
+        }
+
+        // 안전한 범위의 정수만 Excel 숫자로 기록
+        if (/^-?\d+$/.test(token)) {
+            try {
+                const big = BigInt(token);
+
+                if (
+                    big <= BigInt(Number.MAX_SAFE_INTEGER) &&
+                    big >= BigInt(Number.MIN_SAFE_INTEGER)
+                ) {
+                    return {
+                        kind: 'number',
+                        value: token
+                    };
+                }
+
+                return {
+                    kind: 'string',
+                    value: token
+                };
+            } catch {
+                return {
+                    kind: 'string',
+                    value: token
+                };
+            }
+        }
+
+        if (
+            /^-?(?:\d+\.\d+|\d+(?:\.\d+)?[eE][+-]?\d+)$/.test(token)
+        ) {
+            const n = Number(token);
+
+            if (Number.isFinite(n)) {
+                return {
+                    kind: 'number',
+                    value: token
+                };
+            }
+        }
+
+        return {
+            kind: 'string',
+            value: token
+        };
+    }
+
+    function makeRowXml(rowNumber, values) {
+        let xml = '<row r="' + rowNumber + '">';
+
+        for (let col = 0; col < values.length; col++) {
+            const cell = values[col];
+
+            if (!cell || cell.kind === 'blank') {
+                continue;
+            }
+
+            const ref = columnName(col + 1) + rowNumber;
+
+            if (cell.kind === 'number') {
+                xml +=
+                    '<c r="' + ref + '">' +
+                    '<v>' + escapeXml(String(cell.value)) + '</v>' +
+                    '</c>';
+            } else {
+                xml +=
+                    '<c r="' + ref + '" t="inlineStr">' +
+                    '<is><t xml:space="preserve">' +
+                    escapeXml(sanitizeExcelText(String(cell.value))) +
+                    '</t></is>' +
+                    '</c>';
+            }
+        }
+
+        xml += '</row>';
+        return xml;
+    }
+
+    function columnName(columnNumber) {
+        let result = '';
+        let n = columnNumber;
+
+        while (n > 0) {
+            n--;
+            result =
+                String.fromCharCode(65 + (n % 26)) +
+                result;
+            n = Math.floor(n / 26);
+        }
+
+        return result;
+    }
+
+    function escapeXml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function sanitizeExcelText(text) {
+        // XML 1.0에서 허용되지 않는 제어문자 제거
+        return text.replace(
+            /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,
+            ''
+        );
+    }
+
+    function uniqueSheetName(name, used) {
+        let base = name
+            .replace(/[\\\/\?\*\[\]\:]/g, '_')
+            .slice(0, 31);
+
+        if (!base) base = 'Sheet';
+
+        let candidate = base;
+        let index = 1;
+
+        while (used.has(candidate)) {
+            const suffix = '_' + index++;
+            candidate =
+                base.slice(0, 31 - suffix.length) +
+                suffix;
+        }
+
+        return candidate;
+    }
+
+    function makeContentTypesXml(sheetCount) {
+        let xml =
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+            '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+            '<Default Extension="xml" ContentType="application/xml"/>' +
+            '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+            '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+
+        for (let i = 1; i <= sheetCount; i++) {
+            xml +=
+                '<Override PartName="/xl/worksheets/sheet' +
+                i +
+                '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+        }
+
+        xml += '</Types>';
+        return xml;
+    }
+
+    function makeRootRelsXml() {
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+            '<Relationship Id="rId1" ' +
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" ' +
+            'Target="xl/workbook.xml"/>' +
+            '</Relationships>'
+        );
+    }
+
+    function makeWorkbookXml(sheets) {
+        let xml =
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+            'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+            '<sheets>';
+
+        sheets.forEach((sheet, index) => {
+            xml +=
+                '<sheet name="' +
+                escapeXmlAttribute(sheet.name) +
+                '" sheetId="' +
+                (index + 1) +
+                '" r:id="rId' +
+                (index + 1) +
+                '"/>';
+        });
+
+        xml += '</sheets></workbook>';
+        return xml;
+    }
+
+    function makeWorkbookRelsXml(sheetCount) {
+        let xml =
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+
+        for (let i = 1; i <= sheetCount; i++) {
+            xml +=
+                '<Relationship Id="rId' +
+                i +
+                '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" ' +
+                'Target="worksheets/sheet' +
+                i +
+                '.xml"/>';
+        }
+
+        xml +=
+            '<Relationship Id="rId' +
+            (sheetCount + 1) +
+            '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" ' +
+            'Target="styles.xml"/>';
+
+        xml += '</Relationships>';
+        return xml;
+    }
+
+    function makeStylesXml() {
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+            '<fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts>' +
+            '<fills count="2">' +
+            '<fill><patternFill patternType="none"/></fill>' +
+            '<fill><patternFill patternType="gray125"/></fill>' +
+            '</fills>' +
+            '<borders count="1"><border/></borders>' +
+            '<cellStyleXfs count="1">' +
+            '<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>' +
+            '</cellStyleXfs>' +
+            '<cellXfs count="1">' +
+            '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+            '</cellXfs>' +
+            '</styleSheet>'
+        );
+    }
+
+    function escapeXmlAttribute(text) {
+        return escapeXml(text)
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+
+    function downloadBlob(blob, fileName) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
