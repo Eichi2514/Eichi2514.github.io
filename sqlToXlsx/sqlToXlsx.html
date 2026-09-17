@@ -6,141 +6,1068 @@
     <title>SQL → XLSX 변환기</title>
     <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
+
+        :root {
+            --bg: #050816;
+            --panel: rgba(13, 18, 42, .82);
+            --line: rgba(148, 163, 255, .18);
+            --text: #f7f9ff;
+            --muted: #9ca8c7;
+            --cyan: #35e7ff;
+            --blue: #5b7cff;
+            --violet: #8b5cf6;
+            --pink: #f154ff;
+            --green: #44f2b1;
+            --shadow: 0 22px 65px rgba(0, 0, 0, .42);
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+            min-height: 100%;
+            background: var(--bg);
         }
 
         body {
-            font-family: Arial, "Noto Sans KR", sans-serif;
-            max-width: 860px;
-            margin: 40px auto;
-            padding: 0 20px;
-            line-height: 1.6;
-            color: #222;
+            min-height: 100vh;
+            margin: 0;
+            padding: 18px;
+            overflow-x: hidden;
+            color: var(--text);
+            font-family:
+                    Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    "Noto Sans KR", Arial, sans-serif;
+            line-height: 1.5;
+            background:
+                    radial-gradient(circle at 8% 12%, rgba(53, 231, 255, .12), transparent 24%),
+                    radial-gradient(circle at 92% 14%, rgba(241, 84, 255, .12), transparent 24%),
+                    radial-gradient(circle at 55% 100%, rgba(91, 124, 255, .10), transparent 30%),
+                    linear-gradient(135deg, #050816 0%, #090d20 52%, #070a18 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            opacity: .22;
+            background-image:
+                    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 85%);
+        }
+
+        body::after {
+            inset: -25%;
+            background:
+                    conic-gradient(
+                            from 210deg at 50% 50%,
+                            transparent 0deg,
+                            rgba(53, 231, 255, .05) 60deg,
+                            transparent 120deg,
+                            rgba(241, 84, 255, .05) 210deg,
+                            transparent 300deg
+                    );
+            filter: blur(55px);
+            animation: ambientSpin 18s linear infinite;
+        }
+
+        @keyframes ambientSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .app-shell {
+            position: relative;
+            z-index: 1;
+            width: min(1720px, 100%);
+            min-height: calc(100vh - 36px);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(340px, 410px) minmax(0, 1fr);
+            grid-template-rows: auto auto auto;
+            gap: 16px 20px;
+            align-content: center;
+        }
+
+        .hero {
+            grid-column: 1;
+            grid-row: 1 / 4;
+            position: relative;
+            min-height: 100%;
+            padding: 38px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background:
+                    linear-gradient(155deg, rgba(17, 24, 55, .78), rgba(7, 11, 28, .86));
+            box-shadow:
+                    var(--shadow),
+                    inset 0 1px 0 rgba(255,255,255,.045);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            left: -110px;
+            top: -110px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(53, 231, 255, .15), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            right: -90px;
+            bottom: -120px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(241, 84, 255, .14), transparent 70%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            position: relative;
+            z-index: 1;
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 8px 13px;
+            border: 1px solid rgba(123, 143, 255, .22);
+            border-radius: 999px;
+            color: #b6c2ff;
+            background: rgba(10, 16, 38, .58);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px var(--green);
         }
 
         h1 {
-            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            font-size: clamp(58px, 4.8vw, 82px);
+            line-height: .98;
+            letter-spacing: -.055em;
+            font-weight: 900;
         }
 
-        .box {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
+        h1 .sql {
+            color: #76f4ff;
+            text-shadow:
+                    0 0 14px rgba(53, 231, 255, .30),
+                    0 0 28px rgba(53, 231, 255, .12);
+        }
+
+        h1 .arrow {
+            display: inline-block;
+            margin: 0 .10em;
+            color: #93a4ff;
+            font-style: normal;
+            text-shadow: 0 0 20px rgba(91, 124, 255, .35);
+        }
+
+        h1 .xlsx {
+            color: transparent;
+            background: linear-gradient(90deg, #8a7dff 0%, #d45cff 48%, #ff7fd1 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .hero-title-sub {
+            display: block;
+            margin-top: 16px;
+            color: rgba(255,255,255,.94);
+            font-size: clamp(28px, 2.2vw, 36px);
+            line-height: 1.2;
+            font-weight: 850;
+            letter-spacing: -.035em;
+        }
+
+        .hero p {
+            position: relative;
+            z-index: 1;
+            max-width: 340px;
+            margin: 22px 0 0;
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.75;
+        }
+
+        .hero-tags {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .hero-tag {
+            padding: 8px 12px;
+            border: 1px solid rgba(138, 155, 255, .14);
+            border-radius: 8px;
+            color: #c3cdef;
+            background: rgba(12, 17, 39, .45);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .converter-card,
+        .log-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background:
+                    linear-gradient(145deg, rgba(17, 24, 55, .86), rgba(7, 11, 28, .88));
+            box-shadow:
+                    var(--shadow),
+                    inset 0 1px 0 rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+        }
+
+        .converter-card {
+            grid-column: 2;
+            grid-row: 1;
+            margin: 0;
+            padding: 24px;
+            border-radius: 24px;
+        }
+
+        .converter-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: inherit;
+            background: linear-gradient(
+                    135deg,
+                    rgba(53, 231, 255, .42),
+                    transparent 30%,
+                    transparent 70%,
+                    rgba(241, 84, 255, .30)
+            );
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-orb {
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            right: -100px;
+            top: -105px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(241, 84, 255, .15), transparent 68%);
+            pointer-events: none;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 15px;
+        }
+
+        .step {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            color: #dce3ff;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .step-num {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border: 1px solid rgba(111, 131, 255, .3);
+            border-radius: 9px;
+            color: #89f4ff;
+            background:
+                    linear-gradient(145deg, rgba(53, 231, 255, .10), rgba(91, 124, 255, .06));
+            font-family: Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .local-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #86efc4;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .local-badge::before {
+            content: "●";
+            color: #44f2b1;
+            font-size: 8px;
+            text-shadow: 0 0 10px #44f2b1;
         }
 
         #dropZone {
-            border: 2px dashed #b9b9b9;
-            border-radius: 12px;
-            padding: 42px 20px;
-            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 205px;
+            display: grid;
+            grid-template-columns: 82px minmax(0, 1fr) auto;
+            grid-template-rows: auto auto;
+            align-items: center;
+            column-gap: 22px;
+            row-gap: 4px;
+            padding: 30px 32px;
+            border: 1px dashed rgba(118, 151, 255, .46);
+            border-radius: 18px;
+            text-align: left;
             cursor: pointer;
-            transition: 0.15s ease;
-            background: #fafafa;
             user-select: none;
+            isolation: isolate;
+            background:
+                    linear-gradient(rgba(9, 15, 38, .72), rgba(9, 15, 38, .72)),
+                    repeating-linear-gradient(
+                            135deg,
+                            rgba(255,255,255,.025) 0 1px,
+                            transparent 1px 11px
+                    );
+            box-shadow:
+                    inset 0 0 0 1px rgba(255,255,255,.015),
+                    inset 0 0 50px rgba(53, 231, 255, .02);
+            transition:
+                    transform .22s ease,
+                    border-color .22s ease,
+                    box-shadow .22s ease,
+                    background .22s ease;
+        }
+
+        #dropZone::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            left: -160px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(53, 231, 255, .13), transparent 70%);
+            z-index: -1;
         }
 
         #dropZone:hover,
         #dropZone.dragover {
-            border-color: #444;
-            background: #f1f1f1;
+            transform: translateY(-1px);
+            border-color: #65eaff;
+            box-shadow:
+                    0 0 0 1px rgba(53, 231, 255, .08),
+                    0 0 28px rgba(53, 231, 255, .08),
+                    inset 0 0 55px rgba(53, 231, 255, .035);
         }
 
         #dropZone.has-file {
             border-style: solid;
-            border-color: #777;
-            background: #f7f7f7;
+            border-color: rgba(68, 242, 177, .62);
+            background:
+                    linear-gradient(rgba(8, 23, 33, .76), rgba(8, 18, 34, .78)),
+                    repeating-linear-gradient(
+                            135deg,
+                            rgba(68,242,177,.025) 0 1px,
+                            transparent 1px 11px
+                    );
+        }
+
+        .upload-icon {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            position: relative;
+            width: 82px;
+            height: 82px;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(123, 150, 255, .30);
+            border-radius: 22px;
+            color: #8ef4ff;
+            background:
+                    linear-gradient(145deg, rgba(53, 231, 255, .12), rgba(139, 92, 246, .08));
+            box-shadow:
+                    0 12px 28px rgba(0,0,0,.22),
+                    inset 0 1px 0 rgba(255,255,255,.06);
+        }
+
+        .upload-icon::before {
+            content: "⇧";
+            font-size: 42px;
+            font-weight: 300;
+            line-height: 1;
+            transform: translateY(-2px);
+        }
+
+        .upload-icon::after {
+            content: "";
+            position: absolute;
+            left: 22px;
+            right: 22px;
+            bottom: 17px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--cyan), var(--violet));
         }
 
         .drop-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
+            grid-column: 2;
+            grid-row: 1;
+            align-self: end;
+            margin: 0;
+            font-size: clamp(22px, 1.8vw, 28px);
+            font-weight: 850;
+            letter-spacing: -.03em;
         }
 
         .drop-desc {
-            color: #666;
+            grid-column: 2;
+            grid-row: 2;
+            align-self: start;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .file-types {
+            grid-column: 3;
+            grid-row: 1 / 3;
+            display: flex;
+            gap: 6px;
+            margin: 0;
+            align-self: center;
+        }
+
+        .file-type {
+            padding: 6px 10px;
+            border: 1px solid rgba(132, 149, 255, .16);
+            border-radius: 7px;
+            color: #9eadcf;
+            background: rgba(255,255,255,.025);
+            font-family: Consolas, monospace;
             font-size: 14px;
         }
 
         #selectedFileName {
+            grid-column: 2 / 4;
+            grid-row: 3;
+            max-width: 100%;
             margin-top: 12px;
+            padding: 8px 12px;
+            border: 1px solid rgba(68, 242, 177, .18);
+            border-radius: 8px;
+            color: #85efc3;
+            background: rgba(16, 44, 37, .36);
+            font-family: Consolas, monospace;
+            font-size: 13px;
             font-weight: 700;
             word-break: break-all;
         }
 
-        #sqlFile {
-            display: none;
+        #selectedFileName:empty { display: none; }
+        #sqlFile { display: none; }
+
+        .action-area {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(285px, .32fr);
+            gap: 12px;
+            align-items: stretch;
+            margin-top: 14px;
         }
 
-        button {
-            padding: 11px 20px;
+        #convertBtn {
+            position: relative;
+            overflow: hidden;
+            min-height: 64px;
+            padding: 0 26px;
             border: 0;
-            border-radius: 8px;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 15px;
-            margin-top: 16px;
+            color: white;
+            background:
+                    linear-gradient(100deg, #18cfe9 0%, #5b7cff 42%, #a55ef6 71%, #ee55df 100%);
+            box-shadow:
+                    0 12px 28px rgba(91, 124, 255, .22),
+                    inset 0 1px 0 rgba(255,255,255,.30);
+            font-size: 17px;
+            font-weight: 850;
+            letter-spacing: -.02em;
+            transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
         }
 
-        button:disabled {
-            opacity: .5;
+        #convertBtn::before {
+            content: "";
+            position: absolute;
+            width: 95px;
+            height: 180%;
+            top: -40%;
+            left: -110px;
+            transform: rotate(18deg);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+            transition: left .55s ease;
+        }
+
+        #convertBtn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: saturate(1.10) brightness(1.04);
+            box-shadow:
+                    0 15px 34px rgba(91, 124, 255, .28),
+                    inset 0 1px 0 rgba(255,255,255,.35);
+        }
+
+        #convertBtn:hover:not(:disabled)::before {
+            left: calc(100% + 40px);
+        }
+
+        #convertBtn:disabled {
             cursor: not-allowed;
+            color: #76809b;
+            background: linear-gradient(135deg, #1a2035, #151a2b);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+        }
+
+        .security-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 64px;
+            padding: 11px 14px;
+            border: 1px solid rgba(68, 242, 177, .13);
+            border-radius: 14px;
+            color: #98a6c4;
+            background: rgba(9, 19, 30, .52);
+            font-size: 14px;
+        }
+
+        .shield {
+            flex: 0 0 auto;
+            width: 34px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            clip-path: polygon(50% 0%, 91% 15%, 84% 70%, 50% 100%, 16% 70%, 9% 15%);
+            color: #07101a;
+            background: linear-gradient(145deg, #56ffc0, #24d6f2);
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .progress-box {
+            margin-top: 12px;
+            padding: 12px 14px 13px;
+            border: 1px solid rgba(116, 138, 255, .12);
+            border-radius: 12px;
+            background: rgba(8, 12, 28, .54);
+        }
+
+        .progress-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 7px;
+            color: #8794b2;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
 
         progress {
             width: 100%;
-            height: 18px;
-            margin-top: 16px;
+            height: 9px;
+            display: block;
+            overflow: hidden;
+            border: 0;
+            border-radius: 999px;
+            appearance: none;
+            background: #0c1125;
         }
 
-        #status {
-            white-space: pre-wrap;
-            background: #f7f7f7;
-            padding: 14px;
-            border-radius: 8px;
-            min-height: 120px;
-            font-family: Consolas, monospace;
-            font-size: 13px;
-            word-break: break-word;
+        progress::-webkit-progress-bar {
+            border-radius: 999px;
+            background: #0c1125;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+        }
+
+        progress::-webkit-progress-value {
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--pink));
+            box-shadow: 0 0 16px rgba(91, 124, 255, .45);
+        }
+
+        progress::-moz-progress-bar {
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--pink));
         }
 
         .small {
-            color: #666;
-            font-size: 13px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin-top: 12px;
+            color: #9aa7c5;
+            font-size: 14px;
         }
+
+        .info-item {
+            min-height: 92px;
+            padding: 13px 14px;
+            display: grid;
+            grid-template-columns: 30px 1fr;
+            grid-template-rows: auto auto;
+            column-gap: 10px;
+            align-items: start;
+            border: 1px solid rgba(119, 139, 255, .11);
+            border-radius: 11px;
+            background:
+                    linear-gradient(145deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
+            transition: border-color .18s ease, transform .18s ease, background .18s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(109, 232, 255, .20);
+            background:
+                    linear-gradient(145deg, rgba(53,231,255,.04), rgba(139,92,246,.025));
+        }
+
+        .info-icon {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            width: 30px;
+            height: 30px;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(104, 226, 255, .14);
+            border-radius: 7px;
+            color: #83eefa;
+            background: rgba(53, 231, 255, .055);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .info-title {
+            grid-column: 2;
+            grid-row: 1;
+            display: block;
+            margin: 0 0 2px;
+            color: #dce4fb;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .info-copy {
+            grid-column: 2;
+            grid-row: 2;
+            color: #8290ae;
+            line-height: 1.45;
+        }
+
+        .log-card {
+            grid-column: 2;
+            grid-row: 2;
+            margin: 0;
+            padding: 0;
+            border-radius: 16px;
+        }
+
+        .log-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(120, 139, 255, .11);
+            background: rgba(255,255,255,.015);
+        }
+
+        .log-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #dfe6ff;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .log-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px var(--green);
+        }
+
+        .log-meta {
+            color: #697592;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+        }
+
+        #status {
+            min-height: 105px;
+            max-height: 150px;
+            overflow: auto;
+            margin: 0;
+            padding: 14px 16px 16px;
+            white-space: pre-wrap;
+            color: #aebbd7;
+            background:
+                    linear-gradient(rgba(5, 9, 24, .84), rgba(5, 9, 24, .84)),
+                    radial-gradient(circle at 10% 0%, rgba(53,231,255,.08), transparent 26%);
+            font-family: Consolas, "SFMono-Regular", monospace;
+            font-size: 14px;
+            line-height: 1.65;
+            word-break: break-word;
+        }
+
+        #status::-webkit-scrollbar { width: 8px; }
+        #status::-webkit-scrollbar-track { background: transparent; }
+        #status::-webkit-scrollbar-thumb {
+            border: 2px solid transparent;
+            border-radius: 999px;
+            background: #253152;
+            background-clip: padding-box;
+        }
+
+        .footer {
+            grid-column: 2;
+            grid-row: 3;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 0 4px;
+            color: #68738d;
+            font-size: 11px;
+        }
+
+        .footer strong {
+            color: #8793af;
+            font-weight: 700;
+        }
+
+
+        @media (min-width: 1400px) {
+            .converter-card {
+                padding: 26px 28px;
+            }
+
+            .hero {
+                padding: 42px 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .drop-desc {
+                font-size: 14px;
+            }
+
+            .info-copy {
+                font-size: 12px;
+            }
+
+            #status {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            body {
+                padding: 18px;
+            }
+
+            .app-shell {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                align-content: start;
+            }
+
+            .hero,
+            .converter-card,
+            .log-card,
+            .footer {
+                grid-column: 1;
+                grid-row: auto;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 18px;
+            }
+
+            .hero p {
+                max-width: 720px;
+            }
+
+            .hero-tags {
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 12px;
+            }
+
+            .converter-card {
+                padding: 15px;
+                border-radius: 18px;
+            }
+
+            #dropZone {
+                min-height: 190px;
+                grid-template-columns: 56px minmax(0, 1fr);
+                padding: 24px;
+            }
+
+            .upload-icon {
+                width: 56px;
+                height: 56px;
+            }
+
+            .file-types {
+                grid-column: 2;
+                grid-row: 3;
+                justify-self: start;
+                margin-top: 7px;
+            }
+
+            #selectedFileName {
+                grid-column: 1 / 3;
+                grid-row: 4;
+            }
+
+            .action-area {
+                grid-template-columns: 1fr;
+            }
+
+            .small {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            h1 {
+                font-size: 44px;
+            }
+
+            .hero-title-sub {
+                font-size: 22px;
+            }
+
+            .hero-tags {
+                display: none;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #dropZone {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                text-align: center;
+            }
+
+            .upload-icon,
+            .drop-title,
+            .drop-desc,
+            .file-types,
+            #selectedFileName {
+                grid-column: 1;
+                grid-row: auto;
+                justify-self: center;
+            }
+
+            .small {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
     </style>
 </head>
+
 <body>
+<div class="app-shell">
 
-<h1>SQL → XLSX 변환기</h1>
-<p>
-    SQL 파일을 드래그&드롭하면, 원본 파일명으로 폴더를 만든 뒤
-    그 안에 각 테이블을 <b>테이블명.xlsx</b> 형태로 저장합니다.
-</p>
+    <header class="hero">
+        <div class="eyebrow">LOCAL DATABASE CONVERTER</div>
 
-<div class="box">
-    <div id="dropZone" tabindex="0">
-        <div class="drop-title">SQL 파일을 여기에 드래그&드롭</div>
-        <div class="drop-desc">또는 클릭해서 파일 선택 (.sql / .txt)</div>
-        <div id="selectedFileName"></div>
-    </div>
+        <h1>
+            <span class="sql">SQL</span>
+            <i class="arrow">→</i>
+            <span class="xlsx">XLSX</span>
+            <span class="hero-title-sub">테이블별 Excel 변환기</span>
+        </h1>
 
-    <input type="file" id="sqlFile" accept=".sql,.txt">
+        <p>
+            SQL 파일 하나만 넣으면 원본 파일명으로 폴더를 만들고,
+            각 테이블을 <b>테이블명.xlsx</b> 파일로 자동 분리합니다.
+        </p>
 
-    <button id="convertBtn" disabled>테이블별 Excel 변환</button>
-    <progress id="progress" value="0" max="100" style="display:none"></progress>
+        <div class="hero-tags">
+            <span class="hero-tag">Drag & Drop</span>
+            <span class="hero-tag">브라우저 로컬 처리</span>
+            <span class="hero-tag">테이블별 자동 분리</span>
+            <span class="hero-tag">Chrome / Edge 권장</span>
+        </div>
+    </header>
 
-    <div class="small">
-        변환 시작 시 저장할 상위 폴더를 한 번 선택합니다.<br>
-        예: backup.sql → 선택한 폴더/backup/users.xlsx, reservations.xlsx ...<br>
-        파일은 외부 서버로 업로드하지 않고 브라우저 안에서만 처리합니다.<br>
-        폴더 직접 저장 기능 때문에 Chrome 또는 Edge 사용을 권장합니다.
-    </div>
+    <main class="converter-card">
+        <div class="card-orb"></div>
+
+        <div class="section-heading">
+            <div class="step">
+                <span class="step-num">01</span>
+                SQL 파일 선택
+            </div>
+            <div class="local-badge">데이터는 PC 안에서만 처리됩니다</div>
+        </div>
+
+        <div id="dropZone" tabindex="0">
+            <div class="upload-icon"></div>
+            <div class="drop-title">SQL 파일을 여기에 드래그&드롭</div>
+            <div class="drop-desc">또는 이 영역을 클릭해서 파일을 선택하세요.</div>
+
+            <div class="file-types">
+                <span class="file-type">.sql</span>
+                <span class="file-type">.txt</span>
+            </div>
+
+            <div id="selectedFileName"></div>
+        </div>
+
+        <input type="file" id="sqlFile" accept=".sql,.txt">
+
+        <div class="action-area">
+            <button id="convertBtn" disabled>
+                테이블별 Excel 변환&nbsp;&nbsp;→
+            </button>
+
+            <div class="security-panel">
+                <div class="shield">✓</div>
+                <div>
+                    <strong style="color:#d8e2f7;">외부 업로드 없음</strong><br>
+                    파일은 브라우저 내부에서만 처리
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-box">
+            <div class="progress-label">
+                <span>CONVERSION PROGRESS</span>
+                <span>SQL → XLSX</span>
+            </div>
+            <progress id="progress" value="0" max="100" style="display:none"></progress>
+        </div>
+
+        <div class="small">
+            <div class="info-item">
+                <div class="info-icon">01</div>
+                <span class="info-title">폴더 한 번 선택</span>
+                <div class="info-copy">
+                    변환 시작 시 저장할 상위 폴더만 한 번 선택합니다.
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">02</div>
+                <span class="info-title">자동 폴더 생성</span>
+                <div class="info-copy">
+                    backup.sql → backup 폴더가 자동 생성됩니다.
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">03</div>
+                <span class="info-title">테이블별 분리</span>
+                <div class="info-copy">
+                    users.xlsx, reservations.xlsx처럼 각각 저장됩니다.
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">04</div>
+                <span class="info-title">Chrome / Edge</span>
+                <div class="info-copy">
+                    폴더 직접 저장 기능 지원 브라우저 사용을 권장합니다.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="log-card">
+        <div class="log-head">
+            <div class="log-title">
+                <span class="log-dot"></span>
+                실행 로그
+            </div>
+            <div class="log-meta">LOCAL PROCESS</div>
+        </div>
+
+        <div id="status">SQL 파일을 드래그&드롭하거나 선택해주세요.</div>
+    </section>
+
+    <footer class="footer">
+        <span><strong>SQL → XLSX CONVERTER</strong></span>
+        <span>브라우저에서 안전하게 실행되는 로컬 변환 도구</span>
+    </footer>
+
 </div>
-
-<div id="status">SQL 파일을 드래그&드롭하거나 선택해주세요.</div>
 
 <script>
     const fileInput = document.getElementById('sqlFile');
