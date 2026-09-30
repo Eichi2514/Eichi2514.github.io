@@ -1193,12 +1193,9 @@
 
             for await (const item of readLinesWithProgress(selectedFile)) {
                 const line = item.line;
-                processedBytes = item.processed;
+                processedBytes = item.endProcessed;
 
-                progressEl.value = Math.min(
-                    96,
-                    Math.floor((processedBytes / selectedFile.size) * 96)
-                );
+                updateProgress(processedBytes, selectedFile.size);
 
                 const tableComment = line.match(
                     /^\s*--\s*Table:\s*`([^`]+)`/i
@@ -1264,17 +1261,47 @@
                     const tableName = insertMatch[1].replace(/``/g, '`');
                     await ensureTable(tableName);
 
-                    const parsed = parseInsertLine(line);
-                    writeDataRow(parsed.values, parsed.columns);
+                    await parseInsertLineStreaming(
+                        line,
+                        current.columns,
+                        (values, columns) => {
+                            writeDataRow(values, columns);
+                        },
+                        async (charPosition, charLength) => {
+                            const lineRatio = charLength > 0
+                                ? Math.min(1, charPosition / charLength)
+                                : 1;
 
-                    if (totalRows % 3000 === 0) {
-                        statusEl.textContent =
-                            '[' + tableCount + '] ' + tableName + '\n' +
-                            '현재 테이블: ' + current.dataRows.toLocaleString() + '행\n' +
-                            '전체: ' + totalRows.toLocaleString() + '행';
+                            const estimatedBytes =
+                                item.startProcessed +
+                                Math.floor(
+                                    (item.endProcessed - item.startProcessed) * lineRatio
+                                );
 
-                        await new Promise(resolve => setTimeout(resolve, 0));
-                    }
+                            processedBytes = Math.max(
+                                processedBytes,
+                                Math.min(selectedFile.size, estimatedBytes)
+                            );
+
+                            const percent = updateProgress(
+                                processedBytes,
+                                selectedFile.size
+                            );
+
+                            statusEl.textContent =
+                                '[' + tableCount + '] ' + tableName + '\n' +
+                                '현재 테이블: ' + current.dataRows.toLocaleString() + '행\n' +
+                                '전체: ' + totalRows.toLocaleString() + '행\n' +
+                                '진행률: ' + percent + '% · 변환 진행 중...';
+
+                            await new Promise(resolve =>
+                                requestAnimationFrame(() => resolve())
+                            );
+                        }
+                    );
+
+                    processedBytes = item.endProcessed;
+                    updateProgress(processedBytes, selectedFile.size);
                 }
             }
 
@@ -1575,21 +1602,40 @@
         }
     }
 
+    function updateProgress(processed, total) {
+        if (!total) {
+            progressEl.value = 0;
+            return 0;
+        }
+
+        const actualPercent = Math.min(
+            100,
+            Math.floor((processed / total) * 100)
+        );
+
+        // 마지막 XLSX 마무리/저장 구간을 위해 96%까지만 파일 읽기 진행률로 사용
+        progressEl.value = Math.min(96, Math.floor(actualPercent * 0.96));
+        return actualPercent;
+    }
+
     async function* readLinesWithProgress(file) {
-        const reader = file.stream()
-            .pipeThrough(new TextDecoderStream('utf-8'))
-            .getReader();
+        const reader = file.stream().getReader();
+        const decoder = new TextDecoder('utf-8');
 
         let buffer = '';
         let processed = 0;
+        let lineStartProcessed = 0;
 
         while (true) {
             const {value, done} = await reader.read();
 
-            if (done) break;
+            if (done) {
+                buffer += decoder.decode();
+                break;
+            }
 
-            processed += value.length;
-            buffer += value;
+            processed += value.byteLength;
+            buffer += decoder.decode(value, {stream: true});
 
             let index;
 
@@ -1601,16 +1647,31 @@
                     line = line.slice(0, -1);
                 }
 
-                yield {line, processed};
+                yield {
+                    line,
+                    startProcessed: lineStartProcessed,
+                    endProcessed: processed
+                };
+
+                lineStartProcessed = processed;
             }
         }
 
         if (buffer.length) {
-            yield {line: buffer, processed: file.size};
+            yield {
+                line: buffer,
+                startProcessed: lineStartProcessed,
+                endProcessed: file.size
+            };
         }
     }
 
-    function parseInsertLine(line) {
+    async function parseInsertLineStreaming(
+        line,
+        fallbackColumns = [],
+        onRow,
+        onProgress
+    ) {
         const prefix = line.match(
             /^\s*INSERT\s+INTO\s+`((?:``|[^`])+)`\s*/i
         );
@@ -1619,75 +1680,132 @@
             throw new Error('INSERT 문을 해석할 수 없습니다.');
         }
 
+        const tableName = prefix[1].replace(/``/g, '`');
         let pos = prefix[0].length;
 
         while (pos < line.length && /\s/.test(line[pos])) {
             pos++;
         }
 
-        if (line[pos] !== '(') {
-            throw new Error('INSERT 컬럼 시작 괄호를 찾지 못했습니다.');
-        }
+        let columns = [];
 
-        const columnEnd = findMatchingParen(line, pos);
+        // 기존 export-sql 형식: INSERT INTO `table` (`col1`,`col2`) VALUES (...)
+        if (line[pos] === '(') {
+            const columnEnd = findMatchingParen(line, pos);
 
-        if (columnEnd < 0) {
-            throw new Error('INSERT 컬럼 괄호가 닫히지 않았습니다.');
-        }
-
-        const columns = splitTopLevel(
-            line.slice(pos + 1, columnEnd),
-            ','
-        ).map(item => {
-            const m = item.trim().match(/^`((?:``|[^`])+)`$/);
-
-            if (!m) {
-                throw new Error('컬럼명 해석 실패: ' + item.trim());
+            if (columnEnd < 0) {
+                throw new Error('INSERT 컬럼 괄호가 닫히지 않았습니다.');
             }
 
-            return m[1].replace(/``/g, '`');
-        });
+            columns = splitTopLevel(
+                line.slice(pos + 1, columnEnd),
+                ','
+            ).map(item => {
+                const m = item.trim().match(/^`((?:``|[^`])+)`$/);
 
-        const afterColumns = line.slice(columnEnd + 1);
-        const valuesMatch = afterColumns.match(/^\s*VALUES\s*/i);
+                if (!m) {
+                    throw new Error('컬럼명 해석 실패: ' + item.trim());
+                }
 
-        if (!valuesMatch) {
-            throw new Error('VALUES 구문을 찾지 못했습니다.');
+                return m[1].replace(/``/g, '`');
+            });
+
+            pos = columnEnd + 1;
+        } else {
+            // mysqldump 기본 형식: INSERT INTO `table` VALUES (...),(...);
+            columns = fallbackColumns.slice();
+
+            if (!columns.length) {
+                throw new Error(
+                    '테이블 "' + tableName + '"의 컬럼 정보를 CREATE TABLE에서 찾지 못했습니다.'
+                );
+            }
         }
-
-        pos = columnEnd + 1 + valuesMatch[0].length;
 
         while (pos < line.length && /\s/.test(line[pos])) {
             pos++;
         }
 
-        if (line[pos] !== '(') {
-            throw new Error('VALUES 시작 괄호를 찾지 못했습니다.');
+        const valuesMatch = line.slice(pos).match(/^VALUES\s*/i);
+
+        if (!valuesMatch) {
+            throw new Error('VALUES 구문을 찾지 못했습니다.');
         }
 
-        const valueEnd = findMatchingParen(line, pos);
+        pos += valuesMatch[0].length;
 
-        if (valueEnd < 0) {
-            throw new Error('VALUES 괄호가 닫히지 않았습니다.');
-        }
+        let rowCount = 0;
 
-        const rawValues = splitTopLevel(
-            line.slice(pos + 1, valueEnd),
-            ','
-        );
+        while (pos < line.length) {
+            while (pos < line.length && /\s/.test(line[pos])) {
+                pos++;
+            }
 
-        const values = rawValues.map(convertSqlTokenForExcel);
+            if (line[pos] === ';') {
+                break;
+            }
 
-        if (columns.length !== values.length) {
+            if (line[pos] !== '(') {
+                throw new Error(
+                    '테이블 "' + tableName + '"의 VALUES 시작 괄호를 찾지 못했습니다.\n\n' +
+                    line.slice(Math.max(0, pos - 100), pos + 400)
+                );
+            }
+
+            const valueEnd = findMatchingParen(line, pos);
+
+            if (valueEnd < 0) {
+                throw new Error('VALUES 괄호가 닫히지 않았습니다.');
+            }
+
+            const rawValues = splitTopLevel(
+                line.slice(pos + 1, valueEnd),
+                ','
+            );
+
+            const values = rawValues.map(convertSqlTokenForExcel);
+
+            if (columns.length !== values.length) {
+                throw new Error(
+                    '테이블 "' + tableName +
+                    '" 파싱 오류: 컬럼 ' + columns.length +
+                    '개 / 값 ' + values.length + '개\n\n' +
+                    line.slice(Math.max(0, pos - 100), valueEnd + 100)
+                );
+            }
+
+            onRow(values, columns);
+            rowCount++;
+            pos = valueEnd + 1;
+
+            while (pos < line.length && /\s/.test(line[pos])) {
+                pos++;
+            }
+
+            if (rowCount % 1000 === 0) {
+                await onProgress(pos, line.length);
+            }
+
+            if (line[pos] === ',') {
+                pos++;
+                continue;
+            }
+
+            if (line[pos] === ';' || pos >= line.length) {
+                break;
+            }
+
             throw new Error(
-                '테이블 "' + prefix[1].replace(/``/g, '`') +
-                '" 파싱 오류: 컬럼 ' + columns.length +
-                '개 / 값 ' + values.length + '개\n\n' +
-                line.slice(0, 500)
+                '테이블 "' + tableName + '"의 INSERT 구문을 끝까지 해석하지 못했습니다.\n\n' +
+                line.slice(Math.max(0, pos - 100), pos + 400)
             );
         }
 
-        return {columns, values};
+        if (!rowCount) {
+            throw new Error('INSERT 문에서 데이터 행을 찾지 못했습니다.');
+        }
+
+        await onProgress(line.length, line.length);
     }
 
     function splitTopLevel(text, separator) {
