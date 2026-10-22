@@ -564,6 +564,197 @@
             word-break: keep-all;
         }
 
+
+        /* =========================
+           프로필 뱃지 카테고리 / 검색
+        ========================= */
+        .badge-browser {
+            padding: 0 8px;
+            margin-top: 14px;
+        }
+
+        .badge-browser-toolbar {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .badge-search-box {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 42px;
+            box-sizing: border-box;
+            padding: 0 12px;
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+        }
+
+        .badge-search-box:focus-within {
+            border-color: var(--primary);
+        }
+
+        .badge-search-icon {
+            flex-shrink: 0;
+            color: var(--text-sub);
+            font-size: 16px;
+        }
+
+        #badgeSearchInput {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
+            padding: 10px 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        #badgeSearchInput::placeholder {
+            color: var(--text-sub);
+        }
+
+        #badgeSearchInput::-webkit-search-cancel-button {
+            display: none;
+        }
+
+        #badgeSearchClear {
+            flex-shrink: 0;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* 상품 목록 안에서만 나타나는, 검색창 오른쪽 뒤로가기 */
+        #badgeBackToCategories {
+            flex-shrink: 0;
+            padding: 0 12px;
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            background: var(--bg-sub);
+            color: var(--primary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .badge-category-heading {
+            margin: 18px 0 6px;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .badge-category-description {
+            color: var(--text-sub);
+            font-size: 12px;
+        }
+
+        .badge-results-heading {
+            margin-top: 16px;
+            margin-bottom: 7px;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .badge-category-name,
+        .badge-category-count {
+            display: block;
+        }
+
+        .badge-category-count {
+            margin-top: 3px;
+            color: var(--text-sub);
+            font-size: 11px;
+            font-weight: 400;
+        }
+
+        /* 상위/하위 분류 없이 모든 카테고리를 한 번에 선택합니다. */
+        .badge-category-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 12px;
+            margin-bottom: 10px;
+        }
+
+        @media (min-width: 700px) {
+            .badge-category-tabs {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+        }
+
+        .badge-category-tab {
+            min-width: 0;
+            min-height: 48px;
+            padding: 6px 3px;
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            background: var(--bg-sub);
+            color: var(--primary);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: normal;
+            word-break: keep-all;
+            cursor: pointer;
+        }
+
+        .badge-category-tab.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--text-accent);
+        }
+
+        .badge-result-count {
+            margin: 2px 0 10px;
+            color: var(--text-sub);
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .badge-empty {
+            grid-column: 1 / -1;
+            padding: 42px 0;
+            color: var(--text-sub);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .badge-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 18px 0 22px;
+            color: var(--text-main);
+            font-size: 13px;
+        }
+        .badge-pagination button {
+            padding: 7px 15px;
+            border-radius: 7px;
+            color: var(--primary);
+            background: var(--bg-sub);
+            border: 1px solid var(--border-main);
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .badge-pagination button:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -623,7 +814,36 @@
 <div id="shopContents">
     <div class="shop-content" data-content="boxes"></div>
     <div class="shop-content" data-content="themes" style="display:none;"></div>
-    <div class="shop-content" data-content="badges" style="display:none;"></div>
+    <div class="shop-content" data-content="badges" style="display:none;">
+        <div class="badge-browser">
+            <div class="badge-browser-toolbar">
+                <div class="badge-search-box">
+                    <span class="badge-search-icon" aria-hidden="true">🔍</span>
+                    <input type="search" id="badgeSearchInput" placeholder="뱃지 이름 또는 이모지 검색"
+                           autocomplete="off" aria-label="뱃지 검색">
+                    <button type="button" id="badgeSearchClear" aria-label="검색어 지우기" style="display:none;">✕</button>
+                </div>
+                <button type="button" id="badgeBackToCategories" style="display:none;">←</button>
+            </div>
+            <!-- 첫 화면: 분류 목록만 표시 -->
+            <div id="badgeCategoryView">
+                <div class="badge-category-heading">분류 선택</div>
+                <div class="badge-category-description">원하는 분류를 선택해 주세요.</div>
+                <div id="badgeCategoryTabs" class="badge-category-tabs" role="group" aria-label="뱃지 분류"></div>
+            </div>
+            <!-- 두 번째 화면: 선택한 분류의 뱃지 목록 -->
+            <div id="badgeListView" style="display:none;">
+                <div id="badgeResultsHeading" class="badge-results-heading"></div>
+                <div id="badgeResultCount" class="badge-result-count" aria-live="polite"></div>
+                <div id="badgeProductGrid" class="shop-grid"></div>
+                <div id="badgePagination" class="badge-pagination" style="display:none;">
+                    <button type="button" id="badgePrevPage">이전</button>
+                    <span id="badgePageIndicator" aria-live="polite"></span>
+                    <button type="button" id="badgeNextPage">다음</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="shop-content" data-content="miniGame" style="display:none;">
         <div class="mini-game-wrapper" style="padding: 20px; text-align: center;">
             <h2 style="color:var(--primary);">GOLDEN SHOT</h2>
@@ -901,6 +1121,62 @@
         $("#hDisplay").text(h.toLocaleString());
     }
 
+    // 각 뱃지는 SHOP_DATA.badges에 있는 category 하나로만 분류
+    const badgeCategories = [
+        { id: "ALL", name: "전체" },
+        { id: "OWNED", name: "보유" },
+        { id: "기본", name: "기본" },
+        { id: "표정", name: "표정" },
+        { id: "포유류", name: "포유류" },
+        { id: "파충류·환상", name: "파충류·환상" },
+        { id: "바다생물", name: "바다생물" },
+        { id: "조류", name: "조류" },
+        { id: "곤충·기타", name: "곤충·기타" },
+        { id: "판타지", name: "판타지" },
+        { id: "축제", name: "축제" },
+        { id: "패션", name: "패션" },
+        { id: "놀이", name: "놀이" },
+        { id: "음악", name: "음악" },
+        { id: "공구·장비", name: "공구·장비" },
+        { id: "과학·의료", name: "과학·의료" },
+        { id: "전자·미디어", name: "전자·미디어" },
+        { id: "금융·우편", name: "금융·우편" },
+        { id: "문구·생활", name: "문구·생활" },
+        { id: "식사·요리", name: "식사·요리" },
+        { id: "빵·간식", name: "빵·간식" },
+        { id: "디저트", name: "디저트" },
+        { id: "음료", name: "음료" },
+        { id: "과일", name: "과일" },
+        { id: "채소·식재료", name: "채소·식재료" },
+        { id: "식물과 자연", name: "식물·자연" },
+        { id: "교통·이동", name: "교통·이동" },
+        { id: "자연·여행", name: "자연·여행" },
+        { id: "건물·명소", name: "건물·명소" },
+        { id: "집·생활", name: "집·생활" },
+        { id: "날씨와 우주", name: "날씨·우주" },
+        { id: "기호와 감정", name: "기호·감정" }
+    ];
+    const BADGE_PAGE_SIZE = 24;
+    // 처음 방문 시에는 무조건 분류 화면에서 시작합니다.
+    // 구매/착용 직후 새로고침한 경우에만 보고 있던 상품 목록으로 복원합니다.
+    const restoreBadgeList = sessionStorage.getItem("shopBadgeRestoreAfterAction") === "1";
+    sessionStorage.removeItem("shopBadgeRestoreAfterAction");
+    let badgeView = restoreBadgeList ? "items" : "categories";
+    let badgeSearchFromCategories = false;
+    let badgePage = restoreBadgeList
+        ? Math.max(1, Number.parseInt(sessionStorage.getItem("shopBadgePage"), 10) || 1) : 1;
+    const storedBadgeCategory = sessionStorage.getItem("shopBadgeCategory");
+    const storedBadgeSubcategory = sessionStorage.getItem("shopBadgeSubcategory");
+    const validBadgeCategoryIds = new Set(badgeCategories.map(c => c.id));
+    let selectedBadgeCategory = validBadgeCategoryIds.has(storedBadgeCategory)
+        ? storedBadgeCategory
+        : validBadgeCategoryIds.has(storedBadgeSubcategory)
+            ? storedBadgeSubcategory : "ALL";
+    sessionStorage.removeItem("shopBadgeSubcategory");
+    let badgeSearchQuery = restoreBadgeList ? (sessionStorage.getItem("shopBadgeSearch") || "") : "";
+    if (!restoreBadgeList) sessionStorage.removeItem("shopBadgeSearch");
+    let badgeFiltersInitialized = false;
+
     const rendered = {
         boxes: false,
         themes: false,
@@ -934,6 +1210,9 @@
             if (target === "badges") renderBadges();
             if (target === "miniGame") initMiniGameTab();
             rendered[target] = true;
+        } else if (target === "badges") {
+            // 다른 메인 탭에서 되돌아왔거나 뱃지 탭을 다시 누르면 분류 화면부터 시작
+            showBadgeCategoryHome();
         }
     });
 
@@ -1259,42 +1538,174 @@
         location.reload();
     }
 
+    /** 분류 버튼은 최초 한 번만 생성하고, 보유 수량은 로드 후 갱신합니다. */
+    function initBadgeFilters() {
+        if (badgeFiltersInitialized) return;
+        badgeFiltersInitialized = true;
+        $("#badgeSearchInput").val(badgeSearchQuery);
+
+        const $tabs = $("#badgeCategoryTabs");
+        badgeCategories.forEach(category => {
+            const $button = $("<button>", {type: "button", class: "badge-category-tab"})
+                .attr("data-badge-category", category.id)
+                .attr("aria-label", category.name);
+            $("<span>", {class: "badge-category-name"}).text(category.name).appendTo($button);
+            $("<span>", {class: "badge-category-count"}).appendTo($button);
+            $tabs.append($button);
+        });
+    }
+
+    /** 분류 화면의 카테고리별 개수를 표시합니다. */
+    function updateBadgeCategoryCounts() {
+        const allBadges = Object.values(SHOP_DATA.badges);
+        const counts = {ALL: allBadges.length, OWNED: 0};
+        allBadges.forEach(badge => {
+            counts[badge.category] = (counts[badge.category] || 0) + 1;
+            if (badge.priceH === 0 || inventoryBadges?.[badge.id]) counts.OWNED++;
+        });
+        $("#badgeCategoryTabs .badge-category-tab").each(function () {
+            const id = $(this).attr("data-badge-category");
+            $(this).find(".badge-category-count").text(`${counts[id] || 0}개`);
+        });
+    }
+
+    /** 상품 목록에서 검색창 옆의 뒤로가기 버튼을 누르면 분류 선택으로 복귀합니다. */
+    function showBadgeCategoryHome() {
+        badgeView = "categories";
+        badgeSearchFromCategories = false;
+        badgeSearchQuery = "";
+        badgePage = 1;
+        $("#badgeSearchInput").val("");
+        sessionStorage.removeItem("shopBadgeSearch");
+        sessionStorage.removeItem("shopBadgePage");
+        renderBadges();
+    }
+
+    /** 분류를 선택하면 해당 뱃지만 보이는 목록 화면으로 이동합니다. */
+    function openBadgeCategory(categoryId) {
+        selectedBadgeCategory = categoryId;
+        sessionStorage.setItem("shopBadgeCategory", categoryId);
+        badgeView = "items";
+        badgeSearchFromCategories = false;
+        badgeSearchQuery = "";
+        badgePage = 1;
+        $("#badgeSearchInput").val("");
+        sessionStorage.removeItem("shopBadgeSearch");
+        renderBadges();
+    }
+
+    /** 분류 화면과 뱃지 목록 화면은 동시에 나타나지 않습니다. */
     function renderBadges() {
-        const $container = $('.shop-content[data-content="badges"]');
-        $container.empty();
+        initBadgeFilters();
+        $("#badgeSearchClear").toggle(Boolean(badgeSearchQuery.length));
+        const showingItems = badgeView === "items";
+        $("#badgeCategoryView").toggle(!showingItems);
+        $("#badgeListView").toggle(showingItems);
+        $("#badgeBackToCategories").toggle(showingItems);
 
-        const $grid = $('<div class="shop-grid"></div>');
+        if (!showingItems) {
+            updateBadgeCategoryCounts();
+            return;
+        }
 
-        Object.values(SHOP_DATA.badges).forEach(badge => {
+        const $grid = $("#badgeProductGrid").empty();
+        const keyword = badgeSearchQuery.trim().toLocaleLowerCase();
+        const filteredBadges = Object.values(SHOP_DATA.badges).filter(badge => {
+            const owned = badge.priceH === 0 || Boolean(inventoryBadges?.[badge.id]);
+            const matchingCategory = selectedBadgeCategory === "ALL"
+                || (selectedBadgeCategory === "OWNED" && owned)
+                || badge.category === selectedBadgeCategory;
+            const searchText = `${badge.name} ${badge.icon || ""} ${badge.id}`.toLocaleLowerCase();
+            return matchingCategory && searchText.includes(keyword);
+        }).sort((a, b) =>
+            a.priceH - b.priceH || a.name.localeCompare(b.name, "ko")
+        );
+
+        const categoryName = badgeCategories.find(c => c.id === selectedBadgeCategory)?.name || "전체";
+        $("#badgeResultsHeading").text(badgeSearchFromCategories ? "전체 검색 결과" : categoryName);
+        $("#badgeResultCount").text(`뱃지 ${filteredBadges.length.toLocaleString()}개`);
+
+        const totalPages = Math.max(1, Math.ceil(filteredBadges.length / BADGE_PAGE_SIZE));
+        badgePage = Math.min(Math.max(1, badgePage), totalPages);
+        sessionStorage.setItem("shopBadgePage", String(badgePage));
+        const start = (badgePage - 1) * BADGE_PAGE_SIZE;
+        const visibleBadges = filteredBadges.slice(start, start + BADGE_PAGE_SIZE);
+        const $pagination = $("#badgePagination");
+        if (totalPages > 1) {
+            $pagination.css("display", "flex");
+            $("#badgePrevPage").prop("disabled", badgePage === 1);
+            $("#badgeNextPage").prop("disabled", badgePage === totalPages);
+            $("#badgePageIndicator").text(`${badgePage} / ${totalPages} 페이지`);
+        } else {
+            $pagination.hide();
+        }
+
+        if (visibleBadges.length === 0) {
+            $("<div>", {class: "badge-empty"})
+                .text(keyword ? "검색 결과가 없습니다." : "해당 분류에 뱃지가 없습니다.")
+                .appendTo($grid);
+            return;
+        }
+
+        visibleBadges.forEach(badge => {
             const owned = badge.priceH === 0 || inventoryBadges?.[badge.id];
             const applied = activeBadgeId === badge.id;
             const statusText = applied ? "적용 중" : owned ? "보유 중" : "";
             const statusColor = applied ? "var(--primary)" : "var(--text-sub)";
-            const priceText = badge.priceH === 0 ? '무료' : badge.priceH.toLocaleString() + 'H';
-
-
-            const badgeIcon = badge.icon ? badge.icon : `🚫`;
+            const priceText = badge.priceH === 0 ? "무료" : badge.priceH.toLocaleString() + "H";
+            const badgeIcon = badge.icon || "🚫";
 
             const $item = $(`
                 <div class="shop-item">
                     <div style="font-weight:600;">${badge.name}</div>
                     <div style="font-size:36px;">${badgeIcon}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-                        <span style="color:${statusColor}; font-weight:600;">
-                            ${statusText}
-                        </span>
-                        <span style="color:var(--text-sub);">
-                            ${priceText}
-                        </span>
+                        <span style="color:${statusColor}; font-weight:600;">${statusText}</span>
+                        <span style="color:var(--text-sub);">${priceText}</span>
                     </div>
                 </div>
             `);
             $item.on("click", () => onBadgeClick(badge, owned));
             $grid.append($item);
         });
-
-        $container.append($grid);
     }
+
+    $("#badgeCategoryTabs").on("click", ".badge-category-tab", function () {
+        openBadgeCategory($(this).attr("data-badge-category"));
+    });
+
+    $("#badgeBackToCategories").on("click", function () {
+        showBadgeCategoryHome();
+    });
+
+    $("#badgeSearchInput").on("input", function () {
+        badgeSearchQuery = $(this).val();
+        if (badgeView === "categories" && badgeSearchQuery.trim()) {
+            // 분류를 선택하지 않고 검색하면 전체 상품에서 바로 찾습니다.
+            selectedBadgeCategory = "ALL";
+            sessionStorage.setItem("shopBadgeCategory", "ALL");
+            badgeView = "items";
+            badgeSearchFromCategories = true;
+        } else if (badgeSearchFromCategories && !badgeSearchQuery.trim()) {
+            // 분류 화면에서 시작한 전체 검색을 모두 지우면 분류로 복귀합니다.
+            badgeView = "categories";
+            badgeSearchFromCategories = false;
+        }
+        if (badgeSearchQuery) sessionStorage.setItem("shopBadgeSearch", badgeSearchQuery);
+        else sessionStorage.removeItem("shopBadgeSearch");
+        badgePage = 1;
+        renderBadges();
+    });
+
+    $("#badgeSearchClear").on("click", function () {
+        $("#badgeSearchInput").val("").trigger("input").trigger("focus");
+    });
+
+    $("#badgePrevPage, #badgeNextPage").on("click", function () {
+        badgePage += this.id === "badgeNextPage" ? 1 : -1;
+        renderBadges();
+        $(".shop-content[data-content='badges']")[0]?.scrollIntoView({behavior:"smooth", block:"start"});
+    });
 
     let currentBadgeTarget = null;
 
@@ -1378,6 +1789,7 @@
 
         // UI 갱신을 위해 페이지 리로드 (또는 재렌더링 처리)
         applyWalletToUI(result.snapshot.val());
+        sessionStorage.setItem("shopBadgeRestoreAfterAction", "1");
         location.reload();
     }
 
@@ -1400,6 +1812,7 @@
             await set(activeBadgeRef, currentBadgeTarget.id);
 
             $("#badgeSelectModal").fadeOut(150);
+            sessionStorage.setItem("shopBadgeRestoreAfterAction", "1");
             location.reload();
         } catch (err) {
             console.error("Badge Apply Error:", err);
