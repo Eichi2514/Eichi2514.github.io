@@ -755,6 +755,44 @@
             opacity: 0.35;
             cursor: default;
         }
+
+        .badge-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0 7px;
+        }
+
+        .badge-results-header .badge-results-heading {
+            margin: 0;
+        }
+
+        .badge-results-header .badge-page-controls {
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .badge-page-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin: 0;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+        #badgePageSize {
+            padding: 6px 8px;
+            border: 1px solid var(--border-main);
+            border-radius: 7px;
+            background: var(--bg-sub);
+            color: var(--primary);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
     </style>
     <link rel="stylesheet" href="../modules/helpModal.css"/>
     <link rel="stylesheet" href="../modules/menuToggle.css"/>
@@ -833,7 +871,16 @@
             </div>
             <!-- 두 번째 화면: 선택한 분류의 뱃지 목록 -->
             <div id="badgeListView" style="display:none;">
-                <div id="badgeResultsHeading" class="badge-results-heading"></div>
+                <div class="badge-results-header">
+                    <div id="badgeResultsHeading" class="badge-results-heading"></div>
+
+                    <div class="badge-page-controls">
+                        <label for="badgePageSize">보기</label>
+                        <select id="badgePageSize" aria-label="페이지당 뱃지 표시 개수"></select>
+                        <span>개</span>
+                    </div>
+                </div>
+
                 <div id="badgeResultCount" class="badge-result-count" aria-live="polite"></div>
                 <div id="badgeProductGrid" class="shop-grid"></div>
                 <div id="badgePagination" class="badge-pagination" style="display:none;">
@@ -1156,7 +1203,17 @@
         { id: "날씨와 우주", name: "날씨·우주" },
         { id: "기호와 감정", name: "기호·감정" }
     ];
-    const BADGE_PAGE_SIZE = 24;
+    const BADGE_PAGE_SIZE_KEY = "shopBadgePageSize";
+
+    const storedBadgePageSize = Number(localStorage.getItem(BADGE_PAGE_SIZE_KEY));
+
+    let badgePageSize =
+        Number.isInteger(storedBadgePageSize) &&
+        storedBadgePageSize >= 9 &&
+        storedBadgePageSize <= 60 &&
+        storedBadgePageSize % 3 === 0
+            ? storedBadgePageSize
+            : 18;
     // 처음 방문 시에는 무조건 분류 화면에서 시작합니다.
     // 구매/착용 직후 새로고침한 경우에만 보고 있던 상품 목록으로 복원합니다.
     const restoreBadgeList = sessionStorage.getItem("shopBadgeRestoreAfterAction") === "1";
@@ -1544,6 +1601,19 @@
         badgeFiltersInitialized = true;
         $("#badgeSearchInput").val(badgeSearchQuery);
 
+        const $pageSize = $("#badgePageSize");
+
+        for (let size = 9; size <= 60; size += 3) {
+            $pageSize.append(
+                $("<option>", {
+                    value: size,
+                    text: size
+                })
+            );
+        }
+
+        $pageSize.val(badgePageSize);
+
         const $tabs = $("#badgeCategoryTabs");
         badgeCategories.forEach(category => {
             const $button = $("<button>", {type: "button", class: "badge-category-tab"})
@@ -1625,11 +1695,11 @@
         $("#badgeResultsHeading").text(badgeSearchFromCategories ? "전체 검색 결과" : categoryName);
         $("#badgeResultCount").text(`뱃지 ${filteredBadges.length.toLocaleString()}개`);
 
-        const totalPages = Math.max(1, Math.ceil(filteredBadges.length / BADGE_PAGE_SIZE));
+        const totalPages = Math.max(1, Math.ceil(filteredBadges.length / badgePageSize));
         badgePage = Math.min(Math.max(1, badgePage), totalPages);
         sessionStorage.setItem("shopBadgePage", String(badgePage));
-        const start = (badgePage - 1) * BADGE_PAGE_SIZE;
-        const visibleBadges = filteredBadges.slice(start, start + BADGE_PAGE_SIZE);
+        const start = (badgePage - 1) * badgePageSize;
+        const visibleBadges = filteredBadges.slice(start, start + badgePageSize);
         const $pagination = $("#badgePagination");
         if (totalPages > 1) {
             $pagination.css("display", "flex");
@@ -1699,6 +1769,21 @@
 
     $("#badgeSearchClear").on("click", function () {
         $("#badgeSearchInput").val("").trigger("input").trigger("focus");
+    });
+
+    $("#badgePageSize").on("change", function () {
+        const size = Number($(this).val());
+
+        if (!Number.isInteger(size) || size < 9 || size > 60 || size % 3 !== 0) {
+            return;
+        }
+
+        badgePageSize = size;
+        badgePage = 1;
+
+        localStorage.setItem(BADGE_PAGE_SIZE_KEY, String(size));
+
+        renderBadges();
     });
 
     $("#badgePrevPage, #badgeNextPage").on("click", function () {
